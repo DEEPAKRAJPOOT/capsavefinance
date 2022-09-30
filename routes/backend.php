@@ -598,6 +598,15 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'uses' => 'Backend\ApplicationController@createNewSanctionLetter',
             ]);
 
+            Route::get('app-pull-back-confirmBox', [
+                'as' => 'app_pull_back_confirmBox',
+                'uses' => 'Backend\ApplicationController@sendCaseConfirmbox'
+            ]); 
+            Route::get('download-approval-file-copy', [
+                'as' => 'download_approval_file_copy',
+                'uses' => 'Backend\DocumentController@downloadStorageFile'
+            ]);
+
             Route::post('save-new-sanction-letter', [
                 'as' => 'save_new_sanction_letter',
                 'uses' => 'Backend\ApplicationController@saveNewSanctionLetterSupplyChain',

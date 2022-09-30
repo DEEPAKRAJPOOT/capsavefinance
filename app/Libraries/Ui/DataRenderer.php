@@ -407,7 +407,7 @@ class DataRenderer implements DataProviderInterface
                         
                         if (!empty($parent_app_id)) {
                             $aData = Application::getAppData((int)$parent_app_id);
-                            if ($permission) {
+                            if ($permission && $aData) {
                                 $ret .= "<br><small>Parent:</small><br><a href='" . route('company_details', ['biz_id' => $aData->biz_id, 'app_id' => $parent_app_id]) . "' rel='tooltip'>" . \Helpers::formatIdWithPrefix($parent_app_id, 'APP') . "</a>";
                             } else {
                                 $ret .= "<br><small>Parent:</small><br><a rel='tooltip'>" . \Helpers::formatIdWithPrefix($parent_app_id, 'APP') . "</a>";
@@ -567,12 +567,7 @@ class DataRenderer implements DataProviderInterface
                                             $act = $act . '&nbsp;<a href="#" title="Reduce Limit" data-toggle="modal" data-target="#confirmReduceLimit" data-url="' . route('reduce_limit_confirmBox', ['user_id' => $app->user_id,'app_id' => $app->app_id, 'biz_id' => $app->biz_id, 'app_type' => 3]) . '" data-height="200px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm"><i class="fa fa-user-times" aria-hidden="true"></i></a> ';
                                         }
                                     } else {
-                                        $status = DB::table('app_sanction_letter')->where(['app_id' => $app->app_id])->orderBy('sanction_letter_id', 'desc')->pluck('status')->first();
-                                       if($status == 3){
-                                        $act = $act . '&nbsp;<a href="#" title="Move to Next Stage" onclick="alert(\'You cannot move this case to next stage as sanction letter is in process/regenerated\')" class="btn btn-action-btn btn-sm"><i class="fa fa-share" aria-hidden="true"></i></a> ';
-                                       }else{
-                                        $act = $act . '&nbsp;<a href="#" title="Move to Next Stage" data-toggle="modal" data-target="#sendNextstage" data-url="' . route('send_case_confirmBox', ['user_id' => $app->user_id,'app_id' => $app->app_id, 'biz_id' => $request->get('biz_id')]) . '" data-height="370px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm"><i class="fa fa-share" aria-hidden="true"></i></a> ';
-                                       }    
+                                        $act = $act . '&nbsp;<a href="#" title="Move to Next Stage" data-toggle="modal" data-target="#sendNextstage" data-url="' . route('send_case_confirmBox', ['user_id' => $app->user_id,'app_id' => $app->app_id, 'biz_id' => $request->get('biz_id')]) . '" data-height="370px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm"><i class="fa fa-share" aria-hidden="true"></i></a> ';    
 
                                         if ($roleData[0]->id != 4 && !empty($currentStage->assign_role)) {
                                             $act = $act . $moveToBackStageUrl;

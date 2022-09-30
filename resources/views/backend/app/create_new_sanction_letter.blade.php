@@ -603,7 +603,7 @@
                                             <table width="100%" border="1">
                                                 <tr>
                                                     <td width="30%" valign="top"><b>Review Date</b></td>
-                                                    <td><input type="date" name="review_date" id="review_date" style="min-height:30px;" value="{{ $supplyChainFormData->review_date ??'' }}"></td>
+                                                    <td><input type="date" name="review_date" id="review_date" style="min-height:30px;" value="{{ $supplyChainFormData->review_date ?? '' }}"></td>
                                                 </tr>
                                                 <tr>
                                                     <td valign="top"><b>Sanction validity for first disbursement</b>
@@ -1100,8 +1100,19 @@
             removePlugins: 'link,image,flash,smiley,pagebreak,iframe'
 };
    CKEDITOR.replace('monitoring_covenants_select_text',ckeditorOptions);
-
+    
     $(document).ready(function() {
+        setReviewDateByDefault();
+
+        $('#payment_type').on('change', function() {
+            $('#payment_type_comment').val('');
+            if ($(this).val() == '5') {
+                $('#payment_type_comment').removeClass('hide');
+            } else {
+                $('#payment_type_comment').addClass('hide');
+            }
+        })
+
         $('.r_o_i').each(function () {
             CKEDITOR.replace($(this).prop('id'),ckeditorOptions);
         });
@@ -1175,6 +1186,18 @@
         @endif
     });
 
+    function setReviewDateByDefault() {
+        var currentMinDate = new Date();
+        currentMinDate.setDate(currentMinDate.getDate() + 7);
+        var minDate = currentMinDate.getFullYear()+'-'+('0'+(currentMinDate.getMonth()+1)).slice(-2)+'-'+('0'+(currentMinDate.getDate())).slice(-2);
+        $('#review_date').attr('min', minDate);
+
+        var currentMaxDate = new Date();
+        currentMaxDate.setDate(currentMaxDate.getDate() - 1);
+        currentMaxDate.setFullYear(currentMaxDate.getFullYear() + 1);
+        var maxDate = currentMaxDate.getFullYear()+'-'+('0'+(currentMaxDate.getMonth()+1)).slice(-2)+'-'+('0'+(currentMaxDate.getDate())).slice(-2);
+        $('#review_date').attr('max', maxDate);
+    }
 
     function ChangeDateFormat(dateObj, out_format = 'ymd', out_separator = '/', dateAddMinus = 0) {
         dateObj.setDate(dateObj.getDate() + dateAddMinus);

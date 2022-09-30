@@ -2625,6 +2625,10 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
     public function getInvoiceProcessingFeeCharge(){
         return Charges::find(12);
     }
+    
+    public function getAnchorPrgmUserIdsInArray($anchorId, $prgmId){
+        return AppProgramOffer::getAnchorPrgmUserIdsInArray($anchorId, $prgmId);
+    }
 
     public function saveNewSanctionLetterData($sanctionData=[], $sactionId=null)
     {

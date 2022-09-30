@@ -58,5 +58,6 @@ return [
     'reduction_utilized_amt_validation_for_approver' => 'You can\'t sent application to next stage because previous utilized limit is greater than your current limit.',
     'lead_assigned' => 'Leads assigned successfully.',
     'app_assigned' => 'Application assigned successfully.',
+    'validate_limit_expired_found' => 'You can\'t sanctioned this application because limit is already expired.',
 ];
 

@@ -940,6 +940,25 @@ function logFile($data, $w_mode = 'D', $w_filename = '', $w_folder = '', $txn_id
       return FALSE;
 }
 
+function xmlToArrayWithCDATA($xml, $format = 'ARRAY') {
+	$fileContents = str_replace(array("\n", "\r", "\t"), '', $xml);
+	//$xml = preg_replace('/(<\/?)(\w+):([^>]*>)/', '$1$2$3', $fileContents);
+	$fileContents = trim(str_replace('"', "'", $xml));
+	if (!_is_valid_xml($xml)) {
+		return $xml;
+	}
+	$array = json_decode(json_encode(simplexml_load_string($xml, 'SimpleXMLElement', LIBXML_NOCDATA),true), true);
+	return (strtoupper($format) == 'ARRAY' ? $array : json_encode($array));
+}
+
+
+function getPathByDISId($disbursal_id, $common_path = '/user/logs/disbursal'){
+	if (!empty($disbursal_id)) {
+            $dateVar = time();
+            $main_dir = "$common_path/$disbursal_id/$dateVar.log";
+  	}
+	return $main_dir ?? null;
+}
 // Create a function for converting the amount in words
 function numberTowords($num = false)
 {
@@ -980,24 +999,5 @@ function numberTowords($num = false)
         $commas = $commas - 1;
     }
     return implode(' ', $words);
-}
-function xmlToArrayWithCDATA($xml, $format = 'ARRAY') {
-	$fileContents = str_replace(array("\n", "\r", "\t"), '', $xml);
-	//$xml = preg_replace('/(<\/?)(\w+):([^>]*>)/', '$1$2$3', $fileContents);
-	$fileContents = trim(str_replace('"', "'", $xml));
-	if (!_is_valid_xml($xml)) {
-		return $xml;
-	}
-	$array = json_decode(json_encode(simplexml_load_string($xml, 'SimpleXMLElement', LIBXML_NOCDATA),true), true);
-	return (strtoupper($format) == 'ARRAY' ? $array : json_encode($array));
-}
-
-
-function getPathByDISId($disbursal_id, $common_path = '/user/logs/disbursal'){
-	if (!empty($disbursal_id)) {
-            $dateVar = time();
-            $main_dir = "$common_path/$disbursal_id/$dateVar.log";
-  	}
-	return $main_dir ?? null;
 }
 ?>

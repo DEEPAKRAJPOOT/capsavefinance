@@ -1552,4 +1552,14 @@ Route::group(
         'as' => 'lms_get_invoice_outstanding_list',
         'uses' => 'AjaxController@getInvoiceOutstandingList'
     ]);
+    //new sanction letter
+    Route::post('get-new-sanction-letter-list', [
+        'as' => 'get_new_sanction_letter_list',
+        'uses' => 'AjaxController@getNewSanctionLetterList'
+    ]);
+
+    Route::post('update-regenerate-sanction-letter', [
+        'as' => 'update_regenerate_sanction_letter',
+        'uses' => 'AjaxController@updateRegenerateSanctionLetter'
+    ]); 
 });
