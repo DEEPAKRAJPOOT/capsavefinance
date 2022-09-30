@@ -505,6 +505,13 @@ class Transactions extends BaseModel {
         return $flag;
     }
 
+    public static function maxDpdTransaction($user_id){
+
+        return  Transactions::where('user_id',$user_id)->where('entry_type',0)->whereNull('link_trans_id')->whereNull('parent_trans_id')
+        ->whereHas('transType',function($q1){ 
+            $q1->where('chrg_master_id','>',0)->orWhereIn('id',[9,16,33]);
+        })->get();
+    }
     // public function getSettledOutstandingAttribute(){
     //     return round(($this->amount - self::revertedAmt()),2);
     // }
@@ -514,7 +521,7 @@ class Transactions extends BaseModel {
         $number_days = 0;
         if($this->entry_type == 0){
             $from = Carbon::parse($this->paymentduedate)->format('Y-m-d');
-            $graceEnd = Carbon::parse($from)->addDays($this->invoiceDisbursed->grace_period)->format('Y-m-d');
+            $graceEnd = Carbon::parse($from)->addDays($this->invoiceDisbursed->grace_period ?? 0)->format('Y-m-d');
 
             if($this->trans_type == config('lms.TRANS_TYPE.PAYMENT_DISBURSED')){
                 if(strtotime($to) >= strtotime($graceEnd) && $this->outstanding > 0){

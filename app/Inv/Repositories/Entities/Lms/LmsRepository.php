@@ -1858,6 +1858,11 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
 		return LmsUsersLog::getAccountStatus($userId);
 	}
 
+	public function maxDpdTransaction($userId){
+
+		return Transactions::maxDpdTransaction($userId);
+	}
+
     public function getAllBusinessForSheet($whereCond) {
 		$startDate = Carbon::createFromFormat('Y-m-d', $whereCond['date'], 'Asia/Kolkata')->firstOfMonth()->setTimezone('UTC')->format('Y-m-d H:i:s');
 		$endDate = Carbon::createFromFormat('Y-m-d', $whereCond['date'], 'Asia/Kolkata')->endOfDay()->setTimezone('UTC')->format('Y-m-d H:i:s');
