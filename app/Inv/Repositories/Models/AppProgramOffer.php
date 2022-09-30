@@ -725,4 +725,12 @@ class AppProgramOffer extends BaseModel {
     {
         return $this->belongsTo('App\Inv\Repositories\Models\Master\Asset', 'asset_type_id', 'id');
     }
+
+    public static function getPrgmOfferByAppId($whereCondition)
+    {
+        $query = self::where($whereCondition);
+        $result = $query->get();
+        return !$result->isEmpty() ? $result : [];
+    }
+
 }

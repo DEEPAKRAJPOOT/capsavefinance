@@ -61,7 +61,7 @@
                    @if (Session::has('error_code') && Session::get('error_code') == 'validate_fi_status')
                    <label class='error'>You cannot move this application to the next stage as the fi verification is pending for this customer.</label><br>                   
                    @endif
-
+                   
                    @if (Session::has('error_code') && Session::get('error_code') == 'validate_offer_approved')
                    <label class='error'>You cannot pull back this application as the offer has been approved by all the approvers.</label><br>                   
                    @endif

@@ -5,7 +5,10 @@
 <div class="content-wrapper">
     @include('layouts.backend.partials.cam_nav')
     <div class="inner-container">
-
+        @php
+            $route_name = \Request::route()->getName();
+            // echo $route_name;
+        @endphp
         <div class="card mt-3">
             <div class="card-body pt-3 pb-3">
                 <ul class="float-left mb-0 pl-0">
@@ -37,13 +40,13 @@
 
         <div class="card mt-4">
             <div class="card-body ">
-             <form method="POST" id="camForm" action="{{route('cam_information_save')}}"> 
+             <form method="POST" id="camForm" action="{{route('cam_information_save')}}" enctype="multipart/form-data"> 
              @csrf
 
                 <input type="hidden" name="app_id" value="{{isset($arrRequest['app_id']) ? $arrRequest['app_id'] : ''}}" />             
                 <input type="hidden" name="biz_id" value="{{isset($arrRequest['biz_id']) ? $arrRequest['biz_id'] : ''}}" />             
                 <input type="hidden" name="cam_report_id" value="{{isset($arrCamData->cam_report_id) ? $arrCamData->cam_report_id : ''}}" />    
-
+                @if($route_name!="security_deposit")
                 <table class="table table-bordered overview-table" cellpadding="0" cellspacing="0" border="1">
                     <tbody>
                         <tr>
@@ -322,7 +325,7 @@
                         <textarea class="form-control" id="profile_of_company" name="t_o_f_profile_comp" rows="3" spellcheck="false" >{{isset($arrCamData->t_o_f_profile_comp) ? $arrCamData->t_o_f_profile_comp : ''}}</textarea>
                     <!-- </div> -->
                 </div>
-
+@endif
                 <!-- <div class="data mt-4">
                     <h2 class="sub-title bg" style="margin-bottom: 0px; border: 1px solid #d1d1d1;">Risk Comments</h2>
                   
@@ -343,6 +346,7 @@
                    
 
                 </div> -->
+                @if($route_name!="security_deposit")
                  <div class="data mt-4">
                     <h2 class="sub-title bg" style="border: 1px solid #d1d1d1;">Contigent Liabilities & Auditors Observations </h2>
                     <!-- <div class="pl-4 pr-4 pb-4 pt-2"> -->
@@ -361,6 +365,7 @@
                     <!-- </div> -->
 
                 </div>
+                @endif
                 @if(request()->get('view_only'))
                 @can('cam_information_save')
                     <button class="btn btn-success pull-right  mt-3" type="Submit"> Save</button>
@@ -531,7 +536,7 @@
                                              +symbol_rs+ 
                                              '<div class="d-flex">' 
                                               +'<input type='+proposed_exposure_html+' name="proposed_exposure[]" class="form-control  calTotalExposure float_format" value="'+arr.proposed_exposure+'" placeholder="Proposed Exposure (In Mn)" required autocomplete="off">'
-                                             +'<i class="fa fa-2x fa-times-circle remove-ptpq-block ml-2" style="color: red;"></i></div>'+
+                                             +'<i class="fa fa-2x fa-times-circle remove-ptpq-block ml-2" style="color: red;margin-top: 15%;"></i></div>'+
                                         '</div>'+
                                     '</div>';
                     $('#ptpq-block').append(ptpq_block);
@@ -560,7 +565,21 @@ return false;
 }
 });
 
-
+$(document).ready(function () {
+    
+$('#camForm').validate({ // initialize the plugin
+    rules: {
+        'group_company' : {
+            required : true,
+        },
+    },
+    messages: {
+        'group_company': {
+            required: "Please enter Group Name",
+        },
+    }
+});
+});
 $(document).on('submit', '#camForm', function(e) {
    $('.group_nameId').text(" ");
    $filledInput = 0;
@@ -576,23 +595,6 @@ $(document).on('submit', '#camForm', function(e) {
    }
    
    return true;
-});
-
-$(document).ready(function () {
-
-
-$('#camForm').validate({ // initialize the plugin
-    rules: {
-        'group_company' : {
-            required : true,
-        },
-    },
-    messages: {
-        'group_company': {
-            required: "Please enter Group Name",
-        },
-    }
-});
 });
 </script>
 @endsection

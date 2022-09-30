@@ -142,6 +142,8 @@ var iframe_ids = [
     'editLocationTypeFrame',
     'frontViewInterestAccrualFrame',
     'termsConditionspop',
+    'addSecurityDocumentFrame',
+    'editSecurityDocumentFrame',
     'pullBackAssignCaseFrame',
     'assignUserLeads',
     'assignUserApplication',

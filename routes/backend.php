@@ -23,9 +23,9 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'as' => 'download_storage_file',
                 'uses' => 'Backend\DocumentController@downloadStorageFile'
             ]);
-            Route::get('/download-file', [
-                'as' => 'download_storage_file',
-                'uses' => 'Backend\DocumentController@downloadStorageFile'
+            Route::get('/download-s3-file', [
+                'as' => 'download_s3_file',
+                'uses' => 'Backend\DocumentController@downloadAWSS3File'
             ]);
 
         });
@@ -587,7 +587,37 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'uses' => 'Backend\DocumentController@seeUploadFile'
 
             ]);
+            //New Sanction Letter
+            Route::get('new-sanction-letter', [
+                'as' => 'list_new_sanction_letter',
+                'uses' => 'Backend\ApplicationController@ListNewSanctionLetter'
+            ]);
 
+            Route::get('create-new-sanction-letter', [
+                'as' => 'create_new_sanction_letter',
+                'uses' => 'Backend\ApplicationController@createNewSanctionLetter',
+            ]);
+
+            Route::post('save-new-sanction-letter', [
+                'as' => 'save_new_sanction_letter',
+                'uses' => 'Backend\ApplicationController@saveNewSanctionLetterSupplyChain',
+            ]);
+            
+            Route::get('view-new-sanction-letter', [
+                'as' => 'view_new_sanction_letter',
+                'uses' => 'Backend\ApplicationController@viewNewSanctionLetterSupplyChain',
+            ]);
+
+            Route::get('download-new-sanction-letter', [
+                'as' => 'download_new_sanction_letter',
+                'uses' => 'Backend\ApplicationController@downloadNewSanctionLetterSupplyChain',
+            ]);
+
+            Route::post('send-new-sanction-letter-on-mail', [
+                'as' => 'send_new_sanction_letter_on_mail',
+                'uses' => 'Backend\ApplicationController@sendNewSanctionLetterSupplyChainMail',
+            ]);
+           
             Route::get('app-pull-back-confirmBox', [
                 'as' => 'app_pull_back_confirmBox',
                 'uses' => 'Backend\ApplicationController@sendCaseConfirmbox'
@@ -747,7 +777,15 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 Route::get('/finstmt-download', [
                 'as' => 'download_fin_stmt_doc',
                 'uses' => 'Backend\DocumentController@downloadStorageFile'
-            ]);
+                ]);
+                Route::get('security-deposit', [
+                    'as' => 'security_deposit',
+                    'uses' => 'Backend\CamController@securityDeposit'
+                ]);
+                Route::post('save-security-deposit', [
+                    'as' => 'save_security_deposit',
+                    'uses' => 'Backend\CamController@saveSecurityDeposit'
+                ]);
             }); //end of cam   
                         
             Route::get('copy-app-confirmBox', [
@@ -1421,6 +1459,32 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'as' => 'edit_location_type',
                 'uses' => 'Master\LocationTypeController@saveLocationType'
             ]);
+            //Start Security Document
+            Route::get('/list-security-document', [
+                'as' => 'list_security_document',
+                'uses' => 'Master\SecurityDocumentController@index'
+            ]);
+
+            Route::get('/add-security-document', [
+                'as' => 'add_security_document',
+                'uses' => 'Master\SecurityDocumentController@addSecurityDoc'
+            ]);
+
+            Route::post('/add-security-document', [
+                'as' => 'add_security_document',
+                'uses' => 'Master\SecurityDocumentController@saveSecurityDoc'
+            ]);
+
+            Route::get('/edit-security-document', [
+                'as' => 'edit_security_document',
+                'uses' => 'Master\SecurityDocumentController@editSecurityDoc'
+            ]);
+
+            Route::post('/edit-security-document', [
+                'as' => 'edit_security_document',
+                'uses' => 'Master\SecurityDocumentController@saveSecurityDoc'
+            ]);
+            //END Security Document
             
         });
 

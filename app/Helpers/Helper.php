@@ -35,6 +35,7 @@ use Illuminate\Contracts\Support\Renderable;
 use ZanySoft\Zip\Zip;
 use App\Inv\Repositories\Models\AnchorUser;
 use App\Inv\Repositories\Models\Anchor;
+use App\Inv\Repositories\Models\AppSanctionLetter;
 use App\Inv\Repositories\Models\UserFile;
 use App\Inv\Repositories\Models\Program;
 use App\Inv\Repositories\Models\ColenderShare;
@@ -42,6 +43,7 @@ use App\Inv\Repositories\Models\LmsUsersLog;
 use App\Inv\Repositories\Models\Lms\InvoiceDisbursed;
 use App\Inv\Repositories\Models\AppProgramOffer;
 use App\Inv\Repositories\Models\Lms\InvoiceDisbursedDetail;
+use App\Inv\Repositories\Models\AppSecurityDoc;
 
 class Helper extends PaypalHelper
 {
@@ -2403,6 +2405,42 @@ class Helper extends PaypalHelper
         }
     }
 
+    public static function appSanctionLetterStatus($app_id)
+    {
+       $whereCondition = [];
+	   $whereCondition['app_id'] = $app_id;
+       $appSanctionLettersData = AppSanctionLetter::getOfferNewSancationLetterData($whereCondition); 
+        if($appSanctionLettersData){
+            return false;
+        }
+        return true;
+    }
+
+    public static function appCurrentStatus($app_id)
+    {
+       $appCurrentStatusData = Application::getAppData((int) $app_id)->curr_status_id; 
+        if($appCurrentStatusData == config('common.mst_status_id.SANCTION_LETTER_GENERATED') || $appCurrentStatusData == config('common.mst_status_id.APP_SANCTIONED')){
+            return true;
+        }
+        return false;
+    }
+
+    public static function appDataCurrent($app_id)
+    {
+        $application = Application::find($app_id);
+        return $application;
+    }
+
+    public static function appSanctionLetterGenerated($app_id)
+    {
+        $supplyChainFormFile = storage_path('app/public/user/'.$app_id.'_supplychain.json');
+        $arrFileData = false;
+        if (file_exists($supplyChainFormFile)) {
+          $arrFileData = true; 
+        }
+        return $arrFileData;
+    }
+
     public static function getPrgmBalLimitAmt($userId, $prgmId, $app_id = null, $offer_id = null)
     {
         $appStatusList = [
@@ -2573,6 +2611,37 @@ class Helper extends PaypalHelper
         return $sum;
     }
 
+    public static function uploadSecurityDocFile($attributes, $appId, $app_security_doc_id=null)
+    {
+        $inputArr = [];
+        if ($attributes['doc_file']) {
+            if($app_security_doc_id){
+                $appSecDocData = AppSecurityDoc::where('app_security_doc_id', $app_security_doc_id)->first();
+                if($appSecDocData){
+                    $oldFileId = UserFile::deletes($appSecDocData->file_id);
+                }
+            }
+            $file_dir_path = '/app_security_doc/'.$appId;
+            if (!Storage::disk('s3')->exists($file_dir_path)) {
+                Storage::disk('s3')->makeDirectory($file_dir_path, 0777, true);
+            }
+            // $path = Storage::disk('s3')->put($active_filename_fullpath, $content);
+            // if (!Storage::exists('/public/app_security_doc/' . $appId)) {
+            //     Storage::makeDirectory('/public/app_security_doc/' . $appId, 0777, true);
+            // }
+            $path = Storage::disk('s3')->put('/app_security_doc/' . $appId, $attributes['doc_file'], null);
+            $inputArr['file_path'] = $path;
+        }
+
+        $inputArr['file_type'] = $attributes['doc_file']->getClientMimeType();
+        $inputArr['file_name'] = $attributes['doc_file']->getClientOriginalName();
+        $inputArr['file_size'] = $attributes['doc_file']->getClientSize();
+        $inputArr['file_encp_key'] =  md5('2');
+        $inputArr['created_by'] = 1;
+        $inputArr['updated_by'] = 1;
+        return $inputArr;
+    }
+    
     /**
      * Separated cc or bcc emails and return array
      *
@@ -2686,5 +2755,16 @@ class Helper extends PaypalHelper
         $inputArr['updated_by'] = Auth::user()->user_id;
 
         return $inputArr;
+    }
+    public static function getSecurityDoc($offerId, $appId,$docType){
+        $appData = self::appDataCurrent($appId);
+        $securityDataQuery = AppSecurityDoc::with(['mstSecurityDocs'])->where(['prgm_offer_id'=>$offerId,'is_active'=>1,'doc_type'=>$docType]);
+        if($appData && $appData->status == 1){
+            $securityDataQuery->where(['status'=>3,'is_non_editable'=>0]);
+        }else{
+            $securityDataQuery->where(['status'=>4,'is_non_editable'=>1]);
+        }
+        $securityData = $securityDataQuery->get();
+        return ($securityData) ?$securityData : [];
     }
 }

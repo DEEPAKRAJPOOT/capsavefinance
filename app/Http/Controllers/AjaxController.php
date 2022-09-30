@@ -48,12 +48,14 @@ use Illuminate\Support\Facades\Crypt;
 use App\Inv\Repositories\Models\AppAssignment;
 use App\Inv\Repositories\Contracts\Traits\LmsTrait;
 use App\Inv\Repositories\Contracts\Traits\ActivityLogTrait;
+use App\Inv\Repositories\Models\AppSanctionLetter;
 use App\Inv\Repositories\Models\Lms\ChargesTransactions;
 use App\Inv\Repositories\Models\Lms\ChargeTransactionDeleteLog;
 use App\Inv\Repositories\Models\Master\Permission;
 use App\Inv\Repositories\Contracts\Traits\ApplicationTrait;
-use App\Inv\Repositories\Models\AppSanctionLetter;
 use App\Inv\Repositories\Models\AppProgramOffer;
+use App\Inv\Repositories\Models\AppSecurityDoc;
+use App\Inv\Repositories\Models\UserFile;
 use App\Inv\Repositories\Models\Anchor;
 use App\Inv\Repositories\Models\AppApprover;
 use App\Inv\Repositories\Models\User;
@@ -5818,6 +5820,34 @@ if ($err) {
         $overdueReportLogs = OverdueReportLog::orderBy('id','desc')->get();
         return $dataProvider->getOverdueReportLogs($this->request, $overdueReportLogs);
     }
+    //Get new sanction letter
+    public function getNewSanctionLetterList(DataProviderInterface $dataProvider) {
+        $app_id =  (int) $this->request->get('app_id');
+        $whereCondition=[];
+        $whereCondition['app_id'] = $app_id;
+        $sanctionLetterdata = $this->application->getOfferNewSanctionLetterData($whereCondition);
+        $data = $dataProvider->getNewSanctionLetterList($this->request, $sanctionLetterdata);
+        return $data;
+    }
+    //Update sanction regenerate letter
+    public function updateRegenerateSanctionLetter(Request $request) {
+       $sanction_id =  (int) $this->request->get('sanction_id');
+       $app_id =  (int) $this->request->get('app_id');
+       $result = AppSanctionLetter::whereNotIn('sanction_letter_id',[$sanction_id])->where('app_id',$app_id)->update(["status" => 4]);
+       $result = AppSanctionLetter::where('sanction_letter_id',$sanction_id)->where('app_id',$app_id)->update(["status" => 3, "is_regenerated" => 0]);
+       if($result)
+       {
+            $appData = $this->application->getAppDataByAppId($app_id);
+            //if($appData->curr_status_id == config('common.mst_status_id.SANCTION_LETTER_GENERATED')){
+               //Helpers::updateAppCurrentStatus($app_id, config('common.mst_status_id.APP_SANCTIONED'));
+            //}
+           return response()->json(['status' => 1]); 
+       }
+       else
+       {
+           return response()->json(['status' => 0]); 
+       }
+    }
 
     public function reqForChargeDeletion(Request $request)
     {
@@ -5963,6 +5993,7 @@ if ($err) {
             $addl_data = [];
             $currStage = Helpers::getCurrentWfStage($app_id);
             $isFinalSubmit = 0;
+            $appData = $this->application->getAppData($app_id);
             if ($currStage->stage_code == 'approver') {
                 $whereCondition = ['app_id' => $app_id, 'status' => null];
                 $offerData = $this->application->getOfferData($whereCondition);
@@ -5971,7 +6002,6 @@ if ($err) {
                 }
             if ($request->approval_doc_file) {
                 $date = Carbon::now();
-                $appData = $this->application->getAppData($app_id);
                 $supplier_id = $appData->user_id;
                 $uploadApprovalDocData = Helpers::uploadUserApprovalFile($attributes, $supplier_id, $app_id);
                 $userFile = $this->docRepo->saveFile($uploadApprovalDocData);
@@ -6120,7 +6150,27 @@ if ($err) {
         $chequeNumber = $request->get('cheque_no');
         $userId = $request->has('user_id') ? $request->get('user_id'): null ;
         $result = $this->lmsRepo->chequeAlert( $chequeNumber,$userId);
-        if (!isset($result)) {
+        if (isset($result)) {
+            $result = ['status' => 1];
+        } else {
+            $result = ['status' => 0];
+        }
+        return response()->json($result); 
+    }
+
+    public function getSecurityDocumentLists(DataProviderInterface $dataProvider) { 
+        $securityDocList = $this->masterRepo->getAllSecurityDocument();
+        $securityDoc = $dataProvider->getSecurityDocumentLists($this->request, $securityDocList);
+        return $securityDoc;
+    } 
+       
+    // Check Security Document Name
+    public function checkUniqueSecurityDocumentName(Request $request) 
+    {        
+        $securityDocumentName = $request->get('name');
+        $securityDocId = $request->has('security_doc_id') ? $request->get('security_doc_id'): null ;
+        $result = $this->masterRepo->checkSecurityDocument(['name' => $securityDocumentName], $securityDocId);
+        if (isset($result[0])) {
             $result = ['status' => 1];
         } else {
             $result = ['status' => 0];
@@ -6186,4 +6236,43 @@ if ($err) {
         $overdueReportLogs = OutstandingReportLog::orderBy('id','desc')->get();
         return $dataProvider->getOutstandingReportLogs($this->request, $overdueReportLogs);
     }
+
+    public function updateAppSecurityDoc(Request $request ){
+        $app_security_doc_id = $request->get('app_security_doc_id');
+        $appSecDocData = AppSecurityDoc::where(['app_security_doc_id'=> $app_security_doc_id,'is_non_editable'=>0])->first();
+        if($appSecDocData){
+            $arrData = AppSecurityDoc::where('app_security_doc_id', $app_security_doc_id)->update(['is_active' => 0]);
+            if($arrData){
+                if($appSecDocData){
+                    $oldFileId = UserFile::deletes($appSecDocData->file_id);
+                }
+                $status = true; 
+            }else{
+            $status = false;
+            }
+        }else{
+            $status = false;
+        }
+        
+        return response()->json($status);
+    }
+
+     // Check Unique Security Document Number
+     public function checkUniqueSecurityDocNumber(Request $request) 
+     {        
+         $docNumber = $request->get('doc_number');
+         $appSecurityId = $request->has('id') ? $request->get('id'): null ;
+         $appId = $request->has('app_id') ? $request->get('app_id'): null ;
+         if($appSecurityId){
+            $result = AppSecurityDoc::where('document_number', $docNumber)->where('app_id', $appId)->where(['is_active'=>1])->where('app_security_doc_id','!=', $appSecurityId)->where('is_non_editable',1)->first();
+         }else{
+            $result = AppSecurityDoc::where('document_number', $docNumber)->where('app_id', $appId)->where(['is_active'=> 1,'is_non_editable'=>1])->first(); 
+         }
+         if (isset($result)) {
+             $result = ['status' => 1];
+         } else {
+             $result = ['status' => 0];
+         }
+         return response()->json($result); 
+     }
 }

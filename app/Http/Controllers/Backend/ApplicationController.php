@@ -32,12 +32,17 @@ use App\Helpers\Helper;
 use App\Inv\Repositories\Contracts\LmsInterface as InvLmsRepoInterface;
 use App\Inv\Repositories\Contracts\Traits\ActivityLogTrait;
 use App\Inv\Repositories\Models\Master\LocationType;
+use App\Inv\Repositories\Models\AppSanctionLetter;
+use PDF as NewPDF;
+use App\Inv\Repositories\Contracts\Traits\CamTrait;
+use App\Inv\Repositories\Models\AppSecurityDoc;
 use App\Inv\Repositories\Models\AppProgramLimit;
 
 class ApplicationController extends Controller
 {
 	use ApplicationTrait;
 	use LmsTrait;
+	use CamTrait;
 
 	protected $appRepo;
 	protected $userRepo;
@@ -1049,13 +1054,11 @@ class ApplicationController extends Controller
 	public function AcceptNextStage(Request $request) {
 
 		try{
-
-
-                        $approver_list = $request->get('approver_list');
-                        $user_id = $request->get('user_id');
+			$approver_list = $request->get('approver_list');
+			$user_id = $request->get('user_id');
 			$app_id = $request->get('app_id');
-                        $approvers = Helpers::getProductWiseDoAUsersByAppId($app_id);
-                        $sel_assign_role = $request->get('sel_assign_role');
+			$approvers = Helpers::getProductWiseDoAUsersByAppId($app_id);
+			$sel_assign_role = $request->get('sel_assign_role');
 			$assign_case = $request->get('assign_case');
 			$sharing_comment = $request->get('sharing_comment');
 			$curr_role_id = $request->get('curr_role_id');
@@ -1084,12 +1087,12 @@ class ApplicationController extends Controller
 						Session::flash('error_code', 'no_offer_found');
 						return redirect()->back();
 					}
-
-                                        $appData = $this->appRepo->getAppData($app_id);
-                                        if ($appData && in_array($appData->curr_status_id, [config('common.mst_status_id.OFFER_LIMIT_REJECTED')]) ) {
-                                            Session::flash('error_code', 'limit_rejected');
-                                            return redirect()->back();
-                                        }
+                                        
+					$appData = $this->appRepo->getAppData($app_id);
+					if ($appData && in_array($appData->curr_status_id, [config('common.mst_status_id.OFFER_LIMIT_REJECTED')]) ) {
+						Session::flash('error_code', 'limit_rejected');
+						return redirect()->back();
+					}                                        
 				} else if ($currStage->stage_code == 'approver') {
 
 					if ($request->has('is_app_pull_back') && $request->is_app_pull_back) {
@@ -1209,16 +1212,28 @@ class ApplicationController extends Controller
                                 UserDetail::where('user_id',$user_id)->update(['is_active' =>1]);
                                 $this->appRepo->updateAppDetails($app_id, ['status' => 2]); //Mark Sanction
                                 \Helpers::updateAppCurrentStatus($app_id, config('common.mst_status_id.APP_SANCTIONED'));
-
+								$appData = $this->appRepo->getAppData($app_id);
+								$current_status = ($appData) ? $appData->curr_status_id : '';
+								if($current_status == config('common.mst_status_id.APP_SANCTIONED')){
+									$appSecurtiyDocs = AppSecurityDoc::where(['app_id'=>$app_id, 'biz_id' => $appData->biz_id, 'is_active'=>1])->whereIn('status',[3])->whereIn('is_non_editable',[0])->get();
+									foreach ($appSecurtiyDocs as $clone) {
+									  $cloneAppSecData = $clone->replicate();
+									  $cloneAppSecData->is_non_editable = 0;
+									  $cloneAppSecData->status = 5;
+									  $cloneAppSecData->save();
+									}
+                 				 	$updateStatus = AppSecurityDoc::where(['app_id'=>$app_id,'biz_id' => $appData->biz_id,'status'=>3,'is_non_editable'=>0,'is_active'=>1])->update(['is_non_editable' => 1, 'status'=>4]);
+								}
+                                
                                 $prcsAmt = $this->appRepo->getPrgmLimitByAppId($app_id);
                                 if($prcsAmt && isset($prcsAmt->offer)) {
-				  if($createCustomer != null) {
-                                      $whereCond=[];
-                                      $whereCond['user_id'] = $user_id;
-                                      $lmsData = $this->appRepo->getLmsUsers($whereCond);
-                                      if (isset($lmsData[0]) && !empty($lmsData[0]->virtual_acc_id)) {
-                                        $virtualId =  $lmsData[0]->virtual_acc_id;
-                                      } else {
+				  if($createCustomer != null) {   
+					$whereCond=[];
+					$whereCond['user_id'] = $user_id;
+					$lmsData = $this->appRepo->getLmsUsers($whereCond);
+					if (isset($lmsData[0]) && !empty($lmsData[0]->virtual_acc_id)) {
+					$virtualId =  $lmsData[0]->virtual_acc_id;
+					} else {
 					$capId = sprintf('%07d', $createCustomer->lms_user_id);
 					$virtualId = 'CAPVA'.$capId;
                                       }
@@ -1508,6 +1523,7 @@ class ApplicationController extends Controller
 		}else{
 		  $isSalesManager = 0;
 		}
+		$isSalesManager = 1;
 		/*code for getting the sales manager*/
 
 		foreach($supplyOfferData as $key=>$data) {
@@ -1564,7 +1580,19 @@ class ApplicationController extends Controller
 				$userId = $appData ? $appData->user_id : null;
 				$reqdDocs = $this->createAppRequiredDocs($prgmDocsWhere, $userId, $appId);
 
-                                Helpers::updateAppCurrentStatus($appId, config('common.mst_status_id.OFFER_ACCEPTED'));
+				Helpers::updateAppCurrentStatus($appId, config('common.mst_status_id.OFFER_ACCEPTED'));
+				$appData = $this->appRepo->getAppData($appId);
+				$current_status = ($appData) ? $appData->curr_status_id : '';
+				if($current_status == config('common.mst_status_id.OFFER_ACCEPTED')){
+				$appSecurtiyDocs = AppSecurityDoc::where(['app_id'=>$appId, 'biz_id' => $appData->biz_id, 'is_active'=>1,'is_non_editable'=>0,'status'=>1])->get();
+				foreach ($appSecurtiyDocs as $clone) {
+				$cloneAppSecData = $clone->replicate();
+				$cloneAppSecData->is_non_editable = 0;
+				$cloneAppSecData->status = 3;
+				$cloneAppSecData->save();
+				}
+				$updateStatus = AppSecurityDoc::where(['app_id'=>$appId,'biz_id' => $appData->biz_id,'status'=>1,'is_non_editable'=>0,'is_active'=>1])->update(['is_non_editable' => 1, 'status'=>2]);
+				}
 			} else if($request->has('btn_reject_offer')) {
 				$offerData['status'] = 2;
 				$message = trans('backend_messages.offer_rejected');
@@ -2514,4 +2542,372 @@ class ApplicationController extends Controller
 		}
 		}
     }
+	
+	/**
+	 * List New sanction letter
+	 * 
+	 * @param Request $request
+	 * @return View
+	 */
+	public function ListNewSanctionLetter(Request $request)
+	{   
+		//dd($request->all());
+		$appId = $request->get('app_id');
+		$bizId = $request->get('biz_id');
+		$sanctionId = $request->get('sanction_id');
+		$offerId = null;
+		if ($request->has('offer_id') && !empty($request->get('offer_id'))) {
+			$offerId = $request->get('offer_id');
+		}
+		$appData = $this->appRepo->getAppDataByAppId($appId);
+		// if($appData->status != 2){
+		// 	Session::flash('message','Application does not Sanctioned. Please try again!');
+		// 	return redirect()->back();
+		// }
+		$supplyChaindata = $this->getNewSanctionLetterSupplyChainData($appId, $bizId, $offerId, $sanctionId);
+		//$sanctionLetterdata = $this->appRepo->getOfferNewSanctionLetterData();
+		$whereCondition = [];
+		$whereCondition['app_id'] = $appId;
+		$sanctionFirstData =$this->appRepo->getOfferNewSanctionLetterData($whereCondition,'sanction_letter_id','yes');
+		//dd($sanctionFirstData);
+		return view('backend.app.new_sanction_letter_list')->with(['supplyChaindata'=>$supplyChaindata,'sanctionFirstData'=>$sanctionFirstData,'appData'=>$appData]);  
+	}
+
+	/**
+	 * Create New sanction letter
+	 * 
+	 * @param Request $request
+	 * @return View
+	 */
+	public function createNewSanctionLetter(Request $request)
+	{   
+		//dd($request->all());
+		$appId = $request->get('app_id');
+		$bizId = $request->get('biz_id');
+		$action_type = $request->get('action_type');
+		$offerId = $sanctionId = null;
+		if ($request->has('offer_id') && !empty($request->get('offer_id'))) {
+			$offerId = $request->get('offer_id');
+		}
+		if ($request->has('sanction_letter_id') && !empty($request->get('sanction_letter_id'))) {
+			$sanctionId = $request->get('sanction_letter_id');
+		}
+		$appData = $this->appRepo->getAppDataByAppId($appId);
+		if($appData->status != 1){
+			Session::flash('message','Application does not Sanctioned. Please try again!');
+			return redirect()->back();
+		}
+		$whereCondition = [];
+		$whereCondition['app_id'] = $appId;
+		$sanctionFirstData =$this->appRepo->getOfferNewSanctionLetterData($whereCondition,'sanction_letter_id','yes');
+		if(!empty($sanctionFirstData) && $sanctionFirstData->status != 3 && $action_type === 'add'){
+			Session::flash('message','Does not create new sanction letter.Please click on Regenerate icon, Please try again!');
+			return redirect()->back();
+		}
+		$whereCondition = [];
+		$whereCondition['sanction_letter_id'] = $sanctionId;
+		$supplyChainForm =$this->appRepo->getOfferNewSanctionLetterData($whereCondition,null,'yes');
+		$supplyChainFormData = $arrayOfferData = [];
+		if (!empty($supplyChainForm) && $action_type == 'edit') {
+			//dd($supplyChainForm);
+		  	$supplyChainFormData = json_decode(base64_decode($supplyChainForm['sanction_content'],true));
+			$arrayOfferData = (array) $supplyChainFormData->offerData;
+		}
+		//dd($supplyChainFormData,$arrayOfferData['4']->facility_tenor);
+		// $data = $this->getSanctionLetterData((int)$appId, (int)$bizId, (int)$offerId, (int)$sanctionId);
+		$data = $this->getNewSanctionLetterData((int)$appId, (int)$bizId, (int)$offerId, (int)$sanctionId);
+		$supplyChaindata = $this->getNewSanctionLetterSupplyChainData($appId, $bizId, $offerId, $sanctionId);
+		//dd($supplyChaindata,$data);
+		$appLimit = $this->appRepo->getAppLimit((int)$appId);
+		return view('backend.app.create_new_sanction_letter')->with($data)->with(['supplyChaindata'=>$supplyChaindata, 'supplyChainFormData'=>$supplyChainFormData, 'appLimit' => $appLimit, 'actionType' => $action_type,'arrayOfferData'=>$arrayOfferData]);  
+	}
+    
+	/**
+	 * Save New Sanction Letter SupplyChain
+	 * 
+	 * @param Request $request
+	 * @return view
+	 */  
+	public function saveNewSanctionLetterSupplyChain(Request $request){
+		try {
+			//dd($request->all());
+			$arrFileData = $request->all();
+			$appId = (int)$request->app_id; 
+			$offerId = (int)$request->offer_id; 
+			$bizId = (int) $request->get('biz_id');
+			if(!preg_match('/^[a-zA-Z\/0-9]+$/i', $arrFileData['ref_no'])) {
+                Session::flash('error','Invalid Ref. No, Please try again!');
+			    return redirect()->route('list_new_sanction_letter', ['app_id' => $appId, 'offer_id' => $offerId, 'sanction_id' => null,'biz_id' => $bizId]);
+            }
+			if(!$request->has('sanction_letter_id')) {
+                Session::flash('error','Data is missing, Please try again!');
+			    return redirect()->route('list_new_sanction_letter', ['app_id' => $appId, 'offer_id' => $offerId, 'sanction_id' => null,'biz_id' => $bizId]);
+            }
+			$appData = $this->appRepo->getAppDataByAppId($appId);
+			if($appData->status != 1){
+                Session::flash('error','Application has been marke sanctioned, Please try again!');
+			    return redirect()->route('list_new_sanction_letter', ['app_id' => $appId, 'offer_id' => $offerId, 'sanction_id' => null,'biz_id' => $bizId]);
+			}
+			$sanctionId = null;
+			if($request->has('sanction_letter_id')){
+				$sanctionId = $request->sanction_letter_id; 
+			}
+			$status = $is_regenerated = 0;
+			$date_of_final_submission = null;
+			if($arrFileData['action_type'] === 'final_submit'){
+				$whereCondition = [];
+		        $whereCondition['app_id'] = $appId;
+				$sanctionFirstData =$this->appRepo->getOfferNewSanctionLetterData($whereCondition,'sanction_letter_id','yes');
+				if(!empty($sanctionFirstData) && $sanctionFirstData->status != 3 && $arrFileData['action_type_url'] === 'add'){
+					Session::flash('message','Does not create new sanction letter, Please try again!');
+					return redirect()->route('list_new_sanction_letter', ['app_id' => $appId, 'offer_id' => $offerId, 'sanction_id' => null,'biz_id' => $bizId]);
+				}
+                $status = 2;
+				$is_regenerated = 1;
+				AppSanctionLetter::where("app_id",$appId)->update(["is_regenerated" => 0]);
+				$date_of_final_submission = Carbon::now()->format('Y-m-d');
+				AppSanctionLetter::where("app_id",$appId)->update(["status" => 4]);
+
+			}else if($arrFileData['action_type'] === 'update'){
+                $status = 1;
+				AppSanctionLetter::where("app_id",$appId)->update(["status" => 4]);
+			}else if($arrFileData['action_type'] === 'update_create'){
+				AppSanctionLetter::where("app_id",$appId)->update(["status" => 4]);
+			}
+			$supplyChaindata = $this->getNewSanctionLetterSupplyChainData($appId, $bizId, $offerId);
+			$sanctionData = array(
+				'app_id' => $appId,
+				'prgm_offer_id' => $offerId,
+				'ref_no' => $arrFileData['ref_no'],
+				'date_of_final_submission'=>  $date_of_final_submission, 
+				'sanction_content'=>  base64_encode(json_encode($arrFileData)), 
+				'status' => $status, 
+				'is_active' =>  1,
+				'is_regenerated' => $is_regenerated
+			);
+			if (!is_null($sanctionId)) {
+				$sanctionData['updated_at'] = Carbon::now();
+				$sanctionData['updated_by'] = Auth::user()->user_id;
+			}else{
+				$sanctionData['created_at'] = Carbon::now();
+				$sanctionData['created_by'] = Auth::user()->user_id;
+			}
+			//dd($sanctionData);
+			$sanction_info = $this->appRepo->saveNewSanctionLetterData($sanctionData,$sanctionId);
+			if($sanction_info){
+				foreach ($request->offerData as $offerId => $offerValue) {
+					if(isset($offerValue['pre_cond']) && !empty($offerValue['pre_cond'])){
+						$request->pre_cond = $offerValue['pre_cond'];
+						$request->pre_timeline = $offerValue['pre_timeline'];
+					}
+					if(isset($offerValue['post_cond']) && !empty($offerValue['post_cond'])){
+						$request->post_cond = $offerValue['post_cond'];
+						$request->post_timeline = $offerValue['post_timeline'];
+					}
+					$this->savePrePostConditions($request, $request->cam_reviewer_summary_id);
+				}
+			}
+            //if($appData->curr_status_id == config('common.mst_status_id.APP_SANCTIONED')){
+			if( $status == 2){
+				Helpers::updateAppCurrentStatus($appId, config('common.mst_status_id.SANCTION_LETTER_GENERATED'));
+			}
+			//}            		
+            $whereActivi['activity_code'] = 'save_sanction_letter_supplychain';
+            $activity = $this->masterRepo->getActivity($whereActivi);
+            if(!empty($activity)) {
+                $activity_type_id = isset($activity[0]) ? $activity[0]->id : 0;
+                $activity_desc = 'Save Sanction Letter Of Supplychain My Application in Manage Application. AppID '. $appId;
+                $arrActivity['app_id'] = $appId;
+                $this->activityLogByTrait($activity_type_id, $activity_desc, response()->json($supplyChaindata), $arrActivity);
+            } 
+			if (!is_null($sanctionId)) {						           
+				Session::flash('message','Sanction Letter has been updated successfully.');
+			}else{
+				Session::flash('message','Sanction Letter has been saved successfully.');
+			}
+			return redirect()->route('list_new_sanction_letter', ['app_id' => $appId, 'offer_id' => $offerId, 'sanction_id' => null,'biz_id' => $bizId]);  
+		} catch (Exception $ex) {
+			return redirect()->route('gen_sanction_letter', ['app_id' => $appId, 'biz_id' => $bizId, 'offer_id' => $offerId, 'sanction_id' => $sanction_info->sanction_id])->withErrors(Helpers::getExceptionMessage($ex));
+		}
+	}
+
+	/**
+	 * View New sanction letter
+	 * 
+	 * @param Request $request
+	 * @return View
+	 */
+	public function viewNewSanctionLetterSupplyChain(Request $request)
+	{   
+		//dd($request->all());
+		$appId = $request->get('app_id');
+		$bizId = $request->get('biz_id');
+		$sanctionId = $request->get('sanction_letter_id');
+		$action_type = $request->get('action_type');
+		$offerId = null;
+		if ($request->has('offer_id') && !empty($request->get('offer_id'))) {
+			$offerId = $request->get('offer_id');
+		}
+		$whereCondition = [];
+		$whereCondition['sanction_letter_id'] = $sanctionId;
+		$supplyChainForm =$this->appRepo->getOfferNewSanctionLetterData($whereCondition,null,'yes');
+		$supplyChainFormData = $arrayOfferData = [];
+		if (!empty($supplyChainForm) && ($action_type == 'view' || $action_type == 'preview')) {
+			//dd($supplyChainForm);
+		  	$supplyChainFormData = json_decode(base64_decode($supplyChainForm['sanction_content'],true)); 
+			$arrayOfferData = (array) $supplyChainFormData->offerData;
+		}
+		// $data = $this->getSanctionLetterData((int)$appId, (int)$bizId, (int)$offerId, (int)$sanctionId);
+		$data = $this->getNewSanctionLetterData((int)$appId, (int)$bizId, (int)$offerId, (int)$sanctionId);
+		$supplyChaindata = $this->getNewSanctionLetterSupplyChainData($appId, $bizId, $offerId, $sanctionId);
+		$appLimit = $this->appRepo->getAppLimit((int)$appId);
+		if($action_type == 'preview'){
+			$dataA = [
+				'supplyChaindata' => $supplyChaindata,
+				'supplyChainFormData' => $supplyChainFormData,
+				'appLimit' => $appLimit, 
+				'action_type' => $action_type,
+				'arrayOfferData' => $arrayOfferData,
+				'date_of_final_submission' => $data['date_of_final_submission'],
+				'contact_person' => $data['contact_person'],
+				'sanctionData'  => $data['sanctionData'],
+				'appId' => $appId, 'bizId' => $bizId, 'offerId'=>$offerId,'sanctionId' => $sanctionId,'download'=> false
+	
+			];
+			return $this->downloadNewSanctionLetterAsPDF($dataA, false);
+		}
+		return view('backend.app.view_new_sanction_letter')->with($data)->with(['supplyChaindata'=>$supplyChaindata, 'supplyChainFormData'=>$supplyChainFormData, 'appLimit' => $appLimit, 'action_type'=>$action_type,'arrayOfferData'=>$arrayOfferData]);  
+	}
+	
+	public function downloadNewSanctionLetterSupplyChain(Request $request){
+        $appId = $request->get('app_id');
+		$bizId = $request->get('biz_id');
+		$sanctionId = $request->get('sanction_letter_id');
+		$action_type = $request->get('action_type');
+		$offerId = null;
+		if ($request->has('offer_id') && !empty($request->get('offer_id'))) {
+			$offerId = $request->get('offer_id');
+		}
+		$whereCondition = [];
+		$whereCondition['sanction_letter_id'] = $sanctionId;
+		$supplyChainForm =$this->appRepo->getOfferNewSanctionLetterData($whereCondition,null,'yes');
+		$supplyChainFormData = $arrayOfferData = [];
+		if (!empty($supplyChainForm) && $action_type == 'download') {
+			//dd($supplyChainForm);
+		  	$supplyChainFormData = json_decode(base64_decode($supplyChainForm['sanction_content'],true)); 
+			$arrayOfferData = (array) $supplyChainFormData->offerData;
+		}
+		// $data = $this->getSanctionLetterData((int)$appId, (int)$bizId, (int)$offerId, (int)$sanctionId);
+		$santionData = $this->getNewSanctionLetterData((int)$appId, (int)$bizId, (int)$offerId, (int)$sanctionId);
+		$supplyChaindata = $this->getNewSanctionLetterSupplyChainData($appId, $bizId, $offerId, $sanctionId);
+		$appLimit = $this->appRepo->getAppLimit((int)$appId);
+        $data = [
+            'supplyChaindata' => $supplyChaindata,
+            'supplyChainFormData' => $supplyChainFormData,
+            'appLimit' => $appLimit, 
+            'action_type' => $action_type,
+            'arrayOfferData' => $arrayOfferData,
+			'date_of_final_submission' => $santionData['date_of_final_submission'],
+			'contact_person' => $santionData['contact_person'],
+			'sanctionData'  => $santionData['sanctionData']
+
+        ];
+        return $this->downloadNewSanctionLetterAsPDF($data, true);
+    }
+
+	 /**
+     * Download New Sanction Letter.
+     *
+     */
+    public function downloadNewSanctionLetterAsPDF($pdfData = [], $download = false) {
+		$pdfData['templateType'] = 'pdfTemplate';
+        view()->share($pdfData);
+        set_time_limit(0);
+        if ($download==true) {
+		  //$html = view('backend.app.generate_new_sanction_letter')->render();
+		  //return  $html;
+		  ob_start();
+          $pdf = NewPDF::loadView('backend.app.generate_new_sanction_letter',[],[],'UTF-8');
+		  $customPaper = 'A2';//[0,0,999,2000];
+		  $pdf->setOptions(['isHtml5ParserEnabled'=> true,'isRemoteEnabled'=>true,'isPhpEnabled'=>true,'dpi'=>96,'disable-smart-shrinking'=> true]);
+		  $pdf->setPaper($customPaper);
+		  $time = \Helpers::convertDateTimeFormat(now(), 'Y-m-d H:i:s', 'Y-m-d-H:i:s');
+          return $pdf->download('sanctionLetter-'.$time.'.pdf');
+        }
+        $html = view('backend.app.preview_new_sanction_letter')->render();
+		return  $html;
+    }
+
+	/**
+	 * Send New sanction letter
+	 * 
+	 * @return \Illuminate\Http\Response
+	 */
+	public function sendNewSanctionLetterSupplyChainMail(Request $request)
+	{
+		try {
+			//dd($request->all());
+			$appId = $request->get('app_id');
+			$bizId = (int) $request->get('biz_id');
+			$sanctionId = $request->get('sanction_letter_id');
+			$action_type = $request->get('action_type');
+			$offerId = null;
+			if ($request->has('offer_id') && !empty($request->get('offer_id'))) {
+				$offerId = $request->get('offer_id');
+			}
+			$whereCondition = [];
+			$whereCondition['sanction_letter_id'] = $sanctionId;
+			$supplyChainForm =$this->appRepo->getOfferNewSanctionLetterData($whereCondition,null,'yes');
+			$supplyChainFormData = $arrayOfferData = [];
+			if (!empty($supplyChainForm) && $action_type == 'mail') {
+				//dd($supplyChainForm);
+				$supplyChainFormData = json_decode(base64_decode($supplyChainForm['sanction_content'],true)); 
+				$arrayOfferData = (array) $supplyChainFormData->offerData;
+			}
+			// $data = $this->getSanctionLetterData((int)$appId, (int)$bizId, (int)$offerId, (int)$sanctionId);
+			$santionData = $this->getNewSanctionLetterData((int)$appId, (int)$bizId, (int)$offerId, (int)$sanctionId);
+			$supplyChaindata = $this->getNewSanctionLetterSupplyChainData($appId, $bizId, $offerId, $sanctionId);
+			$appLimit = $this->appRepo->getAppLimit((int)$appId);
+			$data = [
+				'supplyChaindata' => $supplyChaindata,
+				'supplyChainFormData' => $supplyChainFormData,
+				'appLimit' => $appLimit, 
+				'action_type' => $action_type,
+				'arrayOfferData' => $arrayOfferData,
+				'date_of_final_submission' => $santionData['date_of_final_submission'],
+				'contact_person' => $santionData['contact_person'],
+				'sanctionData'  => $santionData['sanctionData'],
+				'appId' => $appId, 'bizId' => $bizId, 'offerId'=>$offerId,'sanctionId' => $sanctionId,'download'=> false
+
+			];
+			$data['templateType'] = 'mailTemplate';
+			$htmlContent = view('backend.app.generate_new_sanction_letter')->with($data)->render();
+			$data['templateType'] = 'pdfTemplate';
+			$pdf = NewPDF::loadView('backend.app.generate_new_sanction_letter',$data,[],'UTF-8');
+			$customPaper = 'A2';//[0,0,999,2000];
+			$pdf->setOptions(['isHtml5ParserEnabled'=> true,'isRemoteEnabled'=>true,'isPhpEnabled'=>true,'dpi'=>96,'disable-smart-shrinking'=> false]);
+			$pdf->setPaper($customPaper);
+			$userData =  $this->userRepo->getUserByAppId($appId);
+			$emailData['email'] = $userData->email;
+			$emailData['name'] = $userData->f_name . ' ' . $userData->l_name;
+			$emailData['body'] = $htmlContent;
+			$emailData['attachment'] = $pdf->output();
+			$emailData['subject'] ="Sanction Letter for SupplyChain";
+			\Event::dispatch("SANCTION_LETTER_MAIL", serialize($emailData));
+			Session::flash('message',trans('Sanction Letter for Supply Chain sent successfully.'));
+
+            $whereActivi['activity_code'] = 'send_sanction_letter_supplychain';
+            $activity = $this->masterRepo->getActivity($whereActivi);
+            if(!empty($activity)) {
+                $activity_type_id = isset($activity[0]) ? $activity[0]->id : 0;
+                $activity_desc = 'Send mail Sanction Letter Of Supplychain My Application in Manage Application. AppID '. $appId;
+                $arrActivity['app_id'] = $appId;
+                $this->activityLogByTrait($activity_type_id, $activity_desc, response()->json(['supplyChaindata'=>$supplyChaindata,'supplyChainFormData'=>$supplyChainFormData]), $arrActivity);
+            }			
+			
+			return redirect()->back()->with('is_send',1);
+		} catch (Exception $ex) {
+			return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
+		}
+	}
 }

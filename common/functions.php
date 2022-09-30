@@ -940,6 +940,47 @@ function logFile($data, $w_mode = 'D', $w_filename = '', $w_folder = '', $txn_id
       return FALSE;
 }
 
+// Create a function for converting the amount in words
+function numberTowords($num = false)
+{
+    $num = str_replace(array(',', ' '), '' , trim($num));
+    if(! $num) {
+        return false;
+    }
+    $num = (int) $num;
+    $words = array();
+    $list1 = array('', 'One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight', 'Nine', 'Ten', 'Eleven',
+        'Twelve', 'Thirteen', 'Fourteen', 'Fifteen', 'Sixteen', 'Seventeen', 'Eighteen', 'Nineteen'
+    );
+    $list2 = array('', 'Ten', 'Twenty', 'Thirty', 'Forty', 'Fifty', 'Sixty', 'Seventy', 'Eighty', 'Ninety', 'Hundred');
+    $list3 = array('', 'Thousand', 'Million', 'Billion', 'Trillion');
+    $num_length = strlen($num);
+    $levels = (int) (($num_length + 2) / 3);
+    $max_length = $levels * 3;
+    $num = substr('00' . $num, -$max_length);
+    $num_levels = str_split($num, 3);
+    for ($i = 0; $i < count($num_levels); $i++) {
+        $levels--;
+        $hundreds = (int) ($num_levels[$i] / 100);
+        $hundreds = ($hundreds ? ' ' . ucfirst($list1[$hundreds]) . ' Hundred' . ' ' : '');
+        $tens = (int) ($num_levels[$i] % 100);
+        $singles = '';
+        if ( $tens < 20 ) {
+            $tens = ($tens ? ' ' . ucfirst($list1[$tens]) . ' ' : '' );
+        } else {
+            $tens = (int)($tens / 10);
+            $tens = ' ' . ucfirst($list2[$tens]) . ' ';
+            $singles = (int) ($num_levels[$i] % 10);
+            $singles = ' ' . ucfirst($list1[$singles]) . ' ';
+        }
+        $words[] = $hundreds . $tens . $singles . ( ( $levels && ( int ) ( $num_levels[$i] ) ) ? ' ' . ucfirst($list3[$levels]) . ' ' : '' );
+    } //end for loop
+    $commas = count($words);
+    if ($commas > 1) {
+        $commas = $commas - 1;
+    }
+    return implode(' ', $words);
+}
 function xmlToArrayWithCDATA($xml, $format = 'ARRAY') {
 	$fileContents = str_replace(array("\n", "\r", "\t"), '', $xml);
 	//$xml = preg_replace('/(<\/?)(\w+):([^>]*>)/', '$1$2$3', $fileContents);

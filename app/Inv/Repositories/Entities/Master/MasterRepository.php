@@ -36,6 +36,7 @@ use App\Inv\Repositories\Models\Master\ChargeGST;
 use App\Inv\Repositories\Models\Master\Tds;
 use App\Inv\Repositories\Models\Master\Voucher;
 use App\Inv\Repositories\Models\Master\LocationType;
+use App\Inv\Repositories\Models\Master\SecurityDocument;
 use App\Inv\Repositories\Models\Master\Group;
 
 
@@ -894,8 +895,8 @@ class MasterRepository extends BaseRepositories implements MasterInterface
     }
 
     public function getAllLocationType(){
-      $result = LocationType::orderBy('location_id', 'DESC');
-      return $result ?: false;
+        $result = LocationType::orderBy('location_id', 'DESC');
+        return $result ?: false;
     }
 
     // Check Unique Location type
@@ -919,12 +920,38 @@ class MasterRepository extends BaseRepositories implements MasterInterface
     public function updateLocationType($attributes, $locationId){
         $status = LocationType::where('location_id', $locationId)->first()->update($attributes);
         return $status ?: false;
-
     } 
     
-    public function getAllActiveGroup()
-    {
-        return Group::getAllActiveGroup();
+    // Security Document
+    public function getAllSecurityDocument(){
+        $result = SecurityDocument::orderBy('security_doc_id', 'DESC');
+        return $result ?: false;
+    }
+   
+    public function checkSecurityDocument($securityDocumentName, $securityDocId){
+        return SecurityDocument::checkSecurityDocumentName($securityDocumentName, $securityDocId);
+    } 
+    
+    public function saveSecurityDocument($attributes){
+        $status = SecurityDocument::create($attributes);
+        return $status ?: false;
     }
 
+    public function findSecurityDocumentById($securityDocId){
+        if (empty($securityDocId) || !ctype_digit($securityDocId)) {
+            throw new BlankDataExceptions('No Data Found');
+        }
+        
+        $result = SecurityDocument::find($securityDocId);
+        return $result ?: false;
+    }    
+
+    public function updateSecurityDocument($attributes, $securityDocId){
+        $status = SecurityDocument::where('security_doc_id', $securityDocId)->first()->update($attributes);
+        return $status ?: false;
+    }
+
+    public function getAllActiveGroup(){
+        return Group::getAllActiveGroup();
+    }
 }
