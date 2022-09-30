@@ -7920,12 +7920,13 @@ class DataRenderer implements DataProviderInterface
                    return $pull_status;
            })
            ->filter(function ($query) use ($request) {
-                if($request->get('from_date')!= '' && $request->get('to_date')!=''){
-                    $query->where(function ($query) use ($request) {
-                        $from_date = Carbon::createFromFormat('d/m/Y', $request->get('from_date'))->format('Y-m-d');
-                        $to_date = Carbon::createFromFormat('d/m/Y', $request->get('to_date'))->format('Y-m-d');
-                        $query->WhereBetween('created_at', [$from_date, $to_date]);
-                    });
+                if($request->get('from_date') != '' ){
+                    $from_date = Carbon::createFromFormat('d/m/Y', $request->get('from_date'))->format('Y-m-d');
+                    $query->Where('created_at','>=', $from_date);
+                }
+                if($request->get('to_date') != '' ){
+                    $to_date = Carbon::createFromFormat('d/m/Y', $request->get('to_date'))->format('Y-m-d');
+                    $query->Where('created_at','<=', $to_date);
                 }
                 if($request->get('search_keyword')!= ''){
                     $query->where(function ($query) use ($request) {
@@ -7933,7 +7934,6 @@ class DataRenderer implements DataProviderInterface
                         $query->where('batch_no', 'like',"%$search_keyword%");
                     });
                 }
-              
             })
            ->make(true);
    }

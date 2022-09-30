@@ -1858,20 +1858,62 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
 		return LmsUsersLog::getAccountStatus($userId);
 	}
 
-    public function getAllBusinessForSheet($whereCond) {
-		// return Application::with(['business', 'bizInvoice.invoice_disbursed'])->whereHas('bizInvoice.invoice_disbursed', function ($q) use ($whereCond) {
-		// 	$q->where('is_posted_in_cibil',$whereCond['is_posted_in_cibil']);
-		// 	$q->where('updated_at', '<=', $whereCond['date']);
-		// 	$q->whereIn('status_id', $whereCond['status_ids']);
-		// })->get();
+	public function maxDpdTransaction($userId){
 
-		return BizInvoice::with(['invoice_disbursed', 'business', 'app'])->whereHas('invoice_disbursed', function ($q) use ($whereCond) {
-			$q->where('created_at', '<=', $whereCond['date']);
-			$q->whereIn('status_id', $whereCond['status_ids']);
+		return Transactions::maxDpdTransaction($userId);
+	}
+
+    public function getAllBusinessForSheet($whereCond) {
+		$startDate = Carbon::createFromFormat('Y-m-d', $whereCond['date'], 'Asia/Kolkata')->firstOfMonth()->setTimezone('UTC')->format('Y-m-d H:i:s');
+		$endDate = Carbon::createFromFormat('Y-m-d', $whereCond['date'], 'Asia/Kolkata')->endOfDay()->setTimezone('UTC')->format('Y-m-d H:i:s');
+		$statusIds = $whereCond['status_ids'];
+		$invoices = BizInvoice::select(DB::raw('max(invoice_id) as maxInv,supplier_id, count(invoice_id) as invCnt '))
+		->whereHas('invoice_disbursed', function ($q) use ($startDate, $endDate, $statusIds) {
+			//$q->where('created_at', '>=', $startDate);
+			$q->where('created_at', '<=', $endDate);
+			$q->whereIn('status_id', $statusIds);
 		})
 		->groupBy('supplier_id')
 		->get();
 
+		$collection = null;
+
+		$userAppBizDetail = \DB::table('app_prgm_offer') 
+		->select('app.user_id', \DB::raw('SUBSTRING_INDEX(GROUP_CONCAT('.config("database.connections.mysql.prefix").'app_status_log.app_id ORDER BY '.config("database.connections.mysql.prefix").'app_status_log.created_at DESC),",",1) AS app_id , 
+		SUBSTRING_INDEX(GROUP_CONCAT('.config("database.connections.mysql.prefix").'app.biz_id ORDER BY '.config("database.connections.mysql.prefix").'app_status_log.created_at DESC),",",1) AS biz_id' ) ) 
+		->join('app_prgm_limit','app_prgm_limit.app_prgm_limit_id', '=', 'app_prgm_offer.app_prgm_limit_id') 
+		->join('app','app.app_id', '=', 'app_prgm_offer.app_id') 
+		->join('app_status_log', 'app_status_log.app_id', '=', 'app.app_id') 
+		->whereIn('app_status_log.status_id',[21, 22, 25, 50]) 
+		->where('app_prgm_limit.product_id',1) 
+		->where('app_status_log.created_at', '<=', $endDate)
+		->groupBY('app.user_id') 
+		->get();
+
+		$supplierAppBiz = [];
+		foreach ($userAppBizDetail as $key => $appBizId) {
+			$supplierAppBiz[$appBizId->user_id] = ['app_id'=>$appBizId->app_id, 'biz_id'=>$appBizId->biz_id];
+		}
+
+		foreach ($invoices as $key => $inv) {
+
+			$r = BizInvoice::with(['invoice_disbursed'])
+			->where('invoice_id',$inv->maxInv)->get();
+			if($r){
+				if(!empty($supplierAppBiz[$appBizId->user_id])){
+					$r[0]->biz_id = $supplierAppBiz[$inv->supplier_id]['biz_id'];
+					$r[0]->app_id = $supplierAppBiz[$inv->supplier_id]['app_id'];
+				}
+
+				$r[0]->invCount = $inv->invCnt;
+				if($collection){
+					$collection = $collection->merge($r);
+				}else{
+					$collection = $r;
+				}
+			}
+		}
+		return $collection;
     }
 
 	public function saveChargeTransDeleteLog($attr)

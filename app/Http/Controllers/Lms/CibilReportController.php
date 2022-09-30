@@ -10,6 +10,7 @@ use App\Inv\Repositories\Models\Lms\Transactions;
 use Illuminate\Http\Request;
 use App\Helpers\FileHelper;
 use App\Inv\Repositories\Contracts\LmsInterface as InvLmsRepoInterface;
+use App\Inv\Repositories\Models\Business;
 
 class CibilReportController extends Controller
 {   
@@ -38,6 +39,7 @@ class CibilReportController extends Controller
     }
 
     public function downloadCibilReport(Request $request) {
+      ini_set("memory_limit", "-1");
     	$whereRaw = '';
        if(!empty($request->get('from_date')) && !empty($request->get('to_date'))){
             $from_date = $request->get('from_date');
@@ -65,6 +67,7 @@ class CibilReportController extends Controller
           $merge_segment = $segment_data;
           $cibilArr[$segment_identifier][]  = array_merge($merge_segment, ['Final Formula' => implode('|', $merge_segment)]);
         }
+        
        if (strtolower($request->type) == 'excel') {
            return $this->fileHelper->array_to_excel($cibilArr, 'CibilReport.xlsx');
        }
@@ -101,52 +104,52 @@ class CibilReportController extends Controller
       $cibilReportData['hd'] = $this->_getHDData();
       $cibilReportData['ts'] = $this->_getTSData();
       $countBucketData = $this->lmsRepo->getOverdueData();
-
       $this->userWiseData = [];
       foreach ($countBucketData as $key => $bucketData) {
         $this->userWiseData[$bucketData->supplier_id] = $bucketData; 
       };
+      
       // $date = "2021-10-31 23:59:59";
       $whereCond = ['date' => $date, 'status_ids' => [12,13,15]];
       $cibilRecords = $this->lmsRepo->getAllBusinessForSheet($whereCond);
+      if($cibilRecords){   
+        foreach ($cibilRecords as $key => $cibilRecord) {
+            $this->cibilRecord = $cibilRecord;
+            $appBusiness = Business::with('app')->find($cibilRecord->biz_id);
+            $appId = $appBusiness->app->app_id;
+            $userId = $appBusiness->user_id;
+            
+            $capId = sprintf('%09d', $userId);
+            $customerId = 'CAP'.$capId;
+            $this->selectedDisbursedData[] = $cibilRecord->invCount;
+            $this->formatedCustId = $customerId; /* Helper::formatIdWithPrefix($userId, 'CUSTID') */
+            $this->business_category = isset($appBusiness->msme_type) && array_search(config('common.MSMETYPE')[$appBusiness->msme_type], config('common.MSMETYPE')) ? config('common.MSMETYPE')[$appBusiness->msme_type] : NULL;
+            $this->constitutionName = (isset($appBusiness->constitution) && !empty($appBusiness->constitution)) ? $appBusiness->constitution->name : ''; //config('common.LEGAL_CONSTITUTION')[$appBusiness->biz_constitution]
+            $this->account_status = $this->lmsRepo->getAccountStatus($userId); 
 
-      foreach ($cibilRecords as $key => $cibilRecord) {
-          $this->cibilRecord = $cibilRecord;
-          $appBusiness = $cibilRecord->business;
-          $appId = $appBusiness->app->app_id;
-          $userId = $appBusiness->user_id;
-
-          $this->selectedDisbursedData[] = $this->cibilRecord->invoice_disbursed->invoice_disbursed_id;
-
-          $capId = sprintf('%09d', $userId);
-				  $customerId = 'CAP'.$capId;
-          $this->formatedCustId = $customerId; /* Helper::formatIdWithPrefix($userId, 'CUSTID') */
-          $this->business_category = isset($appBusiness->msme_type) && array_search(config('common.MSMETYPE')[$appBusiness->msme_type], config('common.MSMETYPE')) ? $appBusiness->msme_type : NULL;
-          $this->constitutionName = !empty($appBusiness->constitution->cibil_lc_code) ? $appBusiness->constitution->cibil_lc_code : ''; //config('common.LEGAL_CONSTITUTION')[$appBusiness->biz_constitution]
-          $this->account_status = $this->lmsRepo->getAccountStatus($userId); 
-
-          $cibilReportData['bs'] = $this->_getBSData($appBusiness);
-          $cibilReportData['as'] = $this->_getASData($appBusiness);
-          $cibilReportData['rs'] = $this->_getRSData($appBusiness);
-          $cibilReportData['cr'] = $this->_getCRData($appBusiness);
-          $cibilReportData['gs'] = $this->_getGSData($appBusiness);
-          $cibilReportData['ss'] = $this->_getSSData($appBusiness);
-          $cibilReportData['cd'] = $this->_getCDData($appBusiness);
-          foreach ($cibilReportData as $segment => $segmentData) {
-            if (empty($segmentData)) {
+            $cibilReportData['bs'] = $this->_getBSData($appBusiness);
+            $cibilReportData['as'] = $this->_getASData($appBusiness);
+            $cibilReportData['rs'] = $this->_getRSData($appBusiness);
+            $cibilReportData['cr'] = $this->_getCRData($appBusiness,$date);
+            $cibilReportData['gs'] = $this->_getGSData($appBusiness);
+            $cibilReportData['ss'] = $this->_getSSData($appBusiness);
+            $cibilReportData['cd'] = $this->_getCDData($appBusiness);
+            foreach ($cibilReportData as $segment => $segmentData) {
+              if (empty($segmentData)) {
                 continue;
+              }
+              foreach ($segmentData as $key => $segData) {
+                $finalCibilData[] = [
+                  'batch_no' => $this->batch_no,
+                  'segment_identifier' => $segment,
+                  'segment_data' => json_encode($segData),
+                  'created_at' => Carbon::now(),
+                  'created_by' => Auth::user()->user_id ?? 1,
+                ];
+              }
             }
-            foreach ($segmentData as $key => $segData) {
-              $finalCibilData[] = [
-                'batch_no' => $this->batch_no,
-                'segment_identifier' => $segment,
-                'segment_data' => json_encode($segData),
-                'created_at' => Carbon::now(),
-                'created_by' => Auth::user()->user_id ?? 1,
-              ];
-            }
-          }
-          $cibilReportData = [];
+            $cibilReportData = [];
+        }
       }
       try {
         if (empty($finalCibilData)) {
@@ -160,17 +163,11 @@ class CibilReportController extends Controller
       }
       if ($res === true) {
         $totalAppRecords = 0;
-        if (!empty($this->selectedDisbursedData)) {
-          $totalAppRecords = \DB::update('update rta_invoice_disbursed set is_posted_in_cibil = 1 where invoice_disbursed_id in(' . implode(', ', $this->selectedDisbursedData) . ')');
-        }
         $recordsTobeInserted = count($finalCibilData);
-        // if (empty($totalAppRecords)) {
-        //   $response['message'] =  'Some error occured. No Record can be posted in Cibil.';
-        // }else{
           $response['status'] = 'success';
           $batchData = [
             'batch_no' => $this->batch_no,
-            'invoice_cnt' => count($this->selectedDisbursedData),
+            'invoice_cnt' => array_sum($this->selectedDisbursedData),
             'record_cnt' => $recordsTobeInserted,
             'created_at' => date($date),
           ];
@@ -215,7 +212,7 @@ class CibilReportController extends Controller
             'Other ID' => NULL,
             'Borrower’s Legal Constitution' => $this->constitutionName,
             'Business Category' => $this->business_category,
-            'Business/ Industry Type' => $appBusiness->industryType->cibil_indus_code ?? NULL,
+            'Business/ Industry Type' => $appBusiness->segment->name ?? NULL,
             'Class of Activity 1' => NULL,
             'Class of Activity 2' => NULL,
             'Class of Activity 3' => NULL,
@@ -258,7 +255,7 @@ class CibilReportController extends Controller
           'Address Line 3' => NULL,
           'City/Town' => $addr_data->city_name ?? NULL,
           'District' => NULL,
-          'State/Union Territory' => $addr_data->state->code ?? NULL,
+          'State/Union Territory' => $addr_data->state->name ?? NULL,
           'Pin Code' => $addr_data->pin_code ?? NULL,
           'Country' => NULL,
           'Mobile Number(s)' => $users->mobile_no ?? NULL,
@@ -286,7 +283,7 @@ class CibilReportController extends Controller
           'Relationship' => $this->constitutionName,
           'Business Entity Name' => $appBusiness->biz_entity_name,
           'Business Category' => $this->business_category,
-          'Business / Industry Type' => $appBusiness->industryType->name,
+          'Business / Industry Type' => $appBusiness->segment->name,
           'Individual Name Prefix' => NULL,
           'Full Name' => $users->f_name . ' '. $users->m_name . ' ' . $users->l_name,
           'Gender' => NULL,
@@ -324,14 +321,16 @@ class CibilReportController extends Controller
     }
 
 
-    private function _getCRData($appBusiness) {
+    private function _getCRData($appBusiness, $date) {
+      
         $user = $appBusiness->users;
-        $outstanding = $this->lmsRepo->getUnsettledTrans($user->user_id, ['trans_type_not_in' => [config('lms.TRANS_TYPE.MARGIN'),config('lms.TRANS_TYPE.NON_FACTORED_AMT')] ])->sum('outstanding');
+        $outstanding = $this->lmsRepo->getUnsettledTrans($user->user_id, ['trans_date'=>$date, 'trans_type_not_in' => [config('lms.TRANS_TYPE.MARGIN'),config('lms.TRANS_TYPE.NON_FACTORED_AMT')] ])->sum('outstanding');
         $settledAmt = $this->lmsRepo->getSettledTrans($user->user_id)->sum('settled_outstanding');
         $sanctionDate = $appBusiness->sanctionDate->created_at ?? NULL;
         $prgmLimit = $appBusiness->prgmLimit->limit_amt ?? NULL;
+        $maxDpd = $this->lmsRepo->maxDpdTransaction($user->user_id);
         $userData = isset($this->userWiseData[$user->user_id]) ? $this->userWiseData[$user->user_id] : null;
-        $od_days = isset($userData) ? (int)$userData->od_days : 0;
+        $od_days = isset($maxDpd) ? (int)$maxDpd : 0;
         $od_outstanding = isset($userData) ? round($userData->od_outstanding, 2) : 0;
         $data[] = [
             'Ac No' => $this->formatedCustId,
@@ -493,20 +492,20 @@ class CibilReportController extends Controller
     public function _getMonthLastDate() {
       $lastRecord = \DB::select('select * from rta_cibil_report order by cibil_report_id desc limit 1');
       $currentDate = date('Y-m-d H:i:s');
-      $monthDiff = 16;
+      $monthDiff = 25;
       if(!empty($lastRecord)) {
         $lastPulledDate = $lastRecord[0]->created_at;
         $monthDiff = $this->_monthDifference($currentDate, $lastPulledDate);
       }
-
+      
       for ($i = $monthDiff - 1; $i > 0; $i--) {
-        $date = date('Y-m-t 23:59:59', strtotime(-$i . 'month'));
+        $date = date('Y-m-t', strtotime(-$i . 'month'));
         $monthArr[] = $date;
         $monthNo = (int)date('m', strtotime($date));
         $response[$monthNo] = $this->saveCibilData($date);
-        $response[$monthNo]['monthName'] = date('M Y', strtotime($date));        
+        $response[$monthNo]['monthName'] = date('M Y', strtotime($date));  
+              
       }
-      
       if(empty($response)) {
         $response = array(
           'status' => 'failure',

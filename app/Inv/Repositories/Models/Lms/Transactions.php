@@ -505,6 +505,16 @@ class Transactions extends BaseModel {
         return $flag;
     }
 
+    public static function maxDpdTransaction($user_id){
+        ini_set("memory_limit", "-1");
+        return  Transactions::where('user_id',$user_id)
+        ->where('entry_type',0)
+        ->whereNull('link_trans_id')
+        ->whereNull('parent_trans_id')
+        ->whereIn('trans_type',[config('lms.TRANS_TYPE.PAYMENT_DISBURSED'),config('lms.TRANS_TYPE.INTEREST')])
+        ->get()
+        ->max('dpd');
+    }
     // public function getSettledOutstandingAttribute(){
     //     return round(($this->amount - self::revertedAmt()),2);
     // }
@@ -514,7 +524,7 @@ class Transactions extends BaseModel {
         $number_days = 0;
         if($this->entry_type == 0){
             $from = Carbon::parse($this->paymentduedate)->format('Y-m-d');
-            $graceEnd = Carbon::parse($from)->addDays($this->invoiceDisbursed->grace_period)->format('Y-m-d');
+            $graceEnd = Carbon::parse($from)->addDays($this->invoiceDisbursed->grace_period ?? 0)->format('Y-m-d');
 
             if($this->trans_type == config('lms.TRANS_TYPE.PAYMENT_DISBURSED')){
                 if(strtotime($to) >= strtotime($graceEnd) && $this->outstanding > 0){
@@ -735,6 +745,9 @@ class Transactions extends BaseModel {
         }
         if(!empty($where['trans_type_in'])){
             $query = $query->whereIn('trans_type',$where['trans_type_in']); 
+        }
+        if(!empty($where['trans_date'])){
+            $query = $query->where('trans_date', '<=', $where['trans_date']);
         }
         return $query->get();
     }
