@@ -1879,8 +1879,8 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
 		$collection = null;
 
 		$userAppBizDetail = \DB::table('app_prgm_offer') 
-		->select('app.user_id', \DB::raw('SUBSTRING_INDEX(GROUP_CONCAT('.config("database.connections.mysql.prefix").'app_status_log.app_id ORDER BY '.config("database.connections.mysql.prefix").'app_status_log.created_at DESC),',',1) AS app_id , 
-		SUBSTRING_INDEX(GROUP_CONCAT('.config("database.connections.mysql.prefix").'app.biz_id ORDER BY '.config("database.connections.mysql.prefix").'app_status_log.created_at DESC),',',1) AS biz_id' ) ) 
+		->select('app.user_id', \DB::raw('SUBSTRING_INDEX(GROUP_CONCAT('.config("database.connections.mysql.prefix").'app_status_log.app_id ORDER BY '.config("database.connections.mysql.prefix").'app_status_log.created_at DESC),",",1) AS app_id , 
+		SUBSTRING_INDEX(GROUP_CONCAT('.config("database.connections.mysql.prefix").'app.biz_id ORDER BY '.config("database.connections.mysql.prefix").'app_status_log.created_at DESC),",",1) AS biz_id' ) ) 
 		->join('app_prgm_limit','app_prgm_limit.app_prgm_limit_id', '=', 'app_prgm_offer.app_prgm_limit_id') 
 		->join('app','app.app_id', '=', 'app_prgm_offer.app_id') 
 		->join('app_status_log', 'app_status_log.app_id', '=', 'app.app_id') 
