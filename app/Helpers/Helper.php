@@ -2753,6 +2753,25 @@ class Helper extends PaypalHelper
         $inputArr['file_encp_key'] =  md5('2');
         $inputArr['created_by'] = Auth::user()->user_id;
         $inputArr['updated_by'] = Auth::user()->user_id;
+        return $inputArr;
+    }
+    public static function uploadAppLimitReviewApprovalFile($attributes, $userId, $appId)
+    {
+        $inputArr = [];
+        if (isset($attributes['doc_file'])) {
+            if (!Storage::exists('/public/Lms/app_limit_review/' . $userId . '/'. $appId)) {
+                Storage::makeDirectory('/public/Lms/app_limit_review/' . $userId . '/'. $appId , 0777, true);
+            }
+            $path = Storage::disk('public')->put('/app_limit_review/' . $userId . '/'. $appId . '/', $attributes['doc_file'], null);
+            $inputArr['file_path'] = $path;
+        }
+
+        $inputArr['file_type'] = $attributes['doc_file']->getClientMimeType();
+        $inputArr['file_name'] = $attributes['doc_file']->getClientOriginalName();
+        $inputArr['file_size'] = $attributes['doc_file']->getClientSize();
+        $inputArr['file_encp_key'] =  md5('2');
+        $inputArr['created_by'] = \Auth::user()->user_id;
+        $inputArr['updated_by'] = \Auth::user()->user_id;
 
         return $inputArr;
     }

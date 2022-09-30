@@ -147,6 +147,7 @@ var iframe_ids = [
     'pullBackAssignCaseFrame',
     'assignUserLeads',
     'assignUserApplication',
+    'editReviewDate'
 ];
 
 iframe_ids.forEach(function (id) {

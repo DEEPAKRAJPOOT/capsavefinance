@@ -25,7 +25,7 @@
                     
                     <div class="limit-title"> 
                         <div class="row" style="margin-top:10px;">
-                            <div class="col-lg-3 col-md-6 col-sm-6 col-xs-12">
+                            <div class="col-lg-2 col-md-6 col-sm-6 col-xs-12">
                                 <label>Total Credit Assessed </label>
                                 <div class="label-bottom">{{ number_format($uLimit->tot_limit_amt) }}
                                   @if($uLimit->app->app_type==2) 
@@ -50,7 +50,7 @@
                                     
                                 </div>
                             </div>
-                            <div class="col-lg-3 col-md-6 col-sm-6 col-xs-12">
+                            <div class="col-lg-2 col-md-6 col-sm-6 col-xs-12">
                                 <label>Available Credit Assessed	 </label>
                                 <div class="label-bottom">{{number_format($uLimit->tot_limit_amt-$credit_limit)}} </div>
                             </div>
@@ -58,17 +58,53 @@
                             @php 
                                 $sDate  = $obj->convertDateTimeFormat($uLimit->start_date, $fromDateFormat='Y-m-d', $toDateFormat='d-m-Y');
                                 $eDate  = $obj->convertDateTimeFormat($uLimit->end_date, $fromDateFormat='Y-m-d', $toDateFormat='d-m-Y');
+                                $limitExpDate = '';
+                                if ($uLimit->limit_expiration_date != null){
+                                    $limitExpDate  = $obj->convertDateTimeFormat($uLimit->limit_expiration_date, $fromDateFormat='Y-m-d', $toDateFormat='d-m-Y');
+                                    $limitExpDateCheck  = date('Y-m-d', strtotime($limitExpDate));
+                                }
+                                $readInDays = config('lms.SHOW_EDIT_REVIEW_DATE_BUTTON_IN_DAYS').' days';
+                                $endDate = $uLimit->end_date;
+				                $editReviewButtonShowDate = date('Y-m-d', strtotime('-'.$readInDays,strtotime($endDate)));
+                                $curDate = $limitCurDt;//'2022-06-23';
                              @endphp
                             
-                             <div class="col-lg-2 col-md-6 col-sm-6 col-xs-12">
+                             <div class="col-lg-1 col-md-6 col-sm-6 col-xs-12">
                                 <label>Start Date	 </label>
                                 <div class="label-bottom">{{$sDate}} </div>
                             </div>
                              <div class="col-lg-2 col-md-6 col-sm-6 col-xs-12">
-                                <label>End Date	 </label>
-                                <div class="label-bottom">{{$eDate}} </div>
+                                <label>End Date / Review Date </label>
+                                <div class="label-bottom">{{$eDate}}
+                                    @can('edit_review_date')
+                                        @if($getAccountClosure > 0 && $uLimit->app->status==2)
+                                        @php
+                                            $isShowReviewButton = false;
+                                            if ($editReviewButtonShowDate == $curDate){
+                                                $isShowReviewButton = true;
+                                            }elseif (($curDate > $editReviewButtonShowDate) && ($curDate < $endDate)) {
+                                                $isShowReviewButton = true;
+                                                if ($endDate == $limitExpDateCheck && $limitExpDate != ''){
+                                                    $isShowReviewButton = false;
+                                                }
+                                            }
+                                        @endphp
+                                        @if($isShowReviewButton) 
+                                        <a data-toggle="modal" class="badge btn-success btn-sm ml-1" style="color: #fff;
+                                        cursor: pointer;" data-target="#editReviewDate" data-url ="{{ route('edit_review_date', ['user_id' => request()->get('user_id'),'app_limit_id' => $uLimit->app_limit_id ]) }}" data-height="380px" data-width="100%" data-placement="top" title="Edit Review Date">
+                                    <i class="fa fa-pencil-square-o"></i> Review Date</a>
+                                        @endif
+                                    @endif
+                                @endcan
+                                </div>
                             </div>
-                               <div class="col-lg-2 col-md-6 col-sm-6 col-xs-12">
+                              @if ($limitExpDate != '')
+                              <div class="col-lg-2 col-md-6 col-sm-6 col-xs-12">
+                                    <label>Limit Expiration Date	 </label>
+                                    <div class="label-bottom">{{$limitExpDate}} </div>
+                                </div>
+                              @endif
+                               <div class="col-lg-1 col-md-6 col-sm-6 col-xs-12">
                                 
                                 @if($getAccountClosure > 0 && $uLimit->app->status==2)
                                 <form  method="post" action="{{Route('account_closure')}}" enctype= multipart/form-data>
@@ -84,8 +120,77 @@
                                    @endcan
                                 @endif
                             </div>
+                            @can('edit_review_date')
+                            @if($getAccountClosure > 0 && $uLimit->app->status==2)
+                              @if(count($getAppLimitReview) > 0)
+                               <div class="col-lg-1 col-md-6 col-sm-6 col-xs-12 ml-5">
+                                <a class="btn-sm badge badge-success btn-sm" data-toggle="collapse" href="#scollapse1" role="button" aria-expanded="false" aria-controls="scollapse1"><i class="fa fa-plus" aria-hidden="true"></i></a>
+                                </div>
+                               @endif
+                              @endif
+                             @endcan
                             @endif
                         </div>
+                        @can('edit_review_date')
+                            @if($getAccountClosure > 0 && $uLimit->app->status==2)
+                                @if(count($getAppLimitReview) > 0)
+                                <div id="scollapse1" class="card-body bdr collapse" style="padding: 0; border: 1px solid #e9ecef;">
+                                    <table class="table overview-table" cellpadding="0" cellspacing="0" border="1">
+                                    <thead>
+                                    <tr role="row">
+                                        <th width="10%" >Review Date</td>
+                                        @can('download_review_approval_file')
+                                        <th width="10%" >Download File</td>   
+                                        @endcan
+                                        <th width="10%" >Comment</td>
+                                        <th width="10%" >Status</td>
+                                        <th width="10%" >Created By</td>
+                                        <th width="10%" >Created At</td>
+                                        <th width="10%" >Updated By</td>
+                                        <th width="10%" >Updated At</td>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach ($getAppLimitReview as $vAppLimitReview)
+                                        <tr>
+                                            <td>{{ \Carbon\Carbon::parse($vAppLimitReview->review_date)->format('d-m-Y') }}</td>
+                                            @can('download_review_approval_file')
+                                            <td>
+                                                @if($vAppLimitReview->file_id)
+                                                <a href="{{ route('download_review_approval_file',['file_id'=>$vAppLimitReview->file_id]) }}" title="Download"><i class="fa fa-download" aria-hidden="true"></i></a>
+                                                @else
+                                                N/A
+                                                @endif
+                                            </td>   
+                                            @endcan
+                                            <td>{{ $vAppLimitReview->comment_txt??'N/A' }}</td>
+                                            <td>
+                                                @if ($vAppLimitReview->status == 1)
+                                                <span class="badge badge-warning">Pending </span> 
+                                                @else
+                                                <span class="badge badge-success">Approved </span>  
+                                                @endif
+                                            </td>
+                                            <td>{{ \Helpers::getUserName($vAppLimitReview->created_by) }}</td>
+                                            <td>{{ \Carbon\Carbon::parse($vAppLimitReview->created_at)->format('d-m-Y h:i:s') }}</td>
+                                            @if ($vAppLimitReview->updated_by)
+                                            <td>{{ \Helpers::getUserName($vAppLimitReview->updated_by) }}</td>
+                                            @else
+                                            <td>N/A</td>
+                                            @endif
+                                            @if ($vAppLimitReview->updated_at)
+                                            <td>{{ \Carbon\Carbon::parse($vAppLimitReview->updated_at)->format('d-m-Y h:i:s') }}</td>
+                                            @else
+                                            <td>N/A</td>
+                                            @endif
+                                        </tr>  
+                                        @endforeach
+                                    </tbody>
+                                    </table>
+                                </div>
+                                @endif
+                            @endif
+                        @endcan
                     </div>
                     @foreach($uLimit->supplyProgramLimit as $limit)                      
                     <div class="limit-odd">  
@@ -238,8 +343,9 @@
 </div>
 
 {!!Helpers::makeIframePopup('addAdhocLimit','Add Adhoc Limit', 'modal-lg')!!}
-{!!Helpers::makeIframePopup('approveAdhocLimit','Approve Adhoc Limit', 'modal-xs')!!}
+{!!Helpers::makeIframePopup('approveAdhocLimit','Confrim Approve Adhoc Limit', 'modal-xs')!!}
 {!!Helpers::makeIframePopup('viewAdhcDocument','View Adhoc Document', 'modal-lg')!!}
+{!!Helpers::makeIframePopup('editReviewDate','Edit Review Date', 'modal-xs')!!}
 
 @endsection
 

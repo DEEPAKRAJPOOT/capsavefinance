@@ -51,4 +51,6 @@ return [
     'update_bank_successfully' => 'Bank Detail successfully updated',
     'save_bank_successfully' => 'Bank Detail successfully Created',
     'fi_status_success' => 'FI Status updated successfully',
+    'AppLimitReviewUpdated' => 'Review Date Successfully Updated.',
+    'AppLimitReviewCreated' => 'Review Date Successfully Created.',
 ];

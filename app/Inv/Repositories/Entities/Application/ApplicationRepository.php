@@ -80,6 +80,7 @@ use App\Inv\Repositories\Models\Lms\NachBatch;
 use App\Inv\Repositories\Models\Master\Asset;
 use App\Inv\Repositories\Models\NachStatusLog;
 use App\Inv\Repositories\Models\AppSanctionLetter;
+use App\Inv\Repositories\Models\AppLimitReview;
 
 /**
  * Application repository class
@@ -2654,5 +2655,22 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
     public function getBizOwnerDataByOwnerId($bizOwnerId)
     {
         return BizOwner::getBizOwnerDataByOwnerId($bizOwnerId);
+    }
+
+    public function saveAppLimitReview($arr){
+        return AppLimitReview::saveAppLimitReview($arr);
+    }
+
+    public function getAppReviewLimit(int $user_id){
+        $appLimitReviewData = AppLimitReview::getAppReviewLimit($user_id);
+        return $appLimitReviewData ? $appLimitReviewData : [];
+    }
+
+    public function updateAppLimitReview($arr, $whereCond){
+        return AppLimitReview::updateAppLimitReview($arr, $whereCond);
+    }
+
+    public function getAppReviewLimitLatestData($whereCond){
+        return AppLimitReview::getAppReviewLimitLatestData($whereCond);
     }
 }
