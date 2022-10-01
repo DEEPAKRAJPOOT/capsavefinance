@@ -2644,10 +2644,6 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
         return AppSanctionLetter::getOfferNewSanctionLetterData($whereCondition, $orderBy, $onlyFirst);
     }
     
-    public function getAnchorPrgmUserIdsInArray($anchorId, $prgmId){
-        return AppProgramOffer::getAnchorPrgmUserIdsInArray($anchorId, $prgmId);
-    }
-
     public function getAppOfferLimitApproved($userId, $appId){
         return AppStatusLog::getAppOfferLimitApproved($userId, $appId);
     }

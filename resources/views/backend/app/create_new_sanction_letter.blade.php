@@ -1104,15 +1104,6 @@
     $(document).ready(function() {
         setReviewDateByDefault();
 
-        $('#payment_type').on('change', function() {
-            $('#payment_type_comment').val('');
-            if ($(this).val() == '5') {
-                $('#payment_type_comment').removeClass('hide');
-            } else {
-                $('#payment_type_comment').addClass('hide');
-            }
-        })
-
         $('.r_o_i').each(function () {
             CKEDITOR.replace($(this).prop('id'),ckeditorOptions);
         });

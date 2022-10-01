@@ -9,6 +9,8 @@ use App\Inv\Repositories\Models\AppSecurityDoc;
 use App\Inv\Repositories\Models\AppProgramOffer;
 use App\Inv\Repositories\Models\Master\SecurityDocument;
 use App\Inv\Repositories\Models\Application;
+use App\Inv\Repositories\Models\AppStatusLog;
+use App\Inv\Repositories\Models\Master\Status;
 
 class ImportPrePostSecurityData extends Command
 {
@@ -43,9 +45,8 @@ class ImportPrePostSecurityData extends Command
      */
     public function handle()
     {
-        //$fullFilePath = 'public/prepostcsvfiledata/RTA_CAM_Reviewer_Summary-Data-final.csv'; //first please uncomment file for imported data
-        //$fullFilePath = 'public/prepostcsvfiledata/rta_cam_reviewer_prepost_cond_latest_data_436_Lot 2-24AUG22.csv'; //after first file data imported then second please uncomment file for imported data please comment first file
-        //$fullFilePath = '/home/deepak/Documents/prepostimportData/c1.csv'; //for testing purpose data for local system
+        //$fullFilePath = '/home/deepak/Documents/prepostimportData/Prepost data mapping dated 30-09-2022-to be filled.csv'; //for testing purpose data for local system
+        $fullFilePath = 'public/prepostcsvfiledata/Prepost-data-mapping-dated-30-09-2022-to-be-filled.csv'; //uncomment for live server
         if (!isset($fullFilePath)) {
             $this->info('Csv file has been not found.Please try again.');
             return false;
@@ -65,12 +66,22 @@ class ImportPrePostSecurityData extends Command
             }
         }
         \DB::statement('SET FOREIGN_KEY_CHECKS=0');
+        $app_security_doc_id = null;
         foreach ($rowData as $key => $arrCamData) {
             $applicationData = Application::where(['app_id' => trim($arrCamData['app_id'])])->first('curr_status_id');
             if ($applicationData) {
                 $arrCamData['app_status'] = $applicationData->curr_status_id;
-                $mstSecurityData = SecurityDocument::where(['name' => trim($arrCamData['security_doc_id']), 'is_active' => 1])->first('security_doc_id');
 
+                if ($arrCamData['app_status'] == 45 || $arrCamData['app_status'] == 46){
+                    $statusLogData= AppStatusLog::where(['app_id' => $arrCamData['app_id']])->orderBy('app_status_log_id', 'desc')->skip(1)->take(1)->first('status_id');
+                    if ($statusLogData) {
+                        $arrCamData['app_status'] = $statusLogData->status_id??0;
+                    }
+                }
+                $mstSecurityData = SecurityDocument::where(['name' => trim($arrCamData['security_doc_id']), 'is_active' => 1])->first('security_doc_id');
+                if (isset($arrCamData['description']) && (empty($arrCamData['description']) || $arrCamData['description'] == '')) {
+                    $arrCamData['description'] = isset($arrCamData['cond']) ? strip_tags($arrCamData['cond']) : null;
+                }
                 $inputArr = array(
                     'cam_reviewer_summary_id' => isset($arrCamData['cam_reviewer_summary_id']) ? $arrCamData['cam_reviewer_summary_id'] : NULL,
                     'biz_id' => $arrCamData['biz_id'],
@@ -79,12 +90,11 @@ class ImportPrePostSecurityData extends Command
                     'description' => isset($arrCamData['description']) ? strip_tags($arrCamData['description']) : null,
                     'due_date' => isset($arrCamData['due_date']) ? Carbon::createFromFormat('d-m-Y', $arrCamData['due_date'])->format('Y-m-d') : null,
                     'doc_type' => isset($arrCamData['cond_type']) ? $arrCamData['cond_type'] : null,
-                    'created_at' => isset($arrCamData['created_at']) ? Carbon::parse($arrCamData['created_at'])->format('Y-m-d H:i:s') : null,
+                    'created_at' => isset($arrCamData['created_at']) ? Carbon::parse(trim($arrCamData['created_at']))->format('Y-m-d H:i:s') : null,
                     'created_by' => isset($arrCamData['created_by']) ? $arrCamData['created_by'] : null,
                     'is_non_editable' => 0,
                     'status' => 1,
                 );
-                $app_security_doc_id = null;
                 AppSecurityDoc::updateOrcreate(['app_security_doc_id' => $app_security_doc_id], $inputArr);
                 if ($arrCamData['app_status'] == 22) {
                     $appSecurtiyDocs = AppSecurityDoc::where(['app_id' => $arrCamData['app_id'], 'biz_id' => $arrCamData['biz_id'], 'is_active'  => 1, 'is_non_editable' => 0, 'status' => 1])->get();
@@ -159,7 +169,7 @@ class ImportPrePostSecurityData extends Command
                         );
                         //$inputArr['is_upload'] = null;
                         //$inputArr['file_id'] =  null;
-                        $app_security_doc_id = null;
+                        //$app_security_doc_id = null;
                         AppSecurityDoc::updateOrcreate(['app_security_doc_id' => $app_security_doc_id], $inputArr);
                         if ($arrCamData['app_status'] == 50 || $arrCamData['app_status'] == 51) {
                             $appSecurtiyDocs = AppSecurityDoc::where(['app_id' => $arrCamData['app_id'], 'biz_id' => $arrCamData['biz_id'], 'is_active' => 1])->whereIn('status', [3])->whereIn('is_non_editable', [0])->get();
