@@ -46,7 +46,7 @@ class ImportPrePostSecurityData extends Command
     public function handle()
     {
         //$fullFilePath = '/home/deepak/Documents/prepostimportData/Prepost data mapping dated 30-09-2022-to be filled.csv'; //for testing purpose data for local system
-        $fullFilePath = 'public/prepostcsvfiledata/Prepost-data-mapping-dated-30-09-2022-to-be-filled.csv'; //uncomment for live server
+        //$fullFilePath = 'public/prepostcsvfiledata/Prepost-data-mapping-dated-30-09-2022-to-be-filled.csv'; //uncomment for live server
         if (!isset($fullFilePath)) {
             $this->info('Csv file has been not found.Please try again.');
             return false;
