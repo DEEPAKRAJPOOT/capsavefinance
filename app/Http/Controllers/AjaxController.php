@@ -6122,7 +6122,7 @@ if ($err) {
         $chequeNumber = $request->get('cheque_no');
         $userId = $request->has('user_id') ? $request->get('user_id'): null ;
         $result = $this->lmsRepo->chequeAlert( $chequeNumber,$userId);
-        if (isset($result)) {
+        if (!isset($result)) {
             $result = ['status' => 1];
         } else {
             $result = ['status' => 0];
