@@ -84,9 +84,9 @@
                                             @endcan
                                             </div>
                                             <div class="col-md-1" style="margin-left: -20px;">
-                                            {{-- @can('update_bulk_invoice') --}}
+                                            @can('update_invoice_pending_tab')
                                                 <button type="button" id="rejectPending" data-status="14" class="btn btn-primary btn-sm ml-2 btn-app">Reject</button>
-                                            {{-- @endcan --}}
+                                            @endcan
                                             </div>
                                         </div>
                                         <div class="row">
