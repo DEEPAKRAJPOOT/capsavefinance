@@ -2007,6 +2007,7 @@ class CamController extends Controller
 
     /*function for updating offer data*/
     public function updateLimitOffer(Request $request){
+      \DB::beginTransaction();
       try{
         $appId = $request->get('app_id');        
         $bizId = $request->get('biz_id');
@@ -2111,7 +2112,6 @@ class CamController extends Controller
           Session::flash('message', trans('backend_messages.under_approval'));
           return redirect()->route('limit_assessment',['app_id' =>  $appId, 'biz_id' => $bizId]);
         }
-        \DB::beginTransaction();
         //if (empty($prgmOfferId)) {
           $whereCondition = ['app_id' => $appId, 'is_approve' => 1, 'status_is_null_or_accepted' =>1];
           $offerData = $this->appRepo->getOfferData($whereCondition);
@@ -2119,7 +2119,6 @@ class CamController extends Controller
             Session::flash('message', trans('backend_messages.under_approval'));
             return redirect()->route('limit_assessment',['app_id' =>  $appId, 'biz_id' => $bizId]);
           }
-          \DB::beginTransaction();
           //if (empty($prgmOfferId)) {
             Helpers::updateAppCurrentStatus($appId, config('common.mst_status_id.OFFER_GENERATED'));
             //}
