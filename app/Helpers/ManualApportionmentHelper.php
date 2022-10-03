@@ -759,7 +759,7 @@ class ManualApportionmentHelper{
         $transList = Transactions::whereNull('parent_trans_id')
         ->whereHas('transType', function($query){
             $query->where('chrg_master_id','>','0')
-            ->orWhere('id',config('lms.TRANS_TYPE.INTEREST'));
+            ->orWhereIn('id',[config('lms.TRANS_TYPE.INTEREST'),config('lms.TRANS_TYPE.INTEREST_OVERDUE')]);
         })
         ->whereDate('created_at','<=',$cDate)
         ->whereDate('created_at','>=','2022-04-01')
