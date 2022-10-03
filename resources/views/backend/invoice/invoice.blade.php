@@ -32,7 +32,8 @@
                         <div class="tab-content">
 
                             <div id="menu1" class=" active tab-pane "><br>
-                             <span id="moveCase" class="text-success"></span>
+                             <span id="moveCase" class="text-success" style="margin: 34px;"></span>
+                             <span id="errormoveCase" class="text-danger" style="margin: 34px;"></span>
                                <div class="card">
                                     <div class="card-body">
                                         <div class="row">
@@ -259,5 +260,17 @@
 </script>
 <script src="{{ asset('backend/js/ajax-js/invoice_list.js') }}"></script>
 <script src="{{ asset('backend/js/manage_invoice.js') }}"></script>
+<script>
+    $(document).ready(function(){
+    if(window.localStorage.getItem('storageMsg') != ""){
+        var x = JSON.parse(window.localStorage.getItem('storageMsg'));
+        if(x.type === "success"){
+            $("#moveCase").html(x.text);
+        }else{
+            $("#errormoveCase").html(x.text);
+        }
+    }
+});
+</script>
 
 @endsection

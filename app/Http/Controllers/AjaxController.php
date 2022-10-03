@@ -4115,6 +4115,8 @@ if ($err) {
             $uid = Auth::user()->user_id;
             $response = InvoiceStatusLog::saveInvoiceStatusLog($attr['invoice_id'],$request->status);
             BizInvoice::where(['invoice_id' =>$attr['invoice_id']])->update(['status_id' =>$request->status,'status_update_time' => $cDate,'updated_by' =>$uid]);
+            // return redirect()->back()->with('message', 'Invoice move to reject tab successfully');
+            // return redirect('http://admin.rent.local/lms/invoice/backend_get_reject_invoice')->with('message', 'Invoice move to reject tab successfully');
           }
           else
           {

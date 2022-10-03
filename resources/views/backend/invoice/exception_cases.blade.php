@@ -30,7 +30,8 @@
                     <div class="tab-content">
 
                         <div id="menu1" class=" active tab-pane "><br>
-  <span id="moveCase" class="text-success"></span>
+                        <span id="moveCase" class="text-success" style="margin: 34px;"></span>
+                        <span id="errormoveCase" class="text-danger" style="margin: 34px;"></span>
 
                             <div class="card">
                                 <div class="card-body">
@@ -45,7 +46,7 @@
                                             <button  type="button" id="search_biz" class="btn  btn-primary btn-sm float-right">Search</button>
                                         </div> 
                                         <div class="col-md-1" style="margin-left: -20px;">
-                                            @can('update_bulk_invoice')
+                                            @can('update_invoice_pending_tab')
                                                 <button type="button" id="rejectExcep" data-status="14" class="btn btn-primary btn-sm ml-2 btn-app">Reject</button>
                                             @endcan
                                             </div> 
@@ -126,5 +127,18 @@
 </script>
 <script src="{{ asset('backend/js/manage_invoice.js') }}"></script>
 <script src="{{ asset('backend/js/ajax-js/exception_cases.js') }}"></script>
+<script>
+    $(document).ready(function(){
+        console.log(window.localStorage.getItem('storageMsg'));
+    if(window.localStorage.getItem('storageMsg') != ""){
+        var x = JSON.parse(window.localStorage.getItem('storageMsg'));
+        if(x.type === "success"){
+            $("#moveCase").html(x.text);
+        }else{
+            $("#errormoveCase").html(x.text);
+        }
+    }
+});
+</script>
 
 @endsection

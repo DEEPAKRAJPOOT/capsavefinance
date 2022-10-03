@@ -1130,15 +1130,13 @@ function uploadFile(app_id,id)
                     }
                    if(data.msg=="")
                     {
-                    //    localStorage.setItem('storageMsg', 'Invoice successfully moved');
-                        localStorage.setItem('storageMsg', JSON.stringify({text: 'Invoice successfully moved', type: 'success'}));
+                        localStorage.setItem('storageMsg', JSON.stringify({text: 'Invoice successfully moved to reject tab', type: 'success'}));
                        location.reload();
-                    //    window.location.href="http://admin.rent.local/lms/invoice/backend_get_reject_invoice";
                     }
                     else
                     {
-                      
-                       localStorage.setItem('storageMsg', 'You cannot move this invoice ('+data.msg+') to Reject tab, as customer/anchor/program limit has been exceeded  or invoice has been moved to exception cases.');
+                        localStorage.setItem('storageMsg', JSON.stringify({text: 'You cannot move this invoice ('+data.msg+') to Reject tab, as customer/anchor/program limit has been exceeded  or invoice has been moved to exception cases.', type: 'error'}));
+                    //    localStorage.setItem('storageMsg', 'You cannot move this invoice ('+data.msg+') to Reject tab, as customer/anchor/program limit has been exceeded  or invoice has been moved to exception cases.');
                        location.reload();
                     }
                }
@@ -1189,9 +1187,8 @@ function uploadFile(app_id,id)
                     }
                     if(data.msg=="")
                     {
-                    //    localStorage.setItem('storageMsg', 'Invoice successfully moved');
-                        localStorage.setItem('storageMsg', JSON.stringify({text: 'Invoice successfully moved', type: 'success'}));
-                        location.reload();
+                        localStorage.setItem('storageMsg', JSON.stringify({text: 'Invoice successfully moved to reject tab', type: 'success'}));
+                       location.reload();
                     //    window.location.href="http://admin.rent.local/lms/invoice/backend_get_reject_invoice";
                     }
                     else
