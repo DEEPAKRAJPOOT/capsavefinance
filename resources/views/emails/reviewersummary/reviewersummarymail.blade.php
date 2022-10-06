@@ -123,7 +123,7 @@
                 @endif
                 @empty
                     <tr class="">
-                        <td>No Offer Found</td>
+                        <td colspan="4" style="padding:8px 10px;font-size: 14px;border-bottom: #ccc solid 1px;">No Offer Found</td>
                     </tr>
             @endforelse
             </table>
@@ -320,7 +320,7 @@
                 @endif
                 @empty
                      <tr class="">
-                        <td style="padding:8px 10px;font-size: 13px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;">No Offer Found</td>
+                        <td colspan="5" style="padding:8px 10px;font-size: 14px;border-bottom: #ccc solid 1px;">No Offer Found</td>
                     </tr>
               @endforelse 
 
@@ -359,21 +359,24 @@
 
             <table width="100%" class="mail-table" border="0" cellpadding="0" cellspacing="0" style="border:#ccc solid 1px;">
                 <tr>
-                    <th width="50%" style="background:#b7b7b7;color:#ffffff;text-align: left;padding: 10px;font-size: 14px;border-right: #ccc solid 1px;
-        border-bottom: #ccc solid 1px;">Condition</th>
-                    <th style="background:#b7b7b7;color:#ffffff;text-align: left;padding: 10px;font-size: 14px;
-        border-bottom: #ccc solid 1px;">Timeline</th>
+                    <th width="35%" style="background:#b7b7b7;color:#ffffff;text-align: left;padding: 10px;font-size: 14px;border-right: #ccc solid 1px;
+        border-bottom: #ccc solid 1px;">Type of Document</th>
+                    <th width="25%" style="background:#b7b7b7;color:#ffffff;text-align: left;padding: 10px;font-size: 14px;border-right: #ccc solid 1px;
+                    border-bottom: #ccc solid 1px;">Original Due Date</th>
+        <th width="40%" style="background:#b7b7b7;color:#ffffff;text-align: left;padding: 10px;font-size: 14px;
+        border-bottom: #ccc solid 1px;">Description</th>
                 </tr>
                 @if(isset($preCondArr) && count($preCondArr)>0)
                     @foreach($preCondArr as $prekey =>$preval)
                     <tr>
-                        <td style="padding:8px 10px;font-size: 14px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;">{{$preval['cond']}}</td>
-                        <td style="padding:8px 10px;font-size: 14px;border-bottom: #ccc solid 1px;">{{$preval['timeline']}}</td>
+                        <td style="padding:8px 10px;font-size: 14px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;">{{ $preval['mst_security_docs']['name']??'N/A' }}</td>
+                        <td style="padding:8px 10px;font-size: 14px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;">{{ $preval['due_date']?\Carbon\Carbon::parse($preval['due_date'])->format('d-m-Y'):'N/A' }}</td>
+                        <td style="padding:8px 10px;font-size: 14px;border-bottom: #ccc solid 1px;white-space: pre-wrap;">{{ trim($preval['description'])??'N/A' }}</td>
                     </tr>
                     @endforeach
                 @else
                      <tr>   
-                            <td colspan="2">No Record Found</td>    
+                            <td style="padding:8px 10px;font-size: 14px;border-bottom: #ccc solid 1px;" colspan="3">No Record Found</td>    
                      </tr>   
                 @endif        
             </table>
@@ -388,25 +391,30 @@
 
             <table width="100%" class="mail-table" border="0" cellpadding="0" cellspacing="0" style="border:#ccc solid 1px;">
                 <tr>
-                    <th width="50%" style="background:#b7b7b7;color:#ffffff;text-align: left;padding: 10px;font-size: 14px;border-right: #ccc solid 1px;
-        border-bottom: #ccc solid 1px;">Condition</th>
-                    <th style="background:#b7b7b7;color:#ffffff;text-align: left;padding: 10px;font-size: 14px;
-        border-bottom: #ccc solid 1px;">Timeline</th>
+                    <th width="35%" style="background:#b7b7b7;color:#ffffff;text-align: left;padding: 10px;font-size: 14px;border-right: #ccc solid 1px;
+        border-bottom: #ccc solid 1px;">Type of Document</th>
+                    <th width="25%" style="background:#b7b7b7;color:#ffffff;text-align: left;padding: 10px;font-size: 14px;border-right: #ccc solid 1px;
+                    border-bottom: #ccc solid 1px;">Original Due Date</th>
+        <th width="40%" style="background:#b7b7b7;color:#ffffff;text-align: left;padding: 10px;font-size: 14px;
+        border-bottom: #ccc solid 1px;">Description</th>
                 </tr>
                 @if(isset($postCondArr) && count($postCondArr)>0)
                     @foreach($postCondArr as $postkey =>$postval)
                         <tr>
                             <td style="padding:8px 10px;font-size: 14px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;">
-                                {{$postval['cond']}}
+                                {{ $postval['mst_security_docs']['name']??'N/A' }}
                             </td>
-                            <td style="padding:8px 10px;font-size: 14px;border-bottom: #ccc solid 1px;">
-                                {{$postval['timeline']}}
+                            <td style="padding:8px 10px;font-size: 14px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;">
+                                {{ $postval['due_date']?\Carbon\Carbon::parse($postval['due_date'])->format('d-m-Y'):'N/A' }}
+                            </td>
+                            <td style="padding:8px 10px;font-size: 14px;border-bottom: #ccc solid 1px;white-space: pre-wrap;">
+                                {{ trim($postval['description'])??'N/A' }}
                             </td>
                         </tr>
                     @endforeach
                 @else
                      <tr>   
-                            <td colspan="2">No Record Found</td>    
+                            <td style="padding:8px 10px;font-size: 14px;border-bottom: #ccc solid 1px;" colspan="3">No Record Found</td>    
                      </tr>      
                 @endif
             </table>
