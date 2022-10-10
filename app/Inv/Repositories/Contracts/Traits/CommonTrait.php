@@ -22,4 +22,14 @@ trait CommonTrait
     { 
       return $item['deal_type']==2;
     }
+
+    function filterPreCondSecurity($item) 
+    { 
+      return $item['doc_type']==1;
+    }
+
+    function filterPostCondSecurity($item) 
+    { 
+      return $item['doc_type']==2;
+    }
 }

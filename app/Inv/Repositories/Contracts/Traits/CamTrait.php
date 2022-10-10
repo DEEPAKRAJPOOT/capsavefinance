@@ -20,7 +20,7 @@ use App\Inv\Repositories\Models\CamReviewSummPrePost;
 use App\Inv\Repositories\Models\GroupCompanyExposure;
 use App\Inv\Repositories\Models\Master\Group;
 use App\Inv\Repositories\Models\CamReviewSummRiskCmnt;
-
+use App\Inv\Repositories\Models\AppSecurityDoc;
 trait CamTrait
 {
     protected function getCamReportData(Request $request){
@@ -145,12 +145,11 @@ trait CamTrait
                 /*end code for approve button */
                  
                 if(isset($reviewerSummaryData['cam_reviewer_summary_id'])) {
-                    $dataPrePostCond = CamReviewSummPrePost::where('cam_reviewer_summary_id', $reviewerSummaryData['cam_reviewer_summary_id'])
-                                    ->where('is_active', 1)->get();
+                    $dataPrePostCond = AppSecurityDoc::with(['mstSecurityDocs'])->where('cam_reviewer_summary_id', $reviewerSummaryData['cam_reviewer_summary_id'])->where('app_id', $arrRequest['app_id'])->where('is_active', 1)->whereIn('status', [1,2])->whereIn('is_non_editable', [0,1])->get();
                     $dataPrePostCond = $dataPrePostCond ? $dataPrePostCond->toArray() : [];
                     if(!empty($dataPrePostCond)) {
-                      $preCondArr = array_filter($dataPrePostCond, array($this, "filterPreCond"));
-                      $postCondArr = array_filter($dataPrePostCond, array($this, "filterPostCond"));
+                      $preCondArr = array_filter($dataPrePostCond, array($this, "filterPreCondSecurity"));
+                      $postCondArr = array_filter($dataPrePostCond, array($this, "filterPostCondSecurity"));
                     }
                 } 
 
