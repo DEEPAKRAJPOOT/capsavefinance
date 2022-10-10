@@ -74,7 +74,7 @@ class ImportPrePostSecurityData extends Command
                 $inputArr = array(
                     'description' => isset($arrCamData['cond']) ? strip_tags($arrCamData['cond']) : null,
                 );
-                AppSecurityDoc::updateOrcreate(['app_id' => $arrCamData['app_id'],'biz_id' => $arrCamData['biz_id'],'user_id' => $arrCamData['user_id']], $inputArr);
+                AppSecurityDoc::updateOrcreate(['app_id' => $arrCamData['app_id'],'biz_id' => $arrCamData['biz_id']], $inputArr);
             }
         }
         \DB::statement('SET FOREIGN_KEY_CHECKS=1');
