@@ -253,7 +253,8 @@ class InvoiceController extends Controller {
         $userInfo = $this->invRepo->getCustomerDetail($user_id);
         $getAllInvoice = $this->invRepo->getAllInvoiceAnchor(12);
         $get_bus = $this->invRepo->getBusinessNameApp(12);
-        return view('backend.invoice.disbursment')->with(['get_bus' => $get_bus, 'anchor_list' => $getAllInvoice, 'flag' => $flag, 'user_id' => $user_id, 'app_id' => $app_id, 'userInfo' => $userInfo]);
+        $batchData = $this->lmsRepo->getallBatch();
+        return view('backend.invoice.disbursment')->with(['get_bus' => $get_bus, 'anchor_list' => $getAllInvoice, 'flag' => $flag, 'user_id' => $user_id, 'app_id' => $app_id, 'userInfo' => $userInfo,'batchData' => $batchData]);
     }
 
     public function viewRejectInvoice(Request $req) {
