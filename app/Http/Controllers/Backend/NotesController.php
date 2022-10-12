@@ -26,8 +26,9 @@ class NotesController extends Controller {
     public function index(Request $request)
     {
         $app_id = $request->get('app_id');
+        $user_id = Auth::user()->user_id;
         $arrData = AppNote::showData($app_id);
-        return view('backend.notes.notes', compact('arrData', 'app_id'));
+        return view('backend.notes.notes', compact('arrData', 'app_id','user_id',$user_id));
     }
 
     public function store(Request $request)
@@ -52,6 +53,7 @@ class NotesController extends Controller {
     public function pdNotesList(Request $request)
     {
         $app_id = $request->get('app_id');
+        // $user_id = Auth::user()->user_id;
         $arrData = [];
         $arrData = $this->appRepo->showData($app_id);
         return view('backend.pdNotes.pd_notes', compact('arrData', 'app_id'));

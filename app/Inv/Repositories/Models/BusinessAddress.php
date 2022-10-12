@@ -213,4 +213,13 @@ class BusinessAddress extends BaseModel
         $status = self::where(['biz_id' => $biz_id])->update(['is_default' => 0]);
         return $status;
     }
+
+    public function activeFiAddressApp(){
+        return $this->hasOne('App\Inv\Repositories\Models\FiAddress','biz_addr_id','biz_addr_id')->where(['is_active'=>1,'cm_fi_status_id'=>3]);
+    }
+
+    public static function getAddressforCustomerApp($biz_id){
+        $address = BusinessAddress::whereHas('activeFiAddressApp')->where('biz_id', $biz_id)->where('addr_1', '<>', null)->where('is_active', 1)->get();
+        return $address;
+    }
 }

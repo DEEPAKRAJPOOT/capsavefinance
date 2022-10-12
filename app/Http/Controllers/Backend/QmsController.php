@@ -36,10 +36,11 @@ class QmsController extends Controller {
     public function index(Request $request)
     {
         $app_id = $request->get('app_id');
+        $user_id  = Auth::user()->user_id;
         $arrData = [];
         $arrRole = $this->userRepo->getAllRole();
         $arrData = $this->qmsRepo->showQueryList($app_id);
-        return view('backend.qms.queryList', compact('arrData', 'app_id', 'arrRole'));
+        return view('backend.qms.queryList', compact('arrData', 'app_id', 'arrRole','user_id', $user_id));
     }
 
 

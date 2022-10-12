@@ -27,7 +27,6 @@
         @endcan
     </ul>
 
-
 <div class="row grid-margin mt-3">
     <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-4">
         <div class="card">

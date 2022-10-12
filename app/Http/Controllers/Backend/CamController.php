@@ -93,6 +93,7 @@ class CamController extends Controller
         try{
             $arrRequest['biz_id'] = $request->get('biz_id');
             $arrRequest['app_id'] = $request->get('app_id');
+            $user_id  = Auth::user()->user_id;
             $arrBizData = Business::getApplicationById($arrRequest['biz_id']);
             $arrOwnerData = BizOwner::getCompanyOwnerByBizId($arrRequest['biz_id']);
             foreach ($arrOwnerData as $key => $arr) {
@@ -174,7 +175,8 @@ class CamController extends Controller
                 'checkDisburseBtn'=>$checkDisburseBtn,
                 'arrGroupCompany'=>$arrGroupCompany,
                 'activeGroup' => $activeGroup,
-                'productType' => $productType
+                'productType' => $productType,
+                'user_id' => $user_id
                 ]);
         } catch (Exception $ex) {
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));

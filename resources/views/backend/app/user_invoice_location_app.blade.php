@@ -29,15 +29,15 @@
                     <div class="table-responsive ps ps--theme_default w-100" style="margin-bottom: 20px;">
                      {{-- @include('lms.customer.limit_details') --}}
                     </div>
-                    <form action="{{route('save_user_invoice_location_app', ['user_id' => $user_id,'biz_id'=> $biz_id,'app_id' => $app_id] )}}" method="post"  id="invoice_location">
+                    <form action="{{route('save_user_invoice_location_app', ['user_id'=> $user_id,'biz_id'=> $biz_id,'app_id' => $app_id] )}}" method="post"  id="invoice_location">
                         @csrf
                         <div class="row">
                             <div class="form-group col-md-6">
                                  <label for="entity_type">Customer Location   </label><br />
                                  <select class="form-control" name="customer_pri_loc" id="customer_pri_loc">
                                       <option disabled value="" selected>Select Customer Location</option>
-                                      @foreach($user_addr->address as $u_addr)
-                                      @if($u_addr->addr_1 != null && $u_addr->rcu_status == 1)
+                                      @foreach($user_addr as $u_addr)
+                                      @if($u_addr->addr_1 != null)
                                       <option state="{{$u_addr->state_id}}" value="{{$u_addr->biz_addr_id}}">{{$u_addr->addr_1}} {{$u_addr->addr_2}} {{$u_addr->city_name}} {{$u_addr->state_name}} {{$u_addr->pin_code}}</option>
                                       @endif
                                       @endforeach

@@ -1,17 +1,17 @@
 <ul class="main-menu">    
     @can('company_details')
     <li>
-        <a href="{{ route('company_details', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')]) }}" class="{{ (request()->is('application/company-details') || request()->is('application/promoter-details') || request()->is('application/documents')) ? 'active' : '' }}">Application Information</a>
+        <a href="{{ route('company_details', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id'),'user_id' => $user_id]) }}" class="{{ (request()->is('application/company-details') || request()->is('application/promoter-details') || request()->is('application/documents')) ? 'active' : '' }}">Application Information</a>
     </li>
     @endcan
     @can('cam_overview')
     <li>
-        <a href="{{ route('cam_overview', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')]) }}" class="{{ request()->is('application/cam/*') ? 'active' : '' }}">CAM</a>
+        <a href="{{ route('cam_overview', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id'),'user_id' => $user_id]) }}" class="{{ request()->is('application/cam/*') ? 'active' : '' }}">CAM</a>
     </li>
     @endcan
     @can('backend_fi')
     <li>
-        <a href="{{ route('backend_fi', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')]) }}" class="{{ request()->is('application/fircu/*') ? 'active' : '' }}">FI/RCU</a>
+        <a href="{{ route('backend_fi', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id'),'user_id' => $user_id]) }}" class="{{ request()->is('application/fircu/*') ? 'active' : '' }}">FI/RCU</a>
     </li>
     @endcan
     <!--
@@ -21,7 +21,7 @@
     -->
     @can('notes_list')
     <li>
-        <a href="{{ route('notes_list', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')]) }}" class="{{ request()->is('application/notes') ? 'active' : '' }}">Notes</a>
+        <a href="{{ route('notes_list', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id'),'user_id' => $user_id]) }}" class="{{ request()->is('application/notes') ? 'active' : '' }}">Notes</a>
     </li>
     @endcan
     <!--
@@ -31,7 +31,7 @@
     -->
     @can('pp_document_list')
      <li>
-        <a href="{{ route('pp_document_list', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')]) }}" class="{{ request()->is('document/list') ? 'active' : '' }}"> Documents </a>
+        <a href="{{ route('pp_document_list', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id'),'user_id' => $user_id]) }}" class="{{ request()->is('document/list') ? 'active' : '' }}"> Documents </a>
     </li>
     @endcan
     
@@ -41,7 +41,7 @@
      
     @can('query_management_list')
     <li>
-        <a href="{{ route('query_management_list', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')]) }}" class="{{ request()->is('application/query-management') ? 'active' : '' }}"> QMS</a>
+        <a href="{{ route('query_management_list', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id'),'user_id' => $user_id]) }}" class="{{ request()->is('application/query-management') ? 'active' : '' }}"> QMS</a>
     </li>
     @endcan
     
@@ -58,20 +58,20 @@
     {{--@if ($currentStage->stage_code == 'sales_queue' && $isNavAccessible)--}}
     @can('view_offer')    
     <li>
-        <a href="{{ route('view_offer', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')]) }}" class="{{ request()->is('application/view-offer') ? 'active' : '' }}">View Offer</a>
+        <a href="{{ route('view_offer', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id'),'user_id' => $user_id]) }}" class="{{ request()->is('application/view-offer') ? 'active' : '' }}">View Offer</a>
     </li>
     @endcan
     {{--@endif--}}
     @can('user_invoice_location_app')
     <li>
-        <a href="{{ route('user_invoice_location_app', ['user_id' => request()->get('user_id'),'app_id' => request()->get('app_id'),'biz_id' => request()->get('biz_id')]) }}" class="{{ request()->is('application/user-invoice-location-app') ? 'active' : '' }}">User InVoice
+        <a href="{{ route('user_invoice_location_app', ['user_id' => request()->get('user_id'),'app_id' => request()->get('app_id'),'biz_id' => request()->get('biz_id'),'user_id' => $user_id]) }}" class="{{ request()->is('application/user-invoice-location-app') ? 'active' : '' }}">User InVoice
             Location</a>
     </li>
     @endcan
 
     @can('colender_view_offer')    
     <li>
-        <a href="{{ route('colender_view_offer', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')]) }}" class="{{ request()->is('colender/application/view-offer') ? 'active' : '' }}">View Co-lender Offer</a>
+        <a href="{{ route('colender_view_offer', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id'),'user_id' => $user_id]) }}" class="{{ request()->is('colender/application/view-offer') ? 'active' : '' }}">View Co-lender Offer</a>
     </li>
     @endcan
     @php
@@ -84,14 +84,14 @@
     {{--@if ($currentStage->stage_code == 'sanction_letter' && $isNavAccessible)--}}
     @can('gen_sanction_letter')
     <li>
-        <a href="{{ route('gen_sanction_letter', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')]) }}" class="{{ request()->is('application/sanction-letter') ? 'active' : '' }}">Sanction Letter</a>
+        <a href="{{ route('gen_sanction_letter', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id'),'user_id' => $user_id]) }}" class="{{ request()->is('application/sanction-letter') ? 'active' : '' }}">Sanction Letter</a>
     </li>
     @endcan 
     @if(!$appSanctionLetterGenerated || !$appSanctionLetterDataFlag)
     @if (in_array(1, $productsArr))
     @can('list_new_sanction_letter')
     <li>
-        <a href="{{ route('list_new_sanction_letter', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')]) }}" class="{{ request()->is('application/new-sanction-letter','application/create-new-sanction-letter','application/view-new-sanction-letter') ? 'active' : '' }}">New Sanction Letter</a>
+        <a href="{{ route('list_new_sanction_letter', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id'),'user_id' => $user_id]) }}" class="{{ request()->is('application/new-sanction-letter','application/create-new-sanction-letter','application/view-new-sanction-letter') ? 'active' : '' }}">New Sanction Letter</a>
     </li>
     @endcan 
     @endif  

@@ -2673,4 +2673,9 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
     public function getAppReviewLimitLatestData($whereCond){
         return AppLimitReview::getAppReviewLimitLatestData($whereCond);
     }
+
+    public function getAddressforCustomerApp($bizId) 
+    {
+        return Business::getAddressforCustomerApp($bizId);
+    }
 }

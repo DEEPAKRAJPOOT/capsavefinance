@@ -1542,6 +1542,7 @@ class ApplicationController extends Controller
 	{
 		$appId = $request->get('app_id');
 		$bizId = $request->get('biz_id');
+		$user_id  = Auth::user()->user_id;
 		//$appData = $this->appRepo->getAppDataByAppId($appId);
 		//$loanAmount = $appData ? $appData->loan_amt : 0;
 
@@ -1588,7 +1589,8 @@ class ApplicationController extends Controller
 				->with('is_shown', $is_shown)
 				->with('isSalesManager', $isSalesManager)
 				->with('currentStage', $currentStage)
-				->with('viewGenSancLettertBtn', $viewGenSancLettertBtn);
+				->with('viewGenSancLettertBtn', $viewGenSancLettertBtn)
+				->with('user_id', $user_id);
 	}
 
 	/**
@@ -1703,6 +1705,7 @@ class ApplicationController extends Controller
 	{
 		$appId = $request->get('app_id');
 		$bizId = $request->get('biz_id');
+		$user_id  = Auth::user()->user_id;
 		$sanctionId = $request->get('sanction_id');
 		$offerId = null;
 		if ($request->has('offer_id') && !empty($request->get('offer_id'))) {
@@ -1717,7 +1720,7 @@ class ApplicationController extends Controller
 		$data = $this->getSanctionLetterData((int)$appId, (int)$bizId, (int)$offerId, (int)$sanctionId);
 		$supplyChaindata = $this->getSanctionLetterSupplyChainData($appId, $bizId, $offerId, $sanctionId);
 		$appLimit = $this->appRepo->getAppLimit((int)$appId);
-		return view('backend.app.sanction_letter')->with($data)->with(['supplyChaindata'=>$supplyChaindata, 'supplyChainFormData'=>$supplyChainFormData, 'appLimit' => $appLimit]);
+		return view('backend.app.sanction_letter')->with($data)->with(['supplyChaindata'=>$supplyChaindata, 'supplyChainFormData'=>$supplyChainFormData, 'appLimit' => $appLimit,'user_id' => $user_id]);
 	}
 
    /* For Promoter pan verify iframe model    */
@@ -2601,6 +2604,7 @@ class ApplicationController extends Controller
 		//dd($request->all());
 		$appId = $request->get('app_id');
 		$bizId = $request->get('biz_id');
+		$user_id  = Auth::user()->user_id;
 		$sanctionId = $request->get('sanction_id');
 		$offerId = null;
 		if ($request->has('offer_id') && !empty($request->get('offer_id'))) {
@@ -2617,7 +2621,7 @@ class ApplicationController extends Controller
 		$whereCondition['app_id'] = $appId;
 		$sanctionFirstData =$this->appRepo->getOfferNewSanctionLetterData($whereCondition,'sanction_letter_id','yes');
 		//dd($sanctionFirstData);
-		return view('backend.app.new_sanction_letter_list')->with(['supplyChaindata'=>$supplyChaindata,'sanctionFirstData'=>$sanctionFirstData,'appData'=>$appData]);  
+		return view('backend.app.new_sanction_letter_list')->with(['supplyChaindata'=>$supplyChaindata,'sanctionFirstData'=>$sanctionFirstData,'appData'=>$appData,'user_id' => $user_id]);  
 	}
 
 	/**
@@ -3031,7 +3035,8 @@ class ApplicationController extends Controller
 			// dd($user_id,$biz_id,$app_id);
             $where = ['user_id' => $user_id];
             $allApps = $this->UserInvRepo->getAllAppData($where);
-					$userAddresswithbiz = $this->appRepo->getApplicationById($biz_id);
+					$userAddresswithbiz = BusinessAddress::getAddressforCustomerApp($biz_id);
+					// dd($userAddresswithbiz[0]->activeFiAddressApp);
 					$capsave_addr = $this->UserInvRepo->getCapsavAddr();
 					$appOffer = AppProgramOffer::getPrgmOfferData($app_id);
 					$result = $this->getUserLimitDetais($user_id);
