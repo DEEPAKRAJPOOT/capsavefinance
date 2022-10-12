@@ -2204,7 +2204,6 @@ class ApportionmentController extends Controller
         try {
             if ($request->has('user_id') && $request->user_id && $request->has('payment_id') && $request->payment_id) {
                 if ($request->has('action_type') && $request->has('action_type') == 'checkDownloadCsvEntry') {
-                    sleep(2);
                     $paymentApportionments  = ['payment_id' => $request->payment_id];
                     $result = PaymentApportionment::getLastPaymentAportData($paymentApportionments);
                     if ($result) {

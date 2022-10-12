@@ -68,7 +68,9 @@
             <form id="unsettlementFrom" action="" method="post" onsubmit="return apport.validateMarkSettled(this)">
              @csrf	
             <div class="row">
+                @if($paySug)
                 @include('lms.apportionment.common.listUnsettledTransactions')
+                @endif
             </div>
             <div class="row pull-right action-btn mt-2">
                 <div class="col-md-12" >
@@ -83,15 +85,15 @@
                         @endcan                         
                         @if (!$paymentApportionment)
                             @can('download_apport_unsettled_trans')
-                            <a href="{{ URL::route('download_apport_unsettled_trans',[ 'user_id' => $userId , 'payment_id' => $paymentId, 'sanctionPageView' => $sanctionPageView ]) }}" class="btn btn-success btn-sm float-left mr-2 disabled" id="dwnldUnTransCsv">Download CSV</a>
+                            <a href="{{ URL::route('download_apport_unsettled_trans',[ 'user_id' => $userId , 'payment_id' => $paymentId, 'sanctionPageView' => $sanctionPageView ]) }}" class="btn btn-success btn-sm float-left mr-2 @if($paySug)disabled @endif" id="dwnldUnTransCsv">Download CSV</a>
                             @endcan
                             @else
                             @can('delete_download_csv_apport_unsettled_trans')
-                            <a href="javascript:void(0);" class="btn btn-danger btn-sm float-left mr-2 disabled" id="dltUnTransCsv">Delete CSV</a>
+                            <a href="javascript:void(0);" class="btn btn-danger btn-sm float-left mr-2 @if($paySug)disabled @endif" id="dltUnTransCsv">Delete CSV</a>
                             @endcan
                         @endif
                         @can('upload_apport_unsettled_trans')
-                        <a data-toggle="modal" data-target="#uploadUnsettledTransactionsFrame1" data-height="" data-width="100%" data-placement="top" class="btn btn-success btn-sm float-left mr-2 disabled" id="uploadUnTransCsv">Upload CSV</a>
+                        <a data-toggle="modal" data-target="#uploadUnsettledTransactionsFrame1" data-height="" data-width="100%" data-placement="top" class="btn btn-success btn-sm float-left mr-2 @if($paySug)disabled @endif" id="uploadUnTransCsv">Upload CSV</a>
                         @endcan
                     @endif
                     @if($sanctionPageView) 
