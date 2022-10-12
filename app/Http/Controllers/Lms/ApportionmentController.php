@@ -2086,6 +2086,7 @@ class ApportionmentController extends Controller
                                 return redirect()->back();
                             }
                             $tokenId = Helpers::_decrypt($fileArrayData['TOKEN_ID'], 'CAPAUT');
+                            unset($fileArrayData);
                             $tokenData = [];
                             if ($tokenId) {
                                 $tokenData = explode('|', $tokenId);
