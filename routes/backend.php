@@ -845,7 +845,17 @@ Route::domain(config('proin.backend_uri'))->group(function () {
             Route::post('api/change/year',[
                 'as' => 'api_change_year',
                 'uses' => 'Auth\ApiController@changeFinancialYear'
-            ]);            
+            ]);   
+            
+            Route::get('user-invoice-location-app', [
+                'as' => 'user_invoice_location_app',
+                'uses' => 'Backend\ApplicationController@userInvoiceLocationApp',
+            ]);
+
+            Route::post('save-user-invoice-location-app', [
+                'as' => 'save_user_invoice_location_app',
+                'uses' => 'Backend\ApplicationController@saveUserInvoiceLocationApp',
+            ]);
             
         });//end of application
 

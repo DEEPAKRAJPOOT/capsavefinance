@@ -1562,4 +1562,10 @@ Route::group(
         'as' => 'update_regenerate_sanction_letter',
         'uses' => 'AjaxController@updateRegenerateSanctionLetter'
     ]); 
+
+    Route::post('get_cust_and_cap_loca_app',[
+        'as' => 'get_cust_and_cap_loca_app',
+        'uses' => 'AjaxController@getCustAndCapsLocApp'
+        ]
+    );
 });

@@ -12,6 +12,7 @@ use App\Inv\Repositories\Contracts\UserInterface as InvUserRepoInterface;
 use App\Inv\Repositories\Contracts\ApplicationInterface as InvAppRepoInterface;
 use App\Inv\Repositories\Contracts\DocumentInterface as InvDocumentRepoInterface;
 use App\Inv\Repositories\Contracts\MasterInterface as InvMasterRepoInterface;
+// use App\Inv\Repositories\Contracts\UcicUserInterface as InvUcicUserRepoInterface;
 use App\Inv\Repositories\Models\Master\State;
 use App\Inv\Repositories\Models\BizApiLog;
 use App\Inv\Repositories\Models\AppProgramOffer;
@@ -34,9 +35,15 @@ use App\Inv\Repositories\Contracts\Traits\ActivityLogTrait;
 use App\Inv\Repositories\Models\Master\LocationType;
 use App\Inv\Repositories\Models\AppSanctionLetter;
 use PDF as NewPDF;
+use App\Inv\Repositories\Models\AppProgramLimit;
+use App\Inv\Repositories\Models\BizOwner;
 use App\Inv\Repositories\Contracts\Traits\CamTrait;
 use App\Inv\Repositories\Models\AppSecurityDoc;
-use App\Inv\Repositories\Models\AppProgramLimit;
+use App\Inv\Repositories\Models\AppGroupDetail;
+use App\Inv\Repositories\Contracts\UserInvoiceInterface as InvUserInvRepoInterface;
+use App\Inv\Repositories\Models\Application;
+use App\Inv\Repositories\Models\AppLimit;
+use App\Inv\Repositories\Models\BusinessAddress;
 
 
 class ApplicationController extends Controller
@@ -44,12 +51,13 @@ class ApplicationController extends Controller
 	use ApplicationTrait;
 	use LmsTrait;
 	use CamTrait;
-
 	protected $appRepo;
 	protected $userRepo;
 	protected $docRepo;
 	protected $masterRepo;
 	protected $lmsRepo;
+	// protected $ucicuser_repo;
+	protected $UserInvRepo;
 
 	use ActivityLogTrait;
 
@@ -60,13 +68,15 @@ class ApplicationController extends Controller
 	 */
 	protected $pdf;
 
-	public function __construct(InvAppRepoInterface $app_repo, InvUserRepoInterface $user_repo, InvDocumentRepoInterface $doc_repo, InvLmsRepoInterface $lms_repo, InvMasterRepoInterface $master_repo, Pdf $pdf){
+	public function __construct(InvAppRepoInterface $app_repo, InvUserRepoInterface $user_repo, InvDocumentRepoInterface $doc_repo, InvLmsRepoInterface $lms_repo, InvMasterRepoInterface $master_repo, Pdf $pdf,InvUserInvRepoInterface $UserInvRepo){
 		$this->appRepo = $app_repo;
 		$this->userRepo = $user_repo;
 		$this->docRepo = $doc_repo;
 		$this->masterRepo = $master_repo;
 		$this->pdf = $pdf;
 		$this->lmsRepo = $lms_repo;
+		// $this->ucicuser_repo = $ucicuser_repo;
+		$this->UserInvRepo = $UserInvRepo;
 		$this->middleware('checkBackendLeadAccess');
 	}
 
@@ -1017,7 +1027,13 @@ class ApplicationController extends Controller
 			} else {
 				$roleDropDown = $this->userRepo->getAllRole()->toArray();
 			}
-			$appData = $this->appRepo->getAppData($app_id);
+			$appData = Application::getAppDatas($app_id);
+
+			if($appData->curr_status_id == config('common.mst_status_id.OFFER_ACCEPTED')){
+				if(isset($appData->user_invoice_rel_id) == null || $appData->is_active != 1){
+						Session::flash('error_code','no_relation_found');
+				}
+			}
 			$isAppPullBack = false;
 			if ($request->has('app_pull_back') && $request->app_pull_back) {
 				$isAppPullBack = true;
@@ -1134,6 +1150,14 @@ class ApplicationController extends Controller
 					if ($offerData && is_null($offerData->status) ) {
 						Session::flash('error_code', 'no_offer_accepted');
 						return redirect()->back();
+					}
+					$appData = Application::getAppDatas($app_id);
+
+					if($appData->curr_status_id == config('common.mst_status_id.OFFER_ACCEPTED')){
+						if(isset($appData->user_invoice_rel_id) == null || $appData->is_active != 1){
+							Session::flash('error_code','no_relation_found');
+							return redirect()->back();
+						}
 					}
 				} else if ($currStage->stage_code == 'upload_post_sanction_doc') {
 
@@ -2961,4 +2985,74 @@ class ApplicationController extends Controller
 			return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
 		}
 	}
+
+	public function userInvoiceLocationApp(Request $request) {
+        try {
+            $user_id = $request->get('user_id');
+			$biz_id = $request->get('biz_id');
+			$app_id = $request->get('app_id');
+			// dd($user_id,$biz_id,$app_id);
+            $where = ['user_id' => $user_id];
+            $allApps = $this->UserInvRepo->getAllAppData($where);
+					$userAddresswithbiz = $this->appRepo->getApplicationById($biz_id);
+					$capsave_addr = $this->UserInvRepo->getCapsavAddr();
+					$appOffer = AppProgramOffer::getPrgmOfferData($app_id);
+					$result = $this->getUserLimitDetais($user_id);
+			return view('backend.app.user_invoice_location_app')->with(['user_id'=> $user_id,'capsave_addr' => $capsave_addr, 'user_addr' => $userAddresswithbiz,'userInfo' =>  $result['userInfo'], 'application' => $result['application'], 'anchors' =>  $result['anchors'],'allApps' => $allApps,'biz_id'=> $biz_id,'app_id'=>$app_id,'appOffer' => $appOffer]);
+        } catch (Exception $ex) {
+             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
+        }
+    }
+
+	public function saveUserInvoiceLocationApp(Request $request) {
+        try {
+            $arrUserData = $request->all();
+            $user_id = $request->get('user_id');
+            $biz_id = $request->get('biz_id');
+			// dd($biz_id);
+            $app_id = $request->get('app_id');
+            $arrUserData['created_at'] = \carbon\Carbon::now();
+            $arrUserData['created_by'] = Auth::user()->user_id;
+            if(empty($arrUserData['capsave_state'])) {
+                return redirect()->route('user_invoice_location_app', ['user_id' => $user_id,'biz_id' => $biz_id,'app_id' => $app_id])->with('error', 'State are not present in "Capsave Location"');
+            }
+            if(empty($arrUserData['user_state'])) {
+                return redirect()->route('user_invoice_location_app', ['user_id' => $user_id,'biz_id' => $biz_id,'app_id' => $app_id])->with('error', 'State are not present in "Customer Primary Location"');
+            }
+            $userInvoiceData = [
+                'user_id' => $arrUserData['user_id'],
+                'biz_addr_id' => $arrUserData['customer_pri_loc'],
+                'company_id' => $arrUserData['capsav_location'],
+                'company_state_id' => $arrUserData['capsave_state'] ?? 0,
+                'biz_addr_state_id' => $arrUserData['user_state'] ?? 0,
+                'is_active' => 1,
+                'created_at' => $arrUserData['created_at'],
+                'created_by' => $arrUserData['created_by'],
+            ];
+            $userInvData = [
+                'user_id' => $arrUserData['user_id'],
+                'biz_addr_id' => $arrUserData['customer_pri_loc'],
+                'company_id' => $arrUserData['capsav_location'],
+                'is_active' => 1,
+            ];
+            $checkData = $this->UserInvRepo->checkUserInvoiceLocation($userInvData);
+            if($checkData) {
+                return redirect()->route('user_invoice_location_app', ['user_id' => $user_id,'biz_id' => $biz_id,'app_id' => $app_id])->with('error', 'Same address and company are already mapped and active');
+            }
+            $this->UserInvRepo->unPublishAddr($user_id);
+            $arrUserData['updated_at'] = \carbon\Carbon::now();
+            $arrUserData['updated_by'] = Auth::user()->user_id;
+            $status = $this->UserInvRepo->saveUserInvoiceLocation($userInvoiceData);
+			$bizAddrId = $arrUserData['customer_pri_loc'];
+			$data = BusinessAddress::unsetDefaultAddressApp($biz_id);
+			$default = BusinessAddress::setDefaultAddressApp($bizAddrId);
+            if($status) {
+                return redirect()->route('user_invoice_location_app', ['user_id' => $user_id,'biz_id' => $biz_id,'app_id' => $app_id])->with('message', 'Address save Successfully');
+            } else {
+                return redirect()->route('user_invoice_location_app', ['user_id' => $user_id,'biz_id' => $biz_id,'app_id' => $app_id])->with('error', 'Some error occured while saving');
+            }
+        } catch (Exception $ex) {
+             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
+        }
+    }
 }

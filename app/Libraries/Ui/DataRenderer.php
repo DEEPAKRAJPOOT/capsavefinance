@@ -392,28 +392,29 @@ class DataRenderer implements DataProviderInterface
                         $app_id = $app->app_id;
                         $app_code = $app->app_code;
                         $parent_app_id = $app->parent_app_id;
+                        $userId = $app->user_id;
                         $ret = '';
                         $permission = Helpers::checkPermission('company_details');
                         if($permission){
                            if($user_role == config('common.user_role.APPROVER'))
                                 $link = route('cam_report', ['biz_id' => $app->biz_id, 'app_id' => $app_id]);
                            else
-                                $link = route('company_details', ['biz_id' => $app->biz_id, 'app_id' => $app_id]);
+                                $link = route('company_details', ['biz_id' => $app->biz_id, 'app_id' => $app_id,'user_id' => $userId]);
                            $ret = "<a id='app-id-$app_id' href='$link' rel='tooltip'>" . $app_code . "</a>";
-                                                     
+
                         } else {
                             $ret = "<a id='app-id-$app_id' rel='tooltip'>" . $app_code . "</a>";
                         }
-                        
+
                         if (!empty($parent_app_id)) {
                             $aData = Application::getAppData((int)$parent_app_id);
                             if ($permission && $aData) {
-                                $ret .= "<br><small>Parent:</small><br><a href='" . route('company_details', ['biz_id' => $aData->biz_id, 'app_id' => $parent_app_id]) . "' rel='tooltip'>" . \Helpers::formatIdWithPrefix($parent_app_id, 'APP') . "</a>";
+                                $ret .= "<br><small>Parent:</small><br><a href='" . route('company_details', ['biz_id' => $aData->biz_id, 'app_id' => $parent_app_id,'user_id' => $aData->user_id]) . "' rel='tooltip'>" . \Helpers::formatIdWithPrefix($parent_app_id, 'APP') . "</a>";
                             } else {
                                 $ret .= "<br><small>Parent:</small><br><a rel='tooltip'>" . \Helpers::formatIdWithPrefix($parent_app_id, 'APP') . "</a>";
                             }
-                        } 
-                           
+                        }
+
                         return $ret;
                     }
                 )
@@ -9076,6 +9077,58 @@ class DataRenderer implements DataProviderInterface
                 }
                 return '';
             })
+            ->make(true);
+    }
+
+    public function getCustAndCapsLocApp(Request $request, $data) {
+        $this->sr_no = 1;
+        $this->request = $request;
+        return DataTables::of($data)
+            ->rawColumns(['is_active'])
+            ->editColumn(
+                'sr_no',
+                function ($user) {
+                return $this->sr_no++;
+            })  
+            ->editColumn(
+                'created_at',
+                function ($user) {
+                return ($user->created_at)? date('d-M-Y',strtotime($user->created_at)) : '---';
+            })  
+            ->editColumn(
+                'comp_addr',
+                function ($user) {
+                return $user->capsavBizAddr->cmp_add .' '. $user->capsavBizAddr->city;
+            })  
+            ->editColumn(
+                'user_addr',
+                function ($user) {
+                return $user->userBizAddr->addr_1. ' '. $user->userBizAddr->addr_2. ' '. $user->userBizAddr->city_name;
+            })  
+            ->editColumn(
+                'comp_state',
+                function ($user) {
+                return $user->getCompanyState->name;
+            })  
+            ->editColumn(
+                'user_state',
+                function ($user) {
+                return $user->getUserState->name;
+            })
+            ->addColumn(
+                'is_active',
+                function ($data) {
+                    // dd($this->request->get('app_id'));
+                    $id = $data->user_invoice_rel_id;
+                    $btn = '';
+                    // if(Helpers::checkPermission('get_user_invoice_unpublished_app') ){
+                     $btn = "<a title='Address Unpublish' href='".route('get_user_invoice_unpublished_app', ['user_id' => $data->user_id, 'user_invoice_rel_id' => $data->user_invoice_rel_id,'app_id' => $this->request->get('app_id'),'biz_id' => $this->request->get('biz_id')])."' class='btn btn-action-btn btn-sm'><i class='fa fa-ban' aria-hidden='true'></i></a>";
+                    // }
+                    $status = ($data->is_active == '2')?'<div class="btn-group "> <label class="badge badge-warning current-status">In Active</label> </div></b>':'<div class="btn-group "> <label class="badge badge-success current-status">Active</label>&nbsp;'. $btn.'</div></b>';
+                 //    dd($status);
+                    return $status;
+            })
+            
             ->make(true);
     }
 }
