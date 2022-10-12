@@ -1068,6 +1068,7 @@ class Application extends BaseModel
                 ->leftJoin('user_invoice_rel', 'app_limit.user_id', '=', 'user_invoice_rel.user_id')
                 ->leftjoin('biz_addr', 'app_limit.biz_id', '=', 'biz_addr.biz_id')
                 ->where('app.app_id', $app_id)
+                ->orderBy('user_invoice_rel.user_invoice_rel_id', 'desc')
                 ->first();
                        
         return ($appData ? $appData : null);        
