@@ -1077,7 +1077,7 @@ function uploadFile(app_id,id)
                     }
                     else
                     {
-                        $("#moveCase").html('Invoice successfully sent to  '+st+' ');
+                        $("#moveCase").html('Invoice successfully sent to  '+st+' Tab');
                         $tr.remove();
                     }
                     
@@ -1108,7 +1108,7 @@ function uploadFile(app_id,id)
             replaceAlert('Please select atleast one checked', 'error');
             return false;
         }
-        if (confirm('Are you sure, You want to reject it.'))
+        if (confirm('Are you sure, You want to reject the selected invoices?'))
         {     $(".isloader").show(); 
             var status = $(this).attr('data-status');
             var postData = ({'invoice_id': arr, 'status': status, '_token': messages.token});
