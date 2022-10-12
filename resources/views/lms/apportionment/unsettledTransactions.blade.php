@@ -68,8 +68,10 @@
             <form id="unsettlementFrom" action="" method="post" onsubmit="return apport.validateMarkSettled(this)">
              @csrf	
             <div class="row">
-                @if($paySug)
-                @include('lms.apportionment.common.listUnsettledTransactions')
+                @if($paySug && $paymentId)
+                    @include('lms.apportionment.common.listUnsettledTransactions')
+                @elseif(!$paymentId)
+                    @include('lms.apportionment.common.listUnsettledTransactions')
                 @endif
             </div>
             <div class="row pull-right action-btn mt-2">
