@@ -1320,4 +1320,21 @@ class userInvoiceController extends Controller
           );
         // \Event::dispatch("USER_INVOICE_MAIL", serialize($emailData));
     }
+
+    public function unpublishUsereAddrApp(Request $request) {
+        try{
+            // dd($request->all());
+         $user_id = $request->get('user_id');
+         $app_id = $request->get('app_id');
+         $biz_id = $request->get('biz_id');
+         $data = $this->UserInvRepo->unPublishAddrApp((int) $user_id);
+         if($data) {
+             return redirect()->route('user_invoice_location_app', ['app_id' => $app_id,'user_id' => $user_id,'biz_id' => $biz_id])->with('message', 'All address are unpublished');
+         } else {
+             return redirect()->route('user_invoice_location_app', ['app_id' => $app_id,'user_id' => $user_id,'biz_id' => $biz_id])->with('error', 'Some error occured!');
+         }
+        } catch (Exception $ex) {
+         return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
+        }
+     }
 }

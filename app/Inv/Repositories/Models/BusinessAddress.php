@@ -203,5 +203,14 @@ class BusinessAddress extends BaseModel
 
     public function getLocationType(){
         return $this->belongsTo('App\Inv\Repositories\Models\Master\LocationType','location_id','location_id')->where(['is_active'=>1]);
-    }    
+    }  
+    
+    public static function setDefaultAddressApp($bizAddrId){
+        $status = self::where(['biz_addr_id'=> $bizAddrId,'is_default' => 0,'biz_owner_id' => null])->update(['is_default' => 1]);
+        return $status;
+    }
+    public static function unsetDefaultAddressApp($biz_id){
+        $status = self::where(['biz_id' => $biz_id])->update(['is_default' => 0]);
+        return $status;
+    }
 }

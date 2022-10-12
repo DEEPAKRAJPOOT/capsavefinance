@@ -1056,6 +1056,7 @@ class ApplicationController extends Controller
 				->with('biz_id', $appData->biz_id)
 				->with('approvers',$approvers)
 				->with('nextStage', $nextStage)
+				->with('appData', $appData)
 				->with('isAppPullBack', $isAppPullBack);
 		} catch (Exception $ex) {
 			return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));

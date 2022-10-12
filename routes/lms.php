@@ -168,6 +168,11 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'uses' => 'Backend\DocumentController@downloadStorageFile'
             ]);
             
+            // user_invoice relation get state id for user
+            Route::get('get-user-invoice-unpublished-app', [
+                'as' => 'get_user_invoice_unpublished_app',
+                'uses' => 'Lms\userInvoiceController@unpublishUsereAddrApp',
+            ]);
 
             Route::group(['prefix' => 'charges'], function () {
                 if (config('lms.LMS_STATUS')) {
