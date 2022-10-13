@@ -215,7 +215,7 @@ class BusinessAddress extends BaseModel
     }
 
     public function activeFiAddressApp(){
-        return $this->hasOne('App\Inv\Repositories\Models\FiAddress','biz_addr_id','biz_addr_id')->where(['is_active'=>1,'cm_fi_status_id'=>3]);
+        return $this->hasOne('App\Inv\Repositories\Models\FiAddress','biz_addr_id','biz_addr_id')->where(['is_active'=>1,'cm_fi_status_id'=>3,'fi_status_id' =>3]);
     }
 
     public static function getAddressforCustomerApp($biz_id){
