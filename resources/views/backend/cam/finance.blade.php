@@ -991,6 +991,7 @@
 @section('jscript')
 <script type="text/javascript">
    appId = '{{$appId}}';
+   user_id = '{{$user_id}}';
    appurl = '{{URL::route("financeAnalysis") }}';
    process_url = '{{URL::route("process_financial_statement") }}';
    _token = "{{ csrf_token() }}";

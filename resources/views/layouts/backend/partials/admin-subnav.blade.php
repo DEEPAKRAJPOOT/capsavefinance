@@ -64,7 +64,7 @@
     {{--@endif--}}
     @can('user_invoice_location_app')
     <li>
-        <a href="{{ route('user_invoice_location_app', ['user_id' => request()->get('user_id'),'app_id' => request()->get('app_id'),'biz_id' => request()->get('biz_id'),'user_id' => $user_id]) }}" class="{{ request()->is('application/user-invoice-location-app') ? 'active' : '' }}">User InVoice
+        <a href="{{ route('user_invoice_location_app', ['user_id' => $user_id,'app_id' => request()->get('app_id'),'biz_id' => request()->get('biz_id')]) }}" class="{{ request()->is('application/user-invoice-location-app') ? 'active' : '' }}">User InVoice
             Location</a>
     </li>
     @endcan

@@ -123,10 +123,12 @@ class ApplicationController extends Controller
 	 */
 	public function showCompanyDetails(Request $request){
 		try {
+			// dd($request->all());
 			$arrFileData = $request->all();
 			$appId = $request->get('app_id');
 			$bizId = $request->get('biz_id');
 			$userId = $request->get('user_id');
+
 			$product_ids = [];
 
 			$business_info = $this->appRepo->getApplicationById($request->biz_id);
@@ -215,8 +217,7 @@ class ApplicationController extends Controller
 	 public function showPromoterDetails(Request $request){
 		try
 		{
-
-		$id = Auth::user()->user_id;
+		// $id = Auth::user()->user_id;
 		$appId = $request->get('app_id');
 		$bizId = $request->get('biz_id');
 		$editFlag = $request->get('edit');
@@ -233,6 +234,7 @@ class ApplicationController extends Controller
 			$cin =    "";
 		}
 		$appData 	 = $this->appRepo->getAppData($appId);
+		$user_id = $appData->user_id;
 		$OwnerPanApi = $this->userRepo->getOwnerApiDetail($attribute);
 		return view('backend.app.promoter-details')->with([
 			'ownerDetails' => $OwnerPanApi,
@@ -241,7 +243,8 @@ class ApplicationController extends Controller
 			'bizId' => $bizId,
 			'edit' => $editFlag,
 			'is_lease' => $getProductType,
-			'appData' => $appData
+			'appData' => $appData,
+			'user_id' => $user_id
 		]);
 			 
 		} catch (Exception $ex) {

@@ -154,7 +154,11 @@
                     {!! Form::hidden('is_app_pull_back', $isAppPullBack) !!}
                 <!-- <button type="submit" class="btn btn-success">{{ $confirmBtn }}</button>
                 <button id="close_btn" type="button" class="btn btn-secondary">{{ $closeBtn }}</button>               -->
+                @if (Session::has('error_code') && Session::get('error_code') == 'no_relation_found')
+                <button type="submit" @php if($nextStage && $nextStage->stage_code=='approver') { @endphp id="submit" @php } @endphp class="btn btn-success btn-sm btn-move-next-stage" disabled>{{ $confirmBtn }}</button> &nbsp;
+                @else
                 <button type="submit" @php if($nextStage && $nextStage->stage_code=='approver') { @endphp id="submit" @php } @endphp class="btn btn-success btn-sm btn-move-next-stage">{{ $confirmBtn }}</button> &nbsp;
+                @endif
                 <button id="close_btn" type="button" class="btn btn-secondary btn-sm">{{ $closeBtn }}</button>   
             </div>
             </div>

@@ -54,9 +54,11 @@ class NotesController extends Controller {
     {
         $app_id = $request->get('app_id');
         // $user_id = Auth::user()->user_id;
+        $appData 	 = $this->appRepo->getAppData($app_id);
+		$user_id = $appData->user_id;
         $arrData = [];
         $arrData = $this->appRepo->showData($app_id);
-        return view('backend.pdNotes.pd_notes', compact('arrData', 'app_id'));
+        return view('backend.pdNotes.pd_notes', compact('arrData', 'app_id','user_id'));
     }
 
     /**

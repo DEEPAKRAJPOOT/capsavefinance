@@ -42,11 +42,11 @@ class FiRcuController extends Controller
      */
     public function listFI(Request $request)
     {
-        // dd($request->all());
         $biz_id = $request->get('biz_id');
         $app_id = $request->get('app_id');
-        $user_id = \Auth::user()->user_id;
-        // dd($user_id);
+        $user_id = $request->get('user_id');
+        $appData 	 = $this->appRepo->getAppData($app_id);
+		$user_id = $appData->user_id;
         if(Auth::user()->agency_id != null)
             $fiLists = $this->appRepo->getAddressforAgencyFI($biz_id);
         else
@@ -227,8 +227,11 @@ class FiRcuController extends Controller
      */
     public function listRCU(Request $request)
     {
+        // dd($request->all());
         $appId = $request->get('app_id');
-        $user_id = \Auth::user()->user_id;
+        // $user_id = \Auth::user()->user_id;
+        $appData 	 = $this->appRepo->getAppData($appId);
+		$user_id = $appData->user_id;
         if(Auth::user()->agency_id != null)
             $rcuResult = $this->appRepo->getRcuActiveLists($appId);
         else
