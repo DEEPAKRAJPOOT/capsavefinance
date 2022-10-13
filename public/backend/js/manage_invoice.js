@@ -1,5 +1,6 @@
   $(document).ready(function(){
     setInterval(function(){  localStorage.setItem('storageMsg',''); }, 1000);
+    // setInterval(function(){  localStorage.setItem('Msgs',''); }, 1000);
     // var  msg = localStorage.getItem('storageMsg');
     var  msg = JSON.parse(localStorage.getItem("storageMsg") || "[]");
     if(typeof msg.text != 'undefined')
@@ -1130,12 +1131,12 @@ function uploadFile(app_id,id)
                     }
                    if(data.msg=="")
                     {
-                        localStorage.setItem('storageMsg', JSON.stringify({text: 'Invoice successfully moved to reject tab', type: 'success'}));
+                        localStorage.setItem('Msg', JSON.stringify({text: 'Invoice successfully moved to reject tab', type: 'success'}));
                        location.reload();
                     }
                     else
                     {
-                        localStorage.setItem('storageMsg', JSON.stringify({text: 'You cannot move this invoice ('+data.msg+') to Reject tab, as customer/anchor/program limit has been exceeded  or invoice has been moved to exception cases.', type: 'error'}));
+                        localStorage.setItem('Msg', JSON.stringify({text: 'You cannot move this invoice ('+data.msg+') to Reject tab, as customer/anchor/program limit has been exceeded  or invoice has been moved to exception cases.', type: 'error'}));
                     //    localStorage.setItem('storageMsg', 'You cannot move this invoice ('+data.msg+') to Reject tab, as customer/anchor/program limit has been exceeded  or invoice has been moved to exception cases.');
                        location.reload();
                     }
@@ -1187,14 +1188,14 @@ function uploadFile(app_id,id)
                     }
                     if(data.msg=="")
                     {
-                        localStorage.setItem('storageMsg', JSON.stringify({text: 'Invoice successfully moved to reject tab', type: 'success'}));
+                        localStorage.setItem('Msgs', JSON.stringify({text: 'Invoice successfully moved to reject tab', type: 'success'}));
                        location.reload();
                     //    window.location.href="http://admin.rent.local/lms/invoice/backend_get_reject_invoice";
                     }
                     else
                     {
                         
-                        localStorage.setItem('storageMsg', 'You cannot move this invoice ('+data.msg+') to Reject tab, as customer/anchor/program limit has been exceeded  or invoice has been moved to exception cases.');
+                        localStorage.setItem('Msg', 'You cannot move this invoice ('+data.msg+') to Reject tab, as customer/anchor/program limit has been exceeded  or invoice has been moved to exception cases.');
                         location.reload();
                     }
                 }

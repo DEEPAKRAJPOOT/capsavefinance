@@ -262,10 +262,13 @@
 <script src="{{ asset('backend/js/manage_invoice.js') }}"></script>
 <script>
     $(document).ready(function(){
-    if(window.localStorage.getItem('storageMsg') != ""){
-        var x = JSON.parse(window.localStorage.getItem('storageMsg'));
+        // setInterval(function(){  localStorage.setItem('Msg',''); }, 2000);
+    if(window.localStorage.getItem('Msg') != ""){
+        var x = JSON.parse(window.localStorage.getItem('Msg'));
+        setInterval(function(){  localStorage.setItem('Msg',''); }, 2000);
         if(x.type === "success"){
             $("#moveCase").html(x.text);
+            window.localStorage.clear();
         }else{
             $("#errormoveCase").html(x.text);
         }

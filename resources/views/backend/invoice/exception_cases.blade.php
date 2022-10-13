@@ -129,11 +129,12 @@
 <script src="{{ asset('backend/js/ajax-js/exception_cases.js') }}"></script>
 <script>
     $(document).ready(function(){
-        console.log(window.localStorage.getItem('storageMsg'));
-    if(window.localStorage.getItem('storageMsg') != ""){
-        var x = JSON.parse(window.localStorage.getItem('storageMsg'));
+        // console.log(window.localStorage.getItem('Msg'));
+    if(window.localStorage.getItem('Msgs') != ""){
+        var x = JSON.parse(window.localStorage.getItem('Msgs'),1000);
         if(x.type === "success"){
             $("#moveCase").html(x.text);
+            window.localStorage.clear();
         }else{
             $("#errormoveCase").html(x.text);
         }
