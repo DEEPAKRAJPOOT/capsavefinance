@@ -1677,6 +1677,8 @@ class ApportionmentController extends Controller
     }
 
     public function listUnsettledSettledTDSTrans(Request $request){
+        ini_set('max_execution_time', -1);
+        ini_set("memory_limit", -1);
         $userId = $request->user_id;
         $paymentId = null;
         $payment_date = null;
