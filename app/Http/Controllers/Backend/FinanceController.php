@@ -88,7 +88,7 @@ class FinanceController extends Controller {
                 $new[] = $fetchedArr = (array)$value;
                 $voucherDate = date('d-m-Y',strtotime($fetchedArr['voucher_date']));
                 $trans_date = date('Y-m-d', strtotime($fetchedArr['voucher_date'])); 
-                $transaction_date = date('Y-m-d', strtotime($fetchedArr['transaction_date']));
+                $transaction_date = $fetchedArr['transaction_date']?date('Y-m-d', strtotime($fetchedArr['transaction_date'])):NULL;
                 $entry_type = strtolower($fetchedArr['entry_type']);
                 $is_first_n_old = (empty($transType) || empty($transDate) || ($transType == $fetchedArr['trans_type'] && $transDate == $trans_date));
                 $j_is_first_or_old = NULL;
@@ -131,6 +131,7 @@ class FinanceController extends Controller {
                         "voucher_no" => $fetchedArr['voucher_no'],
                         "voucher_type" => $fetchedArr['voucher_type'],
                         "voucher_date" =>  !empty($fetchedArr['voucher_date']) ? date('d-m-Y',strtotime($fetchedArr['voucher_date'])) : '',
+                        "transaction_date"=>$transaction_date,
                         "ledger_name" => $fetchedArr['ledger_name'],
                         "amount" => $fetchedArr['amount'],
                         "dr_/_cr" => $fetchedArr['entry_type'],
