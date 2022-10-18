@@ -8894,7 +8894,7 @@ class DataRenderer implements DataProviderInterface
                 function ($data) {
                 $link = '';
                 if(Helpers::checkPermission('view_new_sanction_letter') ){
-                    $link .="<a href=\"".route('view_new_sanction_letter', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id'),'sanction_letter_id' =>$data->sanction_letter_id, 'action_type' => 'view'] )."\" title='View' class='btn btn-action-btn btn-sm mr-1'><i class='fa fa-eye' aria-hidden='true'></i></a>";
+                    $link .="<a href=\"".route('view_new_sanction_letter', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id'),'user_id' => request()->get('user_id'),'sanction_letter_id' =>$data->sanction_letter_id, 'action_type' => 'view'] )."\" title='View' class='btn btn-action-btn btn-sm mr-1'><i class='fa fa-eye' aria-hidden='true'></i></a>";
                 }
                 if(Helpers::checkPermission('create_new_sanction_letter') ){
                     if (in_array($data->status,[0,1])){

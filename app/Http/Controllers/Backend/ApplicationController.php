@@ -2635,9 +2635,11 @@ class ApplicationController extends Controller
 	 */
 	public function createNewSanctionLetter(Request $request)
 	{   
-		//dd($request->all());
+		// dd($request->all());
 		$appId = $request->get('app_id');
 		$bizId = $request->get('biz_id');
+		$appData 	 = $this->appRepo->getAppData($appId);
+		$user_id = $appData->user_id;
 		$action_type = $request->get('action_type');
 		$offerId = $sanctionId = null;
 		if ($request->has('offer_id') && !empty($request->get('offer_id'))) {
@@ -2673,7 +2675,7 @@ class ApplicationController extends Controller
 		$supplyChaindata = $this->getNewSanctionLetterSupplyChainData($appId, $bizId, $offerId, $sanctionId);
 		//dd($supplyChaindata,$data);
 		$appLimit = $this->appRepo->getAppLimit((int)$appId);
-		return view('backend.app.create_new_sanction_letter')->with($data)->with(['supplyChaindata'=>$supplyChaindata, 'supplyChainFormData'=>$supplyChainFormData, 'appLimit' => $appLimit, 'actionType' => $action_type,'arrayOfferData'=>$arrayOfferData]);  
+		return view('backend.app.create_new_sanction_letter')->with($data)->with(['supplyChaindata'=>$supplyChaindata, 'supplyChainFormData'=>$supplyChainFormData, 'appLimit' => $appLimit, 'actionType' => $action_type,'arrayOfferData'=>$arrayOfferData,'user_id'=>$user_id]);  
 	}
     
 	/**
@@ -2822,9 +2824,10 @@ class ApplicationController extends Controller
 	 */
 	public function viewNewSanctionLetterSupplyChain(Request $request)
 	{   
-		//dd($request->all());
 		$appId = $request->get('app_id');
 		$bizId = $request->get('biz_id');
+		$appData 	 = $this->appRepo->getAppData($appId);
+		$user_id = $appData->user_id;
 		$sanctionId = $request->get('sanction_letter_id');
 		$action_type = $request->get('action_type');
 		$offerId = null;
@@ -2859,7 +2862,7 @@ class ApplicationController extends Controller
 			];
 			return $this->downloadNewSanctionLetterAsPDF($dataA, false);
 		}
-		return view('backend.app.view_new_sanction_letter')->with($data)->with(['supplyChaindata'=>$supplyChaindata, 'supplyChainFormData'=>$supplyChainFormData, 'appLimit' => $appLimit, 'action_type'=>$action_type,'arrayOfferData'=>$arrayOfferData]);  
+		return view('backend.app.view_new_sanction_letter')->with($data)->with(['supplyChaindata'=>$supplyChaindata, 'supplyChainFormData'=>$supplyChainFormData, 'appLimit' => $appLimit, 'action_type'=>$action_type,'arrayOfferData'=>$arrayOfferData, 'user_id' => $user_id]);  
 	}
 	
 	public function downloadNewSanctionLetterSupplyChain(Request $request){
