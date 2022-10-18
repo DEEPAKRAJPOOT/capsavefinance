@@ -294,6 +294,7 @@ class ApiController
             'voucher_no' => $this->voucherNo,
             'voucher_type' => 'Journal',
             'voucher_date' => $rvrsl->trans_date,
+            'transaction_date'=>$rvrsl->created_at,
             'is_debit_credit' => $rvrsl->entry_type == 1 ? 'Credit' : 'Debit',
             'trans_type' =>  $trans_type_name,
             'invoice_no' =>   $invoice_no,
