@@ -2877,6 +2877,12 @@ if ($err) {
      public function getBackendInvoiceListDisbursedQue(DataProviderInterface $dataProvider) {
         ini_set('memory_limit',-1);
         $invoice_data = $this->invRepo->getAllManageInvoice($this->request,9);
+        $invoiceDetail = clone $invoice_data;
+        $anchorIds = $invoiceDetail->distinct('anchor_id')->pluck('anchor_id')->toArray();
+        $supplierIds = $invoiceDetail->distinct('supplier_id')->pluck('supplier_id')->toArray();
+
+        $IsOverdue = InvoiceTrait::invoiceOverdueCheck($invoice->invoice_id);
+
         $invoice = $dataProvider->getBackendInvoiceListDisbursedQue($this->request, $invoice_data->with('supplier.apps.disbursed_invoices.invoice_disbursed'));
         return $invoice;
     } 
