@@ -751,7 +751,7 @@ class ReportsRepository extends BaseRepositories implements ReportInterface {
 			'invoice.program_offer',
 			'invoice.business', 
 			'disbursal',
-			'transaction',
+			'transactions',
 			'disburseDetails'
 		])
 		->whereIn('status_id', [12,13,15,47])
@@ -769,36 +769,45 @@ class ReportsRepository extends BaseRepositories implements ReportInterface {
 		$outstandingData = self::getOutstandingData($curdate);
 		$sendMail = ($invDisbList->count() > 0)?true:false;
 		$result = [];
-		foreach($invDisbList as $invDisb){
+		foreach($invDisbList as $key => $invDisb){
 			$invDetails = $invDisb->invoice;
 			$disbDetails = $invDisb->disburseDetails;
 			if(!$disbDetails){
 				continue;
 			}
-			$principalOutstanding = round((round($disbDetails->principal_amount,2) - (round($disbDetails->principal_repayment,2) + round($disbDetails->principal_waived_of,2) + round($disbDetails->principal_tds,2) + round($disbDetails->principal_write_off,2))),2);
+
+			$principalOutstanding = $invDisb->transactions->where('trans_type','16')->where('entry_type',0)->whereNull('parent_trans_id')->sum('outstanding');
 			$principalOutstanding = $principalOutstanding > 0 ? $principalOutstanding : 0;
-
-			$marginOutstanding = round((round($disbDetails->margin_amount,2) - (round($disbDetails->margin_repayment,2) + round($disbDetails->margin_waived_of,2) + round($disbDetails->margin_tds,2) + round($disbDetails->margin_write_off,2))),2);
-			$marginOutstanding = $marginOutstanding > 0 ? $marginOutstanding : 0;
-	
-			$interestOutstanding = round((round($disbDetails->interest_capitalized,2) - (round($disbDetails->interest_repayment,2) + round($disbDetails->interest_waived_off,2) + round($disbDetails->interest_tds,2) + round($disbDetails->interset_write_off,2))),2);
-			$interestOutstanding = $interestOutstanding > 0 ? $interestOutstanding : 0;
-	
-			$overdueAmount = round((round($disbDetails->overdue_capitalized,2) - round($disbDetails->overdue_repayment,2)- round($disbDetails->overdue_waived_off,2) - round($disbDetails->overdue_tds,2) - round($disbDetails->overdue_write_off,2)),2);
-			$overdueAmount = $overdueAmount > 0 ? $overdueAmount : 0;
-	
-			$charges = Transactions::where('invoice_disbursed_id',$invDisb->invoice_disbursed_id)->where('trans_type','>', '50')->where('entry_type','0')->where('invoice_disbursed_id',$invDisb->invoice_disbursed_id)->select(['amount', 'outstanding'])->get();
-			  
-			$totalOutstanding = ($principalOutstanding + $interestOutstanding + $overdueAmount + $charges->sum('outstanding'));
-	
-			$interest_to_refunded = round((round($invDisb->disburseDetails->interest_refundable,2) - round($invDisb->disburseDetails->interest_refunded,2)),2);
-			$margin_to_refunded = round((round($invDisb->disburseDetails->margin_repayment,2) - round($invDisb->disburseDetails->margin_refunded,2)),2);
-			$overdueinterest_to_refunded = round((round($invDisb->disburseDetails->overdue_refundable,2) - round($invDisb->disburseDetails->overdue_refunded,2)),2);
 			
+			$marginOutstanding = $invDisb->transactions->where('trans_type','10')->where('entry_type',0)->whereNull('parent_trans_id')->sum('outstanding');
+			$marginOutstanding = $marginOutstanding > 0 ? $marginOutstanding : 0;
 
-			if($totalOutstanding <= 0 && $interest_to_refunded <= 0 && $margin_to_refunded <= 0 && $overdueinterest_to_refunded <= 0 && $marginOutstanding <= 0){
-				continue;
-			}
+			$interestOutstanding = $invDisb->transactions->where('trans_type','9')->where('entry_type',0)->whereNull('parent_trans_id')->sum('outstanding');
+			$interestOutstanding = $interestOutstanding > 0 ? $interestOutstanding : 0;
+			
+			$overdueOutstanding = $invDisb->transactions->where('trans_type','33')->where('entry_type',0)->whereNull('parent_trans_id')->where('is_transaction','1')->where('soa_flag','1')->sum('outstanding');
+			$overdueAmount = $overdueAmount > 0 ? $overdueAmount : 0;
+
+			$chargesOutstanding = $invDisb->transactions->where('trans_type','>','50')->where('entry_type',0)->whereNull('parent_trans_id')->where('is_transaction','1')->where('soa_flag','1')->sum('outstanding');
+			
+			$charges = $invDisb->transactions->where('trans_type','>','50')->where('entry_type',0)->whereNull('parent_trans_id')->where('is_transaction','1')->where('soa_flag','1')->sum('amount');
+							  
+			$totalOutstanding = ($principalOutstanding + $interestOutstanding + $overdueOutstanding + $chargesOutstanding);
+	
+			$interestIds = $invDisb->transactions->where('trans_type','9')->where('entry_type',0)->whereNull('parent_trans_id')->where('is_transaction','1')->pluck('trans_id')->toArray();
+			$interest_to_refunded = $invDisb->transactions->where('trans_type','32')->where('entry_type',1)->whereIn('parent_trans_id',$interestIds)->sum('settled_outstanding');
+			$interest_to_refunded = $interest_to_refunded > 0 ? $interest_to_refunded : 0;
+
+			$overdueIds = $invDisb->transactions->where('trans_type','33')->where('entry_type',0)->whereNull('parent_trans_id')->where('is_transaction','1')->pluck('trans_id')->toArray();
+			$overdueinterest_to_refunded = $invDisb->transactions->where('trans_type','32')->where('entry_type',1)->whereIn('parent_trans_id',$overdueIds)->sum('settled_outstanding');
+			$overdueinterest_to_refunded = $overdueinterest_to_refunded > 0 ? $overdueinterest_to_refunded : 0;
+
+			$margin_to_refunded = $invDisb->transactions->where('trans_type','10')->where('entry_type',1)->sum('settled_outstanding');
+			$margin_to_refunded = $margin_to_refunded > 0 ? $margin_to_refunded : 0;
+
+			// if($totalOutstanding <= 0 && $interest_to_refunded <= 0 && $margin_to_refunded <= 0 && $overdueinterest_to_refunded <= 0 && $marginOutstanding <= 0){
+			// 	continue;
+			// }
 	
 			$anchor_name = $invDetails->anchor->comp_name ?? '';
 			$offer = $invDetails->program_offer;
@@ -862,14 +871,13 @@ class ReportsRepository extends BaseRepositories implements ReportInterface {
 					$principalOverdueCategory='Overdue';
 				}
 			}
-			$interestDPD = 0;
-			$principalDPD = 0;
-			$transDetails = Transactions::where('invoice_disbursed_id',$invDisb->invoice_disbursed_id)->whereNull('payment_id')->where('outstanding', '>', 0)->whereIn('trans_type',[9,16])->where('entry_type','0')->get();
-			$interestDPD = $transDetails->where('trans_type',9)->max('dpd');
-			$principalDPD = $transDetails->where('trans_type',16)->max('dpd');
-			unset($transDetails);
 
+			$principalDPD = $invDisb->transactions->where('trans_type','16')->where('entry_type',0)->where('outstanding', '>', 0)->whereNull('payment_id')->whereNull('parent_trans_id')->max('dpd');
+
+			$interestDPD = $invDisb->transactions->where('trans_type','9')->where('entry_type',0)->where('outstanding', '>', 0)->whereNull('payment_id')->whereNull('parent_trans_id')->max('dpd');
+			
 			$principalDPD = (round($principalOutstanding,2) > 0) ? ($principalDPD > 0 ? $principalDPD : 0) : 0;
+
 			$interestDPD = (round($interestOutstanding,2) > 0) ? ($interestDPD > 0 ? $interestDPD : 0) : 0;
 
 			$maxDPD = $principalDPD > $interestDPD ? $principalDPD : $interestDPD;
@@ -920,7 +928,7 @@ class ReportsRepository extends BaseRepositories implements ReportInterface {
 				'marginPosted' => round($disbDetails->margin_amount,2),
 				'upfrontInterest' => ($prgmDetails->interest_borne_by == 2 && $offer->payment_frequency == 1) ? round($invDisb->total_interest,2) : 0,
 				'chargeDeduction' => round(0,2),
-				'invoiceLevelChrg'=> round($charges->sum('amount'),2),
+				'invoiceLevelChrg'=> round($charges,2),
 				'disburseAmount' => round(($invDisb->disburse_amt - ($invDisb->total_interest + $invDisb->processing_fee + $invDisb->processing_fee_gst)),2),
 				'product' => $product,
 				'paymentFrequency' => $payment_frequency,
@@ -935,8 +943,8 @@ class ReportsRepository extends BaseRepositories implements ReportInterface {
 				'marginOut' => round($marginOutstanding,2),
 				'interestOut' => round($interestOutstanding,2),
 				'overduePosted' => round($disbDetails->overdue_capitalized,2),
-				'overdueOut' => round($overdueAmount,2),
-				'invoiceLevelChrgOut'=> round($charges->sum('outstanding'),2),
+				'overdueOut' => round($overdueOutstanding,2),
+				'invoiceLevelChrgOut'=> round($chargesOutstanding,2),
 				'totalOutStanding' => round($totalOutstanding,2),
 				'intGraceDays' => '',
 				'principalGraceDays' => $disbDetails->grace_period,
@@ -952,6 +960,7 @@ class ReportsRepository extends BaseRepositories implements ReportInterface {
 				'interestToRefunded' => round($interest_to_refunded,2),
 				'overdueToRefunded' => round($overdueinterest_to_refunded,2)
 			];
+			$invDisbList->forget($key);
 		}
 		return $result;
 	}
