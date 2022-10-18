@@ -1045,7 +1045,7 @@ class Transactions extends BaseModel {
                         $qry->Where('chrg_master_id','!=','0');
                     });
             })
-            ->orWhereIn('trans_type', [config('lms.TRANS_TYPE.REVERSE'), config('lms.TRANS_TYPE.WAVED_OFF'), config('lms.TRANS_TYPE.WRITE_OFF'), config('lms.TRANS_TYPE.ADJUSTMENT')])
+            ->orWhereIn('trans_type', [config('lms.TRANS_TYPE.REVERSE'), config('lms.TRANS_TYPE.WAVED_OFF'), config('lms.TRANS_TYPE.WRITE_OFF')])
             ->orWhere(function ($q) {
                 $q->whereIn('trans_type', [config('lms.TRANS_TYPE.REFUND')])->whereNotNull('parent_trans_id')->where('entry_type', '=', '1');
             })
