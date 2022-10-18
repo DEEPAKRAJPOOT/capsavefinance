@@ -1050,7 +1050,7 @@ class Transactions extends BaseModel {
                 $q->whereIn('trans_type', [config('lms.TRANS_TYPE.REFUND')])->whereNotNull('parent_trans_id')->where('entry_type', '=', '1');
             })
             ->orWhere(function ($q) {
-                $q->whereIn('trans_type', [config('lms.TRANS_TYPE.NON_FACTORED_AMT'), config('lms.TRANS_TYPE.TDS'), config('lms.TRANS_TYPE.CANCEL')])->where('entry_type', '=', '1');
+                $q->whereIn('trans_type', [config('lms.TRANS_TYPE.TDS'), config('lms.TRANS_TYPE.CANCEL')])->where('entry_type', '=', '1');
             })
             ->orWhere(function ($q) {
                 $q->WhereIn('trans_type', [config('lms.TRANS_TYPE.INTEREST'), config('lms.TRANS_TYPE.INTEREST_OVERDUE')])->where('entry_type', '=', '0');
