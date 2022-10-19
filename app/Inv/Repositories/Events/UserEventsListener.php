@@ -1720,131 +1720,39 @@ class UserEventsListener extends BaseEvent
             }); 
         }        
     }
-
+        
     /**
-     * EOD Tally Mismatch Alert
+     * EOD Checks Alert
      * 
      * @param Array $attributes
-     */
-    public function onTallyMisMatch($mailData){
-        $data = unserialize($mailData); 
+    */
+    public function onEODChecksAlert($attributes) {
+        $data = unserialize($attributes); 
         $this->func_name = __FUNCTION__;
-        Mail::send('email', ['baseUrl'=> env('REDIRECT_URL',''), 'varContent' => $data['body']],
-        function ($message) use ($data) {
-            if(!empty($data['attachment'])){
-                $att_name = 'Tally Mismatch Report.xlsx';
-                $message->attach($data['attachment'] ,['as' => $att_name]);
-            }
-            
-            $message->from(config('common.FRONTEND_FROM_EMAIL'), config('common.FRONTEND_FROM_EMAIL_NAME'))
-            ->to($data["to"], $data["name"])
-            ->subject($data['subject']);
-
-            if (!empty($data["cc"])) {
-                $message->cc($data["cc"]);
-            }
-
-            if (!empty($data["bcc"])) {
-                $message->bcc($data["bcc"]);
-            }
-
+        $eodCheckData = view('reports.eod_checks')->with(['disbursals' => $data['disbursals'], 'payments' => $data['payments'], 'tally_data' => $data['tally_data']])->render();
+        $mail_subject = "EOD Checks Alert";
+        Mail::send('email', ['baseUrl'=> env('HTTP_APPURL',''), 'varContent' => $eodCheckData],
+            function ($message) use ($data, $mail_subject, $eodCheckData) {                    
+                $email = $data["to"];
+                $cc = array_filter(explode(',', $data['cc']));
+                $bcc = array_filter(explode(',', $data['bcc']));
+                if (!empty($bcc)) {
+                    $message->bcc($bcc);
+                }
+                if (!empty($cc)) {
+                    $message->cc($cc);
+                }
+            $message->from(config('common.FRONTEND_FROM_EMAIL'), config('common.FRONTEND_FROM_EMAIL_NAME'));
+            $message->to($email);
+            $message->subject($mail_subject);
             $mailContent = [
                 'email_from' => config('common.FRONTEND_FROM_EMAIL'),
-                'email_to' => $data["to"],
-                'email_cc' => $data["cc"],
-                'email_bcc' => $data["bcc"],
+                'email_to' => $email,
+                'email_cc' => $cc ?? NULL,
+                'email_bcc' => $bcc ?? NULL,
                 'email_type' => $this->func_name,
-                'name' => $data['name'],
-                'subject' => $data['subject'],
-                'body' => $data['body'],
-                'att_name' => $att_name ?? NULL,
-                'attachment' => $data['attachment'] ?? NULL,
-            ];
-            FinanceModel::logEmail($mailContent);
-        }); 
-    }
-
-    /**
-     * EOD Duplicate Payments Alert
-     * 
-     * @param Array $attributes
-     */
-    public function onDuplicatePayments($mailData){
-        $data = unserialize($mailData); 
-        $this->func_name = __FUNCTION__;
-        Mail::send('email', ['baseUrl'=> env('REDIRECT_URL',''), 'varContent' => $data['body']],
-        function ($message) use ($data) {
-            if(!empty($data['attachment'])){
-                $att_name = 'Duplicate Payments Report.xlsx';
-                $message->attach($data['attachment'] ,['as' => $att_name]);
-            }
-            
-            $message->from(config('common.FRONTEND_FROM_EMAIL'), config('common.FRONTEND_FROM_EMAIL_NAME'))
-            ->to($data["to"], $data["name"])
-            ->subject($data['subject']);
-
-            if (!empty($data["cc"])) {
-                $message->cc($data["cc"]);
-            }
-
-            if (!empty($data["bcc"])) {
-                $message->bcc($data["bcc"]);
-            }
-
-            $mailContent = [
-                'email_from' => config('common.FRONTEND_FROM_EMAIL'),
-                'email_to' => $data["to"],
-                'email_cc' => $data["cc"],
-                'email_bcc' => $data["bcc"],
-                'email_type' => $this->func_name,
-                'name' => $data['name'],
-                'subject' => $data['subject'],
-                'body' => $data['body'],
-                'att_name' => $att_name ?? NULL,
-                'attachment' => $data['attachment'] ?? NULL,
-            ];
-            FinanceModel::logEmail($mailContent);
-        }); 
-    }
-
-    /**
-     * EOD Duplicate Disbursals Alert
-     * 
-     * @param Array $attributes
-     */
-    public function onDuplicateDisbursals($mailData){
-        $data = unserialize($mailData); 
-        $this->func_name = __FUNCTION__;
-        Mail::send('email', ['baseUrl'=> env('REDIRECT_URL',''), 'varContent' => $data['body']],
-        function ($message) use ($data) {
-            if(!empty($data['attachment'])){
-                $att_name = 'Duplicate Disbursals Report.xlsx';
-                $message->attach($data['attachment'] ,['as' => $att_name]);
-            }
-            
-            $message->from(config('common.FRONTEND_FROM_EMAIL'), config('common.FRONTEND_FROM_EMAIL_NAME'))
-            ->to($data["to"], $data["name"])
-            ->subject($data['subject']);
-
-            if (!empty($data["cc"])) {
-                $message->cc($data["cc"]);
-            }
-
-            if (!empty($data["bcc"])) {
-                $message->bcc($data["bcc"]);
-            }
-
-            $mailContent = [
-                'email_from' => config('common.FRONTEND_FROM_EMAIL'),
-                'email_to' => $data["to"],
-                'email_cc' => $data["cc"],
-                'email_bcc' => $data["bcc"],
-                'email_type' => $this->func_name,
-                'name' => $data['name'],
-                'subject' => $data['subject'],
-                'body' => $data['body'],
-                'att_name' => $att_name ?? NULL,
-                'attachment' => $data['attachment'] ?? NULL,
+                'subject' => $mail_subject,
+                'body' => $eodCheckData,
             ];
             FinanceModel::logEmail($mailContent);
         }); 
@@ -2066,18 +1974,8 @@ class UserEventsListener extends BaseEvent
         );
 
         $events->listen(
-            'NOTIFY_TALLY_MISMATCH', 
-            'App\Inv\Repositories\Events\UserEventsListener@onTallyMisMatch'
-        );
-
-        $events->listen(
-            'NOTIFY_DUPLICATE_PAYMENTS', 
-            'App\Inv\Repositories\Events\UserEventsListener@onDuplicatePayments'
-        );
-
-        $events->listen(
-            'NOTIFY_DUPLICATE_DISBURSALS', 
-            'App\Inv\Repositories\Events\UserEventsListener@onDuplicateDisbursals'
+            'NOTIFY_EOD_CHECKS', 
+            'App\Inv\Repositories\Events\UserEventsListener@onEODChecksAlert'
         );
     }
 }
