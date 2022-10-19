@@ -1113,7 +1113,17 @@ class ApplicationController extends Controller
 					if ($appData && in_array($appData->curr_status_id, [config('common.mst_status_id.OFFER_LIMIT_REJECTED')]) ) {
 						Session::flash('error_code', 'limit_rejected');
 						return redirect()->back();
-					}                                        
+					}  
+					$fiWhere = [];
+					$fiWhere['app.app_id'] = $app_id;
+					$fiWhere['fi_addr.is_active'] = 1;
+					$fiWhere['fi_addr.cm_fi_status_id'] = 3;
+					$fiWhere['fi_addr.fi_status_id'] = 3;
+					$fiAddr = $this->appRepo->getFiAddressData($fiWhere);
+					if (count($fiAddr) == 0)  {
+						Session::flash('error_code', 'validate_fi_status');
+						return redirect()->back();
+					}                                      
 				} else if ($currStage->stage_code == 'approver') {
 
 					if ($request->has('is_app_pull_back') && $request->is_app_pull_back) {
@@ -1188,16 +1198,16 @@ class ApplicationController extends Controller
 						return redirect()->back();
 					}
 				} else if ($currStage->stage_code == 'verify_uploaded_exe_doc') {
-					$fiWhere = [];
-					$fiWhere['app.app_id'] = $app_id;
-					$fiWhere['fi_addr.is_active'] = 1;
-					$fiWhere['fi_addr.cm_fi_status_id'] = 3;
-					$fiWhere['fi_addr.fi_status_id'] = 3;
-					$fiAddr = $this->appRepo->getFiAddressData($fiWhere);
-					if (count($fiAddr) == 0)  {
-						Session::flash('error_code', 'validate_fi_status');
-						return redirect()->back();
-					}
+					// $fiWhere = [];
+					// $fiWhere['app.app_id'] = $app_id;
+					// $fiWhere['fi_addr.is_active'] = 1;
+					// $fiWhere['fi_addr.cm_fi_status_id'] = 3;
+					// $fiWhere['fi_addr.fi_status_id'] = 3;
+					// $fiAddr = $this->appRepo->getFiAddressData($fiWhere);
+					// if (count($fiAddr) == 0)  {
+					// 	Session::flash('error_code', 'validate_fi_status');
+					// 	return redirect()->back();
+					// }
 				} else if ($currStage->stage_code == 'opps_checker') {
 				  $capId = sprintf('%09d', $user_id);
 				  $customerId = 'CAP'.$capId;
