@@ -207,8 +207,7 @@ class InvoiceDisbursedDetail extends BaseModel
                     ];
                 }
             }
-            $invDisbDetailsWhere = ['invoice_disbursed_id' => $transDetail->invoice_disbursed_id];
-            self::saveInvoiceDisbursedDetails($invDisbDetails,$invDisbDetailsWhere);
+            return $invDisbDetails;
         }
     }
 
@@ -239,8 +238,7 @@ class InvoiceDisbursedDetail extends BaseModel
                     ];
                 }
             }
-            $invDisbDetailsWhere = ['invoice_disbursed_id' => $transDetail->invoice_disbursed_id];
-            self::saveInvoiceDisbursedDetails($invDisbDetails,$invDisbDetailsWhere);
+            return $invDisbDetails;
         }
     }
 
@@ -271,8 +269,7 @@ class InvoiceDisbursedDetail extends BaseModel
                     ];
                 }
             }
-            $invDisbDetailsWhere = ['invoice_disbursed_id' => $transDetail->invoice_disbursed_id];
-            self::saveInvoiceDisbursedDetails($invDisbDetails,$invDisbDetailsWhere);
+            return $invDisbDetails;
         }
     }
 
@@ -303,8 +300,7 @@ class InvoiceDisbursedDetail extends BaseModel
                     ];
                 }
             }
-            $invDisbDetailsWhere = ['invoice_disbursed_id' => $transDetail->invoice_disbursed_id];
-            self::saveInvoiceDisbursedDetails($invDisbDetails,$invDisbDetailsWhere);
+            return $invDisbDetails;
         }
     }
 
@@ -335,8 +331,7 @@ class InvoiceDisbursedDetail extends BaseModel
                     ];
                 }
             }
-            $invDisbDetailsWhere = ['invoice_disbursed_id' => $transDetail->invoice_disbursed_id];
-            self::saveInvoiceDisbursedDetails($invDisbDetails,$invDisbDetailsWhere);
+            return $invDisbDetails;
         }
     }
 
@@ -408,8 +403,7 @@ class InvoiceDisbursedDetail extends BaseModel
                     ];
                 }
             }
-            $invDisbDetailsWhere = ['invoice_disbursed_id' => $transDetail->invoice_disbursed_id];
-            self::saveInvoiceDisbursedDetails($invDisbDetails,$invDisbDetailsWhere);
+            return $invDisbDetails;
         }
     }
 
@@ -481,8 +475,7 @@ class InvoiceDisbursedDetail extends BaseModel
                     ];
                 }
             }
-            $invDisbDetailsWhere = ['invoice_disbursed_id' => $transDetail->invoice_disbursed_id];
-            self::saveInvoiceDisbursedDetails($invDisbDetails,$invDisbDetailsWhere);
+            return $invDisbDetails;
         }
     }
 
@@ -554,8 +547,7 @@ class InvoiceDisbursedDetail extends BaseModel
                     ];
                 }
             }
-            $invDisbDetailsWhere = ['invoice_disbursed_id' => $transDetail->invoice_disbursed_id];
-            self::saveInvoiceDisbursedDetails($invDisbDetails,$invDisbDetailsWhere);
+            return $invDisbDetails;
         }
     }
 
@@ -627,8 +619,7 @@ class InvoiceDisbursedDetail extends BaseModel
                     ];
                 }
             }
-            $invDisbDetailsWhere = ['invoice_disbursed_id' => $transDetail->invoice_disbursed_id];
-            self::saveInvoiceDisbursedDetails($invDisbDetails,$invDisbDetailsWhere);
+            return $invDisbDetails;
         }
         if($pTransDetails && $transDetail->entry_type == 0){
             if($pTransDetails->trans_type == config('lms.TRANS_TYPE.PAYMENT_DISBURSED')){
@@ -696,8 +687,7 @@ class InvoiceDisbursedDetail extends BaseModel
                     ];
                 }
             }
-            $invDisbDetailsWhere = ['invoice_disbursed_id' => $transDetail->invoice_disbursed_id];
-            self::saveInvoiceDisbursedDetails($invDisbDetails,$invDisbDetailsWhere);
+            return $invDisbDetails;
         }
     }
 
@@ -774,8 +764,7 @@ class InvoiceDisbursedDetail extends BaseModel
                 }
             }
 
-            $invDisbDetailsWhere = ['invoice_disbursed_id' => $transDetail->invoice_disbursed_id];
-            self::saveInvoiceDisbursedDetails($invDisbDetails,$invDisbDetailsWhere);
+            return $invDisbDetails;
         }
         
         if($lTransDetails && $transDetail->entry_type == 0){
@@ -849,8 +838,7 @@ class InvoiceDisbursedDetail extends BaseModel
                 }
             }
 
-            $invDisbDetailsWhere = ['invoice_disbursed_id' => $transDetail->invoice_disbursed_id];
-            self::saveInvoiceDisbursedDetails($invDisbDetails,$invDisbDetailsWhere);
+            return $invDisbDetails;
         }
     }
 
@@ -928,8 +916,7 @@ class InvoiceDisbursedDetail extends BaseModel
                 }
             }
 
-            $invDisbDetailsWhere = ['invoice_disbursed_id' => $transDetail->invoice_disbursed_id];
-            self::saveInvoiceDisbursedDetails($invDisbDetails,$invDisbDetailsWhere);
+            return $invDisbDetails;
         }
         
         if($lTransDetails && $transDetail->entry_type == 0){
@@ -1003,8 +990,7 @@ class InvoiceDisbursedDetail extends BaseModel
                 }
             }
 
-            $invDisbDetailsWhere = ['invoice_disbursed_id' => $transDetail->invoice_disbursed_id];
-            self::saveInvoiceDisbursedDetails($invDisbDetails,$invDisbDetailsWhere);
+            return $invDisbDetails;
         }
     }
   
@@ -1032,42 +1018,55 @@ class InvoiceDisbursedDetail extends BaseModel
     {
         if($transDetails && $transDetails->invoice_disbursed_id){
             $invDisbDetail = self::where('invoice_disbursed_id', $transDetails->invoice_disbursed_id)->first();
+            self::process($transDetails, $invDisbDetail, $isActionDelete = false);
+        }
+    }
+
+    public static function process($transDetails, $invDisbDetail, $isActionDelete = false)
+    {
+        if($transDetails && $transDetails->invoice_disbursed_id && $invDisbDetail){
+            $data = [];
             if ($invDisbDetail) {
                 switch ($transDetails->trans_type){
                     case config('lms.TRANS_TYPE.PAYMENT_DISBURSED'):
-                        self::updatePrincipalTrans($transDetails, $invDisbDetail, $isActionDelete);
+                        $data = self::updatePrincipalTrans($transDetails, $invDisbDetail, $isActionDelete);
                         break;
                     case config('lms.TRANS_TYPE.MARGIN'):
-                        self::updateMarginTrans($transDetails, $invDisbDetail, $isActionDelete);
+                        $data = self::updateMarginTrans($transDetails, $invDisbDetail, $isActionDelete);
                         break;
                     case config('lms.TRANS_TYPE.INTEREST'):
-                        self::updateInterestTrans($transDetails, $invDisbDetail, $isActionDelete);
+                        $data = self::updateInterestTrans($transDetails, $invDisbDetail, $isActionDelete);
                         break;
                     case config('lms.TRANS_TYPE.INTEREST_OVERDUE'):
-                        self::updateOverdueTrans($transDetails, $invDisbDetail, $isActionDelete);
+                        $data = self::updateOverdueTrans($transDetails, $invDisbDetail, $isActionDelete);
                         break;
                     case config('lms.TRANS_TYPE.TDS'):
-                        self::updateTdsTrans($transDetails, $invDisbDetail, $isActionDelete);
+                        $data = self::updateTdsTrans($transDetails, $invDisbDetail, $isActionDelete);
                         break;
                     case config('lms.TRANS_TYPE.WAVED_OFF'):
-                        self::updateWaivedOffTrans($transDetails, $invDisbDetail, $isActionDelete);
+                        $data = self::updateWaivedOffTrans($transDetails, $invDisbDetail, $isActionDelete);
                         break;
                     case config('lms.TRANS_TYPE.WRITE_OFF'):
-                        self::updateWriteOffTrans($transDetails, $invDisbDetail, $isActionDelete);
+                        $data = self::updateWriteOffTrans($transDetails, $invDisbDetail, $isActionDelete);
                         break;
                     case config('lms.TRANS_TYPE.REFUND'):
-                        self::updateRefundTrans($transDetails, $invDisbDetail, $isActionDelete);
+                        $data = self::updateRefundTrans($transDetails, $invDisbDetail, $isActionDelete);
                         break;
                     case config('lms.TRANS_TYPE.REVERSE'):
-                        self::updateReverseTrans($transDetails, $invDisbDetail, $isActionDelete);
+                        $data = self::updateReverseTrans($transDetails, $invDisbDetail, $isActionDelete);
                         break;
                     case config('lms.TRANS_TYPE.CANCEL'):
-                        self::updateCancelTrans($transDetails, $invDisbDetail, $isActionDelete);
+                        $data = self::updateCancelTrans($transDetails, $invDisbDetail, $isActionDelete);
                         break;
                     default:
-                        self::updateChargeTrans($transDetails, $invDisbDetail, $isActionDelete);
+                        $data = self::updateChargeTrans($transDetails, $invDisbDetail, $isActionDelete);
                         break;
                 }
+
+                foreach ($data as $key => $value) {
+                    $invDisbDetail->$key = $value;
+                }
+                $invDisbDetail->save();
             }
         }
     }
