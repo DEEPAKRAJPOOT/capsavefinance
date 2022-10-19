@@ -786,7 +786,7 @@ class ReportsRepository extends BaseRepositories implements ReportInterface {
 			$interestOutstanding = $interestOutstanding > 0 ? $interestOutstanding : 0;
 			
 			$overdueOutstanding = $invDisb->transactions->where('trans_type','33')->where('entry_type',0)->whereNull('parent_trans_id')->where('is_transaction','1')->where('soa_flag','1')->sum('outstanding');
-			$overdueAmount = $overdueAmount > 0 ? $overdueAmount : 0;
+			$overdueOutstanding = $overdueOutstanding > 0 ? $overdueOutstanding : 0;
 
 			$chargesOutstanding = $invDisb->transactions->where('trans_type','>','50')->where('entry_type',0)->whereNull('parent_trans_id')->where('is_transaction','1')->where('soa_flag','1')->sum('outstanding');
 			
