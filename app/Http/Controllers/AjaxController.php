@@ -2875,15 +2875,27 @@ if ($err) {
     } 
       //////////////////// use for Invoice Disbursed Que list/////////////////
      public function getBackendInvoiceListDisbursedQue(DataProviderInterface $dataProvider) {
-        ini_set('memory_limit',-1);
+      //  ini_set('memory_limit',-1);
         $invoice_data = $this->invRepo->getAllManageInvoice($this->request,9);
         $invoiceDetail = clone $invoice_data;
         $anchorIds = $invoiceDetail->distinct('anchor_id')->pluck('anchor_id')->toArray();
         $supplierIds = $invoiceDetail->distinct('supplier_id')->pluck('supplier_id')->toArray();
+        $IsOverdueArray = [];
+        $isLimitExpiredArray = [];
+        $isLimitExceedArray = [];
+        $isAnchorLimitExceededArray = [];
+        foreach($invoiceDetail->get() as $invoice) {
+            $IsOverdueArray[$invoice->invoice_id] = InvoiceTrait::invoiceOverdueCheck($invoice->invoice_id);
+            $isLimitExpiredArray[$invoice->invoice_id] = InvoiceTrait::limitExpire($invoice->supplier_id);
+            $isLimitExceedArray[$invoice->invoice_id] = InvoiceTrait::isLimitExceed($invoice->invoice_id);
+            $isAnchorLimitExceededArray[$invoice->invoice_id] = InvoiceTrait::isAnchorLimitExceeded($invoice->anchor_id, 0);
 
-        $IsOverdue = InvoiceTrait::invoiceOverdueCheck($invoice->invoice_id);
+        }
 
-        $invoice = $dataProvider->getBackendInvoiceListDisbursedQue($this->request, $invoice_data->with('supplier.apps.disbursed_invoices.invoice_disbursed'));
+        //dd($IsOverdueArray,$isLimitExpiredArray,$isLimitExceedArray, $isAnchorLimitExceededArray);
+
+
+        $invoice = $dataProvider->getBackendInvoiceListDisbursedQue($this->request, $invoice_data->with('supplier.apps.disbursed_invoices.invoice_disbursed'),$IsOverdueArray, $isLimitExpiredArray,$isLimitExceedArray, $isAnchorLimitExceededArray);
         return $invoice;
     } 
     

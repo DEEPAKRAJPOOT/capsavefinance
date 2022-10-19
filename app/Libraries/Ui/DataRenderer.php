@@ -1623,7 +1623,7 @@ class DataRenderer implements DataProviderInterface
    /*      
      * Get Invoice list for backend
      */
-    public function getBackendInvoiceListDisbursedQue(Request $request,$invoice)
+    public function getBackendInvoiceListDisbursedQue(Request $request,$invoice, $IsOverdueArray, $isLimitExpiredArray,$isLimitExceedArray, $isAnchorLimitExceeded)
     { 
     
       return DataTables::of($invoice)
@@ -1631,7 +1631,7 @@ class DataRenderer implements DataProviderInterface
 
                 ->addColumn(
                     'invoice_checkbox',
-                    function ($invoice) { 
+                    function ($invoice) use($IsOverdueArray, $isLimitExpiredArray, $isLimitExceedArray, $isAnchorLimitExceeded) { 
                         $id = Auth::user()->user_id;
                         $role_id = DB::table('role_user')->where(['user_id' => $id])->pluck('role_id');
                         $chkUser =    DB::table('roles')->whereIn('id',$role_id)->first();
@@ -1660,16 +1660,22 @@ class DataRenderer implements DataProviderInterface
                                 }
                             }
                         }
-                        $IsOverdue = InvoiceTrait::invoiceOverdueCheck($invoice->invoice_id);
+                        /*$IsOverdue = InvoiceTrait::invoiceOverdueCheck($invoice->invoice_id);
                         $isLimitExpired = InvoiceTrait::limitExpire($invoice->supplier_id);
                         $isLimitExceed = InvoiceTrait::isLimitExceed($invoice->invoice_id);
                         $isAnchorLimitExceeded = InvoiceTrait::isAnchorLimitExceeded($invoice->anchor_id, 0);
                         $this->IsOverdue = $IsOverdue;  
                         $this->isLimitExpired = $isLimitExpired;
                         $this->isLimitExceed  = $isLimitExceed;
-                        $this->isAnchorLimitExceeded  = $isAnchorLimitExceeded;
+                        $this->isAnchorLimitExceeded  = $isAnchorLimitExceeded;*/
+
+                        $this->IsOverdue = $IsOverdueArray[$invoice->invoice_id];  
+                        $this->isLimitExpired = $isLimitExpiredArray[$invoice->invoice_id];
+                        $this->isLimitExceed  = $isLimitExceedArray[$invoice->invoice_id];
+                        $this->isAnchorLimitExceeded  = $isAnchorLimitExceeded[$invoice->invoice_id];
+                        
                        // return  "<input type='checkbox' class='invoice_id' name='checkinvoiceid' value=".$invoice->invoice_id.">";
-                        return ($this->overDueFlag == 1 || $chkUser->id == 11  || $this->isLimitExpired || $this->isLimitExceed || $isAnchorLimitExceeded) ? '-' : "<input type='checkbox' class='invoice_id' name='checkinvoiceid' value=".$invoice->invoice_id.">";
+                        return ($this->overDueFlag == 1 || $chkUser->id == 11  || $this->isLimitExpired || $this->isLimitExceed || $isAnchorLimitExceeded[$invoice->invoice_id]) ? '-' : "<input type='checkbox' class='invoice_id' name='checkinvoiceid' value=".$invoice->invoice_id.">";
                      })
                 ->addColumn(
                     'anchor_id',
