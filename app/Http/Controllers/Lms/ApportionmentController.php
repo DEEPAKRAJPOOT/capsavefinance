@@ -275,7 +275,7 @@ class ApportionmentController extends Controller
             if (empty($TransDetail)) {
                 return redirect()->route('apport_unsettled_view', [ 'payment_id' => $paymentId, 'user_id' =>$TransDetail->user_id, 'sanctionPageView'=>$sanctionPageView])->with(['error' => 'Selected Transaction to be waived off is not valid']);
             }
-            $is_interest_charges = ($TransDetail->transType->chrg_master_id > 0 || in_array($TransDetail->trans_type, [config('lms.TRANS_TYPE.INTEREST')]));
+            $is_interest_charges = ($TransDetail->transType->chrg_master_id > 0 || in_array($TransDetail->trans_type, [config('lms.TRANS_TYPE.INTEREST'),config('lms.TRANS_TYPE.INTEREST_OVERDUE')]));
             if(!$is_interest_charges){
                 return redirect()->route('apport_unsettled_view', [ 'payment_id' => $paymentId, 'user_id' =>$TransDetail->user_id, 'sanctionPageView'=>$sanctionPageView])->with(['error' => 'Waived off is possible only Interest and Charges.']);
             }

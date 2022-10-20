@@ -11,11 +11,11 @@
                                     <th>Invoice No</th>       
                                     <th>Trans Type</th>		
                                     <th>Total Repay Amt</th>
-                                    @if($payment['action_type'] == 3)
+                                    {{-- @if($payment['action_type'] == 3)
                                             <th>Outstanding TDS Amt</th>
-                                    @else
+                                    @else --}}
                                         <th>Outstanding Amt</th>
-                                    @endif
+                                    {{-- @endif --}}
                                     {{-- @if($paymentId)<th>Payment Date</th>@endif --}}
                                     @if($paymentId)
                                         @if($payment['action_type'] == 3)

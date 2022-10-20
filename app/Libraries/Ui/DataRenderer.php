@@ -7034,7 +7034,7 @@ class DataRenderer implements DataProviderInterface
                         $class = '';
                     }
                 }
-                $type = $trans->transType->chrg_master_id != 0  ? 'charges' : ($trans->transType->id == config('lms.TRANS_TYPE.INTEREST') ? 'interest' : '');
+                $type = $trans->transType->chrg_master_id != 0  ? 'charges' : (in_array($trans->transType->id, [config('lms.TRANS_TYPE.INTEREST'),config('lms.TRANS_TYPE.INTEREST_OVERDUE')]) ? 'interest' : '');
                 $result = "<input class='$class' id='check_".$trans->trans_id."' $transDisabled payenabled='$payEnable' pay='$paymentDate' userInv='$userInvoiceDate' transtype='$type' type='checkbox' name='check[".$trans->trans_id."]' onchange='apport.onCheckChange(".$trans->trans_id.")'>";
                 return $result;
             })
@@ -7118,7 +7118,7 @@ class DataRenderer implements DataProviderInterface
                 return $result;
             })
             ->addColumn('select', function($trans){
-                $type = $trans->transType->chrg_master_id != 0  ? 'charges' : ($trans->transType->id == config('lms.TRANS_TYPE.INTEREST') ? 'interest' : '');
+                $type = $trans->transType->chrg_master_id != 0  ? 'charges' : (in_array($trans->transType->id, [config('lms.TRANS_TYPE.INTEREST'),config('lms.TRANS_TYPE.INTEREST_OVERDUE')]) ? 'interest' : '');
                 $result = "<input class='check' transtype='$type' type='checkbox' name='check[".$trans->trans_id."]' onchange='apport.onRefundCheckChange(".$trans->trans_id.")'>";
                 return $result;
             })
