@@ -1395,6 +1395,37 @@ class Helper extends PaypalHelper
                 ->setTimezone(config('common.timezone'))->format($toDateFormat);
         return $convertedDateTime;
     }
+
+    /**
+     * Convert Datetime Format
+     * 
+     * @param string $dateTime
+     * @param string $fromDateFormat
+     * @param string $toDateFormat
+     * @return string
+     */
+    public static function istToUtc($dateTime, $inputDateFormat='Y-m-d H:i:s', $outputDateFormat='Y-m-d H:i:s') 
+    {
+        $convertedDateTime = \Carbon\Carbon::createFromFormat($inputDateFormat, $dateTime, config('common.timezone'))
+                ->setTimezone(config('app.timezone'))->format($outputDateFormat);
+        return $convertedDateTime;
+    }
+
+    /**
+     * Convert Datetime Format
+     * 
+     * @param string $dateTime
+     * @param string $fromDateFormat
+     * @param string $toDateFormat
+     * @return string
+     */
+    public static function utcToIst($dateTime, $inputDateFormat='Y-m-d H:i:s', $outputDateFormat='Y-m-d H:i:s') 
+    {
+        $convertedDateTime = \Carbon\Carbon::createFromFormat($inputDateFormat, $dateTime, config('app.timezone'))
+                ->setTimezone(config('common.timezone'))->format($outputDateFormat);
+        return $convertedDateTime;
+    }
+
     
     /**
      * Format Id with Prefix

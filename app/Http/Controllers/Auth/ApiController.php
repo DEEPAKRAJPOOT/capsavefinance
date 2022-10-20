@@ -118,9 +118,10 @@ class ApiController
           }
         }*/
       }
-      if (is_null($jrnls->parent_trans_id) && $jrnls->entry_type == 0 && $jrnls->outstanding > 0 && $is_charge) {
+      /*if (is_null($jrnls->parent_trans_id) && $jrnls->entry_type == 0 && $jrnls->outstanding > 0 && $is_charge) {
        continue;
-      }
+      }*/
+
       $this->voucherNo = $this->voucherNo + 1;
       $entry_type = $jrnls->entry_type == 1 ? 'Credit' : 'Debit';
       $this->selectedTxnData[] = $jrnls->trans_id;
@@ -130,7 +131,7 @@ class ApiController
           'voucher_no' => $this->voucherNo,
           'voucher_type' => 'Journal',
           'voucher_date' => $jrnls->trans_date,
-          'transaction_date'=>$jrnls->created_at,
+          'transaction_date'=>Helper::utcToIst($jrnls->created_at,'Y-m-d H:i:s', 'Y-m-d H:i:s'),
           'is_debit_credit' =>  $entry_type,
           'trans_type' =>  $trans_type_name,
           'invoice_no' =>   $invoice_no,
@@ -294,7 +295,7 @@ class ApiController
             'voucher_no' => $this->voucherNo,
             'voucher_type' => 'Journal',
             'voucher_date' => $rvrsl->trans_date,
-            'transaction_date'=>$rvrsl->created_at,
+            'transaction_date'=>Helper::utcToIst($rvrsl->created_at,'Y-m-d H:i:s', 'Y-m-d H:i:s'),
             'is_debit_credit' => $rvrsl->entry_type == 1 ? 'Credit' : 'Debit',
             'trans_type' =>  $trans_type_name,
             'invoice_no' =>   $invoice_no,
@@ -363,7 +364,7 @@ class ApiController
           'voucher_no' => $this->voucherNo,
           'voucher_type' => 'Payment',
           'voucher_date' => $rfnd->trans_date,
-          'transaction_date'=>$rfnd->created_at,
+          'transaction_date'=>Helper::utcToIst($rfnd->created_at,'Y-m-d H:i:s', 'Y-m-d H:i:s'),
           'is_debit_credit' =>  'Debit',
           'trans_type' =>  $trans_type_name,
           'invoice_no' =>   $invoice_no,
@@ -392,7 +393,7 @@ class ApiController
           'voucher_no' => $this->voucherNo,
           'voucher_type' => 'Payment',
           'voucher_date' => NULL,
-          'transaction_date'=>$rfnd->created_at,
+          'transaction_date'=>Helper::utcToIst($rfnd->created_at,'Y-m-d H:i:s', 'Y-m-d H:i:s'),
           'is_debit_credit' =>  'Credit',
           'trans_type' =>  '',
           'invoice_no' =>   '',
@@ -446,7 +447,7 @@ class ApiController
               'voucher_no' => $this->voucherNo,
               'voucher_type' => 'Payment',
               'voucher_date' => $dsbrsl->trans_date,
-              'transaction_date'=>$dsbrsl->created_at,
+              'transaction_date'=>Helper::utcToIst($dsbrsl->created_at,'Y-m-d H:i:s', 'Y-m-d H:i:s'),
               'is_debit_credit' =>  'Debit',
               'trans_type' =>  $dsbrsl->getTransNameAttribute(),
               'invoice_no' =>   $invoice_no,
@@ -475,7 +476,7 @@ class ApiController
               'voucher_no' => $this->voucherNo,
               'voucher_type' => 'Payment',
               'voucher_date' => NULL,
-              'transaction_date'=>$dsbrsl->created_at,
+              'transaction_date'=>Helper::utcToIst($dsbrsl->created_at,'Y-m-d H:i:s', 'Y-m-d H:i:s'),
               'is_debit_credit' =>  'Credit',
               'trans_type' =>  $dsbrsl->getTransNameAttribute(),
               'invoice_no' =>   $invoice_no,
@@ -509,7 +510,7 @@ class ApiController
               'voucher_no' => $this->voucherNo,
               'voucher_type' => 'Payment',
               'voucher_date' => NULL,
-              'transaction_date'=>$dsbrsl->created_at,
+              'transaction_date'=>Helper::utcToIst($dsbrsl->created_at,'Y-m-d H:i:s', 'Y-m-d H:i:s'),
               'is_debit_credit' =>  'Credit',
               'trans_type' =>  'Interest',
               'invoice_no' =>   $invoice_no,
@@ -575,7 +576,7 @@ class ApiController
               'voucher_no' => $this->voucherNo,
               'voucher_type' => 'Receipt',
               'voucher_date' => $rcpt->date_of_payment,
-              'transaction_date'=>$rcpt->created_at?$rcpt->created_at:NULL,
+              'transaction_date'=>$rcpt->created_at?Helper::utcToIst($rcpt->created_at,'Y-m-d H:i:s', 'Y-m-d H:i:s'):NULL,
               'is_debit_credit' =>  'Debit',
               'trans_type' =>  'Re-Payment',
               'invoice_no' =>   '',
@@ -619,7 +620,7 @@ class ApiController
               'voucher_no' => $this->voucherNo,
               'voucher_type' => 'Receipt',
               'voucher_date' => $stldTxn->trans_date,
-              'transaction_date'=>$stldTxn->created_at,
+              'transaction_date'=>$stldTxn->created_at?Helper::utcToIst($stldTxn->created_at,'Y-m-d H:i:s', 'Y-m-d H:i:s'):NULL,
               'is_debit_credit' =>  'Credit',
               'trans_type' =>  $trans_type_name,
               'invoice_no' =>   $invoice_no,
@@ -664,7 +665,7 @@ class ApiController
   }
 
   public function tally_entry_date_wise(){
-    $activeDate = date('Y-m-d');
+    $activeDate = Helper::utcToIst(date('Y-m-d'),'Y-m-d', 'Y-m-d');
     // $dates = $this->displayDates('2020-01-01', date('Y-m-d'));
     // foreach ($dates as $activeDate) {
       self::tally_entry($activeDate,$activeDate);
@@ -672,7 +673,7 @@ class ApiController
   }
 
   public function tally_entry_Week_wise($weekName){
-    $activeDate = date('Y-m-d');
+    $activeDate = Helper::utcToIst(date('Y-m-d'),'Y-m-d', 'Y-m-d');
     // $dates = $this->displayDates('2022-01-01', date('Y-m-d'));
     // foreach ($dates as $activeDate) {
       if(in_array(strtolower(trim($weekName)),[strtolower(date('D',strtotime($activeDate))), strtolower(date('l',strtotime($activeDate)))])){
@@ -683,7 +684,7 @@ class ApiController
   }
 
   public function tally_entry_month_wise(){
-    $activeDate = date('Y-m-d');
+    $activeDate = Helper::utcToIst(date('Y-m-d'),'Y-m-d', 'Y-m-d');
     // $dates = $this->displayDates('2020-01-01', '2021-12-31');
     // foreach ($dates as $activeDate) {
       if(date("Y-m-t", strtotime($activeDate)) == $activeDate){
@@ -694,15 +695,13 @@ class ApiController
     // }
   }
 
-  public function tally_entry($startDate = null, $endDate = null){
-    
-    if(empty($startDate)){
-      $startDate = date('Y-m-d');
-    }
-    if(empty($endDate)){
-      $endDate = $startDate;
-    }
-    
+  public function tally_entry($startDate, $endDate){  
+
+    $startDate  = '$startDate 00:00:00'; 
+    $endDate = '$endDate 23:59:59';
+    $startDate = Helper::istToUtc($startDate,'Y-m-d H:i:s', 'Y-m-d H:i:s');
+    $endDate = Helper::istToUtc($endDate,'Y-m-d H:i:s', 'Y-m-d H:i:s');
+
     $this->selectedTxnData = [];
     $this->selectedPaymentData = [];
     $this->voucherNo = null;
@@ -722,7 +721,7 @@ class ApiController
     }
     $this->voucherNo = $this->voucherNo + 1;
     $batch_no = _getRand(15);
-    $where = [['is_posted_in_tally', '=', '0'], ['created_at', '>=', "$startDate 00:00:00"],['created_at', '<=', "$endDate 23:59:59"]];
+    $where = [['is_posted_in_tally', '=', '0'], ['created_at', '>=', $startDate],['created_at', '<=', $endDate]];
     $journalData = Transactions::getJournalTxnTally($where);
     $disbursalData = Transactions::getDisbursalTxnTally($where);
     $refundData = Transactions::getRefundTxnTally($where);
@@ -1214,7 +1213,23 @@ class ApiController
     }
     return view('change_financial_yr');
   }
+
+  public function system_getsod(){
+
+    $sys_date_time = Helper::getSysStartDate();
+    $systemDate = Helper::convertDateTimeFormat(Helper::getSysStartDate(),'Y-m-d H:i:s', 'Y-m-d');
+    now()->parse($sys_date_time)->format('Ymd');
+    $startDate = date('Y-m-d');
+    config('common.timezone');
+    config('app.timezone');
+    date('Y-m-d');
+    //dd(date('Y-m-d')." 00:00:00");
+    
+    dd(date('Y-m-d')." 00:00:00",Helper::convertTimestampToUTCFormat(date('Y-m-d')." 00:00:00"),Helper::convertTimestampToISTFormat(date('Y-m-d')." 00:00:00"));
+    //dd(config('common.timezone'),config('app.timezone'));
+  }
 }
+
 
 
  ?>
