@@ -204,7 +204,7 @@ class SoaController extends Controller
                 $preparedData[$key][$k]['payment_id'] = $data->transaction->payment_id;
                 $preparedData[$key][$k]['parent_trans_id'] = $data->transaction->parent_trans_id;
                 $preparedData[$key][$k]['customer_id'] = $data->lmsUser->customer_id;
-                $preparedData[$key][$k]['trans_date'] = date('d-m-Y',strtotime($data->trans_date));
+                $preparedData[$key][$k]['trans_date'] = Helpers::convertDateTimeFormat($data->trans_date, 'Y-m-d H:i:s', 'd-m-Y');
                 $preparedData[$key][$k]['value_date'] = date('d-m-Y',strtotime($data->value_date));
                 $preparedData[$key][$k]['trans_type'] = trim($data->transaction->transname);
                 $preparedData[$key][$k]['batch_no'] = $data->batch_no;
