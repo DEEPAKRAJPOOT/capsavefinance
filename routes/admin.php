@@ -60,12 +60,6 @@ Route::any(
         ]
     );
 
-    Route::any('api/system/getsod',[
-        'as' => 'api_system_getsod',
-        'uses' => 'Auth\ApiController@system_getsod'
-        ]
-    );
-
     Route::any('api/tally/recover',[
         'as' => 'api_tally_recover',
         'uses' => 'Auth\ApiController@tally_recover'
