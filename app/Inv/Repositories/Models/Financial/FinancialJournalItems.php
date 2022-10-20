@@ -89,7 +89,7 @@ class FinancialJournalItems extends BaseModel {
 
     public static function getAllBatches(array $where = array()) {
       $query = "SELECT * FROM rta_tally ";
-        $cond = 'WHERE ';
+        $cond = 'WHERE is_active = 1 and';
         if (!empty($where)) {
             foreach ($where as $key => $value) {
                 $wh[] = "$key = '$value'";
