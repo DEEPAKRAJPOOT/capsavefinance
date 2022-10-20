@@ -505,7 +505,8 @@ class ApiController
       $where = ['trans_date' => $disbursalDate, 'trans_type' => config('lms.TRANS_TYPE.INTEREST'), 'entry_type' => 0];
       $interestBooked = $dsbrsl->getInterestForDisbursal($where);
       $interestTransId = $interestBooked->trans_id;
-       $InterestRow = [
+      $this->selectedTxnData[] = $interestBooked->trans_id;
+      $InterestRow = [
               'batch_no' =>  $batch_no,
               'transactions_id' =>  $interestTransId,
               'voucher_no' => $this->voucherNo,
@@ -726,7 +727,7 @@ class ApiController
     $journalData = Transactions::getJournalTxnTally($where);
     $disbursalData = Transactions::getDisbursalTxnTally($where);
     $refundData = Transactions::getRefundTxnTally($where);
-    $receiptData = Payment::getPaymentReceipt($where);
+    $receiptData = Payment::with('userRelation')->where(['is_settled' => 1, 'trans_type' => config('lms.TRANS_TYPE.REPAYMENT'), 'action_type' => 1])->whereHas('paymentRefrenceTxns',function($query) use($where){ $query->where($where); })->get();
 
     $journalArray = $this->createJournalData($journalData, $batch_no);
     $disbursalArray = $this->createDisbursalData($disbursalData, $batch_no);
@@ -749,11 +750,15 @@ class ApiController
     if ($res === true) {
       $totalTxnRecords = 0;
       if (!empty($selectedTxnData)) {
-        $totalTxnRecords = \DB::update('update rta_transactions set is_posted_in_tally = 1 where trans_id in(' . implode(', ', $selectedTxnData) . ')');
+        foreach(array_chunk($selectedTxnData,100,true) as $selTxnData){
+          $totalTxnRecords = \DB::update('update rta_transactions set is_posted_in_tally = 1 where trans_id in(' . implode(', ', $selTxnData) . ')');
+        }
       }
       $totalPaymentsRecords = 0;
       if (!empty($selectedPaymentData)) {
-        $totalPaymentsRecords = \DB::update('update rta_payments set is_posted_in_tally = 1 where payment_id in(' . implode(', ', $selectedPaymentData) . ')');
+        foreach(array_chunk($selectedPaymentData,100,true) as $selPayData){
+          $totalPaymentsRecords = \DB::update('update rta_payments set is_posted_in_tally = 1 where payment_id in(' . implode(', ', $selPayData) . ')');
+        }
       }
       $totalRecords = $totalTxnRecords + $totalPaymentsRecords;
       $recordsTobeInserted = count($selectedTxnData) + count($selectedPaymentData);

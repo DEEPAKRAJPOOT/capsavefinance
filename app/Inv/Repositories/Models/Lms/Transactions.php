@@ -1198,7 +1198,7 @@ class Transactions extends BaseModel {
     }
 
     public function userRelation() {
-       return $this->hasOne('App\Inv\Repositories\Models\Lms\UserInvoiceRelation', 'user_id', 'user_id')->where('is_active', 1);
+       return $this->hasOne('App\Inv\Repositories\Models\Lms\UserInvoiceRelation', 'user_id', 'user_id');//->where('is_active', 1);
     }
 
     public static function getUserInvoiceTxns($userId, $invoiceType, $trans_ids, $is_force = false){
