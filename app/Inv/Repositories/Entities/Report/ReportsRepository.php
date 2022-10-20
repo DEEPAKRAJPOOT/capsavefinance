@@ -795,12 +795,16 @@ class ReportsRepository extends BaseRepositories implements ReportInterface {
 			$totalOutstanding = ($principalOutstanding + $interestOutstanding + $overdueOutstanding + $chargesOutstanding);
 	
 			$interestIds = $invDisb->transactions->where('trans_type','9')->where('entry_type',0)->whereNull('parent_trans_id')->where('is_transaction','1')->where('soa_flag','1')->pluck('trans_id')->toArray();
-			$interest_to_refunded = $invDisb->transactions->where('trans_type','32')->where('entry_type',1)->whereIn('parent_trans_id',$interestIds)->sum('settled_outstanding');
-			$interest_to_refunded = $interest_to_refunded > 0 ? $interest_to_refunded : 0;
+			$interest_to_refunded = $invDisb->transactions->where('trans_type','32')->where('entry_type',1)->whereIn('parent_trans_id',$interestIds)->sum('amount');
+			$interest_to_refundedIds = $invDisb->transactions->where('trans_type','32')->where('entry_type',1)->whereIn('parent_trans_id',$interestIds)->pluck('trans_id')->toArray();
+			$intAdjRef = $invDisb->transactions->where('entry_type',0)->whereIn('link_trans_id',$interest_to_refundedIds)->sum('amount');
+			$interest_to_refunded = ($interest_to_refunded - $intAdjRef) > 0 ? ($interest_to_refunded - $intAdjRef) : 0;
 
 			$overdueIds = $invDisb->transactions->where('trans_type','33')->where('entry_type',0)->whereNull('parent_trans_id')->where('is_transaction','1')->where('soa_flag','1')->pluck('trans_id')->toArray();
-			$overdueinterest_to_refunded = $invDisb->transactions->where('trans_type','32')->where('entry_type',1)->whereIn('parent_trans_id',$overdueIds)->sum('settled_outstanding');
-			$overdueinterest_to_refunded = $overdueinterest_to_refunded > 0 ? $overdueinterest_to_refunded : 0;
+			$overdueinterest_to_refunded = $invDisb->transactions->where('trans_type','32')->where('entry_type',1)->whereIn('parent_trans_id',$overdueIds)->sum('amount');
+			$overdueinterest_to_refundedIds = $invDisb->transactions->where('trans_type','32')->where('entry_type',1)->whereIn('parent_trans_id',$overdueIds)->pluck('trans_id')->toArray();
+			$odAdjRef = $invDisb->transactions->where('entry_type',0)->whereIn('link_trans_id',$overdueinterest_to_refundedIds)->sum('amount');
+			$overdueinterest_to_refunded = $overdueinterest_to_refunded-$odAdjRef > 0 ? $overdueinterest_to_refunded-$odAdjRef : 0;
 
 			$margin_to_refunded = $invDisb->transactions->where('trans_type','10')->where('entry_type',1)->sum('settled_outstanding');
 			$margin_to_refunded = $margin_to_refunded > 0 ? $margin_to_refunded : 0;
