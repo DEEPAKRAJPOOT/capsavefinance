@@ -43,12 +43,12 @@ class Kernel extends ConsoleKernel
         //$schedule->command('PaypalRefund:refund')->twiceDaily(1, 13);
         //$schedule->command('ScoutPayoutDetail:BatchDetail')->twiceDaily(2, 14);
         //$schedule->command('PaypalScoutRefund:ScoutRefund')->twiceDaily(3, 12);
-        
+/*        
         if(config('lms.LMS_STATUS')){
             $schedule->command('lms:interestaccrual')->timezone(config('common.timezone'))->dailyAt('00:01');
             $schedule->command('lms:interestaccrual')->dailyAt('00:01');
         }
-
+*/
         if(config('lms.LMS_STATUS') && !\Helpers::checkEodProcess() && \Helpers::getInterestAccrualCronStatus() && !\Helpers::getEodProcessCronStatus()){
             $schedule->command('lms:eodprocess')->timezone(config('common.timezone'))->dailyAt('23:00')->emailOutputOnFailure(config('lms.EOD_FAILURE_MAIL'));
         }
