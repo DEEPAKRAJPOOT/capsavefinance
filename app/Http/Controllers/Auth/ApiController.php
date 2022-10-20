@@ -723,7 +723,7 @@ class ApiController
     }
     $this->voucherNo = $this->voucherNo + 1;
     $batch_no = _getRand(15);
-    $where = [['is_posted_in_tally', '=', '0'], ['created_at', '>=', $startDate],['created_at', '<=', $endDate]];
+    $where = [['is_posted_in_tally', '=', '0'], ['sys_created_at', '>=', $startDate],['sys_created_at', '<=', $endDate]];
     $journalData = Transactions::getJournalTxnTally($where);
     $disbursalData = Transactions::getDisbursalTxnTally($where);
     $refundData = Transactions::getRefundTxnTally($where);
