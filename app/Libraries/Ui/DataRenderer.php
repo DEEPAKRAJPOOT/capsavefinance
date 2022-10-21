@@ -6942,7 +6942,7 @@ class DataRenderer implements DataProviderInterface
                 return "₹ ".number_format($trans->outstanding,2);
             })
             ->addColumn('select', function($trans){
-                $type = $trans->transType->chrg_master_id != 0  ? 'charges' : ($trans->transType->id == config('lms.TRANS_TYPE.INTEREST') ? 'interest' : '');
+                $type = $trans->transType->chrg_master_id != 0  ? 'charges' : (in_array($trans->transType->id, [config('lms.TRANS_TYPE.INTEREST'),config('lms.TRANS_TYPE.INTEREST_OVERDUE')]) ? 'interest' : '');
                 $result = "<input class='check' transtype='$type' type='checkbox' value=".$trans->outstanding." name='check[".$trans->trans_running_id."]' >";
                 return $result;
             })
