@@ -274,9 +274,7 @@ class ManualApportionmentHelper{
                             'entry_type' => 1,
                             'soa_flag' => 1,
                             'trans_type' => config('lms.TRANS_TYPE.REFUND'),
-                            'apportionment_id' => $refundPaymentId,
-                            'created_at' => $refundCreatedAt,
-                            'created_by' => $refundCreatedBy
+                            'apportionment_id' => $refundPaymentId
                         ];
                         $actualAmount = 0;
                     }

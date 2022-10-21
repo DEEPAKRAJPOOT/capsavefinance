@@ -265,11 +265,6 @@ trait LmsTrait
      */
     protected function createTransactionData($userId = null, $data = 0, $transType = 0, $entryType = 0)
     {
-        /**
-        * disburseType = 1 for online and 2 for manually
-        */
-
-        
         $soaFlag = 0;
         if(isset($data['soa_flag'])){
             $soaFlag = $data['soa_flag'];
@@ -298,11 +293,6 @@ trait LmsTrait
         $transactionData['gst_amt'] = $data['gst_amt'] ?? null;
         $transactionData['chrg_gst_id'] = $data['chrg_gst_id'] ?? null;
         $transactionData['trans_mode'] = $data['trans_mode'] ?? null;
-
-        $curData = \Carbon\Carbon::now(config('common.timezone'))->format('Y-m-d h:i:s');
-                        
-        $transactionData['created_by'] = Auth::user()->user_id ?? 0;
-        $transactionData['created_at'] = $curData;
         return $transactionData;
     }
 
