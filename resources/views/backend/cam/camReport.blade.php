@@ -68,26 +68,23 @@
          <table id="invoice_history" class="table   no-footer overview-table " role="grid" aria-describedby="invoice_history_info" cellpadding="0" cellspacing="0">
             <thead>
                <tr role="row">
-                  <th class="sorting_asc" tabindex="0" aria-controls="invoice_history" rowspan="1" colspan="1" aria-sort="ascending" aria-label="Sr.No: activate to sort column descending" width="60%">Condition</th>
-                  <th class="sorting" tabindex="0" aria-controls="invoice_history" rowspan="1" colspan="1" aria-label="Docs : activate to sort column ascending">Timeline</th>
+                  <th class="sorting_asc" tabindex="0" aria-controls="invoice_history" rowspan="1" colspan="1" aria-sort="ascending" aria-label="Sr.No: activate to sort column descending" width="25%">Type of Document</th>
+                  <th class="sorting" tabindex="0" aria-controls="invoice_history" rowspan="1" colspan="1" aria-label="Docs : activate to sort column ascending" width="20%">Original Due Date</th>
+                  <th class="sorting" tabindex="0" aria-controls="invoice_history" rowspan="1" colspan="1" aria-label="Docs : activate to sort column ascending">Description</th>
                </tr>
             </thead>
             <tbody>
                @if(isset($preCondArr) && count($preCondArr)>0)
                   @foreach($preCondArr as $prekey =>$preval)
                   <tr role="row" class="odd">
-                     <td class="">
-                        <p>{{$preval['cond']}}</p> 
-                        
-                     </td>
-                     <td class="">
-                        <p>{{$preval['timeline']}}</p>
-                     </td>
+                     <td class="">{{ $preval['mst_security_docs']['name']??'N/A' }}</td>
+                     <td class="">{{ $preval['due_date']?\Carbon\Carbon::parse($preval['due_date'])->format('d-m-Y'):'N/A' }}</td>
+                     <td style="white-space: pre-wrap;">{{ $preval['description']??'N/A' }}</td>
                   </tr>
                   @endforeach
                @else
                   <tr role="row" class="odd">
-                     <td colspan="2">
+                     <td colspan="3">
                         <p>No Record Found.</p> 
                         
                      </td> 
@@ -107,25 +104,23 @@
          <table id="invoice_history" class="table   no-footer overview-table " role="grid" aria-describedby="invoice_history_info" cellpadding="0" cellspacing="0">
             <thead>
                <tr role="row">
-                  <th class="sorting_asc" tabindex="0" aria-controls="invoice_history" rowspan="1" colspan="1" aria-sort="ascending" aria-label="Sr.No: activate to sort column descending" width="60%">Condition</th>
-                  <th class="sorting" tabindex="0" aria-controls="invoice_history" rowspan="1" colspan="1" aria-label="Docs : activate to sort column ascending">Timeline</th>
+                  <th class="sorting_asc" tabindex="0" aria-controls="invoice_history" rowspan="1" colspan="1" aria-sort="ascending" aria-label="Sr.No: activate to sort column descending" width="25%">Type of Document</th>
+                  <th class="sorting" tabindex="0" aria-controls="invoice_history" rowspan="1" colspan="1" aria-label="Docs : activate to sort column ascending" width="20%">Original Due Date</th>
+                  <th class="sorting" tabindex="0" aria-controls="invoice_history" rowspan="1" colspan="1" aria-label="Docs : activate to sort column ascending">Description</th>
                </tr>
             </thead>
             <tbody>
                @if(isset($postCondArr) && count($postCondArr)>0)
                   @foreach($postCondArr as $postkey =>$postval)
-                     <tr role="row" class="odd">
-                           <td class="">
-                              <p> {{$postval['cond']}} </p>
-                           </td>
-                           <td class="">
-                              <p> {{$postval['timeline']}} </p>
-                           </td>
-                     </tr>
+                  <tr role="row" class="odd">
+                     <td class="">{{ $postval['mst_security_docs']['name']??'N/A' }}</td>
+                     <td class="">{{ $postval['due_date']?\Carbon\Carbon::parse($postval['due_date'])->format('d-m-Y'):'N/A' }}</td>
+                     <td style="white-space: pre-wrap;">{{ $postval['description']??'N/A' }}</td>
+                  </tr>
                   @endforeach
                @else
                   <tr role="row" class="odd">
-                     <td class="" colspan="2">
+                     <td class="" colspan="3">
                         <p>No Record Found.</p> 
                         
                      </td> 

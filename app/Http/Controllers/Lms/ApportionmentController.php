@@ -1677,6 +1677,8 @@ class ApportionmentController extends Controller
     }
 
     public function listUnsettledSettledTDSTrans(Request $request){
+        ini_set('max_execution_time', -1);
+        ini_set("memory_limit", -1);
         $userId = $request->user_id;
         $paymentId = null;
         $payment_date = null;
@@ -2086,6 +2088,7 @@ class ApportionmentController extends Controller
                                 return redirect()->back();
                             }
                             $tokenId = Helpers::_decrypt($fileArrayData['TOKEN_ID'], 'CAPAUT');
+                            unset($fileArrayData);
                             $tokenData = [];
                             if ($tokenId) {
                                 $tokenData = explode('|', $tokenId);
@@ -2204,7 +2207,6 @@ class ApportionmentController extends Controller
         try {
             if ($request->has('user_id') && $request->user_id && $request->has('payment_id') && $request->payment_id) {
                 if ($request->has('action_type') && $request->has('action_type') == 'checkDownloadCsvEntry') {
-                    sleep(2);
                     $paymentApportionments  = ['payment_id' => $request->payment_id];
                     $result = PaymentApportionment::getLastPaymentAportData($paymentApportionments);
                     if ($result) {

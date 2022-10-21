@@ -539,7 +539,14 @@ let checkDownloadCsvEntry = function () {
 $(document).on("click", "#dwnldUnTransCsv", function (e) {
     e.preventDefault();
     window.location.href = $(this).attr("href");
-    checkDownloadCsvEntry();
+
+    var tid = setInterval(function(){
+        checkDownloadCsvEntry();
+    },5000); //delay is in milliseconds 
+
+    setTimeout(function(){
+        clearInterval(tid); //clear above interval after 5 seconds
+    },15000);
 });
 
 $(document).on("click", "#dltUnTransCsv", function (e) {

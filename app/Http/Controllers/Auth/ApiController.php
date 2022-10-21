@@ -15,6 +15,7 @@ use App\Helpers\Helper;
 use App\Inv\Repositories\Models\Master\EmailTemplate;
 use Storage;
 use Session;
+use Carbon\Carbon;
 
 /**
  * 
@@ -118,9 +119,10 @@ class ApiController
           }
         }*/
       }
-      if (is_null($jrnls->parent_trans_id) && $jrnls->entry_type == 0 && $jrnls->outstanding > 0 && $is_charge) {
+      /*if (is_null($jrnls->parent_trans_id) && $jrnls->entry_type == 0 && $jrnls->outstanding > 0 && $is_charge) {
        continue;
-      }
+      }*/
+
       $this->voucherNo = $this->voucherNo + 1;
       $entry_type = $jrnls->entry_type == 1 ? 'Credit' : 'Debit';
       $this->selectedTxnData[] = $jrnls->trans_id;
@@ -294,6 +296,7 @@ class ApiController
             'voucher_no' => $this->voucherNo,
             'voucher_type' => 'Journal',
             'voucher_date' => $rvrsl->trans_date,
+            'transaction_date'=>$rvrsl->created_at,
             'is_debit_credit' => $rvrsl->entry_type == 1 ? 'Credit' : 'Debit',
             'trans_type' =>  $trans_type_name,
             'invoice_no' =>   $invoice_no,
@@ -502,7 +505,8 @@ class ApiController
       $where = ['trans_date' => $disbursalDate, 'trans_type' => config('lms.TRANS_TYPE.INTEREST'), 'entry_type' => 0];
       $interestBooked = $dsbrsl->getInterestForDisbursal($where);
       $interestTransId = $interestBooked->trans_id;
-       $InterestRow = [
+      $this->selectedTxnData[] = $interestBooked->trans_id;
+      $InterestRow = [
               'batch_no' =>  $batch_no,
               'transactions_id' =>  $interestTransId,
               'voucher_no' => $this->voucherNo,
@@ -574,7 +578,7 @@ class ApiController
               'voucher_no' => $this->voucherNo,
               'voucher_type' => 'Receipt',
               'voucher_date' => $rcpt->date_of_payment,
-              'transaction_date'=>$refrenceTxns->created_at?$refrenceTxns->created_at:NULL,
+              'transaction_date'=>$rcpt->created_at?$rcpt->created_at:NULL,
               'is_debit_credit' =>  'Debit',
               'trans_type' =>  'Re-Payment',
               'invoice_no' =>   '',
@@ -618,7 +622,7 @@ class ApiController
               'voucher_no' => $this->voucherNo,
               'voucher_type' => 'Receipt',
               'voucher_date' => $stldTxn->trans_date,
-              'transaction_date'=>$stldTxn->created_at,
+              'transaction_date'=>$stldTxn->created_at?$stldTxn->created_at:NULL,
               'is_debit_credit' =>  'Credit',
               'trans_type' =>  $trans_type_name,
               'invoice_no' =>   $invoice_no,
@@ -663,7 +667,7 @@ class ApiController
   }
 
   public function tally_entry_date_wise(){
-    $activeDate = date('Y-m-d');
+    $activeDate = Carbon::now()->setTimezone(config('common.timezone'))->format('Y-m-d');
     // $dates = $this->displayDates('2020-01-01', date('Y-m-d'));
     // foreach ($dates as $activeDate) {
       self::tally_entry($activeDate,$activeDate);
@@ -671,7 +675,7 @@ class ApiController
   }
 
   public function tally_entry_Week_wise($weekName){
-    $activeDate = date('Y-m-d');
+    $activeDate = Carbon::now()->setTimezone(config('common.timezone'))->format('Y-m-d');
     // $dates = $this->displayDates('2022-01-01', date('Y-m-d'));
     // foreach ($dates as $activeDate) {
       if(in_array(strtolower(trim($weekName)),[strtolower(date('D',strtotime($activeDate))), strtolower(date('l',strtotime($activeDate)))])){
@@ -682,7 +686,7 @@ class ApiController
   }
 
   public function tally_entry_month_wise(){
-    $activeDate = date('Y-m-d');
+    $activeDate = Carbon::now()->setTimezone(config('common.timezone'))->format('Y-m-d');
     // $dates = $this->displayDates('2020-01-01', '2021-12-31');
     // foreach ($dates as $activeDate) {
       if(date("Y-m-t", strtotime($activeDate)) == $activeDate){
@@ -693,14 +697,13 @@ class ApiController
     // }
   }
 
-  public function tally_entry($startDate = null, $endDate = null){
-    
-    if(empty($startDate)){
-      $startDate = date('Y-m-d');
-    }
-    if(empty($endDate)){
-      $endDate = $startDate;
-    }
+  public function tally_entry($startDate, $endDate){  
+
+    $startDate  = "$startDate 00:00:00"; 
+    $endDate = "$endDate 23:59:59";
+    //$startDate = Helper::istToUtc($startDate,'Y-m-d H:i:s', 'Y-m-d H:i:s');
+    //$endDate = Helper::istToUtc($endDate,'Y-m-d H:i:s', 'Y-m-d H:i:s');
+
     $this->selectedTxnData = [];
     $this->selectedPaymentData = [];
     $this->voucherNo = null;
@@ -720,17 +723,18 @@ class ApiController
     }
     $this->voucherNo = $this->voucherNo + 1;
     $batch_no = _getRand(15);
-    $where = [['is_posted_in_tally', '=', '0'], ['created_at', '>=', "$startDate 00:00:00"],['created_at', '<=', "$endDate 23:59:59"]];
+    $where = [['is_posted_in_tally', '=', '0'], ['created_at', '>=', $startDate],['created_at', '<=', $endDate]];
     $journalData = Transactions::getJournalTxnTally($where);
     $disbursalData = Transactions::getDisbursalTxnTally($where);
     $refundData = Transactions::getRefundTxnTally($where);
-    $receiptData = Payment::getPaymentReceipt($where);
+    $receiptData = Payment::with('userRelation')->where(['is_settled' => 1, 'trans_type' => config('lms.TRANS_TYPE.REPAYMENT'), 'action_type' => 1])->whereHas('paymentRefrenceTxns',function($query) use($where){ $query->where($where); })->get();
 
     $journalArray = $this->createJournalData($journalData, $batch_no);
     $disbursalArray = $this->createDisbursalData($disbursalData, $batch_no);
     $receiptArray = $this->createReceiptData($receiptData, $batch_no);
     $refundArray = $this->createRefundData($refundData, $batch_no);
     $tally_data = array_merge($disbursalArray, $journalArray , $receiptArray, $refundArray);
+    
     try {
         if (empty($tally_data)) {
            $response['message'] =  'No Records are selected to Post in tally.';
@@ -746,11 +750,15 @@ class ApiController
     if ($res === true) {
       $totalTxnRecords = 0;
       if (!empty($selectedTxnData)) {
-        $totalTxnRecords = \DB::update('update rta_transactions set is_posted_in_tally = 1 where trans_id in(' . implode(', ', $selectedTxnData) . ')');
+        foreach(array_chunk($selectedTxnData,100,true) as $selTxnData){
+          $totalTxnRecords = \DB::update('update rta_transactions set is_posted_in_tally = 1 where trans_id in(' . implode(', ', $selTxnData) . ')');
+        }
       }
       $totalPaymentsRecords = 0;
       if (!empty($selectedPaymentData)) {
-        $totalPaymentsRecords = \DB::update('update rta_payments set is_posted_in_tally = 1 where payment_id in(' . implode(', ', $selectedPaymentData) . ')');
+        foreach(array_chunk($selectedPaymentData,100,true) as $selPayData){
+          $totalPaymentsRecords = \DB::update('update rta_payments set is_posted_in_tally = 1 where payment_id in(' . implode(', ', $selPayData) . ')');
+        }
       }
       $totalRecords = $totalTxnRecords + $totalPaymentsRecords;
       $recordsTobeInserted = count($selectedTxnData) + count($selectedPaymentData);
@@ -1214,6 +1222,7 @@ class ApiController
     return view('change_financial_yr');
   }
 }
+
 
 
  ?>

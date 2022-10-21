@@ -44,8 +44,8 @@ class TransactionsObserver
      */
     public function updated(Transactions $transaction)
     {
-        InvoiceDisbursedDetail::updateTransactionDetails($transaction);
-        CustomerTransactionSOA::updateTransactionSOADetails($transaction->user_id);
+        //InvoiceDisbursedDetail::updateTransactionDetails($transaction);
+        //CustomerTransactionSOA::updateTransactionSOADetails($transaction->user_id);
     }
 
     /**
