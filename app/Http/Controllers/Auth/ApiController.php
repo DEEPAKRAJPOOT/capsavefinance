@@ -574,7 +574,7 @@ class ApiController
      }
      $BankRow = [
               'batch_no' =>  $batch_no,
-              'transactions_id' =>  NULL,
+              'transactions_id' =>  $refrenceTxns->trans_id ?? NULL,
               'voucher_no' => $this->voucherNo,
               'voucher_type' => 'Receipt',
               'voucher_date' => $rcpt->date_of_payment,

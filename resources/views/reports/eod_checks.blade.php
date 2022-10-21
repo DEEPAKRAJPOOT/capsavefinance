@@ -27,6 +27,88 @@
               <strong>{{ count($tally_data) > 0 ? 'Tally Mismatch Found.' : 'No Tally Mismatch Found.' }}</strong>
             </td>
           </tr>
+
+          @if(count($tally_data))          
+          <tr>
+            <td>
+              <table border="0" cellpadding="0" cellspacing="0"
+                style="width: 100%;border: 1px solid #ccc; margin-top: 10px; margin-bottom: 10px;">
+                <tbody>
+                  <tr style="background-color: #eceff1;">
+                    <td
+                      style="font-family: Calibri !important; box-sizing: border-box; font-size: 0.917rem !important; font-weight: 600; padding-bottom: 10px;font-size: 0.917rem !important;;white-space: nowrap;padding:2px 5px;border-right:1px solid #ccc;color: #262626;">
+                       Start Date
+                    </td>
+                    <td
+                      style="font-family: Calibri !important; box-sizing: border-box; font-size: 0.917rem !important; font-weight: 600; padding-bottom: 10px;font-size: 0.917rem !important;;white-space: nowrap;padding:2px 5px;border-right:1px solid #ccc;color: #262626;">
+                       End Date
+                    </td>
+                    <td
+                      style="font-family: Calibri !important; box-sizing: border-box; font-size: 0.917rem !important; font-weight: 600; padding-bottom: 10px;font-size: 0.917rem !important;;white-space: nowrap;padding:2px 5px;border-right:1px solid #ccc;color: #262626;">
+                       Trans Count
+                    </td>
+                    <td
+                      style="font-family: Calibri !important; box-sizing: border-box; font-size: 0.917rem !important; font-weight: 600; padding-bottom: 10px;font-size: 0.917rem !important;;white-space: nowrap;padding:2px 5px;border-right:1px solid #ccc;color: #262626;">
+                      Trans Type 
+                    </td>
+                    <td
+                      style="font-family: Calibri !important; box-sizing: border-box; font-size: 0.917rem !important; font-weight: 600; padding-bottom: 10px;font-size: 0.917rem !important;;white-space: nowrap;padding:2px 5px;border-right:1px solid #ccc;color: #262626;">
+                      Trans Name
+                    </td>  
+                    <td
+                      style="font-family: Calibri !important; box-sizing: border-box; font-size: 0.917rem !important; font-weight: 600; padding-bottom: 10px;font-size: 0.917rem !important;;white-space: nowrap;padding:2px 5px;border-right:1px solid #ccc;color: #262626;">
+                      Trans Ids
+                    </td>  
+                  </tr>
+                  @foreach($tally_data as $key => $tally)
+                  @php
+                    $batchInterval = explode("|", $key);
+                    $startDate = $batchInterval[0] ?? '---';
+                    $endDate = $batchInterval[1] ?? '---';
+                  @endphp
+                    <tr>
+                      <td
+                        style="font-family: Calibri !important; box-sizing: border-box; font-size: 0.917rem !important; text-align: left; padding: 10px 10px 10px 0px; border-top:1px solid #ccc;border-right:1px solid #ccc;padding: 2px 5px;font-size: 0.917rem !important;line-height: 18px;vertical-align: top;">
+                        {{ $startDate }}
+                      </td>
+
+                      <td
+                        style="font-family: Calibri !important; box-sizing: border-box; font-size: 0.917rem !important; text-align: left; padding: 10px 10px 10px 0px; border-top:1px solid #ccc;border-right:1px solid #ccc;padding: 2px 5px;font-size: 0.917rem !important;line-height: 18px;vertical-align: top;">
+                        {{ $endDate }}
+                      </td>
+
+                      <td
+                        style="font-family: Calibri !important; box-sizing: border-box; font-size: 0.917rem !important; text-align: left; padding: 10px 10px 10px 0px; border-top:1px solid #ccc;border-right:1px solid #ccc;padding: 2px 5px;font-size: 0.917rem !important;line-height: 18px;vertical-align: top;">
+                        {{-- $tally->transCount --}}
+                        {{ implode("|", array_column($tally, 'transCount')) }}
+                      </td>
+
+                      <td
+                        style="font-family: Calibri !important; box-sizing: border-box; font-size: 0.917rem !important; text-align: left; padding: 10px 10px 10px 0px; border-top:1px solid #ccc;border-right:1px solid #ccc;padding: 2px 5px;font-size: 0.917rem !important;line-height: 18px;vertical-align: top;">
+                        {{-- $tally->trans_type --}}
+                        {{ implode("|", array_column($tally, 'trans_type')) }}
+                      </td>
+
+                      <td
+                        style="font-family: Calibri !important; box-sizing: border-box; font-size: 0.917rem !important; text-align: left; padding: 10px 10px 10px 0px; border-top:1px solid #ccc;border-right:1px solid #ccc;padding: 2px 5px;font-size: 0.917rem !important;line-height: 18px;vertical-align: top;">
+                        {{-- $tally->transaction_name --}}
+                        {{ implode("|", array_column($tally, 'transaction_name')) }}
+                      </td>
+                      <td
+                        style="font-family: Calibri !important; box-sizing: border-box; font-size: 0.917rem !important; text-align: left; padding: 10px 10px 10px 0px; border-top:1px solid #ccc;border-right:1px solid #ccc;padding: 2px 5px;font-size: 0.917rem !important;line-height: 18px;vertical-align: top;">
+                        {{-- $tally->trans_ids --}}
+                        {{ implode("|", array_column($tally, 'trans_ids')) }}
+                      </td>
+                    </tr>
+                  @endforeach
+
+                </tbody>
+              </table>
+            </td>
+          </tr>
+          @endif
+
+          @if(count($payments))
           <tr>
             <td style="font-family: Calibri !important; box-sizing: border-box; font-size: 0.917rem !important; text-align: left; padding-top:15px;padding-bottom:15px;font-weight: 500; font-size: 0.917rem !important; font-family: Calibri !important; color: #111; line-height: 11px;">
               <strong>Duplicate Payments</strong>
@@ -86,6 +168,9 @@
               </table>
             </td>
           </tr>
+          @endif
+
+          @if(count($disbursals))
           <tr>
             <td style="font-family: Calibri !important; box-sizing: border-box; font-size: 0.917rem !important; text-align: left; padding-top:15px;padding-bottom:15px;font-weight: 500; font-size: 0.917rem !important; font-family: Calibri !important; color: #111; line-height: 11px;">
               <strong>Duplicate Disbursals</strong>
@@ -135,7 +220,8 @@
                 </tbody>
               </table>
             </td>
-          </tr>          
+          </tr>
+          @endif  
           <tr>
             <td
               style="box-sizing: border-box; font-size: 0.917rem !important; text-align: left; padding-top:30px;font-weight: 600; font-size: 0.917rem !important; font-family: Calibri !important; line-height: 21px; padding-bottom:5px;color: #111;">

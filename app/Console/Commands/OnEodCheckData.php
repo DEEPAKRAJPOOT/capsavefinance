@@ -6,7 +6,6 @@ use Illuminate\Console\Command;
 use App\Inv\Repositories\Models\Payment;
 use App\Inv\Repositories\Models\Lms\Disbursal;
 use App\Inv\Repositories\Models\Lms\Transactions;
-use Carbon\Carbon;
 use DB;
 
 class OnEodCheckData extends Command
@@ -27,6 +26,7 @@ class OnEodCheckData extends Command
 
     protected $eodDate = '';
     protected $emailTo = '';
+    protected $tallyData = [];
 
     /**
      * Create a new command instance.
@@ -35,8 +35,8 @@ class OnEodCheckData extends Command
      */
     public function __construct()
     {
-        // $this->eodDate = now()->toDateString();
-        $this->eodDate = '2021-10-01';
+        $this->eodDate = now()->toDateString();
+        // $this->eodDate = '2022-10-01';
         $this->emailTo = 'pankaj.sharma@zuron.in';
         $this->emailCc = '';
         $this->emailBcc = '';
@@ -52,15 +52,7 @@ class OnEodCheckData extends Command
     {
         // $dupPayments = $this->checkDuplicatePaymentRecords();
         // $dupDisbursals = $this->checkDuplicateDisbursalRecords(); 
-        $tally_data = $this->checkEODTallyRecords();
-
-        // $emailData['disbursals'] = $dupDisbursals;
-        // $emailData['payments']   = $dupPayments;
-        // $emailData['tally_data'] = $tally_data;
-        // $emailData['to']         = $this->emailTo;
-        // $emailData['cc']         = $this->emailCc;
-        // $emailData['bcc']        = $this->emailBcc;
-        // \Event::dispatch("NOTIFY_EOD_CHECKS", serialize($emailData));
+        $this->checkEODTallyRecords();
     }
 
     private function checkDuplicatePaymentRecords()
@@ -87,9 +79,32 @@ class OnEodCheckData extends Command
 
     private function checkEODTallyRecords()
     {
-        $startDate = "$this->eodDate 00:00:00";
-        $endDate = now()->toDateString()." 23:59:59";
-        // $endDate = now()->toDateString();
+        $tallyBatches = DB::table('tally')
+                        ->whereNull('is_validated')
+                        ->whereNotNull('start_date')
+                        ->whereNotNull('end_date')
+                        ->groupBy('start_date', 'end_date')
+                        ->get();
+
+        foreach($tallyBatches as $tallyBatch) {
+            $this->processTallyBatch($tallyBatch);
+        }
+
+        if (count($this->tallyData)) {
+            $emailData['disbursals'] = $dupDisbursals ?? [];
+            $emailData['payments']   = $dupPayments ?? [];
+            $emailData['tally_data'] = $this->tallyData;
+            $emailData['to']         = $this->emailTo;
+            $emailData['cc']         = $this->emailCc;
+            $emailData['bcc']        = $this->emailBcc;
+            \Event::dispatch("NOTIFY_EOD_CHECKS", serialize($emailData));
+        }
+    }
+
+    public function processTallyBatch($tallyBatch)
+    {
+        $startDate = $tallyBatch->start_date;/*"$this->eodDate 00:00:00";*/
+        $endDate = $tallyBatch->end_date;/*"$this->eodDate 23:59:59";*/
         $where = [/*['is_posted_in_tally', '=', '0'],*/ ['created_at', '>=', $startDate],['created_at', '<=', $endDate]];
 
         $journalData = Transactions::where($where)
@@ -117,50 +132,48 @@ class OnEodCheckData extends Command
                                             ]);
                                     });
                                 })
-                                ->toSql();
-        // dd($journalData);
-        $bankingData = Transactions::whereHas('payment', function($query) use($where) {
-                            $query->where($where)
-                                ->where('trans_type', config('lms.TRANS_TYPE.REPAYMENT'))
-                                ->where('action_type', 1);
-                                
-                            $query->whereHas('transaction', function($query1) {
-                                $query1->where(function($query2) {
-                                            $query2->where('entry_type', 1)
-                                                ->whereIn('trans_type', [
-                                                    config('lms.TRANS_TYPE.REPAYMENT'),
-                                                    config('lms.TRANS_TYPE.INTEREST'),
-                                                    config('lms.TRANS_TYPE.INTEREST_OVERDUE'), 
-                                                    config('lms.TRANS_TYPE.NON_FACTORED_AMT'), 
-                                                    config('lms.TRANS_TYPE.PAYMENT_DISBURSED'), 
-                                                    config('lms.TRANS_TYPE.MARGIN'),
-                                                ]);
-                                            $query2->orWhere('trans_type', '>', 49);
-                                        });
+                                ->pluck('trans_id')
+                                ->toArray();
 
-                                $query1->orWhere(function($query3) {
-                                    $query3->where('entry_type', 0)
-                                            ->where('trans_type', config('lms.TRANS_TYPE.REFUND'));
-                                });
-                            });
-                        })                   
-                        ->toSql();
-        dd($bankingData);
-        $tally_trans_ids = array_unique(array_merge($journalData, $bankingData));            
-        $d = DB::table('tally')
-                ->select('tally_entry.transactions_id')
+        $bankingData = Transactions::where($where)
+                                ->where('entry_type', 1)
+                                ->whereNotNull('payment_id')
+                                ->whereNotIn('trans_type', [
+                                    config('lms.TRANS_TYPE.REFUND'),
+                                ])
+                                ->pluck('trans_id')
+                                ->toArray();
+
+        $tally_trans_ids = array_unique(array_merge($journalData, $bankingData));
+        $tally_data = DB::table('tally')
+                        ->select(DB::raw('DISTINCT rta_tally_entry.transactions_id'))
+                        ->where('start_date', $startDate)
+                        ->where('end_date', $endDate)
+                        ->join('tally_entry', 'tally_entry.batch_no', '=', 'tally.batch_no')
+                        ->whereIn('tally_entry.transactions_id', $tally_trans_ids)
+                        ->get()
+                        ->toArray();
+        $uniqTallyTransIds = array_column($tally_data, "transactions_id");
+        $diffUniqTallyTransIds = array_diff($tally_trans_ids, $uniqTallyTransIds);
+
+        if (count($diffUniqTallyTransIds)) {
+            $updateQuery = ['is_validated' => 0]; 
+            
+            $tally_data = Transactions::select(DB::raw('COUNT(*) as transCount, trans_type, rta_mst_trans_type.trans_name as transaction_name, GROUP_CONCAT(trans_id SEPARATOR "|") as trans_ids'))
+                                    ->join('mst_trans_type', 'mst_trans_type.id', '=', 'transactions.trans_type')
+                                    ->whereIn('trans_id', $diffUniqTallyTransIds)
+                                    ->groupBy('trans_type')
+                                    ->get()
+                                    ->toArray();
+            $this->tallyData["$startDate|$endDate"] = $tally_data;
+        }else {
+            $updateQuery = ['is_validated' => 1];
+        }
+
+        // To update tally validate status on tally table
+        DB::table('tally')
                 ->where('start_date', $startDate)
                 ->where('end_date', $endDate)
-                ->join('tally_entry', 'tally_entry.batch_no', '=', 'tally.batch_no')
-                ->whereIn('tally_entry.transactions_id', $tally_trans_ids)
-                ->get()
-                ->toArray();
-        dd($d, implode("|", array_diff($tally_trans_ids, $d)));
-        dd($journalData, $bankingData, array_unique(array_merge($journalData, $bankingData)));
-
-        // $transactions = Transactions::whereIn('trans_id', $tally_trans_ids)
-        //                         ->doesntHave('tallyEntry')
-                                // ->get();
-        return $transactions;
+                ->update($updateQuery);
     }
 }
