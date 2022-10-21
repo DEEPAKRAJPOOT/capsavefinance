@@ -578,7 +578,7 @@ class ApiController
               'voucher_no' => $this->voucherNo,
               'voucher_type' => 'Receipt',
               'voucher_date' => $rcpt->date_of_payment,
-              'transaction_date'=>$rcpt->created_at?$rcpt->created_at:NULL,
+              'transaction_date'=>$refrenceTxns->created_at?:NULL,
               'is_debit_credit' =>  'Debit',
               'trans_type' =>  'Re-Payment',
               'invoice_no' =>   '',
@@ -701,8 +701,8 @@ class ApiController
 
     $startDate  = "$startDate 00:00:00"; 
     $endDate = "$endDate 23:59:59";
-    //$startDate = Helper::istToUtc($startDate,'Y-m-d H:i:s', 'Y-m-d H:i:s');
-    //$endDate = Helper::istToUtc($endDate,'Y-m-d H:i:s', 'Y-m-d H:i:s');
+    $startDate = Helper::istToUtc($startDate,'Y-m-d H:i:s', 'Y-m-d H:i:s');
+    $endDate = Helper::istToUtc($endDate,'Y-m-d H:i:s', 'Y-m-d H:i:s');
 
     $this->selectedTxnData = [];
     $this->selectedPaymentData = [];
