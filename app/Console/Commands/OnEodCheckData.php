@@ -6,11 +6,7 @@ use Illuminate\Console\Command;
 use App\Inv\Repositories\Models\Payment;
 use App\Inv\Repositories\Models\Lms\Disbursal;
 use App\Inv\Repositories\Models\Lms\Transactions;
-use App\Inv\Repositories\Models\Master\EmailTemplate;
-use Illuminate\Support\Facades\Storage;
-use PHPExcel_IOFactory;
 use Carbon\Carbon;
-use PHPExcel;
 use DB;
 
 class OnEodCheckData extends Command
@@ -39,8 +35,8 @@ class OnEodCheckData extends Command
      */
     public function __construct()
     {
-        $this->eodDate = now()->toDateString();
-        // $this->eodDate = '2022-10-13';
+        // $this->eodDate = now()->toDateString();
+        $this->eodDate = '2021-10-01';
         $this->emailTo = 'pankaj.sharma@zuron.in';
         $this->emailCc = '';
         $this->emailBcc = '';
@@ -54,17 +50,17 @@ class OnEodCheckData extends Command
      */
     public function handle()
     {
-        $dupPayments = $this->checkDuplicatePaymentRecords();
-        $dupDisbursals = $this->checkDuplicateDisbursalRecords(); 
+        // $dupPayments = $this->checkDuplicatePaymentRecords();
+        // $dupDisbursals = $this->checkDuplicateDisbursalRecords(); 
         $tally_data = $this->checkEODTallyRecords();
 
-        $emailData['disbursals'] = $dupDisbursals;
-        $emailData['payments']   = $dupPayments;
-        $emailData['tally_data'] = $tally_data;
-        $emailData['to']         = $this->emailTo;
-        $emailData['cc']         = $this->emailCc;
-        $emailData['bcc']        = $this->emailBcc;
-        \Event::dispatch("NOTIFY_EOD_CHECKS", serialize($emailData));
+        // $emailData['disbursals'] = $dupDisbursals;
+        // $emailData['payments']   = $dupPayments;
+        // $emailData['tally_data'] = $tally_data;
+        // $emailData['to']         = $this->emailTo;
+        // $emailData['cc']         = $this->emailCc;
+        // $emailData['bcc']        = $this->emailBcc;
+        // \Event::dispatch("NOTIFY_EOD_CHECKS", serialize($emailData));
     }
 
     private function checkDuplicatePaymentRecords()
@@ -91,16 +87,80 @@ class OnEodCheckData extends Command
 
     private function checkEODTallyRecords()
     {
-        $where = [/*['is_posted_in_tally', '=', '0'],*/ ['created_at', '>=', "$this->eodDate 00:00:00"],['created_at', '<=', "$this->eodDate 23:59:59"]];
-        $journalArray = Transactions::getJournalTxnTally($where)->toArray();
-        $disbursalArray = Transactions::getDisbursalTxnTally($where)->toArray();
-        $refundArray = Transactions::getRefundTxnTally($where)->toArray();
+        $startDate = "$this->eodDate 00:00:00";
+        $endDate = now()->toDateString()." 23:59:59";
+        // $endDate = now()->toDateString();
+        $where = [/*['is_posted_in_tally', '=', '0'],*/ ['created_at', '>=', $startDate],['created_at', '<=', $endDate]];
 
-        $tally_data = array_merge($disbursalArray, $journalArray, $refundArray);
-        $tally_trans_ids = array_column($tally_data, 'trans_id');
-        $transactions = Transactions::whereIn('trans_id', $tally_trans_ids)
-                                ->doesntHave('tallyEntry')
-                                ->get();
+        $journalData = Transactions::where($where)
+                                    ->where(function($query){
+                                    $query->where('entry_type', 0)
+                                        ->whereNotIn('trans_type', [config('lms.TRANS_TYPE.MARGIN')]);
+                                    $query->where(function($query1) {
+                                        $query1->whereIn('trans_type', [
+                                            config('lms.TRANS_TYPE.INTEREST'),
+                                            config('lms.TRANS_TYPE.INTEREST_OVERDUE'),
+                                            config('lms.TRANS_TYPE.PAYMENT_DISBURSED'),
+                                        ]);
+                                        $query1->orWhere('trans_type', '>', 49);
+                                    });
+
+                                    $query->orWhere(function ($query1) {
+                                        $query1->where('entry_type', 1)
+                                            ->whereIn('trans_type', [
+                                                config('lms.TRANS_TYPE.CANCEL'),
+                                                config('lms.TRANS_TYPE.REVERSE'), 
+                                                config('lms.TRANS_TYPE.TDS'), 
+                                                config('lms.TRANS_TYPE.REFUND'), 
+                                                config('lms.TRANS_TYPE.WAVED_OFF'),
+                                                config('lms.TRANS_TYPE.WRITE_OFF'),
+                                            ]);
+                                    });
+                                })
+                                ->toSql();
+        // dd($journalData);
+        $bankingData = Transactions::whereHas('payment', function($query) use($where) {
+                            $query->where($where)
+                                ->where('trans_type', config('lms.TRANS_TYPE.REPAYMENT'))
+                                ->where('action_type', 1);
+                                
+                            $query->whereHas('transaction', function($query1) {
+                                $query1->where(function($query2) {
+                                            $query2->where('entry_type', 1)
+                                                ->whereIn('trans_type', [
+                                                    config('lms.TRANS_TYPE.REPAYMENT'),
+                                                    config('lms.TRANS_TYPE.INTEREST'),
+                                                    config('lms.TRANS_TYPE.INTEREST_OVERDUE'), 
+                                                    config('lms.TRANS_TYPE.NON_FACTORED_AMT'), 
+                                                    config('lms.TRANS_TYPE.PAYMENT_DISBURSED'), 
+                                                    config('lms.TRANS_TYPE.MARGIN'),
+                                                ]);
+                                            $query2->orWhere('trans_type', '>', 49);
+                                        });
+
+                                $query1->orWhere(function($query3) {
+                                    $query3->where('entry_type', 0)
+                                            ->where('trans_type', config('lms.TRANS_TYPE.REFUND'));
+                                });
+                            });
+                        })                   
+                        ->toSql();
+        dd($bankingData);
+        $tally_trans_ids = array_unique(array_merge($journalData, $bankingData));            
+        $d = DB::table('tally')
+                ->select('tally_entry.transactions_id')
+                ->where('start_date', $startDate)
+                ->where('end_date', $endDate)
+                ->join('tally_entry', 'tally_entry.batch_no', '=', 'tally.batch_no')
+                ->whereIn('tally_entry.transactions_id', $tally_trans_ids)
+                ->get()
+                ->toArray();
+        dd($d, implode("|", array_diff($tally_trans_ids, $d)));
+        dd($journalData, $bankingData, array_unique(array_merge($journalData, $bankingData)));
+
+        // $transactions = Transactions::whereIn('trans_id', $tally_trans_ids)
+        //                         ->doesntHave('tallyEntry')
+                                // ->get();
         return $transactions;
     }
 }

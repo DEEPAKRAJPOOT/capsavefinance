@@ -761,6 +761,8 @@ class ApiController
         $batchData = [
           'batch_no' => $batch_no,
           'record_cnt' => $recordsTobeInserted,
+          'start_date' => \Carbon\Carbon::parse($startDate)->startOfDay()->toDateTimeString(),
+          'end_date' => \Carbon\Carbon::parse($endDate)->endOfDay()->toDateTimeString(),
           'created_at' => $endDate,
         ];
         $tally_inst_data = FinanceModel::dataLogger($batchData, 'tally');
