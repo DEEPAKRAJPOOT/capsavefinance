@@ -502,7 +502,8 @@ class ApiController
      $disbursalPayment[] = $BankRow;
      if (!empty($total_interest) && $total_interest > 0) {
       $disbursalDate = $dsbrsl->trans_date;
-      $where = ['trans_date' => $disbursalDate, 'trans_type' => config('lms.TRANS_TYPE.INTEREST'), 'entry_type' => 0];
+      // change interest entry type for dirbursement in case of upfront for born by customer case
+      $where = ['trans_date' => $disbursalDate, 'trans_type' => config('lms.TRANS_TYPE.INTEREST'), 'entry_type' => 1];
       $interestBooked = $dsbrsl->getInterestForDisbursal($where);
       $interestTransId = $interestBooked->trans_id;
       $this->selectedTxnData[] = $interestBooked->trans_id;

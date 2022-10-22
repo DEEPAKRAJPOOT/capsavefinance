@@ -6,6 +6,7 @@ use Illuminate\Console\Command;
 use App\Inv\Repositories\Models\Payment;
 use App\Inv\Repositories\Models\Lms\Disbursal;
 use App\Inv\Repositories\Models\Lms\Transactions;
+use App\Inv\Repositories\Models\Master\TallyEntry;
 use DB;
 
 class OnEodCheckData extends Command
@@ -27,6 +28,7 @@ class OnEodCheckData extends Command
     protected $eodDate = '';
     protected $emailTo = '';
     protected $tallyData = [];
+    protected $tallyErrorData = [];
 
     /**
      * Create a new command instance.
@@ -79,26 +81,35 @@ class OnEodCheckData extends Command
 
     private function checkEODTallyRecords()
     {
-        $tallyBatches = DB::table('tally')
-                        ->whereNull('is_validated')
-                        ->whereNotNull('start_date')
-                        ->whereNotNull('end_date')
-                        ->groupBy('start_date', 'end_date')
-                        ->get();
+        try {
+            DB::beginTransaction();
+            $tallyBatches = DB::table('tally')
+                            ->whereNull('is_validated')
+                            ->whereNotNull('start_date')
+                            ->whereNotNull('end_date')
+                            // ->groupBy('start_date', 'end_date')
+                            ->orderByDesc('id')
+                            ->get();
 
-        foreach($tallyBatches as $tallyBatch) {
-            $this->processTallyBatch($tallyBatch);
-        }
+            foreach($tallyBatches as $tallyBatch) {
+                $this->processTallyBatch($tallyBatch);
+            }
 
-        if (count($this->tallyData)) {
-            $emailData['disbursals'] = $dupDisbursals ?? [];
-            $emailData['payments']   = $dupPayments ?? [];
-            $emailData['tally_data'] = $this->tallyData;
-            $emailData['to']         = $this->emailTo;
-            $emailData['cc']         = $this->emailCc;
-            $emailData['bcc']        = $this->emailBcc;
-            \Event::dispatch("NOTIFY_EOD_CHECKS", serialize($emailData));
-        }
+            if (count($this->tallyData) && count($this->tallyErrorData)) {
+                $emailData['disbursals'] = $dupDisbursals ?? [];
+                $emailData['payments']   = $dupPayments ?? [];
+                $emailData['tally_data'] = $this->tallyData;
+                $emailData['tally_error_data'] = $this->tallyErrorData;
+                $emailData['to']         = $this->emailTo;
+                $emailData['cc']         = $this->emailCc;
+                $emailData['bcc']        = $this->emailBcc;
+                \Event::dispatch("NOTIFY_EOD_CHECKS", serialize($emailData));
+            }
+            DB::commit();
+        } catch (\Exception $ex) {
+            DB::rollback();
+            dd(\Helpers::getExceptionMessage($ex));
+        }        
     }
 
     public function processTallyBatch($tallyBatch)
@@ -143,37 +154,114 @@ class OnEodCheckData extends Command
                                 ])
                                 ->pluck('trans_id')
                                 ->toArray();
-
+    
         $tally_trans_ids = array_unique(array_merge($journalData, $bankingData));
-        $tally_data = DB::table('tally')
+        $tally_trans_data = DB::table('tally')
                         ->select(DB::raw('DISTINCT rta_tally_entry.transactions_id'))
-                        ->where('start_date', $startDate)
-                        ->where('end_date', $endDate)
+                        ->where('tally.batch_no', $tallyBatch->batch_no)
+                        // ->where('start_date', $startDate)
+                        // ->where('end_date', $endDate)
                         ->join('tally_entry', 'tally_entry.batch_no', '=', 'tally.batch_no')
                         ->whereIn('tally_entry.transactions_id', $tally_trans_ids)
                         ->get()
                         ->toArray();
-        $uniqTallyTransIds = array_column($tally_data, "transactions_id");
+        $uniqTallyTransIds = array_column($tally_trans_data, "transactions_id");
         $diffUniqTallyTransIds = array_diff($tally_trans_ids, $uniqTallyTransIds);
-
+        
         if (count($diffUniqTallyTransIds)) {
-            $updateQuery = ['is_validated' => 0]; 
-            
-            $tally_data = Transactions::select(DB::raw('COUNT(*) as transCount, trans_type, rta_mst_trans_type.trans_name as transaction_name, GROUP_CONCAT(trans_id SEPARATOR "|") as trans_ids'))
+            $updateQuery = ['is_validated' => 0];
+            $tallyRecords = TallyEntry::select(DB::raw('rta_mst_trans_type.trans_name as transaction_name, COUNT(DISTINCT rta_tally_entry.transactions_id) as tallyCount, SUM(distinct rta_tally_entry.amount) as tallyAmt'))
+                                ->join('transactions', 'transactions.trans_id', '=', 'tally_entry.transactions_id')
+                                ->join('mst_trans_type', 'mst_trans_type.id', '=', 'transactions.trans_type')
+                                ->where('tally_entry.batch_no', $tallyBatch->batch_no)
+                                ->groupBy('transactions.trans_type', 'tally_entry.transactions_id')
+                                ->orderBy('transactions.trans_type', 'ASC')
+                                ->get()
+                                ->toArray();
+                                
+            $tallyTransRecords = Transactions::select(DB::raw('rta_mst_trans_type.trans_name as transaction_name, COUNT(*) as transCount, SUM(rta_transactions.amount) as transAmt, SUM(CASE When rta_transactions.trans_type="17" Then rta_payments.amount Else 0 End ) as paysAmt'))
+                                    ->join('mst_trans_type', 'mst_trans_type.id', '=', 'transactions.trans_type')
+                                    ->leftJoin('payments', 'transactions.payment_id', '=', 'payments.payment_id')
+                                    ->whereIn('transactions.trans_id', $tally_trans_ids)
+                                    ->groupBy('transactions.trans_type')
+                                    ->get()
+                                    ->toArray();
+
+            $this->tallyData[$tallyBatch->batch_no] = [
+                'start_date' => \Helpers::convertDateTimeFormat($tallyBatch->start_date, 'Y-m-d H:i:s', 'd-m-Y h:i A'),
+                'end_date' => \Helpers::convertDateTimeFormat($tallyBatch->end_date, 'Y-m-d H:i:s', 'd-m-Y h:i A'),
+                'total_record' => array_sum(array_column($tallyTransRecords, 'transCount')),
+                'matched_record' => array_sum(array_column($tallyRecords, 'tallyCount')),
+                'trans_wise_data' => $this->formatData(array_merge($tallyRecords, $tallyTransRecords)),
+            ];
+
+            $tally_data = Transactions::select(DB::raw('COUNT(*) as transCount, rta_mst_trans_type.trans_name as transaction_name, GROUP_CONCAT(trans_id) as trans_ids'))
                                     ->join('mst_trans_type', 'mst_trans_type.id', '=', 'transactions.trans_type')
                                     ->whereIn('trans_id', $diffUniqTallyTransIds)
                                     ->groupBy('trans_type')
                                     ->get()
                                     ->toArray();
-            $this->tallyData["$startDate|$endDate"] = $tally_data;
+
+            $this->tallyErrorData[$tallyBatch->batch_no] = $tally_data;
         }else {
             $updateQuery = ['is_validated' => 1];
         }
 
         // To update tally validate status on tally table
         DB::table('tally')
-                ->where('start_date', $startDate)
-                ->where('end_date', $endDate)
+                ->where('batch_no', $tallyBatch->batch_no)
+            /* ->where('start_date', $startDate)
+                 ->where('end_date', $endDate)*/
                 ->update($updateQuery);
+    }
+
+    private function formatData($allData)
+    {
+        $newData = [];
+        foreach($allData as $data) {
+            if (isset($newData[$data['transaction_name']])) {
+                $oldData = $newData[$data['transaction_name']];
+                if (isset($data['tallyCount'])) {
+                    if (isset($oldData['tallyCount'])) {
+                        $newData[$data['transaction_name']]['tallyCount'] = $oldData['tallyCount'] + $data['tallyCount'];
+                    }else {
+                        $newData[$data['transaction_name']]['tallyCount'] = $data['tallyCount'];
+                    }
+                }
+                if (isset($data['tallyAmt'])) {
+                    if (isset($oldData['tallyAmt'])) {
+                        $newData[$data['transaction_name']]['tallyAmt'] = $oldData['tallyAmt'] + $data['tallyAmt'];
+                    }else {
+                        $newData[$data['transaction_name']]['tallyAmt'] = $data['tallyAmt'];
+                    }
+                }
+                if (isset($data['transCount'])) {
+                    if (isset($oldData['transCount'])) {
+                        $newData[$data['transaction_name']]['transCount'] = $oldData['transCount'] + $data['transCount'];
+                    }else {
+                        $newData[$data['transaction_name']]['transCount'] = $data['transCount'];
+                    }
+                }
+                if (isset($data['transAmt'])) {
+                    if (isset($oldData['transAmt'])) {
+                        $newData[$data['transaction_name']]['transAmt'] = $oldData['transAmt'] + $data['transAmt'];
+                    }else {
+                        $newData[$data['transaction_name']]['transAmt'] = $data['transAmt'];
+                    }
+                }
+                if (isset($data['paysAmt'])) {
+                    if (isset($oldData['transAmt'])) {
+                        $newData[$data['transaction_name']]['transAmt'] = $oldData['transAmt'] + $data['paysAmt'];
+                    }else {
+                        if ($data['transaction_name'] == 'Repayment') {
+                            $newData[$data['transaction_name']]['transAmt'] = $data['paysAmt'];
+                        }
+                    }
+                }
+            }else {
+                $newData[$data['transaction_name']] = $data;
+            }
+        }
+        return $newData;
     }
 }

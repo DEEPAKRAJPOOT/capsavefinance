@@ -14,17 +14,12 @@
           <tr>
             <td
               style="font-family: Calibri !important; box-sizing: border-box; font-size: 0.917rem !important; text-align: left; padding-top:20px; font-size: 0.917rem !important; font-family: Calibri !important; color: #111; line-height: 11px;">
-              Hi Sir,
+              Dear Sir/Madam,
             </td>
           </tr>
           <tr>
             <td style="font-family: Calibri !important; box-sizing: border-box; font-size: 0.917rem !important; text-align: left; padding-top:15px;font-weight: 500; font-size: 0.917rem !important; font-family: Calibri !important; color: #111; line-height: 11px;">
               Please check below mentioned EOD checks data.
-            </td>
-          </tr>
-          <tr>
-            <td style="font-family: Calibri !important; box-sizing: border-box; font-size: 0.917rem !important; text-align: left; padding-top:15px;padding-bottom:15px;font-weight: 500; font-size: 0.917rem !important; font-family: Calibri !important; color: #111; line-height: 11px;">
-              <strong>{{ count($tally_data) > 0 ? 'Tally Mismatch Found.' : 'No Tally Mismatch Found.' }}</strong>
             </td>
           </tr>
 
@@ -37,69 +32,174 @@
                   <tr style="background-color: #eceff1;">
                     <td
                       style="font-family: Calibri !important; box-sizing: border-box; font-size: 0.917rem !important; font-weight: 600; padding-bottom: 10px;font-size: 0.917rem !important;;white-space: nowrap;padding:2px 5px;border-right:1px solid #ccc;color: #262626;">
+                       Sr. No
+                    </td>
+                    <td
+                      style="font-family: Calibri !important; box-sizing: border-box; font-size: 0.917rem !important; font-weight: 600; padding-bottom: 10px;font-size: 0.917rem !important;;white-space: nowrap;padding:2px 5px;border-right:1px solid #ccc;color: #262626;">
+                       Tally Batch No
+                    </td>
+                    <td
+                      style="font-family: Calibri !important; box-sizing: border-box; font-size: 0.917rem !important; font-weight: 600; padding-bottom: 10px;font-size: 0.917rem !important;;white-space: nowrap;padding:2px 5px;border-right:1px solid #ccc;color: #262626;">
                        Start Date
                     </td>
                     <td
                       style="font-family: Calibri !important; box-sizing: border-box; font-size: 0.917rem !important; font-weight: 600; padding-bottom: 10px;font-size: 0.917rem !important;;white-space: nowrap;padding:2px 5px;border-right:1px solid #ccc;color: #262626;">
-                       End Date
+                      End Date
                     </td>
                     <td
                       style="font-family: Calibri !important; box-sizing: border-box; font-size: 0.917rem !important; font-weight: 600; padding-bottom: 10px;font-size: 0.917rem !important;;white-space: nowrap;padding:2px 5px;border-right:1px solid #ccc;color: #262626;">
-                       Trans Count
-                    </td>
-                    <td
-                      style="font-family: Calibri !important; box-sizing: border-box; font-size: 0.917rem !important; font-weight: 600; padding-bottom: 10px;font-size: 0.917rem !important;;white-space: nowrap;padding:2px 5px;border-right:1px solid #ccc;color: #262626;">
-                      Trans Type 
-                    </td>
-                    <td
-                      style="font-family: Calibri !important; box-sizing: border-box; font-size: 0.917rem !important; font-weight: 600; padding-bottom: 10px;font-size: 0.917rem !important;;white-space: nowrap;padding:2px 5px;border-right:1px solid #ccc;color: #262626;">
-                      Trans Name
+                      Total Record
                     </td>  
                     <td
                       style="font-family: Calibri !important; box-sizing: border-box; font-size: 0.917rem !important; font-weight: 600; padding-bottom: 10px;font-size: 0.917rem !important;;white-space: nowrap;padding:2px 5px;border-right:1px solid #ccc;color: #262626;">
-                      Trans Ids
+                      Matched Record
                     </td>  
                   </tr>
-                  @foreach($tally_data as $key => $tally)
-                  @php
-                    $batchInterval = explode("|", $key);
-                    $startDate = $batchInterval[0] ?? '---';
-                    $endDate = $batchInterval[1] ?? '---';
-                  @endphp
+                  @php $i = 0; @endphp
+                  @foreach($tally_data as $batchNo => $tally)
+                    <tr>
+                      <td
+                        style="font-family: Calibri !important; box-sizing: border-box; font-size: 0.917rem !important; text-align: left; padding: 10px 10px 10px 0px; border-top:1px solid #ccc;border-right:1px solid #ccc;padding: 2px 5px;font-size: 0.917rem !important;line-height: 18px;vertical-align: top;">                        
+                        {{ ++$i }}
+                      </td>
+
+                      <td
+                        style="font-family: Calibri !important; box-sizing: border-box; font-size: 0.917rem !important; text-align: left; padding: 10px 10px 10px 0px; border-top:1px solid #ccc;border-right:1px solid #ccc;padding: 2px 5px;font-size: 0.917rem !important;line-height: 18px;vertical-align: top;">
+                        {{ $batchNo }}
+                      </td>
+
+                      <td
+                        style="font-family: Calibri !important; box-sizing: border-box; font-size: 0.917rem !important; text-align: left; padding: 10px 10px 10px 0px; border-top:1px solid #ccc;border-right:1px solid #ccc;padding: 2px 5px;font-size: 0.917rem !important;line-height: 18px;vertical-align: top;">
+                        {{ $tally['start_date'] }}
+                      </td>
+
+                      <td
+                        style="font-family: Calibri !important; box-sizing: border-box; font-size: 0.917rem !important; text-align: left; padding: 10px 10px 10px 0px; border-top:1px solid #ccc;border-right:1px solid #ccc;padding: 2px 5px;font-size: 0.917rem !important;line-height: 18px;vertical-align: top;">
+                        {{ $tally['end_date'] }}
+                      </td>
+
+                      <td
+                        style="font-family: Calibri !important; box-sizing: border-box; font-size: 0.917rem !important; text-align: left; padding: 10px 10px 10px 0px; border-top:1px solid #ccc;border-right:1px solid #ccc;padding: 2px 5px;font-size: 0.917rem !important;line-height: 18px;vertical-align: top;">
+                        {{ $tally['total_record'] }}
+                      </td>
+                      <td
+                        style="font-family: Calibri !important; box-sizing: border-box; font-size: 0.917rem !important; text-align: left; padding: 10px 10px 10px 0px; border-top:1px solid #ccc;border-right:1px solid #ccc;padding: 2px 5px;font-size: 0.917rem !important;line-height: 18px;vertical-align: top;">
+                        {{ $tally['matched_record'] }}
+                      </td>
+                    </tr>
+
+                    @if(!empty($tally['trans_wise_data']) && count($tally['trans_wise_data']))
+                    <tr style="background-color: #eceff1;">
+                      <td
+                        style="font-family: Calibri !important; box-sizing: border-box; font-size: 0.917rem !important; font-weight: 600; padding-bottom: 10px;font-size: 0.917rem !important;;white-space: nowrap;padding:2px 5px;border-right:1px solid #ccc;color: #262626;">                        
+                      </td>
+                      <td
+                        style="font-family: Calibri !important; box-sizing: border-box; font-size: 0.917rem !important; font-weight: 600; padding-bottom: 10px;font-size: 0.917rem !important;;white-space: nowrap;padding:2px 5px;border-right:1px solid #ccc;color: #262626;">
+                        Transaction Type
+                      </td>
+                      <td
+                        style="font-family: Calibri !important; box-sizing: border-box; font-size: 0.917rem !important; font-weight: 600; padding-bottom: 10px;font-size: 0.917rem !important;;white-space: nowrap;padding:2px 5px;border-right:1px solid #ccc;color: #262626;">
+                        Total Record
+                      </td>
+                      <td
+                        style="font-family: Calibri !important; box-sizing: border-box; font-size: 0.917rem !important; font-weight: 600; padding-bottom: 10px;font-size: 0.917rem !important;;white-space: nowrap;padding:2px 5px;border-right:1px solid #ccc;color: #262626;">
+                        Total Amount
+                      </td>
+                      <td
+                        style="font-family: Calibri !important; box-sizing: border-box; font-size: 0.917rem !important; font-weight: 600; padding-bottom: 10px;font-size: 0.917rem !important;;white-space: nowrap;padding:2px 5px;border-right:1px solid #ccc;color: #262626;">
+                        Record Matched/Unmatched
+                      </td>
+                      <td
+                        style="font-family: Calibri !important; box-sizing: border-box; font-size: 0.917rem !important; font-weight: 600; padding-bottom: 10px;font-size: 0.917rem !important;;white-space: nowrap;padding:2px 5px;border-right:1px solid #ccc;color: #262626;">
+                        Amount Matched/Unmatched
+                      </td>
+                    </tr>
+                    @php
+                      $tallyTransWiseData = $tally['trans_wise_data'];
+                    @endphp
+                    @foreach($tallyTransWiseData as $transName => $transWiseData)
                     <tr>
                       <td
                         style="font-family: Calibri !important; box-sizing: border-box; font-size: 0.917rem !important; text-align: left; padding: 10px 10px 10px 0px; border-top:1px solid #ccc;border-right:1px solid #ccc;padding: 2px 5px;font-size: 0.917rem !important;line-height: 18px;vertical-align: top;">
-                        {{ $startDate }}
+                      </td>
+                      <td
+                        style="font-family: Calibri !important; box-sizing: border-box; font-size: 0.917rem !important; text-align: left; padding: 10px 10px 10px 0px; border-top:1px solid #ccc;border-right:1px solid #ccc;padding: 2px 5px;font-size: 0.917rem !important;line-height: 18px;vertical-align: top;">
+                        {{ $transName }}
                       </td>
 
                       <td
                         style="font-family: Calibri !important; box-sizing: border-box; font-size: 0.917rem !important; text-align: left; padding: 10px 10px 10px 0px; border-top:1px solid #ccc;border-right:1px solid #ccc;padding: 2px 5px;font-size: 0.917rem !important;line-height: 18px;vertical-align: top;">
-                        {{ $endDate }}
+                        {{ $transWiseData['transCount'] }}
                       </td>
 
                       <td
                         style="font-family: Calibri !important; box-sizing: border-box; font-size: 0.917rem !important; text-align: left; padding: 10px 10px 10px 0px; border-top:1px solid #ccc;border-right:1px solid #ccc;padding: 2px 5px;font-size: 0.917rem !important;line-height: 18px;vertical-align: top;">
-                        {{-- $tally->transCount --}}
-                        {{ implode("|", array_column($tally, 'transCount')) }}
+                        {{ $transWiseData['transAmt'] }}
                       </td>
 
                       <td
                         style="font-family: Calibri !important; box-sizing: border-box; font-size: 0.917rem !important; text-align: left; padding: 10px 10px 10px 0px; border-top:1px solid #ccc;border-right:1px solid #ccc;padding: 2px 5px;font-size: 0.917rem !important;line-height: 18px;vertical-align: top;">
-                        {{-- $tally->trans_type --}}
-                        {{ implode("|", array_column($tally, 'trans_type')) }}
+                        {{ isset($transWiseData['tallyCount']) ? $transWiseData['tallyCount'] : 0 }}/{{ ($transWiseData['transCount'] - (isset($transWiseData['tallyCount']) ? $transWiseData['tallyCount'] : 0)) }}
                       </td>
 
                       <td
                         style="font-family: Calibri !important; box-sizing: border-box; font-size: 0.917rem !important; text-align: left; padding: 10px 10px 10px 0px; border-top:1px solid #ccc;border-right:1px solid #ccc;padding: 2px 5px;font-size: 0.917rem !important;line-height: 18px;vertical-align: top;">
-                        {{-- $tally->transaction_name --}}
-                        {{ implode("|", array_column($tally, 'transaction_name')) }}
-                      </td>
-                      <td
-                        style="font-family: Calibri !important; box-sizing: border-box; font-size: 0.917rem !important; text-align: left; padding: 10px 10px 10px 0px; border-top:1px solid #ccc;border-right:1px solid #ccc;padding: 2px 5px;font-size: 0.917rem !important;line-height: 18px;vertical-align: top;">
-                        {{-- $tally->trans_ids --}}
-                        {{ implode("|", array_column($tally, 'trans_ids')) }}
+                        {{ isset($transWiseData['tallyAmt']) ? round($transWiseData['tallyAmt'], 2) : 0 }}/{{ round(($transWiseData['transAmt'] - (isset($transWiseData['tallyAmt']) ? round($transWiseData['tallyAmt'], 2) : 0)), 2) }}
                       </td>
                     </tr>
+                    @endforeach
+                    @endif
+                  @endforeach
+                </tbody>
+              </table>
+            </td>
+          </tr>
+          @endif
+
+          @if(count($tally_error_data))
+          <tr>
+            <td style="font-family: Calibri !important; box-sizing: border-box; font-size: 0.917rem !important; text-align: left; padding-top:15px;font-weight: 500; font-size: 0.917rem !important; font-family: Calibri !important; color: #111; line-height: 11px;">
+              <strong>Tally Error Records.</strong>
+            </td>
+          </tr>      
+          <tr>
+            <td>
+              <table border="0" cellpadding="0" cellspacing="0"
+                style="width: 100%;border: 1px solid #ccc; margin-top: 10px; margin-bottom: 10px;">
+                <tbody>
+                  <tr style="background-color: #eceff1;">
+                    <td
+                      style="font-family: Calibri !important; box-sizing: border-box; font-size: 0.917rem !important; font-weight: 600; padding-bottom: 10px;font-size: 0.917rem !important;;white-space: nowrap;padding:2px 5px;border-right:1px solid #ccc;color: #262626;">
+                       Transaction Type
+                    </td>
+                    <td
+                      style="font-family: Calibri !important; box-sizing: border-box; font-size: 0.917rem !important; font-weight: 600; padding-bottom: 10px;font-size: 0.917rem !important;;white-space: nowrap;padding:2px 5px;border-right:1px solid #ccc;color: #262626;">
+                       Tally Batch No
+                    </td>
+                    <td
+                      style="font-family: Calibri !important; box-sizing: border-box; font-size: 0.917rem !important; font-weight: 600; padding-bottom: 10px;font-size: 0.917rem !important;;white-space: nowrap;padding:2px 5px;border-right:1px solid #ccc;color: #262626;">
+                       Trans Ids
+                    </td>
+                  </tr>
+                  @foreach($tally_error_data as $batchNo => $tally_error)
+                    @foreach($tally_error as $error)
+                    <tr>
+                      <td
+                        style="font-family: Calibri !important; box-sizing: border-box; font-size: 0.917rem !important; text-align: left; padding: 10px 10px 10px 0px; border-top:1px solid #ccc;border-right:1px solid #ccc;padding: 2px 5px;font-size: 0.917rem !important;line-height: 18px;vertical-align: top;">
+                        {{ $error['transaction_name'] }}
+                      </td>
+
+                      <td
+                        style="font-family: Calibri !important; box-sizing: border-box; font-size: 0.917rem !important; text-align: left; padding: 10px 10px 10px 0px; border-top:1px solid #ccc;border-right:1px solid #ccc;padding: 2px 5px;font-size: 0.917rem !important;line-height: 18px;vertical-align: top;">
+                        {{ $batchNo }}
+                      </td>
+
+                      <td
+                        style="font-family: Calibri !important; box-sizing: border-box; font-size: 0.917rem !important; text-align: left; padding: 10px 10px 10px 0px; border-top:1px solid #ccc;border-right:1px solid #ccc;padding: 2px 5px;font-size: 0.917rem !important;line-height: 18px;vertical-align: top;">
+                        {{ $error['trans_ids'] }}
+                      </td>
+                    </tr>
+                  @endforeach
                   @endforeach
 
                 </tbody>
