@@ -47,11 +47,11 @@
                       End Date
                     </td>
                     <td
-                      style="font-family: Calibri !important; box-sizing: border-box; font-size: 0.917rem !important; font-weight: 600; padding-bottom: 10px;font-size: 0.917rem !important;;white-space: nowrap;padding:2px 5px;border-right:1px solid #ccc;color: #262626;">
+                      style="font-family: Calibri !important; box-sizing: border-box; font-size: 0.917rem !important; font-weight: 600; padding-bottom: 10px;font-size: 0.917rem !important;;white-space: nowrap;padding:2px 5px;border-right:1px solid #ccc;color: #262626;" colspan="2">
                       Total Record
                     </td>  
                     <td
-                      style="font-family: Calibri !important; box-sizing: border-box; font-size: 0.917rem !important; font-weight: 600; padding-bottom: 10px;font-size: 0.917rem !important;;white-space: nowrap;padding:2px 5px;border-right:1px solid #ccc;color: #262626;">
+                      style="font-family: Calibri !important; box-sizing: border-box; font-size: 0.917rem !important; font-weight: 600; padding-bottom: 10px;font-size: 0.917rem !important;;white-space: nowrap;padding:2px 5px;border-right:1px solid #ccc;color: #262626;" colspan="2">
                       Matched Record
                     </td>  
                   </tr>
@@ -79,11 +79,11 @@
                       </td>
 
                       <td
-                        style="font-family: Calibri !important; box-sizing: border-box; font-size: 0.917rem !important; text-align: left; padding: 10px 10px 10px 0px; border-top:1px solid #ccc;border-right:1px solid #ccc;padding: 2px 5px;font-size: 0.917rem !important;line-height: 18px;vertical-align: top;">
+                        style="font-family: Calibri !important; box-sizing: border-box; font-size: 0.917rem !important; text-align: left; padding: 10px 10px 10px 0px; border-top:1px solid #ccc;border-right:1px solid #ccc;padding: 2px 5px;font-size: 0.917rem !important;line-height: 18px;vertical-align: top;" colspan="2">
                         {{ $tally['total_record'] }}
                       </td>
                       <td
-                        style="font-family: Calibri !important; box-sizing: border-box; font-size: 0.917rem !important; text-align: left; padding: 10px 10px 10px 0px; border-top:1px solid #ccc;border-right:1px solid #ccc;padding: 2px 5px;font-size: 0.917rem !important;line-height: 18px;vertical-align: top;">
+                        style="font-family: Calibri !important; box-sizing: border-box; font-size: 0.917rem !important; text-align: left; padding: 10px 10px 10px 0px; border-top:1px solid #ccc;border-right:1px solid #ccc;padding: 2px 5px;font-size: 0.917rem !important;line-height: 18px;vertical-align: top;" colspan="2">
                         {{ $tally['matched_record'] }}
                       </td>
                     </tr>
@@ -101,18 +101,36 @@
                         style="font-family: Calibri !important; box-sizing: border-box; font-size: 0.917rem !important; font-weight: 600; padding-bottom: 10px;font-size: 0.917rem !important;;white-space: nowrap;padding:2px 5px;border-right:1px solid #ccc;color: #262626;">
                         Total Record
                       </td>
+
+                      <td
+                        style="font-family: Calibri !important; box-sizing: border-box; font-size: 0.917rem !important; font-weight: 600; padding-bottom: 10px;font-size: 0.917rem !important;;white-space: nowrap;padding:2px 5px;border-right:1px solid #ccc;color: #262626;">
+                              Tally No.of records
+                      </td>
+
+                      <td
+                        style="font-family: Calibri !important; box-sizing: border-box; font-size: 0.917rem !important; font-weight: 600; padding-bottom: 10px;font-size: 0.917rem !important;;white-space: nowrap;padding:2px 5px;border-right:1px solid #ccc;color: #262626;">
+                              Records Diff
+                      </td>
+
                       <td
                         style="font-family: Calibri !important; box-sizing: border-box; font-size: 0.917rem !important; font-weight: 600; padding-bottom: 10px;font-size: 0.917rem !important;;white-space: nowrap;padding:2px 5px;border-right:1px solid #ccc;color: #262626;">
                         Total Amount
                       </td>
+                      
+                      
                       <td
                         style="font-family: Calibri !important; box-sizing: border-box; font-size: 0.917rem !important; font-weight: 600; padding-bottom: 10px;font-size: 0.917rem !important;;white-space: nowrap;padding:2px 5px;border-right:1px solid #ccc;color: #262626;">
-                        Record Matched/Unmatched
+                            Tally Amount
                       </td>
+
                       <td
                         style="font-family: Calibri !important; box-sizing: border-box; font-size: 0.917rem !important; font-weight: 600; padding-bottom: 10px;font-size: 0.917rem !important;;white-space: nowrap;padding:2px 5px;border-right:1px solid #ccc;color: #262626;">
-                        Amount Matched/Unmatched
+                            Amount Diff
                       </td>
+
+
+
+
                     </tr>
                     @php
                       $tallyTransWiseData = $tally['trans_wise_data'];
@@ -132,20 +150,36 @@
                         {{ $transWiseData['transCount'] }}
                       </td>
 
+
+                      <td
+                        style="font-family: Calibri !important; box-sizing: border-box; font-size: 0.917rem !important; text-align: left; padding: 10px 10px 10px 0px; border-top:1px solid #ccc;border-right:1px solid #ccc;padding: 2px 5px;font-size: 0.917rem !important;line-height: 18px;vertical-align: top;">
+                        {{ isset($transWiseData['tallyCount']) ? $transWiseData['tallyCount'] : 0 }}
+                      </td>
+
+
+                      <td
+                        style="font-family: Calibri !important; box-sizing: border-box; font-size: 0.917rem !important; text-align: left; padding: 10px 10px 10px 0px; border-top:1px solid #ccc;border-right:1px solid #ccc;padding: 2px 5px;font-size: 0.917rem !important;line-height: 18px;vertical-align: top;">
+                        {{ ($transWiseData['transCount'] - (isset($transWiseData['tallyCount']) ? $transWiseData['tallyCount'] : 0)) }}
+                      </td>
+
                       <td
                         style="font-family: Calibri !important; box-sizing: border-box; font-size: 0.917rem !important; text-align: left; padding: 10px 10px 10px 0px; border-top:1px solid #ccc;border-right:1px solid #ccc;padding: 2px 5px;font-size: 0.917rem !important;line-height: 18px;vertical-align: top;">
                         {{ $transWiseData['transAmt'] }}
                       </td>
 
+
+                      
+
                       <td
                         style="font-family: Calibri !important; box-sizing: border-box; font-size: 0.917rem !important; text-align: left; padding: 10px 10px 10px 0px; border-top:1px solid #ccc;border-right:1px solid #ccc;padding: 2px 5px;font-size: 0.917rem !important;line-height: 18px;vertical-align: top;">
-                        {{ isset($transWiseData['tallyCount']) ? $transWiseData['tallyCount'] : 0 }}/{{ ($transWiseData['transCount'] - (isset($transWiseData['tallyCount']) ? $transWiseData['tallyCount'] : 0)) }}
+                        {{ isset($transWiseData['tallyAmt']) ? round($transWiseData['tallyAmt'], 2) : 0 }}
                       </td>
 
                       <td
                         style="font-family: Calibri !important; box-sizing: border-box; font-size: 0.917rem !important; text-align: left; padding: 10px 10px 10px 0px; border-top:1px solid #ccc;border-right:1px solid #ccc;padding: 2px 5px;font-size: 0.917rem !important;line-height: 18px;vertical-align: top;">
-                        {{ isset($transWiseData['tallyAmt']) ? round($transWiseData['tallyAmt'], 2) : 0 }}/{{ round(($transWiseData['transAmt'] - (isset($transWiseData['tallyAmt']) ? round($transWiseData['tallyAmt'], 2) : 0)), 2) }}
+                        {{ round(($transWiseData['transAmt'] - (isset($transWiseData['tallyAmt']) ? round($transWiseData['tallyAmt'], 2) : 0)), 2) }}
                       </td>
+                      
                     </tr>
                     @endforeach
                     @endif
