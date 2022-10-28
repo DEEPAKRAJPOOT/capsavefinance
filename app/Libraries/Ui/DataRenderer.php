@@ -5819,17 +5819,17 @@ class DataRenderer implements DataProviderInterface
                     ->editColumn(
                         'created_at',
                         function ($dataRecords) {
-                        return $dataRecords->created_at;
+                        return \Helpers::utcToIst($dataRecords->created_at, 'Y-m-d H:i:s', 'Y-m-d H:i A');
                     })
                     ->editColumn(
                         'start_date',
                         function ($dataRecords) {
-                        return $dataRecords->start_date ?? '---';
+                        return $dataRecords->start_date ? \Helpers::utcToIst($dataRecords->start_date, 'Y-m-d H:i:s', 'Y-m-d H:i A') : '---';
                     })
                     ->editColumn(
                         'end_date',
                         function ($dataRecords) {
-                        return $dataRecords->end_date ?? '---';
+                        return $dataRecords->end_date ? \Helpers::utcToIst($dataRecords->end_date, 'Y-m-d H:i:s', 'Y-m-d H:i A') : '---';
                     })
                     ->editColumn(
                         'batch_no',
