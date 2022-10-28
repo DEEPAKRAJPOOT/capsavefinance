@@ -1730,18 +1730,23 @@ class UserEventsListener extends BaseEvent
         $data = unserialize($attributes); 
         $this->func_name = __FUNCTION__;
         $eodCheckData = view('reports.eod_checks')->with(['disbursals' => $data['disbursals'], 'payments' => $data['payments'], 'tally_data' => $data['tally_data'], 'tally_error_data' => $data['tally_error_data']])->render();
-        $mail_subject = "EOD Checks Alert";
-        Mail::send('email', ['baseUrl'=> env('HTTP_APPURL',''), 'varContent' => $eodCheckData],
-            function ($message) use ($data, $mail_subject, $eodCheckData) {                    
-                $email = $data["to"];
-                $cc = array_filter(explode(',', $data['cc']));
-                $bcc = array_filter(explode(',', $data['bcc']));
+        
+        
+        $email_content = EmailTemplate::getEmailTemplate("EOD_CHECKS_ALERT");
+        if ($email_content) {
+            Mail::send('email', ['baseUrl'=> env('HTTP_APPURL',''), 'varContent' => $eodCheckData],
+            function ($message) use ($data, $email_content, $eodCheckData) {                    
+                //$email = $data["to"];
+                $email = env('EOD_CHECK_MAIL_TO');
+                $cc = array_filter(explode(',', $email_content->cc));
+                $bcc = array_filter(explode(',', $email_content->bcc));
                 if (!empty($bcc)) {
                     $message->bcc($bcc);
                 }
                 if (!empty($cc)) {
                     $message->cc($cc);
                 }
+            $mail_subject = $email_content->subject;
             $message->from(config('common.FRONTEND_FROM_EMAIL'), config('common.FRONTEND_FROM_EMAIL_NAME'));
             $message->to($email);
             $message->subject($mail_subject);
@@ -1756,6 +1761,11 @@ class UserEventsListener extends BaseEvent
             ];
             FinanceModel::logEmail($mailContent);
         }); 
+
+
+        }        
+        
+        
     }
     
     /**

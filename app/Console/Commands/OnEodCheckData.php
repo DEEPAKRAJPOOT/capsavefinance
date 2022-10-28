@@ -26,7 +26,6 @@ class OnEodCheckData extends Command
     protected $description = 'To check eod data for mismatch records';
 
     protected $eodDate = '';
-    protected $emailTo = '';
     protected $tallyData = [];
     protected $tallyErrorData = [];
 
@@ -38,10 +37,6 @@ class OnEodCheckData extends Command
     public function __construct()
     {
         $this->eodDate = now()->toDateString();
-        // $this->eodDate = '2022-10-01';
-        $this->emailTo = 'amit.suman@zuron.in';
-        $this->emailCc = '';
-        $this->emailBcc = '';
         parent::__construct();
 
     }
@@ -102,9 +97,6 @@ class OnEodCheckData extends Command
                 $emailData['payments']   = $dupPayments ?? [];
                 $emailData['tally_data'] = $this->tallyData;
                 $emailData['tally_error_data'] = $this->tallyErrorData;
-                $emailData['to']         = $this->emailTo;
-                $emailData['cc']         = $this->emailCc;
-                $emailData['bcc']        = $this->emailBcc;
                 \Event::dispatch("NOTIFY_EOD_CHECKS", serialize($emailData));
             }
             DB::commit();
