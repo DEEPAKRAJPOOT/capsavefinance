@@ -10,6 +10,7 @@ use BlankDataExceptions;
 use App\Http\Requests\Request;
 use InvalidDataTypeExceptions;
 use App\Inv\Repositories\Models\User;
+use App\Inv\Repositories\Models\Master\Company;
 use App\Inv\Repositories\Models\LmsUser;
 use App\Inv\Repositories\Models\Payment;
 use App\Inv\Repositories\Models\AppLimit;
@@ -1858,6 +1859,10 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
 		return LmsUsersLog::getAccountStatus($userId);
 	}
 
+	public function getCapsavAddr(){
+		return Company::getCapsavAddr();
+	}
+	
     public function getAllBusinessForSheet($whereCond) {
 		// return Application::with(['business', 'bizInvoice.invoice_disbursed'])->whereHas('bizInvoice.invoice_disbursed', function ($q) use ($whereCond) {
 		// 	$q->where('is_posted_in_cibil',$whereCond['is_posted_in_cibil']);

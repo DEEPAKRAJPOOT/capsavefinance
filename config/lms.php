@@ -12,6 +12,7 @@ return [
     'EOD_FAILURE_MAIL' => explode(',',env('EOD_FAILURE_MAIL','')),
     'LMS_STATUS' => env('LMS_STATUS', 0),
     'NPA_DAYS' => env('NPA_DAYS', 90),
+    'COMP_ADDR_ID'=>'10',
     'TRANS_TYPE' => [    
        'REVERSE' => '2',
        'TDS'=>'7',

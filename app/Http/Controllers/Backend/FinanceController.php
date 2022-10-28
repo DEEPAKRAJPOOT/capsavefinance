@@ -85,6 +85,7 @@ class FinanceController extends Controller {
         $transDate = "";
         if (!empty($result)) {
            foreach ($result as $key => $value) {
+               
                 $new[] = $fetchedArr = (array)$value;
                 $voucherDate = date('d-m-Y',strtotime($fetchedArr['voucher_date']));
                 $trans_date = date('Y-m-d', strtotime($fetchedArr['voucher_date'])); 
@@ -111,7 +112,7 @@ class FinanceController extends Controller {
                         "cr_amount" => ($entry_type == 'credit' ? $fetchedArr['amount'] : ''),
                         "cr_ref_no" => $fetchedArr['ref_no'],
                         "cr_ref_amount" => $fetchedArr['amount'],
-                        "narration" => $fetchedArr['narration'] 
+                        "narration" => $fetchedArr['narration'],
                     ];
                     if (!$is_first_n_old) {
                         if (!empty($journal[0])) {
@@ -148,6 +149,8 @@ class FinanceController extends Controller {
                         "favoring_name" => $fetchedArr['favoring_name'],
                         "remarks" => $fetchedArr['remarks'],
                         "narration" => $fetchedArr['narration'],
+                        "company_bank_name"=> $fetchedArr['company_bank_name']?$fetchedArr['company_bank_name']:'',
+                        "company_bank_acc"=> $fetchedArr['company_bank_acc']?$fetchedArr['company_bank_acc']:'',
                     ];
                     $records['PAYMENT'][] = $paymentRow;
                 }

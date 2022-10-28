@@ -62,6 +62,8 @@ class TallyEntry extends BaseModel
         'amount',
         'ref_no',
         'ref_amount',
+        'company_bank_name',
+        'company_bank_acc',
         'acc_no',
         'ifsc_code',
         'bank_name',

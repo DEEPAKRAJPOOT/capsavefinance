@@ -144,6 +144,8 @@ class ApiController
           'acc_no' =>  '',
           'ifsc_code' =>  '',
           'bank_name' =>  '',
+          'company_bank_name'=>'',
+          'company_bank_acc'=>'',
           'cheque_amount' =>  '',
           'cross_using' => '',
           'mode_of_pay' => '',
@@ -311,6 +313,8 @@ class ApiController
             'cheque_amount' =>  '',
             'cross_using' => '',
             'mode_of_pay' => '',
+            'company_bank_name'=>'',
+            'company_bank_acc'=>'',
             'inst_no' =>  NULL,
             'inst_date' =>  NULL,
             'favoring_name' =>  '',
@@ -380,6 +384,8 @@ class ApiController
           'cheque_amount' =>  '',
           'cross_using' => '',
           'mode_of_pay' => '',
+          'company_bank_name'=>'',
+          'company_bank_acc'=>'',
           'inst_no' =>  NULL,
           'inst_date' =>  NULL,
           'favoring_name' =>  '',
@@ -408,6 +414,8 @@ class ApiController
           'bank_name' =>  $accountDetails->bank->bank_name ?? '',
           'cheque_amount' =>  '',
           'cross_using' => '',
+          'company_bank_name'=>'',
+          'company_bank_acc'=>'',
           'mode_of_pay' => 'e-Fund-Transfer',
           'inst_no' =>  $inst_no,
           'inst_date' =>  $inst_date,
@@ -466,6 +474,8 @@ class ApiController
               'inst_no' =>  NULL,
               'inst_date' =>  NULL,
               'favoring_name' =>  '',
+              'company_bank_name'=>'',
+              'company_bank_acc'=>'',
               'remarks' => '',
               'generated_by' => '0',
               'narration' => 'Being  Payment Disbursed towards UserId ' . $user_id . ', Invoice No '. $invoice_no .' & Batch no '. $batch_no .$payment_id,
@@ -496,6 +506,8 @@ class ApiController
               'inst_date' =>  $dsbrsl->invoiceDisbursed->disbursal->funded_date ?? NULL,
               'favoring_name' =>  $userName,
               'remarks' => '',
+              'company_bank_name'=>'',
+              'company_bank_acc'=>'',
               'generated_by' => '1',
               'narration' => 'Being  Payment Disbursed towards UserId ' . $user_id . ', Invoice No '. $invoice_no .' & Batch no '. $batch_no .$payment_id,
      ];
@@ -529,6 +541,8 @@ class ApiController
               'inst_no' =>  NULL,
               'inst_date' =>  NULL,
               'favoring_name' =>  '',
+              'company_bank_name'=>'',
+              'company_bank_acc'=>'',
               'remarks' => '',
               'generated_by' => '1',
               'narration' => 'Being Interest Booked towards UserId ' . $user_id . ', Invoice No '. $invoice_no .' & Batch no '. $batch_no .$payment_id,
@@ -540,8 +554,11 @@ class ApiController
   }
 
   private function createReceiptData($receiptData, $batch_no) {
+    
     $receiptPayment = [];
     foreach($receiptData as $rcpt){
+      
+      
      $this->voucherNo = $this->voucherNo + 1;
      $settledTransactoions =  $rcpt->getSettledTxns;
      $refrenceTxns = $rcpt->paymentRefrenceTxns->first();
@@ -595,6 +612,8 @@ class ApiController
               'inst_no' =>  $inst_no,
               'inst_date' =>  $inst_date,
               'favoring_name' =>  $userName,
+              'company_bank_name'=>$rcpt->companyUserAccount?$rcpt->companyUserAccount->bank->bank_name:NULL,
+              'company_bank_acc'=>$rcpt->companyUserAccount?$rcpt->companyUserAccount->acc_no:NULL,
               'remarks' => '',
               'generated_by' => '1',
               'narration' => 'Being Repayment towards UserId ' . $user_id . ' & Batch no '. $batch_no,
@@ -639,6 +658,8 @@ class ApiController
               'inst_no' =>  NULL,
               'inst_date' =>  NULL,
               'favoring_name' =>  '',
+              'company_bank_name'=>$rcpt->companyUserAccount?$rcpt->companyUserAccount->bank->bank_name:NULL,
+              'company_bank_acc'=>$rcpt->companyUserAccount?$rcpt->companyUserAccount->acc_no:NULL,
               'remarks' => '',
               'generated_by' => '0',
               'narration' => 'Being '.$trans_type_name.' towards UserId ' . $user_id . ', Invoice No '. $invoice_no .' & Batch no '. $batch_no,
@@ -696,12 +717,14 @@ class ApiController
     // }
   }
 
-  public function tally_entry($startDate, $endDate){  
-
-    $startDate  = "$startDate 00:00:00"; 
-    $endDate = "$endDate 23:59:59";
-    $startDate = Helper::istToUtc($startDate,'Y-m-d H:i:s', 'Y-m-d H:i:s');
-    $endDate = Helper::istToUtc($endDate,'Y-m-d H:i:s', 'Y-m-d H:i:s');
+  public function tally_entry(Request $request, $startDate = null, $endDate = null){
+    
+    if(empty($startDate)){
+      $startDate = $request->get('start_date')?date('Y-m-d',strtotime($request->get('start_date'))):date('Y-m-d');
+    }
+    if(empty($endDate)){
+      $endDate = $request->get('end_date')?date('Y-m-d',strtotime($request->get('end_date'))):$startDate;
+    }
 
     $this->selectedTxnData = [];
     $this->selectedPaymentData = [];
