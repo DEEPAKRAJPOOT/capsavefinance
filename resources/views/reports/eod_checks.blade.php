@@ -224,7 +224,7 @@
                         {{ $error['trans_ids'] }}
                       </td>
                     </tr>
-                  @endforeach
+                    @endforeach
                   @endforeach
 
                 </tbody>
