@@ -5822,6 +5822,16 @@ class DataRenderer implements DataProviderInterface
                         return $dataRecords->created_at;
                     })
                     ->editColumn(
+                        'start_date',
+                        function ($dataRecords) {
+                        return $dataRecords->start_date ?? '---';
+                    })
+                    ->editColumn(
+                        'end_date',
+                        function ($dataRecords) {
+                        return $dataRecords->end_date ?? '---';
+                    })
+                    ->editColumn(
                         'batch_no',
                         function ($dataRecords) {
                         return $dataRecords->batch_no;
