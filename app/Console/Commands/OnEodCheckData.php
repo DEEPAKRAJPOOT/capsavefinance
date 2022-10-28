@@ -39,8 +39,8 @@ class OnEodCheckData extends Command
     {
         $this->eodDate = now()->toDateString();
         // $this->eodDate = '2022-10-01';
-        $this->emailTo = 'amit.suman@zuron.in,gaurav.agarwal@zuron.in,sudesh.kumar@zuron.in,hirdesh@zuron.in';
-        $this->emailCc = '';
+        $this->emailTo = 'hirdesh@zuron.in';
+        $this->emailCc = 'amit.suman@zuron.in,gaurav.agarwal@zuron.in,sudesh.kumar@zuron.in';
         $this->emailBcc = '';
         parent::__construct();
 
