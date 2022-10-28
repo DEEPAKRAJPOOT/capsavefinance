@@ -32,7 +32,9 @@
                                 <tr role="row">
                                     <th>Batch No</th>
                                     <th>Records in Batch</th>
-                                    <th>Date</th>
+                                    <th>Start Date</th>
+                                    <th>End Date</th>
+                                    <th>Created At</th>
                                     <th>Action</th>
                                 </tr>
                             </thead>

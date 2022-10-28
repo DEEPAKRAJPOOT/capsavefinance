@@ -1718,9 +1718,46 @@ class UserEventsListener extends BaseEvent
                 ];
                 FinanceModel::logEmail($mailContent);
             }); 
-        }
+        }        
     }
-
+        
+    /**
+     * EOD Checks Alert
+     * 
+     * @param Array $attributes
+    */
+    public function onEODChecksAlert($attributes) {
+        $data = unserialize($attributes); 
+        $this->func_name = __FUNCTION__;
+        $eodCheckData = view('reports.eod_checks')->with(['disbursals' => $data['disbursals'], 'payments' => $data['payments'], 'tally_data' => $data['tally_data'], 'tally_error_data' => $data['tally_error_data']])->render();
+        $mail_subject = "EOD Checks Alert";
+        Mail::send('email', ['baseUrl'=> env('HTTP_APPURL',''), 'varContent' => $eodCheckData],
+            function ($message) use ($data, $mail_subject, $eodCheckData) {                    
+                $email = $data["to"];
+                $cc = array_filter(explode(',', $data['cc']));
+                $bcc = array_filter(explode(',', $data['bcc']));
+                if (!empty($bcc)) {
+                    $message->bcc($bcc);
+                }
+                if (!empty($cc)) {
+                    $message->cc($cc);
+                }
+            $message->from(config('common.FRONTEND_FROM_EMAIL'), config('common.FRONTEND_FROM_EMAIL_NAME'));
+            $message->to($email);
+            $message->subject($mail_subject);
+            $mailContent = [
+                'email_from' => config('common.FRONTEND_FROM_EMAIL'),
+                'email_to' => $email,
+                'email_cc' => $cc ?? NULL,
+                'email_bcc' => $bcc ?? NULL,
+                'email_type' => $this->func_name,
+                'subject' => $mail_subject,
+                'body' => $eodCheckData,
+            ];
+            FinanceModel::logEmail($mailContent);
+        }); 
+    }
+    
     /**
      * Event subscribers
      *
@@ -1934,6 +1971,11 @@ class UserEventsListener extends BaseEvent
         $events->listen(
             'APPROVER_MAIL_FOR_PENDING_CASES',
             'App\Inv\Repositories\Events\UserEventsListener@approverMailForPendingCases'
+        );
+
+        $events->listen(
+            'NOTIFY_EOD_CHECKS', 
+            'App\Inv\Repositories\Events\UserEventsListener@onEODChecksAlert'
         );
     }
 }

@@ -574,7 +574,7 @@ class ApiController
      }
      $BankRow = [
               'batch_no' =>  $batch_no,
-              'transactions_id' =>  NULL,
+              'transactions_id' => NULL,
               'voucher_no' => $this->voucherNo,
               'voucher_type' => 'Receipt',
               'voucher_date' => $rcpt->date_of_payment,
@@ -769,7 +769,9 @@ class ApiController
         $batchData = [
           'batch_no' => $batch_no,
           'record_cnt' => $recordsTobeInserted,
-          'created_at' => $endDate,
+          'start_date' => $startDate,
+          'end_date' => $endDate,
+          'created_at' => now(),
         ];
         $tally_inst_data = FinanceModel::dataLogger($batchData, 'tally');
         $response['message'] =  ($recordsTobeInserted > 1 ? $recordsTobeInserted .' Records inserted successfully' : '1 Record inserted.');

@@ -23,6 +23,8 @@ try {
                     
                     {data: 'batch_no'},
                     {data: 'records_in_batch'},
+                    {data: 'start_date'},
+                    {data: 'end_date'},
                     {data: 'created_at'},
                     {data: 'action'},
                 ],
