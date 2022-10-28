@@ -43,6 +43,7 @@ class OnEodCheckData extends Command
         $this->emailCc = '';
         $this->emailBcc = '';
         parent::__construct();
+
     }
 
     /**
@@ -81,6 +82,8 @@ class OnEodCheckData extends Command
 
     private function checkEODTallyRecords()
     {
+        ini_set("memory_limit", "-1");
+        ini_set('max_execution_time', 10000);
         try {
             DB::beginTransaction();
             $tallyBatches = DB::table('tally')
@@ -147,13 +150,28 @@ class OnEodCheckData extends Command
                                 ->toArray();
 
         $bankingData = Transactions::where($where)
-                                ->where('entry_type', 1)
-                                ->whereNotNull('payment_id')
-                                ->whereNotIn('trans_type', [
-                                    config('lms.TRANS_TYPE.REFUND'),
-                                ])
-                                ->whereHas('payment', function ($query) {
-                                    $query->whereNotIn('action_type', [5]);
+                                ->where(function($query){
+                                    $query->where(function($query1){
+                                        $query1->where('entry_type', 1)
+                                        ->whereNotNull('payment_id')
+                                        ->whereNotIn('trans_type', [
+                                            config('lms.TRANS_TYPE.REFUND'),
+                                            config('lms.TRANS_TYPE.REPAYMENT'),
+                                        ])
+                                        ->whereHas('payment', function ($query2) {
+                                            $query2->whereNotIn('action_type', [5]);
+                                        });
+                                    })
+                                    ->orWhere(function($query3){
+                                        $query3->where('entry_type', 0)
+                                        ->where('trans_type',32);
+                                    })
+                                    ->orWhere(function($query4){
+                                        $query4->where('entry_type', 1)
+                                        ->where('trans_type',9)
+                                        ->whereNull('payment_id')
+                                        ->whereNull('trans_running_id');
+                                    });
                                 })
                                 ->pluck('trans_id')
                                 ->toArray();
@@ -171,22 +189,22 @@ class OnEodCheckData extends Command
         $uniqTallyTransIds = array_column($tally_trans_data, "transactions_id");
         $diffUniqTallyTransIds = array_diff($tally_trans_ids, $uniqTallyTransIds);
 
-        if (count($diffUniqTallyTransIds)) {
+        if (1) {
             $updateQuery = ['is_validated' => 0];
-            $tallyRecords = TallyEntry::select(DB::raw('rta_customer_transaction_soa.trans_name as transaction_name, COUNT(DISTINCT rta_tally_entry.transactions_id) as tallyCount, SUM(distinct rta_tally_entry.amount) as tallyAmt'))
+            $tallyRecords = TallyEntry::select(DB::raw('concat(if(rta_transactions.entry_type = 0,"Debit - ","Credit - "),rta_customer_transaction_soa.trans_name) as transaction_name, COUNT(DISTINCT rta_tally_entry.transactions_id) as tallyCount, SUM(rta_tally_entry.amount) as tallyAmt'))
                                 ->join('transactions', 'transactions.trans_id', '=', 'tally_entry.transactions_id')
                                 ->join('customer_transaction_soa', 'customer_transaction_soa.trans_id', '=', 'transactions.trans_id')
                                 ->where('tally_entry.batch_no', $tallyBatch->batch_no)
-                                ->groupBy('transactions.trans_type', 'tally_entry.transactions_id')
+                                ->groupBy('tally_entry.transactions_id')
                                 ->orderBy('transactions.trans_type', 'ASC')
                                 ->get()
                                 ->toArray();
                                 
-            $tallyTransRecords = Transactions::select(DB::raw('rta_customer_transaction_soa.trans_name as transaction_name, COUNT(*) as transCount, SUM(rta_transactions.amount) as transAmt, SUM(CASE When rta_transactions.trans_type="17" Then rta_payments.amount Else 0 End ) as paysAmt'))
+            $tallyTransRecords = Transactions::select(DB::raw('concat(if(rta_transactions.entry_type = 0,"Debit - ","Credit - "),rta_customer_transaction_soa.trans_name) as transaction_name, COUNT(*) as transCount, SUM(rta_transactions.amount) as transAmt, SUM(CASE When rta_transactions.trans_type="17" Then rta_payments.amount Else 0 End ) as paysAmt'))
                                    ->join('customer_transaction_soa', 'customer_transaction_soa.trans_id', '=', 'transactions.trans_id')
                                     ->leftJoin('payments', 'transactions.payment_id', '=', 'payments.payment_id')
                                     ->whereIn('transactions.trans_id', $tally_trans_ids)
-                                    ->groupBy('transactions.trans_type')
+                                    ->groupBy('transactions.trans_id')
                                     ->get()
                                     ->toArray();
 
@@ -198,10 +216,10 @@ class OnEodCheckData extends Command
                 'trans_wise_data' => $this->formatData(array_merge($tallyRecords, $tallyTransRecords)),
             ];
 
-            $tally_data = Transactions::select(DB::raw('COUNT(*) as transCount, rta_customer_transaction_soa.trans_name as transaction_name, GROUP_CONCAT(trans_id) as trans_ids'))
+            $tally_data = Transactions::select(DB::raw('COUNT(*) as transCount, rta_customer_transaction_soa.trans_name as transaction_name, GROUP_CONCAT(rta_transactions.trans_id) as trans_ids'))
                                     ->join('customer_transaction_soa', 'customer_transaction_soa.trans_id', '=', 'transactions.trans_id')
-                                    ->whereIn('trans_id', $diffUniqTallyTransIds)
-                                    ->groupBy('trans_type')
+                                    ->whereIn('transactions.trans_id', $diffUniqTallyTransIds)
+                                    ->groupBy('transactions.trans_type')
                                     ->get()
                                     ->toArray();
 
@@ -252,7 +270,7 @@ class OnEodCheckData extends Command
                         $newData[$data['transaction_name']]['transAmt'] = $data['transAmt'];
                     }
                 }
-                if (isset($data['paysAmt'])) {
+               /* if (isset($data['paysAmt'])) {
                     if (isset($oldData['transAmt'])) {
                         $newData[$data['transaction_name']]['transAmt'] = $oldData['transAmt'] + $data['paysAmt'];
                     }else {
@@ -260,7 +278,7 @@ class OnEodCheckData extends Command
                             $newData[$data['transaction_name']]['transAmt'] = $data['paysAmt'];
                         }
                     }
-                }
+                }*/
             }else {
                 $newData[$data['transaction_name']] = $data;
             }

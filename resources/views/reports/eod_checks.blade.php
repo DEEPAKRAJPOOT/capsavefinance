@@ -143,7 +143,7 @@
 
                       <td
                         style="font-family: Calibri !important; box-sizing: border-box; font-size: 0.917rem !important; text-align: left; padding: 10px 10px 10px 0px; border-top:1px solid #ccc;border-right:1px solid #ccc;padding: 2px 5px;font-size: 0.917rem !important;line-height: 18px;vertical-align: top;">
-                        {{ $transWiseData['transCount'] }}
+                        {{ isset($transWiseData['transCount']) ? $transWiseData['transCount'] : 0}}
                       </td>
 
                       <td
@@ -153,12 +153,12 @@
 
                       <td
                         style="font-family: Calibri !important; box-sizing: border-box; font-size: 0.917rem !important; text-align: left; padding: 10px 10px 10px 0px; border-top:1px solid #ccc;border-right:1px solid #ccc;padding: 2px 5px;font-size: 0.917rem !important;line-height: 18px;vertical-align: top;">
-                        {{ ($transWiseData['transCount'] - (isset($transWiseData['tallyCount']) ? $transWiseData['tallyCount'] : 0)) }}
+                        {{ ((isset($transWiseData['transCount']) ? $transWiseData['transCount'] : 0) - (isset($transWiseData['tallyCount']) ? $transWiseData['tallyCount'] : 0)) }}
                       </td>
 
                       <td
                         style="font-family: Calibri !important; box-sizing: border-box; font-size: 0.917rem !important; text-align: left; padding: 10px 10px 10px 0px; border-top:1px solid #ccc;border-right:1px solid #ccc;padding: 2px 5px;font-size: 0.917rem !important;line-height: 18px;vertical-align: top;">
-                        {{ $transWiseData['transAmt'] }}
+                        {{ isset($transWiseData['transAmt']) ? $transWiseData['transAmt'] : 0}}
                       </td>
                     
                       <td
@@ -168,7 +168,7 @@
 
                       <td
                         style="font-family: Calibri !important; box-sizing: border-box; font-size: 0.917rem !important; text-align: left; padding: 10px 10px 10px 0px; border-top:1px solid #ccc;border-right:1px solid #ccc;padding: 2px 5px;font-size: 0.917rem !important;line-height: 18px;vertical-align: top;">
-                        {{ round(($transWiseData['transAmt'] - (isset($transWiseData['tallyAmt']) ? round($transWiseData['tallyAmt'], 2) : 0)), 2) }}
+                        {{ round(((isset($transWiseData['transAmt']) ? round($transWiseData['transAmt'],2) : 0) - (isset($transWiseData['tallyAmt']) ? round($transWiseData['tallyAmt'], 2) : 0)), 2) }}
                       </td>
                       
                     </tr>
