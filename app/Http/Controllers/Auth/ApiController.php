@@ -500,43 +500,43 @@ class ApiController
               'narration' => 'Being  Payment Disbursed towards UserId ' . $user_id . ', Invoice No '. $invoice_no .' & Batch no '. $batch_no .$payment_id,
      ];
      $disbursalPayment[] = $BankRow;
-     if (!empty($total_interest) && $total_interest > 0) {
       $disbursalDate = $dsbrsl->trans_date;
       // change interest entry type for dirbursement in case of upfront for born by customer case
-      $where = ['trans_date' => $disbursalDate, 'trans_type' => config('lms.TRANS_TYPE.INTEREST'), 'entry_type' => 1];
+      $where = ['trans_date' => $disbursalDate, 'payment_id' => NULL, 'trans_type' => config('lms.TRANS_TYPE.INTEREST'), 'entry_type' => 1];
       $interestBooked = $dsbrsl->getInterestForDisbursal($where);
-      $interestTransId = $interestBooked->trans_id;
-      $this->selectedTxnData[] = $interestBooked->trans_id;
-      $InterestRow = [
-              'batch_no' =>  $batch_no,
-              'transactions_id' =>  $interestTransId,
-              'voucher_no' => $this->voucherNo,
-              'voucher_type' => 'Payment',
-              'voucher_date' => NULL,
-              'transaction_date'=>$dsbrsl->created_at,
-              'is_debit_credit' =>  'Credit',
-              'trans_type' =>  'Interest',
-              'invoice_no' =>   $invoice_no,
-              'invoice_date' =>  $invoice_date,
-              'ledger_name' =>  'Interest',
-              'amount' =>  $total_interest,
-              'ref_no' =>  $invoice_no,
-              'ref_amount' =>  $total_interest,
-              'acc_no' =>  '',
-              'ifsc_code' =>  '',
-              'bank_name' =>  '',
-              'cheque_amount' =>  '',
-              'cross_using' => '',
-              'mode_of_pay' => '',
-              'inst_no' =>  NULL,
-              'inst_date' =>  NULL,
-              'favoring_name' =>  '',
-              'remarks' => '',
-              'generated_by' => '1',
-              'narration' => 'Being Interest Booked towards UserId ' . $user_id . ', Invoice No '. $invoice_no .' & Batch no '. $batch_no .$payment_id,
-     ];
-     $disbursalPayment[] = $InterestRow;
-     }
+      if(isset($interestBooked)){
+        $interestTransId = $interestBooked->trans_id;
+        $this->selectedTxnData[] = $interestBooked->trans_id;
+        $InterestRow = [
+                'batch_no' =>  $batch_no,
+                'transactions_id' =>  $interestTransId,
+                'voucher_no' => $this->voucherNo,
+                'voucher_type' => 'Payment',
+                'voucher_date' => NULL,
+                'transaction_date'=>$dsbrsl->created_at,
+                'is_debit_credit' =>  'Credit',
+                'trans_type' =>  'Interest',
+                'invoice_no' =>   $invoice_no,
+                'invoice_date' =>  $invoice_date,
+                'ledger_name' =>  'Interest',
+                'amount' =>  $interestBooked->amount,
+                'ref_no' =>  $invoice_no,
+                'ref_amount' =>  $interestBooked->amount,
+                'acc_no' =>  '',
+                'ifsc_code' =>  '',
+                'bank_name' =>  '',
+                'cheque_amount' =>  '',
+                'cross_using' => '',
+                'mode_of_pay' => '',
+                'inst_no' =>  NULL,
+                'inst_date' =>  NULL,
+                'favoring_name' =>  '',
+                'remarks' => '',
+                'generated_by' => '1',
+                'narration' => 'Being Interest Payment towards UserId ' . $user_id . ', Invoice No '. $invoice_no .' & Batch no '. $batch_no .$payment_id,
+        ];
+        $disbursalPayment[] = $InterestRow;
+      }
     }
     return $disbursalPayment;
   }
@@ -579,7 +579,7 @@ class ApiController
               'voucher_no' => $this->voucherNo,
               'voucher_type' => 'Receipt',
               'voucher_date' => $rcpt->date_of_payment,
-              'transaction_date'=>$rcpt->created_at?$rcpt->created_at:NULL,
+              'transaction_date'=>$refrenceTxns->created_at?:NULL,
               'is_debit_credit' =>  'Debit',
               'trans_type' =>  'Re-Payment',
               'invoice_no' =>   '',
@@ -701,9 +701,9 @@ class ApiController
   public function tally_entry($startDate, $endDate){  
 
     $startDate  = "$startDate 00:00:00"; 
-    $endDate    = "$endDate 23:59:59";
-    //$startDate = Helper::istToUtc($startDate,'Y-m-d H:i:s', 'Y-m-d H:i:s');
-    //$endDate = Helper::istToUtc($endDate,'Y-m-d H:i:s', 'Y-m-d H:i:s');
+    $endDate = "$endDate 23:59:59";
+    $startDate = Helper::istToUtc($startDate,'Y-m-d H:i:s', 'Y-m-d H:i:s');
+    $endDate = Helper::istToUtc($endDate,'Y-m-d H:i:s', 'Y-m-d H:i:s');
 
     $this->selectedTxnData = [];
     $this->selectedPaymentData = [];

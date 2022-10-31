@@ -274,9 +274,7 @@ class ManualApportionmentHelper{
                             'entry_type' => 1,
                             'soa_flag' => 1,
                             'trans_type' => config('lms.TRANS_TYPE.REFUND'),
-                            'apportionment_id' => $refundPaymentId,
-                            'created_at' => $refundCreatedAt,
-                            'created_by' => $refundCreatedBy
+                            'apportionment_id' => $refundPaymentId
                         ];
                         $actualAmount = 0;
                     }
@@ -528,7 +526,7 @@ class ManualApportionmentHelper{
         }
         
         TransactionsRunning::where('invoice_disbursed_id','=',$invDisbId)
-        ->whereDate('trans_date','>=',$transDate)
+        //->whereDate('trans_date','>=',$transDate)
         ->update(['amount'=>0,'sys_updated_at' => Helpers::getSysStartDate()]);
         if($interests->count()>0){
             foreach ($interests as $interest) {

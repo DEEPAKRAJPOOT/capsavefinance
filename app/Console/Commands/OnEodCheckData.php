@@ -187,59 +187,59 @@ class OnEodCheckData extends Command
         
         if ((count($diffUniqTallyTransIds) && $totalDiffAmt > 0) || ($totalDiffAmt > 0)) {
             $updateQuery = ['is_validated' => 0];
-            $tallyRecords = TallyEntry::select(DB::raw('concat(if(rta_transactions.entry_type = 0,"Debit - ","Credit - "),rta_customer_transaction_soa.trans_name) as transaction_name, COUNT(DISTINCT rta_tally_entry.transactions_id) as tallyCount, SUM(rta_tally_entry.amount) as tallyAmt'))
-                                ->join('transactions', 'transactions.trans_id', '=', 'tally_entry.transactions_id')
-                                ->join('customer_transaction_soa', 'customer_transaction_soa.trans_id', '=', 'transactions.trans_id')
-                                ->where('tally_entry.batch_no', $tallyBatch->batch_no)
-                                ->groupBy('tally_entry.transactions_id')
-                                ->orderBy('transactions.trans_type', 'ASC')
-                                ->get()
-                                ->toArray();
-                                
-            $tallyTransRecords = Transactions::select(DB::raw('concat(if(rta_transactions.entry_type = 0,"Debit - ","Credit - "),rta_customer_transaction_soa.trans_name) as transaction_name, COUNT(*) as transCount, SUM(rta_transactions.amount) as transAmt'))
-                                   ->join('customer_transaction_soa', 'customer_transaction_soa.trans_id', '=', 'transactions.trans_id')
-                                    ->leftJoin('payments', 'transactions.payment_id', '=', 'payments.payment_id')
-                                    ->whereIn('transactions.trans_id', $trans_ids)
-                                    ->groupBy('transactions.trans_id')
-                                    ->get()
-                                    ->toArray();
-
-            $this->tallyData[$tallyBatch->batch_no] = [
-                'start_date' => \Helpers::convertDateTimeFormat($tallyBatch->start_date, 'Y-m-d H:i:s', 'd-m-Y h:i A'),
-                'end_date' => \Helpers::convertDateTimeFormat($tallyBatch->end_date, 'Y-m-d H:i:s', 'd-m-Y h:i A'),
-                'total_record' => array_sum(array_column($tallyTransRecords, 'transCount')),
-                'matched_record' => array_sum(array_column($tallyRecords, 'tallyCount')),
-                'trans_wise_data' => $this->formatData(array_merge($tallyRecords, $tallyTransRecords)),
-            ];
-            
-            $transGstRecords = Transactions::whereIn('trans_id', $trans_ids)
-                            ->whereHas('userInvTrans')
-                            ->where('trans_type', '>', 49)
-                            ->where('gst', 1)
-                            ->get();
-
-            $tallyGstRecords = TallyEntry::select('tally_entry.trans_type as trans_name', DB::raw('sum(rta_tally_entry.amount) as tally_gst_amount'))
-                        ->where('tally_entry.batch_no', $tallyBatch->batch_no)
-                        ->whereNotNull('tally_entry.transactions_id')
-                        ->where('tally_entry.trans_type', 'like', '%gst%')
-                        ->groupBy('tally_entry.transactions_id', 'tally_entry.trans_type')
-                        ->get()
-                        ->toArray();
-            $gstData = $this->formatGstData($transGstRecords, $tallyGstRecords);
-            $this->tallyData[$tallyBatch->batch_no]['trans_wise_data']['SGST + CGST'] = $gstData['gst_type_1'];
-            $this->tallyData[$tallyBatch->batch_no]['trans_wise_data']['IGST'] = $gstData['gst_type_2'];
-
-            $tally_data = Transactions::select(DB::raw('COUNT(*) as transCount, rta_customer_transaction_soa.trans_name as transaction_name, GROUP_CONCAT(rta_transactions.trans_id) as trans_ids'))
-                                    ->join('customer_transaction_soa', 'customer_transaction_soa.trans_id', '=', 'transactions.trans_id')
-                                    ->whereIn('transactions.trans_id', $diffUniqTallyTransIds)
-                                    ->groupBy('transactions.trans_type')
-                                    ->get()
-                                    ->toArray();
-
-            $this->tallyErrorData[$tallyBatch->batch_no] = $tally_data;
-        }else {
+        } else {
             $updateQuery = ['is_validated' => 1];
         }
+        $tallyRecords = TallyEntry::select(DB::raw('concat(if(rta_transactions.entry_type = 0,"Debit - ","Credit - "),rta_customer_transaction_soa.trans_name) as transaction_name, COUNT(DISTINCT rta_tally_entry.transactions_id) as tallyCount, SUM(rta_tally_entry.amount) as tallyAmt'))
+                            ->join('transactions', 'transactions.trans_id', '=', 'tally_entry.transactions_id')
+                            ->join('customer_transaction_soa', 'customer_transaction_soa.trans_id', '=', 'transactions.trans_id')
+                            ->where('tally_entry.batch_no', $tallyBatch->batch_no)
+                            ->groupBy('tally_entry.transactions_id')
+                            ->orderBy('transactions.trans_type', 'ASC')
+                            ->get()
+                            ->toArray();
+                            
+        $tallyTransRecords = Transactions::select(DB::raw('concat(if(rta_transactions.entry_type = 0,"Debit - ","Credit - "),rta_customer_transaction_soa.trans_name) as transaction_name, COUNT(*) as transCount, SUM(rta_transactions.amount) as transAmt'))
+                                ->join('customer_transaction_soa', 'customer_transaction_soa.trans_id', '=', 'transactions.trans_id')
+                                ->leftJoin('payments', 'transactions.payment_id', '=', 'payments.payment_id')
+                                ->whereIn('transactions.trans_id', $trans_ids)
+                                ->groupBy('transactions.trans_id')
+                                ->get()
+                                ->toArray();
+
+        $this->tallyData[$tallyBatch->batch_no] = [
+            'start_date' => \Helpers::convertDateTimeFormat($tallyBatch->start_date, 'Y-m-d H:i:s', 'd-m-Y h:i A'),
+            'end_date' => \Helpers::convertDateTimeFormat($tallyBatch->end_date, 'Y-m-d H:i:s', 'd-m-Y h:i A'),
+            'total_record' => array_sum(array_column($tallyTransRecords, 'transCount')),
+            'matched_record' => array_sum(array_column($tallyRecords, 'tallyCount')),
+            'trans_wise_data' => $this->formatData(array_merge($tallyRecords, $tallyTransRecords)),
+        ];
+        
+        $transGstRecords = Transactions::whereIn('trans_id', $trans_ids)
+                        ->whereHas('userInvTrans')
+                        ->where('trans_type', '>', 49)
+                        ->where('gst', 1)
+                        ->get();
+
+        $tallyGstRecords = TallyEntry::select('tally_entry.trans_type as trans_name', DB::raw('sum(rta_tally_entry.amount) as tally_gst_amount'))
+                    ->where('tally_entry.batch_no', $tallyBatch->batch_no)
+                    ->whereNotNull('tally_entry.transactions_id')
+                    ->where('tally_entry.trans_type', 'like', '%gst%')
+                    ->groupBy('tally_entry.transactions_id', 'tally_entry.trans_type')
+                    ->get()
+                    ->toArray();
+        $gstData = $this->formatGstData($transGstRecords, $tallyGstRecords);
+        $this->tallyData[$tallyBatch->batch_no]['trans_wise_data']['SGST + CGST'] = $gstData['gst_type_1'];
+        $this->tallyData[$tallyBatch->batch_no]['trans_wise_data']['IGST'] = $gstData['gst_type_2'];
+
+        $tally_data = Transactions::select(DB::raw('COUNT(*) as transCount, rta_customer_transaction_soa.trans_name as transaction_name, GROUP_CONCAT(rta_transactions.trans_id) as trans_ids'))
+                                ->join('customer_transaction_soa', 'customer_transaction_soa.trans_id', '=', 'transactions.trans_id')
+                                ->whereIn('transactions.trans_id', $diffUniqTallyTransIds)
+                                ->groupBy('transactions.trans_type')
+                                ->get()
+                                ->toArray();
+
+        $this->tallyErrorData[$tallyBatch->batch_no] = $tally_data;
 
         // To update tally validate status on tally table
         DB::table('tally')

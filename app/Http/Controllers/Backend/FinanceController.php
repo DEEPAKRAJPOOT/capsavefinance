@@ -217,7 +217,7 @@ class FinanceController extends Controller {
           unset($records['JOURNAL'][$key]['batch_no']);
         }
         $toExportData = $records;
-        return $this->fileHelper->array_to_excel($toExportData, "$batch_no-execl.xlsx");
+        return $this->fileHelper->array_to_excel($toExportData, "Tally-$batch_no.xlsx");
     }
 
     public function crateJeConfig(Request $request) {
