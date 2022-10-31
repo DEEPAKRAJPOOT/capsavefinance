@@ -166,7 +166,7 @@ class OnEodCheckData extends Command
                                 })
                                 ->pluck('trans_id')
                                 ->toArray();
-    
+
         $trans_ids = array_unique(array_merge($journalData, $bankingData));    
         $uniqTallyTransIds = TallyEntry::where('batch_no', $tallyBatch->batch_no)
                                 ->whereIn('transactions_id', $trans_ids)
@@ -213,10 +213,17 @@ class OnEodCheckData extends Command
             ];
             
             $transGstRecords = Transactions::whereIn('trans_id', $trans_ids)
-                            ->whereHas('userInvTrans')
-                            ->where('trans_type', '>', 49)
-                            ->where('gst', 1)
-                            ->get();
+                                        ->where('gst', 1)
+                                        ->where(function($query) {
+                                            $query->where('trans_type', '>', 49)
+                                                 ->where('entry_type', 0)
+                                                 ->whereHas('userInvTrans');
+
+                                            $query->orWhere('trans_type', config('lms.TRANS_TYPE.WAVED_OFF'))
+                                                ->where('entry_type', 1)
+                                                ->doesntHave('userInvTrans');
+                                        })
+                                        ->get();
 
             $tallyGstRecords = TallyEntry::select('tally_entry.trans_type as trans_name', DB::raw('sum(rta_tally_entry.amount) as tally_gst_amount'))
                         ->where('tally_entry.batch_no', $tallyBatch->batch_no)
@@ -295,12 +302,26 @@ class OnEodCheckData extends Command
         if(count($transGstRecords)) {
             foreach($transGstRecords as $transGstRecord) {
                 $userInvTrans = $transGstRecord->userInvTrans;
-                if ($userInvTrans->sgst_amount > 0 && $userInvTrans->cgst_amount > 0) {
+                if ($userInvTrans && $userInvTrans->sgst_amount > 0 && $userInvTrans->cgst_amount > 0) {
                    $data['trans_gst1_amount'] = round(($userInvTrans->sgst_amount + $userInvTrans->cgst_amount), 2);
                    array_push($transGstRecordsArray, $data);
-                }elseif($userInvTrans->igst_amount > 0) {
+                }elseif($userInvTrans && $userInvTrans->igst_amount > 0) {
                    $data1['trans_gst2_amount'] = round($userInvTrans->igst_amount, 2);
                    array_push($transGstRecordsArray, $data1);
+                }elseif(!$userInvTrans) {
+                    if($transGstRecord->trans_type == config('lms.TRANS_TYPE.WAVED_OFF') && $transGstRecord->parent_trans_id && $transGstRecord->parentTransactions->trans_type > 49 && $transGstRecord->parentTransactions->userInvTrans) {
+                        $parentUserInvTrans = $transGstRecord->parentTransactions->userInvTrans;
+                        $sgstAmt = round((($transGstRecord->base_amt * $parentUserInvTrans->sgst_rate) / 100), 2);
+                        $cgstAmt = round((($transGstRecord->base_amt * $parentUserInvTrans->cgst_rate) / 100), 2);
+                        $igstAmt = round((($transGstRecord->base_amt * $parentUserInvTrans->igst_rate) / 100), 2);
+                        if ($sgstAmt > 0 && $cgstAmt > 0) {
+                            $data4['trans_gst1_amount'] = round(($sgstAmt + $cgstAmt), 2);
+                            array_push($transGstRecordsArray, $data4);
+                        }elseif($igstAmt > 0) {
+                            $data5['trans_gst2_amount'] = $igstAmt;
+                            array_push($transGstRecordsArray, $data5);
+                        }
+                    }
                 }
             }
         }
