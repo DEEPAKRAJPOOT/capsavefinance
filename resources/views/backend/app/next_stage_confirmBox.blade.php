@@ -92,7 +92,7 @@
                    <label class='error'>You cannot pull back this application as the offer has been approved by all the approvers.</label><br>                   
                    @endif
                    @if (Session::has('error_code') && Session::get('error_code') == 'no_relation_found')
-                   <label id="click" class='error'>You can not move this application to the next stage as the relation is pending for this customer.<a target='blank_' href="{{ route('user_invoice_location_app',['user_id' => $appData->user_id,'app_id' => $appData->app_id,'biz_id' => $appData->biz_id]) }}">Click here</a></label><br>                   
+                   <label id="click" class='error'>You can not move this application to the next stage as address mapping is pending.<a target='blank_' href="{{ route('user_invoice_location_app',['user_id' => $appData->user_id,'app_id' => $appData->app_id,'biz_id' => $appData->biz_id]) }}">Click here</a></label><br>                   
                    @endif
                     @if(!$isAppPullBack)
                        @if ($assign_case)
