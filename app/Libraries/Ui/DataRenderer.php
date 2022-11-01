@@ -1669,13 +1669,13 @@ class DataRenderer implements DataProviderInterface
                         $this->isLimitExceed  = $isLimitExceed;
                         $this->isAnchorLimitExceeded  = $isAnchorLimitExceeded;*/
 
-                        $this->IsOverdue = $IsOverdueArray[$invoice->invoice_id];  
-                        $this->isLimitExpired = $isLimitExpiredArray[$invoice->invoice_id];
+                        $this->IsOverdue = $IsOverdueArray[$invoice->supplier_id];  
+                        $this->isLimitExpired = $isLimitExpiredArray[$invoice->supplier_id];
                         $this->isLimitExceed  = $isLimitExceedArray[$invoice->invoice_id];
-                        $this->isAnchorLimitExceeded  = $isAnchorLimitExceeded[$invoice->invoice_id];
+                        $this->isAnchorLimitExceeded  = $isAnchorLimitExceeded[$invoice->anchor_id];
                         
                        // return  "<input type='checkbox' class='invoice_id' name='checkinvoiceid' value=".$invoice->invoice_id.">";
-                        return ($this->overDueFlag == 1 || $chkUser->id == 11  || $this->isLimitExpired || $this->isLimitExceed || $isAnchorLimitExceeded[$invoice->invoice_id]) ? '-' : "<input type='checkbox' class='invoice_id' name='checkinvoiceid' value=".$invoice->invoice_id.">";
+                        return ($this->overDueFlag == 1 || $chkUser->id == 11  || $this->isLimitExpired || $this->isLimitExceed || $this->isAnchorLimitExceeded) ? '-' : "<input type='checkbox' class='invoice_id' name='checkinvoiceid' value=".$invoice->invoice_id.">";
                      })
                 ->addColumn(
                     'anchor_id',

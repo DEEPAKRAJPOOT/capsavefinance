@@ -2885,15 +2885,20 @@ if ($err) {
         $isLimitExceedArray = [];
         $isAnchorLimitExceededArray = [];
         foreach($invoiceDetail->get() as $invoice) {
-            $IsOverdueArray[$invoice->invoice_id] = InvoiceTrait::invoiceOverdueCheck($invoice->invoice_id);
-            $isLimitExpiredArray[$invoice->invoice_id] = InvoiceTrait::limitExpire($invoice->supplier_id);
+            if(!isset($IsOverdueArray[$invoice->supplier_id])) {
+                $IsOverdueArray[$invoice->supplier_id] = InvoiceTrait::invoiceOverdueCheck($invoice->supplier);
+            }
+
+            if (!isset($isLimitExpiredArray[$invoice->supplier_id])) {
+                $isLimitExpiredArray[$invoice->supplier_id] = InvoiceTrait::limitExpire($invoice->supplier_id);
+            }
+
             $isLimitExceedArray[$invoice->invoice_id] = InvoiceTrait::isLimitExceed($invoice->invoice_id);
-            $isAnchorLimitExceededArray[$invoice->invoice_id] = InvoiceTrait::isAnchorLimitExceeded($invoice->anchor_id, 0);
 
+            if (!isset($isAnchorLimitExceededArray[$invoice->anchor_id])) {
+                $isAnchorLimitExceededArray[$invoice->anchor_id] = InvoiceTrait::isAnchorLimitExceeded($invoice->anchor_id, 0);
+            }
         }
-
-        //dd($IsOverdueArray,$isLimitExpiredArray,$isLimitExceedArray, $isAnchorLimitExceededArray);
-
 
         $invoice = $dataProvider->getBackendInvoiceListDisbursedQue($this->request, $invoice_data->with('supplier.apps.disbursed_invoices.invoice_disbursed'),$IsOverdueArray, $isLimitExpiredArray,$isLimitExceedArray, $isAnchorLimitExceededArray);
         return $invoice;
