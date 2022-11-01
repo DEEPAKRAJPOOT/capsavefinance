@@ -670,7 +670,9 @@ class ApiController
     $activeDate = Carbon::now()->setTimezone(config('common.timezone'))->format('Y-m-d');
     // $dates = $this->displayDates('2020-01-01', date('Y-m-d'));
     // foreach ($dates as $activeDate) {
-      self::tally_entry($activeDate,$activeDate);
+      $startActiveDate  = "$activeDate 00:00:00"; 
+      $endActiveDate = "$activeDate 23:59:59";
+      self::tally_entry($startActiveDate,$endActiveDate);
     // }
   }
 
@@ -680,6 +682,8 @@ class ApiController
     // foreach ($dates as $activeDate) {
       if(in_array(strtolower(trim($weekName)),[strtolower(date('D',strtotime($activeDate))), strtolower(date('l',strtotime($activeDate)))])){
         $weekStartDate = date('Y-m-d',(strtotime ( '-7 day' , strtotime($activeDate))));
+        $weekStartDate  = "$weekStartDate 00:00:00"; 
+        $activeDate = "$activeDate 23:59:59";
         self::tally_entry($weekStartDate,$activeDate);
       }
     // }
@@ -691,16 +695,14 @@ class ApiController
     // foreach ($dates as $activeDate) {
       if(date("Y-m-t", strtotime($activeDate)) == $activeDate){
         $monthStartDate = date("Y-m-1", strtotime($activeDate));
-        echo "$monthStartDate"."--"."$activeDate"."\n";
+        $monthStartDate  = "$monthStartDate 00:00:00"; 
+        $activeDate = "$activeDate 23:59:59";
         self::tally_entry($monthStartDate,$activeDate);
       }
     // }
   }
 
   public function tally_entry($startDate, $endDate){  
-
-    $startDate  = "$startDate 00:00:00"; 
-    $endDate = "$endDate 23:59:59";
     $startDate = Helper::istToUtc($startDate,'Y-m-d H:i:s', 'Y-m-d H:i:s');
     $endDate = Helper::istToUtc($endDate,'Y-m-d H:i:s', 'Y-m-d H:i:s');
 
