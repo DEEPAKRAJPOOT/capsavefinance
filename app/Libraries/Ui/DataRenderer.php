@@ -2528,7 +2528,7 @@ class DataRenderer implements DataProviderInterface
                     function ($invoice) {
                         $comp_name = '';
                         $comp_name .= $invoice->anchor->comp_name ? '<span><b>Anchor Business Name:&nbsp;</b>'.$invoice->anchor->comp_name.'</span>' : '';
-                        $comp_name .= $invoice->program->prgm_name ? '<br><span><b>Program:&nbsp;</b>'.$invoice->program->prgm_name.'</span>' : '';
+                        $comp_name .= isset($invoice->program->prgm_name) ? '<br><span><b>Program:&nbsp;</b>'.isset($invoice->program->prgm_name).'</span>' : '';
                         return $comp_name;
                 })
                 ->addColumn(
