@@ -371,7 +371,7 @@
                     <tr>
                         <td style="padding:8px 10px;font-size: 14px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;">{{ $preval['mst_security_docs']['name']??'N/A' }}</td>
                         <td style="padding:8px 10px;font-size: 14px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;">{{ $preval['due_date']?\Carbon\Carbon::parse($preval['due_date'])->format('d-m-Y'):'N/A' }}</td>
-                        <td style="padding:8px 10px;font-size: 14px;border-bottom: #ccc solid 1px;white-space: pre-wrap;">{{ trim($preval['description'])??'N/A' }}</td>
+                        <td style="padding:8px 10px;font-size: 14px;border-bottom: #ccc solid 1px;white-space: normal;">{{ trim($preval['description'])??'N/A' }}</td>
                     </tr>
                     @endforeach
                 @else
@@ -407,7 +407,7 @@
                             <td style="padding:8px 10px;font-size: 14px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;">
                                 {{ $postval['due_date']?\Carbon\Carbon::parse($postval['due_date'])->format('d-m-Y'):'N/A' }}
                             </td>
-                            <td style="padding:8px 10px;font-size: 14px;border-bottom: #ccc solid 1px;white-space: pre-wrap;">
+                            <td style="padding:8px 10px;font-size: 14px;border-bottom: #ccc solid 1px;white-space: normal;">
                                 {{ trim($postval['description'])??'N/A' }}
                             </td>
                         </tr>

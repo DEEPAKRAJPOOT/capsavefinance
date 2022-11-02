@@ -79,7 +79,7 @@
                   <tr role="row" class="odd">
                      <td class="">{{ $preval['mst_security_docs']['name']??'N/A' }}</td>
                      <td class="">{{ $preval['due_date']?\Carbon\Carbon::parse($preval['due_date'])->format('d-m-Y'):'N/A' }}</td>
-                     <td style="white-space: pre-wrap;">{{ $preval['description']??'N/A' }}</td>
+                     <td style="white-space: normal;">{{ $preval['description']??'N/A' }}</td>
                   </tr>
                   @endforeach
                @else
@@ -115,7 +115,7 @@
                   <tr role="row" class="odd">
                      <td class="">{{ $postval['mst_security_docs']['name']??'N/A' }}</td>
                      <td class="">{{ $postval['due_date']?\Carbon\Carbon::parse($postval['due_date'])->format('d-m-Y'):'N/A' }}</td>
-                     <td style="white-space: pre-wrap;">{{ $postval['description']??'N/A' }}</td>
+                     <td style="white-space: normal;">{{ $postval['description']??'N/A' }}</td>
                   </tr>
                   @endforeach
                @else
