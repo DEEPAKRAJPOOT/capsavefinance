@@ -166,6 +166,10 @@
                                                 </select>
                                             </div>
                                         </div>
+                                        
+                                        <div class="col-md-8 payment-methods" style="display: none;" >
+                                            <div class="row" id="appendInput"></div>
+                                        </div>
                                         <div class="col-md-4 bank-list">
                                             <div class="form-group">
                                                 <label for="txtCreditPeriod">Active Bank List <span class="error_message_label">*</span></label>
@@ -177,9 +181,6 @@
                                                     @endforeach
                                                 </select>
                                             </div>
-                                        </div>
-                                        <div class="col-md-8 payment-methods" style="display: none;" >
-                                            <div class="row" id="appendInput"></div>
                                         </div>
                                         <div class="col-md-4 tds_certificate">
                                             <div class="form-group">

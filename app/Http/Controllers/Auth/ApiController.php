@@ -150,6 +150,7 @@ class ApiController
           'cross_using' => '',
           'mode_of_pay' => '',
           'inst_no' =>  NULL,
+          'utr_no'  => NULL,
           'inst_date' =>  NULL,
           'favoring_name' =>  '',
           'remarks' => '',
@@ -316,6 +317,7 @@ class ApiController
             'company_bank_name'=>'',
             'company_bank_acc'=>'',
             'inst_no' =>  NULL,
+            'utr_no'  => NULL,
             'inst_date' =>  NULL,
             'favoring_name' =>  '',
             'remarks' => '',
@@ -387,6 +389,7 @@ class ApiController
           'company_bank_name'=>'',
           'company_bank_acc'=>'',
           'inst_no' =>  NULL,
+          'utr_no'  => NULL,
           'inst_date' =>  NULL,
           'favoring_name' =>  '',
           'remarks' => '',
@@ -418,6 +421,7 @@ class ApiController
           'company_bank_acc'=>'',
           'mode_of_pay' => 'e-Fund-Transfer',
           'inst_no' =>  $inst_no,
+          'utr_no'  => NULL,
           'inst_date' =>  $inst_date,
           'favoring_name' =>  $userName,
           'remarks' => '',
@@ -472,6 +476,7 @@ class ApiController
               'cross_using' => '',
               'mode_of_pay' => '',
               'inst_no' =>  NULL,
+              'utr_no'  => NULL,
               'inst_date' =>  NULL,
               'favoring_name' =>  '',
               'company_bank_name'=>'',
@@ -503,6 +508,7 @@ class ApiController
               'cross_using' => '',
               'mode_of_pay' => 'e-Fund-Transfer',
               'inst_no' =>  $dsbrsl->invoiceDisbursed->disbursal->tran_id ?? NULL,
+              'utr_no'  => NULL,
               'inst_date' =>  $dsbrsl->invoiceDisbursed->disbursal->funded_date ?? NULL,
               'favoring_name' =>  $userName,
               'remarks' => '',
@@ -539,6 +545,7 @@ class ApiController
               'cross_using' => '',
               'mode_of_pay' => '',
               'inst_no' =>  NULL,
+              'utr_no'  => NULL,
               'inst_date' =>  NULL,
               'favoring_name' =>  '',
               'company_bank_name'=>'',
@@ -568,6 +575,17 @@ class ApiController
      if (empty($accountDetails)) {
         continue;
      }
+     $utr_no=NULL;
+     if($rcpt->payment_type === '1'){
+       $utr_no = $rcpt->utr_no ?? NULL;
+     }else if($rcpt->payment_type === '2'){
+      $utr_no = $rcpt->cheque_no ?? NULL;
+     }else if($rcpt->payment_type === '3'){
+      $utr_no = $rcpt->unr_no ?? NULL;
+     }else if($rcpt->payment_type === '4'){
+      $utr_no = $rcpt->unr_no ?? NULL;
+     }
+
      $inst_no = $rcpt->refundReq->tran_no ?? NULL;
      $inst_date = $rcpt->refundReq->actual_refund_date ?? NULL;
      $this->selectedPaymentData[] = $rcpt->payment_id;
@@ -610,6 +628,7 @@ class ApiController
               'cross_using' => $rcpt->payment_type == 2 ? 'a/c payee' : NULL,
               'mode_of_pay' => $mode_of_pay,
               'inst_no' =>  $inst_no,
+              'utr_no'  => $utr_no,
               'inst_date' =>  $inst_date,
               'favoring_name' =>  $userName,
               'company_bank_name'=>$rcpt->companyUserAccount?$rcpt->companyUserAccount->bank->bank_name:NULL,
@@ -656,6 +675,7 @@ class ApiController
               'cross_using' => '',
               'mode_of_pay' => '',
               'inst_no' =>  NULL,
+              'utr_no'  => NULL,
               'inst_date' =>  NULL,
               'favoring_name' =>  '',
               'company_bank_name'=>$rcpt->companyUserAccount?$rcpt->companyUserAccount->bank->bank_name:NULL,
@@ -755,8 +775,8 @@ class ApiController
     $disbursalArray = $this->createDisbursalData($disbursalData, $batch_no);
     $receiptArray = $this->createReceiptData($receiptData, $batch_no);
     $refundArray = $this->createRefundData($refundData, $batch_no);
-    $tally_data = array_merge($disbursalArray, $journalArray , $receiptArray, $refundArray);
     
+    $tally_data = array_merge($disbursalArray, $journalArray , $receiptArray, $refundArray);
     try {
         if (empty($tally_data)) {
            $response['message'] =  'No Records are selected to Post in tally.';

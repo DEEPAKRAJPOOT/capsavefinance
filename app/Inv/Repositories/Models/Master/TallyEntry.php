@@ -71,6 +71,7 @@ class TallyEntry extends BaseModel
         'cross_using',
         'mode_of_pay',
         'inst_no',
+        'utr_no',
         'inst_date',
         'favoring_name',
         'remarks',
