@@ -190,11 +190,14 @@ class FinanceController extends Controller {
                 "bank_name" => '',
                 "cheque_amount" => '',
                 "cross_using" => '',
+                "utr_no" => '',
                 "inst_no" => '',
                 "inst_date" => '',
                 "favoring_name" => '',
                 "remarks" => '',
                 "narration" => '',
+                "company_bank_name"=> '',
+                "company_bank_acc"=> '',
             ];
         }
 

@@ -150,15 +150,13 @@ class PaymentController extends Controller {
 					return ($request->action_type == 1)?true:false;
 				}),
 				'customer_id' => 'required', 
-				'virtual_acc' => 'required',
-				'bank_id' => 'required',  
+				'virtual_acc' => 'required', 
 				'date_of_payment' => 'required|date_format:d/m/Y|before_or_equal:'.$curdate,
 				'amount' => 'required|numeric|gt:0', 
 				'description' => 'required',
 				'doc_file' => 'checkmime'
 			],
 			[
-				'bank_id'=>'Please select bank',
 				'amount.required' => 'Transaction amount is required',
 				'amount.numeric' => 'Transaction amount must be number',
 				'amount.gt' => 'Transaction amount must be greater than zero',
@@ -194,7 +192,7 @@ class PaymentController extends Controller {
 			$paymentData = [	
 				'user_id' => $request->user_id,
 				'biz_id' => $request->biz_id,
-				'bank_id'=> $request->bank_id,
+				'bank_account_id'=> $request->bank_id,
 				'virtual_acc' => $request->virtual_acc,
 				'action_type' => $request->action_type,
 				'trans_type' => $request->trans_type,
