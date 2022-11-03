@@ -2823,7 +2823,7 @@ public function disburseTableInsert($exportData = [], $supplierIds = [], $allinv
                 date_default_timezone_set("Asia/Kolkata");
                 $data = $this->lmsRepo->getdisbursalBatchByDBId($disbursalBatchId);
                 // dd($data['disbursal_api_log']);
-                $reqData['txn_id'] = isset($data['disbursal_api_log']) ? $data['disbursal_api_log']['txn_id'] : 1;
+                $reqData['txn_id'] = (isset($data['disbursal_api_log']) && !empty($data['disbursal_api_log']['txn_id'])) ? $data['disbursal_api_log']['txn_id'] : 1;
                 $transId = $reqData['txn_id'];
                 // $transId = '2RGIK4436OUMXHZGXH';
                 $createdBy = 0;
