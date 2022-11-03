@@ -737,14 +737,12 @@ class ApiController
     // }
   }
 
-  public function tally_entry(Request $request, $startDate = null, $endDate = null){
-    
-    if(empty($startDate)){
-      $startDate = $request->get('start_date')?date('Y-m-d',strtotime($request->get('start_date'))):date('Y-m-d');
-    }
-    if(empty($endDate)){
-      $endDate = $request->get('end_date')?date('Y-m-d',strtotime($request->get('end_date'))):$startDate;
-    }
+  public function tally_entry($startDate, $endDate){  
+
+    $startDate  = "$startDate 00:00:00"; 
+    $endDate = "$endDate 23:59:59";
+    $startDate = Helper::istToUtc($startDate,'Y-m-d H:i:s', 'Y-m-d H:i:s');
+    $endDate = Helper::istToUtc($endDate,'Y-m-d H:i:s', 'Y-m-d H:i:s');
 
     $this->selectedTxnData = [];
     $this->selectedPaymentData = [];
