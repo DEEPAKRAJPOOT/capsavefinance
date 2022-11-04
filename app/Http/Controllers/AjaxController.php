@@ -2893,14 +2893,30 @@ if ($err) {
                 $isLimitExpiredArray[$invoice->supplier_id] = InvoiceTrait::limitExpire($invoice->supplier_id);
             }
 
-            $isLimitExceedArray[$invoice->invoice_id] = InvoiceTrait::isLimitExceed($invoice->invoice_id);
+            $attribute['user_id'] = $supplierId = $invoice->supplier_id;
+            $attribute['anchor_id'] = $anchorId = $invoice->anchor_id;
+            $attribute['prgm_id'] = $prgmId = $invoice->program_id;
+            $attribute['program_id'] = $invoice->program_id;
+            $attribute['prgm_offer_id'] = $offerId = $invoice->prgm_offer_id;
+            $attribute['app_id'] = $appId = $invoice->app_id;
+
+            if(!isset($limitExceed["$supplierId:$anchorId:$prgmId:$offerId:$appId"])) {
+                $limitExceed["$supplierId:$anchorId:$prgmId:$offerId:$appId"]['limit'] = $limit = InvoiceTrait::ProgramLimit($attribute);
+                $limitExceed["$supplierId:$anchorId:$prgmId:$offerId:$appId"]['sum'] = $sum = Helpers::anchorSupplierPrgmUtilizedLimitByInvoice($attribute);
+            }else {
+                $limit = $limitExceed["$supplierId:$anchorId:$prgmId:$offerId:$appId"]['limit'];
+                $sum = $limitExceed["$supplierId:$anchorId:$prgmId:$offerId:$appId"]['sum'];
+            }
+
+            $isLimitExceedArray["$invoice->invoice_id:$supplierId:$anchorId:$prgmId:$offerId:$appId"] = Helpers::checkInvoiceLimitExceed($sum, $limit, $invoice->invoice_margin_amount);
+            // $isLimitExceedArray[$invoice->invoice_id] = InvoiceTrait::isLimitExceed($invoice->invoice_id);
 
             if (!isset($isAnchorLimitExceededArray[$invoice->anchor_id])) {
                 $isAnchorLimitExceededArray[$invoice->anchor_id] = InvoiceTrait::isAnchorLimitExceeded($invoice->anchor_id, 0);
             }
         }
 
-        $invoice = $dataProvider->getBackendInvoiceListDisbursedQue($this->request, $invoice_data->with('supplier.apps.disbursed_invoices.invoice_disbursed'),$IsOverdueArray, $isLimitExpiredArray,$isLimitExceedArray, $isAnchorLimitExceededArray);
+        $invoice = $dataProvider->getBackendInvoiceListDisbursedQue($this->request, $invoice_data->with('supplier.apps.disbursed_invoices.invoice_disbursed'),$IsOverdueArray, $isLimitExpiredArray,$isLimitExceedArray, $isAnchorLimitExceededArray);        
         return $invoice;
     } 
     

@@ -1636,30 +1636,30 @@ class DataRenderer implements DataProviderInterface
                         $role_id = DB::table('role_user')->where(['user_id' => $id])->pluck('role_id');
                         $chkUser =    DB::table('roles')->whereIn('id',$role_id)->first();
 
-                        $this->overDueFlag = 0;
-                        $disburseAmount = 0;
-                        $apps = $invoice['supplier']['apps'];
-                        if ($this->overDueFlag == 0) {
-                            foreach ($apps as $app) {
-                                foreach ($app['disbursed_invoices'] as $inv) {
-                                    $invc = $inv;
-                                    $invc['invoice_disbursed'] = $inv['invoice_disbursed'];
-                                    if ((isset($invc['invoice_disbursed']['payment_due_date']))) {
-                                        if (!is_null($invc['invoice_disbursed']['payment_due_date'])) {
-                                            $calDay = $invc['invoice_disbursed']['grace_period'];
-                                            $dueDate = strtotime($invc['invoice_disbursed']['payment_due_date']."+ $calDay Days");
-                                            $dueDate = $dueDate ?? 0; // or your date as well
-                                            $now = strtotime(date('Y-m-d'));
-                                            $datediff = ($dueDate - $now);
-                                            $days = round($datediff / (60 * 60 * 24));
-                                            if ($this->overDueFlag == 0 && $days < 0 && $invc['is_repayment'] == 0) {
-                                                $this->overDueFlag = 0;
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
+                        // $this->overDueFlag = 0;
+                        // $disburseAmount = 0;
+                        // $apps = $invoice['supplier']['apps'];
+                        // if ($this->overDueFlag == 0) {
+                        //     foreach ($apps as $app) {
+                        //         foreach ($app['disbursed_invoices'] as $inv) {
+                        //             $invc = $inv;
+                        //             $invc['invoice_disbursed'] = $inv['invoice_disbursed'];
+                        //             if ((isset($invc['invoice_disbursed']['payment_due_date']))) {
+                        //                 if (!is_null($invc['invoice_disbursed']['payment_due_date'])) {
+                        //                     $calDay = $invc['invoice_disbursed']['grace_period'];
+                        //                     $dueDate = strtotime($invc['invoice_disbursed']['payment_due_date']."+ $calDay Days");
+                        //                     $dueDate = $dueDate ?? 0; // or your date as well
+                        //                     $now = strtotime(date('Y-m-d'));
+                        //                     $datediff = ($dueDate - $now);
+                        //                     $days = round($datediff / (60 * 60 * 24));
+                        //                     if ($this->overDueFlag == 0 && $days < 0 && $invc['is_repayment'] == 0) {
+                        //                         $this->overDueFlag = 0;
+                        //                     }
+                        //                 }
+                        //             }
+                        //         }
+                        //     }
+                        // }
                         /*$IsOverdue = InvoiceTrait::invoiceOverdueCheck($invoice->invoice_id);
                         $isLimitExpired = InvoiceTrait::limitExpire($invoice->supplier_id);
                         $isLimitExceed = InvoiceTrait::isLimitExceed($invoice->invoice_id);
@@ -1671,11 +1671,12 @@ class DataRenderer implements DataProviderInterface
 
                         $this->IsOverdue = $IsOverdueArray[$invoice->supplier_id];  
                         $this->isLimitExpired = $isLimitExpiredArray[$invoice->supplier_id];
-                        $this->isLimitExceed  = $isLimitExceedArray[$invoice->invoice_id];
+                        $this->isLimitExceed  = $isLimitExceedArray["$invoice->invoice_id:$invoice->supplier_id:$invoice->anchor_id:$invoice->program_id:$invoice->prgm_offer_id:$invoice->app_id"];
+                        // $this->isLimitExceed  = $isLimitExceedArray[$invoice->invoice_id];
                         $this->isAnchorLimitExceeded  = $isAnchorLimitExceeded[$invoice->anchor_id];
                         
                        // return  "<input type='checkbox' class='invoice_id' name='checkinvoiceid' value=".$invoice->invoice_id.">";
-                        return ($this->overDueFlag == 1 || $chkUser->id == 11  || $this->isLimitExpired || $this->isLimitExceed || $this->isAnchorLimitExceeded) ? '-' : "<input type='checkbox' class='invoice_id' name='checkinvoiceid' value=".$invoice->invoice_id.">";
+                        return ($this->IsOverdue || $chkUser->id == 11  || $this->isLimitExpired || $this->isLimitExceed || $this->isAnchorLimitExceeded) ? '-' : "<input type='checkbox' class='invoice_id' name='checkinvoiceid' value=".$invoice->invoice_id.">";
                      })
                 ->addColumn(
                     'anchor_id',
