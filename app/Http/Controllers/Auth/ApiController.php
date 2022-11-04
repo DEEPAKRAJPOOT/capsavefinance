@@ -668,7 +668,7 @@ class ApiController
   }
 
   public function tally_entry_date_wise(){
-    $activeDate = Carbon::now()->setTimezone(config('common.timezone'))->format('Y-m-d');
+    $activeDate = Carbon::now()->subDays(1)->setTimezone(config('common.timezone'))->format('Y-m-d');
     // $dates = $this->displayDates('2020-01-01', date('Y-m-d'));
     // foreach ($dates as $activeDate) {
       $startActiveDate  = "$activeDate 00:00:00"; 
@@ -678,11 +678,11 @@ class ApiController
   }
 
   public function tally_entry_Week_wise($weekName){
-    $activeDate = Carbon::now()->setTimezone(config('common.timezone'))->format('Y-m-d');
+    $activeDate = Carbon::now()->subDays(1)->setTimezone(config('common.timezone'))->format('Y-m-d');
     // $dates = $this->displayDates('2022-01-01', date('Y-m-d'));
     // foreach ($dates as $activeDate) {
       if(in_array(strtolower(trim($weekName)),[strtolower(date('D',strtotime($activeDate))), strtolower(date('l',strtotime($activeDate)))])){
-        $weekStartDate = date('Y-m-d',(strtotime ( '-7 day' , strtotime($activeDate))));
+        $weekStartDate = date('Y-m-d',(strtotime ( '-6 day' , strtotime($activeDate))));
         $weekStartDate  = "$weekStartDate 00:00:00"; 
         $activeDate = "$activeDate 23:59:59";
         self::tally_entry($weekStartDate,$activeDate);
