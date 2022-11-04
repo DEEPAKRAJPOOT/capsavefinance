@@ -218,13 +218,16 @@ class OnEodCheckData extends Command
             $transGstRecords = Transactions::whereIn('trans_id', $trans_ids)
                                         ->where('gst', 1)
                                         ->where(function($query) {
-                                            $query->where('trans_type', '>', 49)
-                                                 ->where('entry_type', 0)
-                                                 ->whereHas('userInvTrans');
-
-                                            $query->orWhere('trans_type', config('lms.TRANS_TYPE.WAVED_OFF'))
+                                            $query->where(function($query1) {
+                                                $query1->where('trans_type', '>', 49)
+                                                ->where('entry_type', 0)
+                                                ->whereHas('userInvTrans');
+                                            })
+                                            ->orWhere(function($query2) {
+                                                $query2->where('trans_type', config('lms.TRANS_TYPE.WAVED_OFF'))
                                                 ->where('entry_type', 1)
                                                 ->doesntHave('userInvTrans');
+                                            });
                                         })
                                         ->get();
 
