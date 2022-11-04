@@ -699,9 +699,6 @@ class ApiController
   }
 
   public function tally_entry($startDate, $endDate){  
-
-    $startDate  = "$startDate 00:00:00"; 
-    $endDate = "$endDate 23:59:59";
     $startDate = Helper::istToUtc($startDate,'Y-m-d H:i:s', 'Y-m-d H:i:s');
     $endDate = Helper::istToUtc($endDate,'Y-m-d H:i:s', 'Y-m-d H:i:s');
 

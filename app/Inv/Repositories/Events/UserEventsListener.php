@@ -1730,6 +1730,8 @@ class UserEventsListener extends BaseEvent
         $data = unserialize($attributes); 
         $this->func_name = __FUNCTION__;
         $eodCheckData = view('reports.eod_checks')->with(['disbursals' => $data['disbursals'], 'payments' => $data['payments'], 'tally_data' => $data['tally_data'], 'tally_error_data' => $data['tally_error_data']])->render();
+        
+        
         $email_content = EmailTemplate::getEmailTemplate("EOD_CHECKS_ALERT");
         if ($email_content) {
             Mail::send('email', ['baseUrl'=> env('HTTP_APPURL',''), 'varContent' => $eodCheckData],
