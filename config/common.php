@@ -29,6 +29,10 @@ return [
         2 => 'Sanctioned',
         3 => 'Closed',
     ],
+    'DEFAULT_BORROWER_LIMIT' => [
+        'Single_limit' => 150,
+        'multiple_limit' => 250,
+    ],
     //Roles Ids
     'anchor_role' => 11,
     'YES' => 1,
