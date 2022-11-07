@@ -626,6 +626,15 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'as' => 'send_new_sanction_letter_on_mail',
                 'uses' => 'Backend\ApplicationController@sendNewSanctionLetterSupplyChainMail',
             ]);
+
+            Route::get('reactivate-status-app', [
+                'as' => 'reactivate_status_app',
+                'uses' => 'Backend\ApplicationController@reactivateStatusApp'
+            ]);
+            Route::post('post-reactivate-status-app', [
+                'as' => 'reactivate_status_app_save',
+                'uses' => 'Backend\ApplicationController@reactivateStatusAppSave'
+            ]); 
            
             Route::get('app-pull-back-confirmBox', [
                 'as' => 'app_pull_back_confirmBox',

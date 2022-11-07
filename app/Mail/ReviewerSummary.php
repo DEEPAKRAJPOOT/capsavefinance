@@ -122,7 +122,7 @@ class ReviewerSummary extends Mailable
         $borrowerLimitData['multiple_limit'] = config('common.DEFAULT_BORROWER_LIMIT.multiple_limit');
         
         if($is_shown){
-        $Limitdata =  $this->appRepo->getAppBorrowerLimit($appId);
+        $Limitdata =  $appRepo->getAppBorrowerLimit($appId);
         if($Limitdata){
             $borrowerLimitData['single_limit'] = $Limitdata['single_limit'];
             $borrowerLimitData['multiple_limit'] = $Limitdata['multiple_limit'];
