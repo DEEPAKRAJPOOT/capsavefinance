@@ -1034,7 +1034,7 @@ trait LmsTrait
 
         $disbursalData['bank_type'] = $data['bank_type'] ?? null;
         $disbursalData['txn_id'] = $response['result']['header']['Tran_ID'] ?? null;
-        $disbursalData['enq_txn_id'] = $data['enq_txn_id'] ?? null;
+        $disbursalData['enq_txn_id'] = $data['enq_txn_id'] ?? $disbursalData['txn_id'] ?? null;
         $disbursalData['url'] = $response['result']['url'] ?? null;
         
         $disbursalData['header'] = $response['result']['http_header'] ?? null;
