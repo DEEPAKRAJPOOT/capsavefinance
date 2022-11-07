@@ -15,8 +15,6 @@ try {
                 data: function (d) {
                     d.customer_code = $('input[name=customer_code]').val();
                     d.selected_date = $('input[name=selected_date]').val();
-                     d.biz_id = $('input[name=search_biz]').val();
-                    d.batch_id = $('select[name=batch_id]').val();
                     d._token = messages.token;
                 },
                 "error": function () {  // error handling

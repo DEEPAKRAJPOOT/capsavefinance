@@ -1,5 +1,6 @@
   $(document).ready(function(){
     setInterval(function(){  localStorage.setItem('storageMsg',''); }, 1000);
+    // setInterval(function(){  localStorage.setItem('Msgs',''); }, 1000);
     // var  msg = localStorage.getItem('storageMsg');
     var  msg = JSON.parse(localStorage.getItem("storageMsg") || "[]");
     if(typeof msg.text != 'undefined')
@@ -1077,11 +1078,126 @@ function uploadFile(app_id,id)
                     }
                     else
                     {
-                        $("#moveCase").html('Invoice successfully sent to  '+st+' ');
+                        $("#moveCase").html('Invoice successfully sent to  '+st+' Tab');
                         $tr.remove();
                     }
                     
 
+                }
+            });
+        } else
+        {
+            return false;
+        }
+    });
+
+    //////////////////////////// for reject pending invoice////////////////////
+
+
+    $(document).on('click', '#rejectPending', function () {
+       
+        $("#moveCase").html('');
+        var arr = [];
+        i = 0;
+        th = this;
+        $(".chkstatus:checked").each(function () {
+            arr[i++] = $(this).val();
+           
+        });
+     
+        if (arr.length == 0) {
+            replaceAlert('Please select atleast one checked', 'error');
+            return false;
+        }
+        if (confirm('Are you sure, You want to reject the selected invoices?'))
+        {     $(".isloader").show(); 
+            var status = $(this).attr('data-status');
+            var postData = ({'invoice_id': arr, 'status': status, '_token': messages.token});
+          jQuery.ajax({
+                url: messages.update_bulk_invoice,
+                method: 'post',
+                dataType: 'json',
+                data: postData,
+                 error: function (xhr, status, errorThrown) {
+                    alert(errorThrown);
+
+                },
+                success: function (data) {
+                    $(".isloader").hide(); 
+                    if (data.eod_process) {
+                        var alertmsg = '<div class="content-wrapper-msg"><div class=" alert-danger alert" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>' + data.message + '</div></div>';
+                        parent.$("#iframeMessage").html(alertmsg);
+                        return false;
+                    }
+                   if(data.msg=="")
+                    {
+                        localStorage.setItem('Msg', JSON.stringify({text: 'Invoice successfully moved to reject tab', type: 'success'}));
+                       location.reload();
+                    }
+                    else
+                    {
+                        localStorage.setItem('Msg', JSON.stringify({text: 'You cannot move this invoice ('+data.msg+') to Reject tab, as customer/anchor/program limit has been exceeded  or invoice has been moved to exception cases.', type: 'error'}));
+                    //    localStorage.setItem('storageMsg', 'You cannot move this invoice ('+data.msg+') to Reject tab, as customer/anchor/program limit has been exceeded  or invoice has been moved to exception cases.');
+                       location.reload();
+                    }
+               }
+            });
+        } else
+        {
+            return false;
+        }
+    });
+
+    //////////////////////////// for reject exception invoice////////////////////
+
+
+    $(document).on('click', '#rejectExcep', function () {
+    
+        $("#moveCase").html('');
+        var arr = [];
+        i = 0;
+        th = this;
+        $(".chkstatus:checked").each(function () {
+            arr[i++] = $(this).val();
+            
+        });
+        
+        if (arr.length == 0) {
+            replaceAlert('Please select atleast one checked', 'error');
+            return false;
+        }
+        if (confirm('Are you sure, You want to reject the selected invoices?'))
+        {     $(".isloader").show(); 
+            var status = $(this).attr('data-status');
+            var postData = ({'invoice_id': arr, 'status': status, '_token': messages.token});
+            jQuery.ajax({
+                url: messages.update_bulk_invoice,
+                method: 'post',
+                dataType: 'json',
+                data: postData,
+                    error: function (xhr, status, errorThrown) {
+                    alert(errorThrown);
+
+                },
+                success: function (data) {
+                    $(".isloader").hide(); 
+                    if (data.eod_process) {
+                        var alertmsg = '<div class="content-wrapper-msg"><div class=" alert-danger alert" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>' + data.message + '</div></div>';
+                        parent.$("#iframeMessage").html(alertmsg);
+                        return false;
+                    }
+                    if(data.msg=="")
+                    {
+                        localStorage.setItem('Msgs', JSON.stringify({text: 'Invoice successfully moved to reject tab', type: 'success'}));
+                       location.reload();
+                    //    window.location.href="http://admin.rent.local/lms/invoice/backend_get_reject_invoice";
+                    }
+                    else
+                    {
+                        
+                        localStorage.setItem('Msg', 'You cannot move this invoice ('+data.msg+') to Reject tab, as customer/anchor/program limit has been exceeded  or invoice has been moved to exception cases.');
+                        location.reload();
+                    }
                 }
             });
         } else

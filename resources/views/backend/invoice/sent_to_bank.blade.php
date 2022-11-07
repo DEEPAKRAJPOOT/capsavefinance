@@ -33,13 +33,13 @@
                             <form id="manualDisburse" method="POST" action="{{ Route('download_batch_data') }}">
                                 @csrf
                                 <div class="row">
-                                    <div class="col-md-3">
+                                    <div class="col-md-3" style="margin-left: 20px;">
                                         {!!
                                         Form::text('customer_code',
                                         null,
                                         [
                                         'class' => 'form-control',
-                                        'placeholder' => 'Search by Customer Code',
+                                        'placeholder' => 'Search by CustId and Batch Id',
                                         'id'=>'customer_code'
                                         ])
                                         !!}
@@ -58,17 +58,13 @@
                                         !!}
 
                                     </div>
-                                    <div class="col-md-3">
-                                        <select class="form-control" id="batch_id" name="batch_id">
-                                            <option value="" selected="">All</option>
-                                            @foreach($batchData as $batch)
-                                            <option value="{{ $batch->disbursal_batch_id }}">{{ $batch->batch_id }}</option>
-                                            @endforeach
-                                        </select>
+                                    <div class="col-md-1">
+                                    <button id="searchbtn" type="button" class="btn  btn-primary btn-sm float-right">Search</button>
                                     </div>
-                                    <button id="searchbtn" type="button" class="btn  btn-success btn-sm float-right">Search</button>
                                     @can('download_batch_data')
-                                        <button type="submit" class="btn  btn-success btn-sm float-right ml-4">Download Excel</button>
+                                    <div class="col-md-2" style="padding-left:430px;">
+                                        <button type="submit" class="btn  btn-primary btn-sm float-right ml-4">Download Excel</button>
+                                    </div>
                                     @endcan
                                 </div>
                             </form>

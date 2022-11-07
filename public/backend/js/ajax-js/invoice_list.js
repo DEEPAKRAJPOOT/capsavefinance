@@ -41,7 +41,7 @@ try {
         //Search
         $('#search_biz').on('click', function (e) {
             oTable.draw();
-        });                   
+        }); 
     });
 } catch (e) {
     if (typeof console !== 'undefined') {

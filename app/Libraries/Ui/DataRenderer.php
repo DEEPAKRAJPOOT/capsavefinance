@@ -13,7 +13,6 @@ use App\Inv\Repositories\Models\User;
 use Illuminate\Support\Facades\Crypt;
 use App\Inv\Repositories\Models\Anchor;
 use Illuminate\Support\Facades\Storage;
-use App\Inv\Repositories\Models\Payment;
 use App\Libraries\Ui\DataRendererHelper;
 use App\Contracts\Ui\DataProviderInterface;
 use App\Inv\Repositories\Models\AnchorUser;
@@ -23,12 +22,13 @@ use App\Inv\Repositories\Models\AppAssignment;
 use App\Inv\Repositories\Models\AppProgramLimit;
 use App\Inv\Repositories\Contracts\Traits\LmsTrait;
 use App\Inv\Repositories\Models\Master\DoaLevelRole;
-use App\Inv\Repositories\Contracts\Traits\InvoiceTrait;
 use App\Inv\Repositories\Models\Lms\InterestAccrualTemp;
 use App\Inv\Repositories\Models\Lms\UserInvoiceRelation;
+use App\Inv\Repositories\Contracts\Traits\InvoiceTrait;
+use App\Inv\Repositories\Models\Payment;
 use App\Inv\Repositories\Models\Lms\PaymentApportionment;
 use App\Inv\Repositories\Models\Lms\Transactions;
-
+use App\Inv\Repositories\Models\Master\MakerChecker;
 
 class DataRenderer implements DataProviderInterface
 {
@@ -63,9 +63,9 @@ class DataRenderer implements DataProviderInterface
     {
         //
     }
-    
+
     /*
-     * 
+     *
      * get all country list
      */
     public function getUsersList(Request $request, $user)
@@ -79,7 +79,7 @@ class DataRenderer implements DataProviderInterface
                     //$link = '000'.$user->user_id;
                     $link = \Helpers::formatIdWithPrefix($user->user_id, 'LEADID');
                         return "<a id=\"" . $user->user_id . "\" href=\"".route('lead_detail', ['user_id' => $user->user_id])."\" rel=\"tooltip\"   >$link</a> ";
-                        
+
                     }
                 )
                 ->editColumn(
@@ -88,7 +88,7 @@ class DataRenderer implements DataProviderInterface
                     $panInfo = $user->pan_no && !empty($user->pan_no) ? '<br><strong>PAN:</strong> ' . $user->pan_no : ((isset($user->nonAnchorPanNo) && $user->nonAnchorPanNo && !empty($user->nonAnchorPanNo)) ? '<br><strong>PAN:</strong> ' . $user->nonAnchorPanNo : ''); 
                     $full_name = $user->f_name.' '.$user->l_name . $panInfo;
                     return $full_name;
-                    
+
                 })
                 ->editColumn(
                     'email',
@@ -98,15 +98,15 @@ class DataRenderer implements DataProviderInterface
                 })
                 ->editColumn(
                     'anchor',
-                    function ($user) {                    
+                    function ($user) {
                     if($user->UserAnchorId){
                        //$userInfo=User::getUserByAnchorId((int) $user->UserAnchorId);
                        //$achorId= $userInfo->f_name.' '.$userInfo->l_name;
                         $achorId = Helpers::getAnchorsByUserId($user->user_id);
                     }else{
-                      $achorId='N/A';  
+                      $achorId='N/A';
                     }
-                    //$achorId = $user->UserAnchorId; 
+                    //$achorId = $user->UserAnchorId;
                     return $achorId;
                 })
                 ->editColumn(
@@ -119,24 +119,24 @@ class DataRenderer implements DataProviderInterface
                     }else{
                         $achorUserTpe='';
                     }
-                    //$achorUserTpe = $user->AnchUserType; 
+                    //$achorUserTpe = $user->AnchUserType;
                     return $achorUserTpe;
                 })
                 ->editColumn(
                     'salesper',
                     function ($user) {
                     if($user->to_id){
-                    $userInfo=Helpers::getUserInfo($user->to_id);                    
-                       $saleName=$userInfo->f_name. ' '.$userInfo->l_name;  
+                    $userInfo=Helpers::getUserInfo($user->to_id);
+                       $saleName=$userInfo->f_name. ' '.$userInfo->l_name;
                     }else{
-                       $saleName=''; 
-                    } 
+                       $saleName='';
+                    }
                     return $saleName;
                 })
                 ->editColumn(
                     '',
                     function ($user) {
-                    $full_name = $user->mobile_no; 
+                    $full_name = $user->mobile_no;
                     return $full_name;
                 })
                 // ->editColumn(
@@ -153,10 +153,10 @@ class DataRenderer implements DataProviderInterface
                     function ($user) {
                     return ($user->is_active == '0')?'<div class="btn-group ">
                                              <label class="badge badge-danger current-status">In Active</label>
-                                             
+
                                           </div></b>':'<div class="btn-group ">
                                              <label class="badge badge-success current-status">Active</label>
-                                             
+
                                           </div></b>';
 
                 })
@@ -186,7 +186,7 @@ class DataRenderer implements DataProviderInterface
                     if ($request->get('by_email') != '') {
                         if ($request->has('by_email')) {
                             $query->where(function ($query) use ($request) {
-                                $by_nameOrEmail = trim($request->get('by_email'));   
+                                $by_nameOrEmail = trim($request->get('by_email'));
                                 $query->where('users.f_name', 'like',"%$by_nameOrEmail%")
                                 ->orWhere('users.l_name', 'like', "%$by_nameOrEmail%")
                                 ->orWhere(\DB::raw("CONCAT(rta_users.f_name,' ',rta_users.l_name)"), 'like', "%$by_nameOrEmail%")
@@ -209,7 +209,7 @@ class DataRenderer implements DataProviderInterface
                             $pan = $request->get('pan');
                             $query->where('anchor_user.pan_no', $pan);
                         });
-                    }                    
+                    }
                 })
                 ->make(true);
     }
@@ -383,6 +383,7 @@ class DataRenderer implements DataProviderInterface
      */
     public function getAppList(Request $request, $app)
     {
+    
         return DataTables::of($app)
                 ->rawColumns(['app_id','biz_entity_name','assignee', 'status', 'assigned_by', 'action','assoc_anchor', 'contact','name', 'app_code'])
                 ->addColumn(
@@ -400,11 +401,11 @@ class DataRenderer implements DataProviderInterface
                            else
                                 $link = route('company_details', ['biz_id' => $app->biz_id, 'app_id' => $app_id]);
                            $ret = "<a id='app-id-$app_id' href='$link' rel='tooltip'>" . $app_code . "</a>";
-                                                     
+
                         } else {
                             $ret = "<a id='app-id-$app_id' rel='tooltip'>" . $app_code . "</a>";
                         }
-                        
+
                         if (!empty($parent_app_id)) {
                             $aData = Application::getAppData((int)$parent_app_id);
                             if ($permission && $aData) {
@@ -412,8 +413,8 @@ class DataRenderer implements DataProviderInterface
                             } else {
                                 $ret .= "<br><small>Parent:</small><br><a rel='tooltip'>" . \Helpers::formatIdWithPrefix($parent_app_id, 'APP') . "</a>";
                             }
-                        } 
-                           
+                        }
+
                         return $ret;
                     }
                 )
@@ -428,9 +429,9 @@ class DataRenderer implements DataProviderInterface
                 })
                 ->addColumn(
                     'name',
-                    function ($app) {                        
+                    function ($app) {
                         if($app->user_type && $app->user_type==1){
-                            $anchorUserType='<small class="aprveAppListBtn">( Supplier )</small>'; 
+                            $anchorUserType='<small class="aprveAppListBtn">( Supplier )</small>';
                         }else if($app->user_type && $app->user_type==2){
                             $anchorUserType='<small class="aprveAppListBtn">( Buyer )</small>';
                         }else{
@@ -449,47 +450,48 @@ class DataRenderer implements DataProviderInterface
                 )
                 // ->addColumn(
                 //     'email',
-                //     function ($app) {                        
+                //     function ($app) {
                 //         return $app->email ? $app->email : '';
                 // })
                 // ->addColumn(
                 //     'mobile_no',
-                //     function ($app) {                        
+                //     function ($app) {
                 //         return $app->mobile_no ? $app->mobile_no : '';
-                // })                
+                // })
                 // ->addColumn(
                 //     'assoc_anchor',
                 //     function ($app) {
-                    
+
                 //     if($app->anchor_id){
                 //         $achorName = Helpers::getAnchorsByUserId($app->user_id);
                 //     } else {
-                //        $achorName='';  
-                //     }                    
+                //        $achorName='';
+                //     }
                 //     return $achorName;
-                    
+
                 // })
                 // ->addColumn(
                 //     'user_type',
                 //     function ($app) {
                 //     if($app->user_type && $app->user_type==1){
-                //        $anchorUserType='Supplier'; 
+                //        $anchorUserType='Supplier';
                 //     }else if($app->user_type && $app->user_type==2){
                 //         $anchorUserType='Buyer';
                 //     }else{
                 //         $anchorUserType='';
                 //     }
-                // })                
+                //        return $anchorUserType;
+                // })
                 ->addColumn(
                     'assignee',
-                    function ($app) {  
-                        $data = '';                  
-                        //        return $anchorUserType;
-                        //    $userInfo = Helpers::getUserInfo($app->to_id);                    
-                        //    $assignName = $userInfo->f_name. ' ' . $userInfo->l_name;  
+                    function ($app) {
+                        $data = '';
+                    //if ($app->to_id){
+                    //    $userInfo = Helpers::getUserInfo($app->to_id);
+                    //    $assignName = $userInfo->f_name. ' ' . $userInfo->l_name;
                     //} else {
-                        //    $assignName=''; 
-                    //} 
+                    //    $assignName='';
+                    //}
                     //return $assignName;
                     $userInfo = Helpers::getAppCurrentAssignee($app->app_id);
                     if($userInfo){
@@ -517,7 +519,7 @@ class DataRenderer implements DataProviderInterface
                         return $data;
                         //$fromData = AppAssignment::getOrgFromUser($app->app_id);
                         //return isset($fromData->assigned_by) ? $fromData->assigned_by . '<br><small>(' . $fromData->from_role . ')</small>' : '';
-                })                
+                })
                 ->addColumn(
                     'shared_detail',
                     function ($app) {
@@ -527,14 +529,14 @@ class DataRenderer implements DataProviderInterface
                 ->addColumn(
                     'status',
                     function ($app) {
-                    //$app_status = config('common.app_status');                    
+                    //$app_status = config('common.app_status');
                     //$status = isset($app_status[$app->status]) ? $app_status[$app->status] : '';    // $app->status== 1 ? 'Completed' : 'Incomplete';
-                    $status = isset($app->status_name) ? $app->status_name : ''; 
+                    $status = isset($app->status_name) ? $app->status_name : '';
 
                     $link = '<a title="View Application Status" href="#" data-toggle="modal" data-target="#viewApplicationStatus" data-url="' . route('view_app_status_list', ['app_id' => $app->app_id, 'note_id' => $app->note_id, 'user_id' => $app->user_id, 'curr_status_id' => $app->curr_status_id]) . '" data-height="350px" data-width="100%" data-placement="top" class="aprveAppListBtn">View Status</a>';
 
                     if(Helpers::checkPermission('view_app_status_list') ){
-                        $status .= $link;                        
+                        $status .= $link;
                     }
                     return $status;
                 })
@@ -550,14 +552,14 @@ class DataRenderer implements DataProviderInterface
                         if ($view_only && in_array($app->status, [0,1,2])) {
                            if(Helpers::checkPermission('add_app_note')){
                                 $act = $act . '<a title="Add App Note" href="#" data-toggle="modal" data-target="#addCaseNote" data-url="' . route('add_app_note', ['app_id' => $app->app_id, 'biz_id' => $request->get('biz_id')]) . '" data-height="190px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm"><i class="fa fa-sticky-note" aria-hidden="true"></i></a>';
-                            }                            
+                            }
                         }
 
                         if ($view_only && $app->status == 1) {
                           //// $act = $act . '<a title="Copy application" href="#" data-toggle="modal" data-target="#addAppCopy" data-url="' . route('add_app_copy', ['user_id' =>$app->user_id,'app_id' => $app->app_id, 'biz_id' => $app->biz_id]) . '" data-height="190px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm">Copy Application</a>';
                             if(Helpers::checkPermission('send_case_confirmBox')){
                                 $hasSupplyChainOffer = Helpers::hasSupplyChainOffer($app->app_id);
-                                if ($currentStage && ( (!$lmsStatus && $currentStage->order_no < 16) || ($lmsStatus && $currentStage->order_no <= 16) ) ) {                                                                                                           
+                                if ($currentStage && ( (!$lmsStatus && $currentStage->order_no < 16) || ($lmsStatus && $currentStage->order_no <= 16) ) ) {
                                     $moveToBackStageUrl = '&nbsp;<a href="#" title="Move to Back Stage" data-toggle="modal" data-target="#assignCaseFrame" data-url="' . route('send_case_confirmBox', ['user_id' => $app->user_id,'app_id' => $app->app_id, 'biz_id' => $request->get('biz_id'), 'assign_case' => 1]) . '" data-height="320px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm"><i class="fa fa-reply" aria-hidden="true"></i></a> ';
                                     if ($currentStage->order_no == 16 && !$hasSupplyChainOffer ) {
                                         if ($app->curr_status_id != config('common.mst_status_id')['DISBURSED']) {
@@ -574,11 +576,11 @@ class DataRenderer implements DataProviderInterface
                                         }
                                     }
                                 }
-                            }                                                        
+                            }
                         }
-                        
-                        
-                        if ($lmsStatus && $app->renewal_status == 1 && Helpers::checkPermission('copy_app_confirmbox')) {                            
+
+
+                        if ($lmsStatus && $app->renewal_status == 1 && Helpers::checkPermission('copy_app_confirmbox')) {
                             $act = $act . '&nbsp;<a href="#" title="Copy/Renew Application" data-toggle="modal" data-target="#confirmCopyApp" data-url="' . route('copy_app_confirmbox', ['user_id' => $app->user_id,'app_id' => $app->app_id, 'biz_id' => $app->biz_id, 'app_type' => 1]) . '" data-height="200px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm"><i class="fa fa-files-o" aria-hidden="true"></i></a> ';
                         }
 
@@ -596,31 +598,35 @@ class DataRenderer implements DataProviderInterface
                                 $act = $act . '&nbsp;<a href="#" title="Reduce Limit" data-toggle="modal" data-target="#confirmReduceLimit" data-url="' . route('reduce_limit_confirmBox', ['user_id' => $app->user_id,'app_id' => $app->app_id, 'biz_id' => $app->biz_id, 'app_type' => 3]) . '" data-height="200px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm"><i class="fa fa-user-times" aria-hidden="true"></i></a> ';
                             }
                         }
-                        
+
                         //Route for Application Rejection
                         // if (Helpers ::checkPermission('reject_app') && ($app->curr_status_id === null && $app->curr_status_id !== config('common.mst_status_id')['APP_REJECTED'])) {
                         if (Helpers::isChangeAppStatusAllowed($app->curr_status_id) && Helpers ::checkPermission('reject_app')) {
                            $act = $act . '<a title="Modify Status" href="#" data-toggle="modal" data-target="#rejectApplication" data-url="' . route('reject_app', ['app_id' => $app->app_id, 'note_id' => $app->note_id, 'user_id' => $app->user_id, 'curr_status_id' => $app->curr_status_id]) . '" data-height="250px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm"><i class="fa fa-cog" aria-hidden="true"></i></a>';
                         }
-
+                        if (Helpers::isChangeAppStatusReactivate($app->curr_status_id) && Helpers ::checkPermission('reactivate_status_app')) {
+                           $act = $act . '<a title="Reactivate Status" href="#" data-toggle="modal" data-target="#reactivateApplication" data-url="' . route('reactivate_status_app', ['app_id' => $app->app_id, 'note_id' => $app->note_id, 'user_id' => $app->user_id, 'curr_status_id' => $app->curr_status_id]) . '" data-height="250px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm"><i class="fa fa-key" aria-hidden="true"></i></a>';
+                        }
+                        
                         $userRoles = $roleData->pluck('id')->toArray();
                         if (in_array(config('common.user_role.REVIEWER'), $userRoles) && Helpers::checkPermission('app_pull_back_confirmBox') && in_array($app->app_type, [2,3]) && $currentStage->stage_code == 'approver' && !Helpers::isAppApprByAuthority($app->app_id)) {
                             $act .= '&nbsp;<a href="#" title="App Pull Back" data-toggle="modal" data-target="#pullBackAssignCaseFrame" data-url="' . route('app_pull_back_confirmBox', ['user_id' => $app->user_id,'app_id' => $app->app_id, 'biz_id' => $app->biz_id, 'app_pull_back' => true, ]) . '" data-height="200px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm"><i class="fa fa-undo" aria-hidden="true"></i></a> ';
                         }
                         
+
                         return $act;
-                                      
+
                     }
                 )
                 ->filter(function ($query) use ($request) {
-                    
-                    if ($request->get('search_keyword') != '') {                        
+
+                    if ($request->get('search_keyword') != '') {
                         $query->where(function ($query) use ($request) {
                             $search_keyword = trim($request->get('search_keyword'));
                             $query->where('app.app_code', 'like',"%$search_keyword%")
                             ->orWhere('biz.biz_entity_name', 'like', "%$search_keyword%")
                             ->orWhere('anchor_user.pan_no', 'like', "%$search_keyword%");
-                        });                        
+                        });
                     }
                     if ($request->get('is_assign') != '') {
                         $query->where(function ($query) use ($request) {
@@ -632,7 +638,7 @@ class DataRenderer implements DataProviderInterface
                         $query->where(function ($query) use ($request) {
                             $status = $request->get('status');
                             if ($status == 1 || $status == 2) {
-                                $query->where('app.renewal_status', $status);  
+                                $query->where('app.renewal_status', $status);
                             } else if ($status == 3) {
                                 $query->where('app.app_type', 2);
                             } else if ($status == 4) {
@@ -641,14 +647,14 @@ class DataRenderer implements DataProviderInterface
                                 $query->where('app.curr_status_id', $status);
                             }
                         });
-                    }  
-                    
+                    }
+
                     if ($request->get('pan') != '') {
                         $query->where(function ($query) use ($request) {
                             $pan = $request->get('pan');
                             $query->where('anchor_user.pan_no', $pan);
                         });
-                    }                    
+                    }
                 })
                 ->make(true);
     }
@@ -773,17 +779,16 @@ class DataRenderer implements DataProviderInterface
                 //     }else{
                 //         $anchorUserType='';
                 //     }
-                //        return $anchorUserType;
                 // })                
                 ->addColumn(
                     'assignee',
                     function ($app) {  
                         $data = '';                  
-                    //if ($app->to_id){
-                    //    $userInfo = Helpers::getUserInfo($app->to_id);                    
-                    //    $assignName = $userInfo->f_name. ' ' . $userInfo->l_name;  
+                        //        return $anchorUserType;
+                        //    $userInfo = Helpers::getUserInfo($app->to_id);                    
+                        //    $assignName = $userInfo->f_name. ' ' . $userInfo->l_name;  
                     //} else {
-                    //    $assignName=''; 
+                        //    $assignName=''; 
                     //} 
                     //return $assignName;
                     $userInfo = Helpers::getAppCurrentAssignee($app->app_id);
@@ -805,53 +810,119 @@ class DataRenderer implements DataProviderInterface
                         } else {
                             $data .= $app->assigned_by ? $app->assigned_by : '';
                         }
-                       // $data .= '<a  data-toggle="modal" data-target="#viewSharedDetails" data-url ="' . route('view_shared_details', ['app_id' => $app->app_id]) . '" data-height="350px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm" title="View Shared Details"><i class="fa fa-eye"></i></a>';
+                        // $data .= '<a  data-toggle="modal" data-target="#viewSharedDetails" data-url ="' . route('view_shared_details', ['app_id' => $app->app_id]) . '" data-height="350px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm" title="View Shared Details"><i class="fa fa-eye"></i></a>';
                         if(Helpers::checkPermission('view_shared_details') ){
                             $data .= '<a  data-toggle="modal" data-target="#viewSharedDetails" data-url ="' . route('view_shared_details', ['app_id' => $app->app_id]) . '" data-height="350px" data-width="100%" data-placement="top" class="aprveAppListBtn" title="View Shared Details">View Shared Details</a>';
                         }
                         return $data;
                         //$fromData = AppAssignment::getOrgFromUser($app->app_id);
                         //return isset($fromData->assigned_by) ? $fromData->assigned_by . '<br><small>(' . $fromData->from_role . ')</small>' : '';
-                })                
-                ->addColumn(
-                    'shared_detail',
-                    function ($app) {
-                    return $app->sharing_comment ? $app->sharing_comment : '';
-
-                })
-                ->addColumn(
-                    'status',
-                    function ($app) {
-                    //$app_status = config('common.app_status');                    
-                    //$status = isset($app_status[$app->status]) ? $app_status[$app->status] : '';    // $app->status== 1 ? 'Completed' : 'Incomplete';
-                    $status = isset($app->status_name) ? $app->status_name : ''; 
-
-                    $link = '<a title="View Application Status" href="#" data-toggle="modal" data-target="#viewApplicationStatus" data-url="' . route('view_app_status_list', ['app_id' => $app->app_id, 'note_id' => $app->note_id, 'user_id' => $app->user_id, 'curr_status_id' => $app->curr_status_id]) . '" data-height="350px" data-width="100%" data-placement="top" class="aprveAppListBtn">View Status</a>';
-
-                    if(Helpers::checkPermission('view_app_status_list') ){
-                        $status .= $link;                        
-                    }
-                    return $status;
-                })
-                ->filter(function ($query) use ($request) {
-                    
-                    if ($request->get('search_keyword') != '') {                        
-                        $query->where(function ($query) use ($request) {
-                            $search_keyword = trim($request->get('search_keyword'));
-                            $query->where('app.app_code', 'like',"%$search_keyword%")
-                            ->orWhere('biz.biz_entity_name', 'like', "%$search_keyword%")
-                            ->orWhere('anchor_user.pan_no', 'like', "%$search_keyword%");
-                        });                        
-                    }
-                    if ($request->get('is_assign') != '') {
-                        $query->where(function ($query) use ($request) {
-                            $is_assigned = $request->get('is_assign');
-                            $query->where('app.is_assigned', $is_assigned);
-                        });
-                    }
-                    if ($request->get('status') != '') {
-                        $query->where(function ($query) use ($request) {
-                            $status = $request->get('status');
+                    })                
+                    ->addColumn(
+                        'shared_detail',
+                        function ($app) {
+                            return $app->sharing_comment ? $app->sharing_comment : '';
+                            
+                        })
+                        ->addColumn(
+                            'status',
+                            function ($app) {
+                                //$app_status = config('common.app_status');                    
+                                //$status = isset($app_status[$app->status]) ? $app_status[$app->status] : '';    // $app->status== 1 ? 'Completed' : 'Incomplete';
+                                $status = isset($app->status_name) ? $app->status_name : ''; 
+                                
+                                $link = '<a title="View Application Status" href="#" data-toggle="modal" data-target="#viewApplicationStatus" data-url="' . route('view_app_status_list', ['app_id' => $app->app_id, 'note_id' => $app->note_id, 'user_id' => $app->user_id, 'curr_status_id' => $app->curr_status_id]) . '" data-height="350px" data-width="100%" data-placement="top" class="aprveAppListBtn">View Status</a>';
+                                
+                                if(Helpers::checkPermission('view_app_status_list') ){
+                                    $status .= $link;                        
+                                }
+                                return $status;
+                            })
+                            ->addColumn(
+                                'action',
+                                function ($app) use ($request) {
+                                    $act = '';
+                                    $lmsStatus = config('lms.LMS_STATUS');
+                                    $view_only = Helpers::isAccessViewOnly($app->app_id);
+                                    if ($view_only && in_array($app->status, [0,1,2])) {
+                                        if(Helpers::checkPermission('add_app_note')){
+                                            $act = $act . '<a title="Add App Note" href="#" data-toggle="modal" data-target="#addCaseNote" data-url="' . route('add_app_note', ['app_id' => $app->app_id, 'biz_id' => $request->get('biz_id')]) . '" data-height="190px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm"><i class="fa fa-sticky-note" aria-hidden="true"></i></a>';
+                                        }                            
+                                    }
+                                    if ($view_only && $app->status == 1) {
+                                        //// $act = $act . '<a title="Copy application" href="#" data-toggle="modal" data-target="#addAppCopy" data-url="' . route('add_app_copy', ['user_id' =>$app->user_id,'app_id' => $app->app_id, 'biz_id' => $app->biz_id]) . '" data-height="190px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm">Copy Application</a>';
+                                        
+                                        if(Helpers::checkPermission('send_case_confirmBox')){
+                                            $currentStage = Helpers::getCurrentWfStage($app->app_id);
+                                            $roleData = Helpers::getUserRole();     
+                                            $hasSupplyChainOffer = Helpers::hasSupplyChainOffer($app->app_id);
+                                            if ($currentStage && ( (!$lmsStatus && $currentStage->order_no < 16) || ($lmsStatus && $currentStage->order_no <= 16) ) ) {                                                                                                           
+                                                $moveToBackStageUrl = '&nbsp;<a href="#" title="Move to Back Stage" data-toggle="modal" data-target="#assignCaseFrame" data-url="' . route('send_case_confirmBox', ['user_id' => $app->user_id,'app_id' => $app->app_id, 'biz_id' => $request->get('biz_id'), 'assign_case' => 1]) . '" data-height="320px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm"><i class="fa fa-reply" aria-hidden="true"></i></a> ';
+                                                if ($currentStage->order_no == 16 && !$hasSupplyChainOffer ) {
+                                                    if ($app->curr_status_id != config('common.mst_status_id')['DISBURSED']) {
+                                                        $act = $act . $moveToBackStageUrl;
+                                                    }
+                                                } else {
+                                                    $act = $act . '&nbsp;<a href="#" title="Move to Next Stage" data-toggle="modal" data-target="#sendNextstage" data-url="' . route('send_case_confirmBox', ['user_id' => $app->user_id,'app_id' => $app->app_id, 'biz_id' => $request->get('biz_id')]) . '" data-height="370px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm"><i class="fa fa-share" aria-hidden="true"></i></a> ';    
+                                                    
+                                                    if ($roleData[0]->id != 4 && !empty($currentStage->assign_role)) {
+                                                        $act = $act . $moveToBackStageUrl;
+                                                    }
+                                                }
+                                            }
+                                        }                                                        
+                                    }
+                                    
+                                    
+                                    if ($lmsStatus && $app->renewal_status == 1 && Helpers::checkPermission('copy_app_confirmbox')) {                            
+                                        $act = $act . '&nbsp;<a href="#" title="Copy/Renew Application" data-toggle="modal" data-target="#confirmCopyApp" data-url="' . route('copy_app_confirmbox', ['user_id' => $app->user_id,'app_id' => $app->app_id, 'biz_id' => $app->biz_id, 'app_type' => 1]) . '" data-height="200px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm"><i class="fa fa-files-o" aria-hidden="true"></i></a> ';
+                                    }
+                                    
+                                    //$where=[];
+                                    //$where['user_id'] = $app->user_id;
+                                    //$where['status'] = [0,1];
+                                    //$appData = Application::getApplicationsData($where);
+                                    $appData = Application::checkAppByPan($app->user_id);
+                                    if ($lmsStatus && $app->status == 2 && !$appData) { //Limit Enhancement
+                                        
+                                        if (Helpers::checkPermission('enhance_limit_confirmbox')) {
+                                            $act = $act . '&nbsp;<a href="#" title="Limit Enhancement" data-toggle="modal" data-target="#confirmEnhanceLimit" data-url="' . route('enhance_limit_confirmbox', ['user_id' => $app->user_id,'app_id' => $app->app_id, 'biz_id' => $app->biz_id, 'app_type' => 2]) . '" data-height="200px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm"><i class="fa fa-user-plus" aria-hidden="true"></i></a> ';
+                                        }
+                                        if (Helpers::checkPermission('reduce_limit_confirmBox')) {
+                                            $act = $act . '&nbsp;<a href="#" title="Reduce Limit" data-toggle="modal" data-target="#confirmReduceLimit" data-url="' . route('reduce_limit_confirmBox', ['user_id' => $app->user_id,'app_id' => $app->app_id, 'biz_id' => $app->biz_id, 'app_type' => 3]) . '" data-height="200px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm"><i class="fa fa-user-times" aria-hidden="true"></i></a> ';
+                                        }
+                                    }
+                                    
+                                    //Route for Application Rejection
+                                    // if (Helpers ::checkPermission('reject_app') && ($app->curr_status_id === null && $app->curr_status_id !== config('common.mst_status_id')['APP_REJECTED'])) {
+                                        if (Helpers::isChangeAppStatusAllowed($app->curr_status_id) && Helpers ::checkPermission('reject_app')) {
+                                            $act = $act . '<a title="Modify Status" href="#" data-toggle="modal" data-target="#rejectApplication" data-url="' . route('reject_app', ['app_id' => $app->app_id, 'note_id' => $app->note_id, 'user_id' => $app->user_id, 'curr_status_id' => $app->curr_status_id]) . '" data-height="250px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm"><i class="fa fa-cog" aria-hidden="true"></i></a>';
+                                        }
+                                        
+                                        return $act;
+                                        
+                                    }
+                                    )
+                                    ->filter(function ($query) use ($request) {
+                                        
+                                        if ($request->get('search_keyword') != '') {                        
+                                            $query->where(function ($query) use ($request) {
+                                                $search_keyword = trim($request->get('search_keyword'));
+                                                $query->where('app.app_code', 'like',"%$search_keyword%")
+                                                ->orWhere('biz.biz_entity_name', 'like', "%$search_keyword%")
+                                                ->orWhere('anchor_user.pan_no', 'like', "%$search_keyword%");
+                                            });                        
+                                        }
+                                        if ($request->get('is_assign') != '') {
+                                            $query->where(function ($query) use ($request) {
+                                                $is_assigned = $request->get('is_assign');
+                                                $query->where('app.is_assigned', $is_assigned);
+                                            });
+                                        }
+                                        if ($request->get('status') != '') {
+                                            $query->where(function ($query) use ($request) {
+                                                $status = $request->get('status');
+                                                //if ($app->to_id){
                             if ($status == 1 || $status == 2) {
                                 $query->where('app.renewal_status', $status);  
                             } else if ($status == 3) {
@@ -890,50 +961,50 @@ class DataRenderer implements DataProviderInterface
                 )
                 ->addColumn(
                     'biz_entity_name',
-                    function ($app) {                        
+                    function ($app) {
                         return $app->biz_entity_name ? $app->biz_entity_name : '';
                 })
                 ->addColumn(
                     'user_name',
-                    function ($app) {                        
+                    function ($app) {
                         return $app->f_name.' '.$app->m_name.' '.$app->l_name;
                 })
                 ->addColumn(
                     'user_email',
-                    function ($app) {                        
+                    function ($app) {
                         return $app->email;
                 })
                 ->addColumn(
                     'user_phone',
-                    function ($app) {                        
+                    function ($app) {
                         return $app->mobile_no;
                 })
                 ->addColumn(
                     'assoc_anchor',
-                    function ($app) {                        
+                    function ($app) {
                      if($app->anchor_id){
                        //$userInfo=User::getUserByAnchorId((int)$app->anchor_id);
                        //$achorName= ($userInfo)? ucwords($userInfo->f_name.' '.$userInfo->l_name): 'NA';
-                        $achorName = Helpers::getAnchorsByUserId($app->user_id); 
+                        $achorName = Helpers::getAnchorsByUserId($app->user_id);
                     }else{
-                      $achorName='';  
-                    }                    
+                      $achorName='';
+                    }
                     return $achorName;
                 })
                 ->addColumn(
                     'applied_loan_amount',
                     function ($app) {
                     return $app->loan_amt ? number_format($app->loan_amt) : '';
-                })                
+                })
                 ->addColumn(
                     'created_at',
-                    function ($app) {                    
+                    function ($app) {
                     return $app->created_at ? date('d/m/Y', strtotime($app->created_at)) : '';
                 })
                 ->addColumn(
                     'status',
                     function ($app) {
-                    $app_status = config('common.app_status');                    
+                    $app_status = config('common.app_status');
                     return '<label class="badge '.(($app->status == 1 || $app->status == 2)? "badge-primary":"badge-warning").'">'.(($app->status == 1 || $app->status == 2)? $app_status[$app->status] : $app_status[$app->status] ).'</label>';
 
                 })
@@ -947,13 +1018,13 @@ class DataRenderer implements DataProviderInterface
                     }
                 )*/
                 ->filter(function ($query) use ($request) {
-                    
-                    if ($request->get('search_keyword') != '') {                        
+
+                    if ($request->get('search_keyword') != '') {
                         $query->where(function ($query) use ($request) {
                             $search_keyword = trim($request->get('search_keyword'));
                             $query->where('app.app_code', 'like',"%$search_keyword%")
                             ->orWhere('biz.biz_entity_name', 'like', "%$search_keyword%");
-                        });                        
+                        });
                     }
                     // if ($request->get('is_status') != '') {
                     //     $query->where(function ($query) use ($request) {
@@ -961,17 +1032,17 @@ class DataRenderer implements DataProviderInterface
                     //         $query->where('app.status', $is_assigned);
                     //     });
                     // }
-                    
+
                 })
                 ->make(true);
     }
 
-    /*      
+    /*
      * Get user application list for frontend
      */
     public function getUserAppList(Request $request, $app)
     {
-      
+
         return DataTables::of($app)
                 ->rawColumns(['app_id', 'action', 'assoc_anchor', 'status'])
                 ->addColumn(
@@ -983,50 +1054,50 @@ class DataRenderer implements DataProviderInterface
                 )
                 ->addColumn(
                     'biz_entity_name',
-                    function ($app) {                        
+                    function ($app) {
                         return $app->biz_entity_name ? $app->biz_entity_name : '';
                 })
                 ->addColumn(
                     'user_name',
-                    function ($app) {                        
+                    function ($app) {
                         return $app->f_name.' '.$app->m_name.' '.$app->l_name;
                 })
                 ->addColumn(
                     'user_email',
-                    function ($app) {                        
+                    function ($app) {
                         return $app->email;
                 })
                 ->addColumn(
                     'user_phone',
-                    function ($app) {                        
+                    function ($app) {
                         return $app->mobile_no;
                 })
                 ->addColumn(
                     'assoc_anchor',
-                    function ($app) {                        
+                    function ($app) {
                      if($app->anchor_id){
                        //$userInfo=User::getUserByAnchorId((int) $app->anchor_id);
                          //$achorName= ($userInfo)? ucwords($userInfo->f_name.' '.$userInfo->l_name): 'NA';
                         $achorName = Helpers::getAnchorsByUserId($app->user_id);
                     }else{
-                      $achorName='';  
-                    }                    
+                      $achorName='';
+                    }
                     return $achorName;
                 })
                 ->addColumn(
                     'applied_loan_amount',
                     function ($app) {
                     return $app->loan_amt ? number_format($app->loan_amt) : '';
-                })                
+                })
                 ->addColumn(
                     'created_at',
-                    function ($app) {                    
+                    function ($app) {
                     return $app->created_at ? date('d/m/Y', strtotime($app->created_at)) : '';
                 })
                 ->addColumn(
                     'status',
                     function ($app) {
-                    $app_status = config('common.app_status');                    
+                    $app_status = config('common.app_status');
                     //return '<label class="badge '.(($app->status == 1)? "badge-primary":"badge-warning").'">'.(isset($app_status[$app->status]) ? $app_status[$app->status] : '' ).'</label>';
                     $app_status_class = config('common.APP_STATUS_LABEL_CLASS.'.$app->curr_status_id) ? config('common.APP_STATUS_LABEL_CLASS.'.$app->curr_status_id) : 'badge-primary';
                     return '<label class="badge '. $app_status_class .'">'.(isset($app->status_name) ? $app->status_name : '' ).'</label>';
@@ -1042,13 +1113,13 @@ class DataRenderer implements DataProviderInterface
                     }
                 )
                 ->filter(function ($query) use ($request) {
-                    
-                    if ($request->get('search_keyword') != '') {                        
+
+                    if ($request->get('search_keyword') != '') {
                         $query->where(function ($query) use ($request) {
                             $search_keyword = trim($request->get('search_keyword'));
                             $query->where('app.app_id', 'like',"%$search_keyword%")
                             ->orWhere('biz.biz_entity_name', 'like', "%$search_keyword%");
-                        });                        
+                        });
                     }
                     if ($request->get('is_status') != '') {
                         $query->where(function ($query) use ($request) {
@@ -1056,69 +1127,69 @@ class DataRenderer implements DataProviderInterface
                             $query->where('app.curr_status_id', $is_assigned);
                         });
                     }
-                    
+
                 })
                 ->make(true);
-    }  
-    
-    
-     /*      
+    }
+
+
+     /*
      * Get Invoice list for frontend
      */
     public function getInvoiceList(Request $request,$invoice)
-    { 
+    {
         return DataTables::of($invoice)
                 ->rawColumns(['status'])
                 ->addColumn(
                     'anchor_name',
-                    function ($invoice) {                        
+                    function ($invoice) {
                         return $invoice->anchor->comp_name ? $invoice->anchor->comp_name : '';
                 })
                 ->addColumn(
                     'supplier_name',
-                    function ($invoice) { 
+                    function ($invoice) {
                         return $invoice->supplier->f_name ? $invoice->supplier->f_name : '';
                 })
                  ->addColumn(
                     'program_name',
-                    function ($invoice) {                        
+                    function ($invoice) {
                         return $invoice->program->prgm_name ? $invoice->program->prgm_name : '';
                 })
                 ->addColumn(
                     'invoice_date',
-                    function ($invoice) {                        
+                    function ($invoice) {
                          return $invoice->invoice_date ? $invoice->invoice_date : '';
                 })
                 ->addColumn(
                     'tenor',
-                    function ($invoice) {                        
+                    function ($invoice) {
                          return $invoice->tenor ? $invoice->tenor : '';
                 })
                  ->addColumn(
                     'invoice_approve_amount',
-                    function ($invoice) {                        
+                    function ($invoice) {
                          return $invoice->invoice_approve_amount ? $invoice->invoice_approve_amount : '';
                 })
-                
+
                ->addColumn(
                     'status',
                     function ($invoice) {
-                    //$app_status = config('inv_common.app_status');                    
+                    //$app_status = config('inv_common.app_status');
                     return '<label class="badge '.(($invoice->status == 1)? "badge-primary":"badge-warning").'">'.(($invoice->status == 1)? "Completed":"Incomplete").'</label>';
 
                 })
               ->make(true);
-    }  
-     /*      
+    }
+     /*
      * Get  User Wise Invoice list for backend
      */
     public function getUserWiseInvoiceList(Request $request,$invoice)
-    {  
+    {
         return DataTables::of($invoice)
                ->rawColumns(['anchor_name','supplier_name','invoice_date','invoice_amount','view_upload_invoice','status','anchor_id','action','invoice_id','invoice_due_date'])
                ->addColumn(
                     'invoice_id',
-                    function ($invoice) use ($request)  {     
+                    function ($invoice) use ($request)  {
                            if($request->front)
                            {
                                $link = '';
@@ -1135,10 +1206,10 @@ class DataRenderer implements DataProviderInterface
                               return $link;
                         }
              })
-             
+
               ->addColumn(
                     'anchor_name',
-                    function ($invoice) {  
+                    function ($invoice) {
                         $comp_name = '';
                         $comp_name .= $invoice->anchor->comp_name ? '<span><b>Name:&nbsp;</b>'.$invoice->anchor->comp_name.'</span>' : '';
                         $comp_name .= $invoice->program->prgm_name ? '<br><span><b>Program:&nbsp;</b>'.$invoice->program->prgm_name.'</span>' : '';
@@ -1146,7 +1217,7 @@ class DataRenderer implements DataProviderInterface
                 })
                 ->addColumn(
                     'supplier_name',
-                    function ($invoice) { 
+                    function ($invoice) {
                         $custo_name = '';
                         $custo_name .= $invoice->supplier->f_name ? '<span><b>Name:&nbsp;</b>'.$invoice->supplier->f_name.'</span>' : '';
                         $custo_name .= $invoice->business->biz_entity_name ? '<br><span><b>Business Name:&nbsp;</b>'.$invoice->business->biz_entity_name.'</span>' : '';
@@ -1154,29 +1225,38 @@ class DataRenderer implements DataProviderInterface
                 })
                  ->addColumn(
                     'invoice_date',
-                    function ($invoice) {                        
+                    function ($invoice) {
                         $inv_date = '';
-                       if($invoice->mstStatus->id!=12) { 
+                       if($invoice->mstStatus->id!=12) {
                         $inv_date .= $invoice->invoice_date ? '<span><b>Inv. Date:&nbsp;</b>'.$invoice->invoice_date.'</span>' : '';
                         $inv_date .= $invoice->invoice_due_date ? '<br><span><b>Inv. Due Date:&nbsp;</b>'.$invoice->invoice_due_date.'</span>' : '';
-                        $inv_date .= $invoice->tenor ? '<br><span><b>Tenor IN Days:&nbsp;</b>'.$invoice->tenor.'</span>' : '';
                        }
                        else
                        {
-                           
+
                         $inv_date .= $invoice->disbursal ? '<span><b>Disburse Date:&nbsp;</b>'.Carbon::parse($invoice->disbursal->disburse_date)->format('d-m-Y').'</span>' : '';
                         $inv_date .= $invoice->disbursal ? '<br><span><b>Payment Due Date:&nbsp;</b>'.Carbon::parse($invoice->disbursal->payment_due_date)->format('d-m-Y').'</span>' : '';
                         $inv_date .= $invoice->tenor ? '<br><span><b>Tenor In Days:&nbsp;</b>'.$invoice->tenor.'</span>' : '';
-                       
+
                        }
+
+                       if($invoice->invoice_disbursed){
+                            if($invoice->tenor == $invoice->invoice_disbursed->tenor_days){
+                                $inv_date .= '<br><span><b>Tenor In Days:&nbsp;</b>'.$invoice->tenor.'</span>';
+                            }else{
+                                $inv_date .= '<br><span><b>Tenor In Days:&nbsp;</b>'.$invoice->tenor .'/'. $invoice->invoice_disbursed->tenor_days.'</span>';
+                            }
+                        }else{
+                            $inv_date .= '<br><span><b>Tenor In Days:&nbsp;</b>'.$invoice->tenor.'</span>';
+                        }
                         return $inv_date;
-                })  
-                ->addColumn(            
+                })
+                ->addColumn(
                     'invoice_amount',
-                    function ($invoice) {                        
+                    function ($invoice) {
                         $inv_amount = '';
-                      if($invoice->mstStatus->id!=12) 
-                      {   
+                      if($invoice->mstStatus->id!=12)
+                      {
                         $inv_amount .= $invoice->invoice_amount ? '<span><b>Inv. Amount:&nbsp;</b>'.$invoice->invoice_amount.'</span>' : '';
                         $inv_amount .= $invoice->invoice_approve_amount ? '<br><span><b>Inv. Approve Amount:&nbsp;</b>'.$invoice->invoice_approve_amount.'</span>' : '';
                         $inv_amount .= $invoice->invoice_margin_amount ? '</br><span><b>Inv. Margin Amt.</b>:&nbsp;'.number_format($invoice->invoice_margin_amount, 2).'</span>' : '';
@@ -1190,17 +1270,13 @@ class DataRenderer implements DataProviderInterface
                       }
                         return $inv_amount;
                 })
-                 ->addColumn(            
+                 ->addColumn(
                     'status',
-                    function ($invoice) {   
-                                             
-                        $act = $invoice->mstStatus->status_name ? $invoice->mstStatus->status_name : '';
-                        if(($invoice->file_id != 0)) {
-                            $act .='&nbsp;<a href="'.route('download_storage_file', ['file_id' => $invoice->userFile->file_id ]).'" title="Download" target="_blank" class="btn btn-action-btn btn-sm"> <i class="fa fa-file-pdf-o" aria-hidden="true"></i></a>';
-                            $act .='&nbsp;<a href="'.route('see_invoice_file', ['file_id' => $invoice->userFile->file_id ]).'" title="View Document" target="_blank" class="btn btn-action-btn btn-sm"> <i class="fa fa-eye" aria-hidden="true"></i></a>';
-                        }
+                    function ($invoice) {
 
-                        if($invoice->invoice_disbursed) { 
+                        $act = $invoice->mstStatus->status_name ? $invoice->mstStatus->status_name : '';
+
+                        if($invoice->invoice_disbursed) {
                             if(Helpers::checkPermission('view_interest_accrual') ){
                                 $act .='&nbsp;&nbsp;<a data-toggle="modal"  data-height="550px" data-width="100%" data-target="#viewInterestAccrual" data-url="' . route('view_interest_accrual', ['invoice_disbursed_id' =>$invoice->invoice_disbursed->invoice_disbursed_id]) . '"  data-placement="top" class="btn btn-action-btn btn-sm" title="View Interest Accrual"><i class="fa fa-info" aria-hidden="true"></i></a>';
                             }
@@ -1208,37 +1284,37 @@ class DataRenderer implements DataProviderInterface
                         return $act;
                 })
                 ->filter(function ($query) use ($request) {
-                    if ($request->get('invoice_no') != '') {                        
+                    if ($request->get('invoice_no') != '') {
                         $query->where(function ($query) use ($request) {
                             $invoice_keyword = trim($request->get('invoice_no'));
                             $query->where('invoice_no',"$invoice_keyword");
-                        });                        
+                        });
                     }
-                    
-                    if ($request->get('status_id') != '') {                        
+
+                    if ($request->get('status_id') != '') {
                         $query->where(function ($query) use ($request) {
                             $search_keyword = trim($request->get('status_id'));
                             $query->where('status_id',"$search_keyword");
-                        });                        
+                        });
                     }
-                   
-                    
+
+
                 })
               ->make(true);
-    } 
-    
-    /*      
+    }
+
+    /*
      * Get Invoice list for backend
      */
     public function getBackendInvoiceList(Request $request,$invoice)
-    {  
-        
+    {
+
         return DataTables::of($invoice)
                ->rawColumns(['updated_at','anchor_name','supplier_name','invoice_date','invoice_amount','view_upload_invoice','status','anchor_id','action','invoice_id','invoice_due_date'])
-           
+
                 ->addColumn(
                     'anchor_id',
-                    function ($invoice) { 
+                    function ($invoice) {
                         $id = Auth::user()->user_id;
                         $inv_approval = Config::get('common.inv_approval');
                         $role_id = DB::table('role_user')->where(['user_id' => $id])->pluck('role_id');
@@ -1256,11 +1332,11 @@ class DataRenderer implements DataProviderInterface
                         {
                             $customer  = 3;
                         }
-                   
-                       $expl  =  explode(",",$invoice->program->invoice_approval); 
-                      if(in_array($customer, $expl)) 
-                      { 
-                       
+
+                       $expl  =  explode(",",$invoice->program->invoice_approval);
+                      if(in_array($customer, $expl))
+                      {
+
                              return '<input type="checkbox" data-id="'.$invoice->supplier_id.'" name="chkstatus" value="'.(($invoice->invoice_id) ? $invoice->invoice_id : '' ).'" class="chkstatus">';
                       }
                       else {
@@ -1269,19 +1345,19 @@ class DataRenderer implements DataProviderInterface
                     })
                   ->addColumn(
                     'invoice_id',
-                    function ($invoice) use ($request)  { 
+                    function ($invoice) use ($request)  {
                         $link = '';
                         if(Helpers::checkPermission('view_invoice_details') ){
                             $link = '<a href="'.route("view_invoice_details",["invoice_id" => $invoice->invoice_id]).'">'.$invoice->invoice_no.'</a>';
                         }
                         return $link;
-                  
-                       
+
+
              })
-             
+
               ->addColumn(
                     'anchor_name',
-                    function ($invoice) {  
+                    function ($invoice) {
                         $comp_name = '';
                         $comp_name .= $invoice->anchor->comp_name ? '<span><b>Anchor Business Name:&nbsp;</b>'.$invoice->anchor->comp_name.'</span>' : '';
                         $comp_name .= $invoice->program->prgm_name ? '<br><span><b>Program:&nbsp;</b>'.$invoice->program->prgm_name.'</span>' : '';
@@ -1289,7 +1365,7 @@ class DataRenderer implements DataProviderInterface
                 })
                 ->addColumn(
                     'supplier_name',
-                    function ($invoice) { 
+                    function ($invoice) {
                         $custo_name = '';
                         $custo_name .= "<a id=\"" . $invoice->lms_user->user_id . "\" href=\"".route('lms_get_customer_applications', ['user_id' => $invoice->lms_user->user_id,'app_id' => $invoice->lms_user->app_id])."\" rel=\"tooltip\"   >".$invoice->lms_user->customer_id."</a></br>";
                         $custo_name .= $invoice->supplier->f_name ? '<span><b>Name:&nbsp;</b>'.$invoice->supplier->f_name.'</span>' : '';
@@ -1299,27 +1375,27 @@ class DataRenderer implements DataProviderInterface
                 })
                  ->addColumn(
                     'invoice_date',
-                    function ($invoice) {                        
+                    function ($invoice) {
                         $inv_date = '';
                         $inv_date .= $invoice->invoice_date ? '<span><b>Date:&nbsp;</b>'.Carbon::parse($invoice->invoice_date)->format('d-m-Y').'</span>' : '';
                         $inv_date .= $invoice->invoice_due_date ? '<br><span><b>Due Date:&nbsp;</b>'.Carbon::parse($invoice->invoice_due_date)->format('d-m-Y').'</span>' : '';
                         $inv_date .= $invoice->tenor ? '<br><span><b>Tenor In Days:&nbsp;</b>'.$invoice->tenor.'</span>' : '';
                         return $inv_date;
-                })  
-                ->addColumn(            
+                })
+                ->addColumn(
                     'invoice_amount',
-                    function ($invoice) {                        
+                    function ($invoice) {
                         $inv_amount = '';
                         $inv_amount .= $invoice->invoice_amount ? '<span><b>Inv. Amt.:&nbsp;</b>'.number_format($invoice->invoice_amount).'</span></br>' : '';
                         $inv_amount .= $invoice->invoice_approve_amount ? '<span><b>Inv. Appr. Amt.</b>:&nbsp;'.number_format($invoice->invoice_approve_amount).'</span>' : '';
                         $inv_amount .= $invoice->program_offer ? '<br><span><b>Margin.:&nbsp;</b>'.$invoice->program_offer->margin.' %</span>' : '';
                         $inv_amount .= $invoice->invoice_margin_amount ? '</br><span><b>Inv. Margin Amt.</b>:&nbsp;'.number_format($invoice->invoice_margin_amount, 2).'</span>' : '';
                         return $inv_amount;
-                        
+
                 })
-                ->addColumn(            
+                ->addColumn(
                     'updated_at',
-                    function ($invoice) {                        
+                    function ($invoice) {
                         $inv_amount = '';
                         $inv_amount .= $invoice->Invoiceuser ? '<span><b>Name:&nbsp;</b>'.$invoice->Invoiceuser->f_name.'&nbsp;'.$invoice->Invoiceuser->l_name.'</span>' : '';
                         return $inv_amount;
@@ -1335,7 +1411,7 @@ class DataRenderer implements DataProviderInterface
                             /// return '<input type="file" name="doc_file" id="file'.$invoice->invoice_id.'" dir="1"  onchange="uploadFile('.$invoice->app_id.','.$invoice->invoice_id.')" title="Upload Invoice">';
                            $action .='<div class="image-upload"><label for="file-input"><i class="fa fa-upload circle btnFilter" aria-hidden="true"></i> </label>
                                      <input name="doc_file" id="file-input" type="file" class="file'.$invoice->invoice_id.'" dir="1"  onchange="uploadFile('.$invoice->app_id.','.$invoice->invoice_id.')" title="Upload Invoice"/></div>';
-                         }   
+                         }
                         $id = Auth::user()->user_id;
                         $inv_approval = Config::get('common.inv_approval');
                         $role_id = DB::table('role_user')->where(['user_id' => $id])->pluck('role_id');
@@ -1354,58 +1430,64 @@ class DataRenderer implements DataProviderInterface
                             $customer  = 3;
                         }
                      if($customer!=3)
-                     {  
+                     {
                       $action .='<a title="Edit Amount" href="#" data-amount="'.(($invoice->invoice_amount) ? $invoice->invoice_amount : '' ).'" data-approve="'.(($invoice->invoice_approve_amount) ? $invoice->invoice_approve_amount : '' ).'"  data-id="'.(($invoice->invoice_id) ? $invoice->invoice_id : '' ).'" data-toggle="modal" data-target="#myModal7" class="btn btn-action-btn btn-sm changeInvoiceAmount"><i class="fa fa-edit" aria-hidden="true"></i></a>';
                       $action .='<a title="Edit Tenor" href="#" data-tenor="'.(($invoice->tenor) ? $invoice->tenor : '' ).'" data-offertenor="'.(($invoice->program_offer->tenor) ? $invoice->program_offer->tenor : '' ).'" data-id="'.(($invoice->invoice_id) ? $invoice->invoice_id : '' ).'" data-toggle="modal" data-target="#changeInvoiceTenorModal" class="btn btn-action-btn btn-sm changeInvoiceTenor"><i class="fa fa-edit" aria-hidden="true"></i></a>';
                      }
-                      $expl  =  explode(",",$invoice->program->invoice_approval); 
-                      if(in_array($customer, $expl)) 
-                      {  
-                        
+                      $expl  =  explode(",",$invoice->program->invoice_approval);
+                      if(in_array($customer, $expl))
+                      {
+
                           $action .='<a title="Approve" data-status="8" data-amount="'.(($invoice->invoice_approve_amount) ? $invoice->invoice_approve_amount  : '' ).'"  data-user="'.(($invoice->supplier_id) ? $invoice->supplier_id : '' ).'"  data-id="'.(($invoice->invoice_id) ? $invoice->invoice_id : '' ).'" class="btn btn-action-btn btn-sm pendingApproveInv"><i class="fa fa-thumbs-up" aria-hidden="true"></i></a>';
-                      
+
+                      }
+                      if(Helpers::checkPermission('update_invoice_pending_tab') ){
+                        $action .='</br></br><div class="d-flex"><select  data-id="'.(($invoice->invoice_id) ? $invoice->invoice_id : '' ).'" class=" btn-success rounded approveInv1"><option value="0">Change Status</option><option value="14"> Reject</option></select></div>';
                       }
                       return $action;
                 })
                    ->filter(function ($query) use ($request) {
-                  
-                    if ($request->get('biz_id') != '') {                        
+
+                    if ($request->get('biz_id') != '') {
                        $query->where(function ($query) use ($request) {
                     $search_keyword = trim($request->get('biz_id'));
                     $query->where('invoice_no', 'like',"%$search_keyword%")
                     ->orwhereHas('business', function ($q) use ($search_keyword){
                         $q->where('biz_entity_name', 'like', "%$search_keyword%");
-                     })
-                     ->orwhereHas('anchor', function ($q) use ($search_keyword){
+                    })
+                    ->orwhereHas('anchor', function ($q) use ($search_keyword){
                         $q->where('comp_name', 'like', "%$search_keyword%");
-                     });
+                    })
+                    ->orwhereHas('lms_user', function ($q) use ($search_keyword){
+                        $q->where('customer_id', 'like', "%$search_keyword%");
+                    });
                 });
                         }
-                    
+
                 })
               ->make(true);
-    } 
-    
-     /*      
+    }
+
+     /*
      * Get Invoice list for backend
      */
     public function getFrontendInvoiceList(Request $request,$invoice)
-    { 
+    {
         return DataTables::of($invoice)
                ->rawColumns(['anchor_name','supplier_name','invoice_date','invoice_amount','view_upload_invoice','status','anchor_id','invoice_upload','invoice_id','invoice_due_date', 'action'])
-           
-              
+
+
                  ->addColumn(
                     'invoice_id',
-                    function ($invoice) use ($request)  {     
-                          
+                    function ($invoice) use ($request)  {
+
                               return '<a href="'.route("frontend_view_invoice_details",["invoice_id" => $invoice->invoice_id]).'">'.$invoice->invoice_no.'</a>';
-            
+
              })
-             
+
               ->addColumn(
                     'anchor_name',
-                    function ($invoice) {  
+                    function ($invoice) {
                         $comp_name = '';
                         $comp_name .= $invoice->anchor->comp_name ? '<span><b>Name:&nbsp;</b>'.$invoice->anchor->comp_name.'</span>' : '';
                         $comp_name .= $invoice->program->prgm_name ? '<br><span><b>Program:&nbsp;</b>'.$invoice->program->prgm_name.'</span>' : '';
@@ -1413,7 +1495,7 @@ class DataRenderer implements DataProviderInterface
                 })
                 ->addColumn(
                     'supplier_name',
-                    function ($invoice) { 
+                    function ($invoice) {
                         $custo_name = '';
                         $custo_name .= $invoice->supplier->f_name ? '<span><b>Name:&nbsp;</b>'.$invoice->supplier->f_name.'</span>' : '';
                         $custo_name .= $invoice->business->biz_entity_name ? '<br>'.$invoice->business->biz_entity_name.'</span>' : '';
@@ -1421,16 +1503,16 @@ class DataRenderer implements DataProviderInterface
                 })
                  ->addColumn(
                     'invoice_date',
-                    function ($invoice) {                        
+                    function ($invoice) {
                         $inv_date = '';
                         $inv_date .= $invoice->invoice_date ? '<span><b>Date:&nbsp;</b>'.$invoice->invoice_date.'</span>' : '';
                         $inv_date .= $invoice->invoice_due_date ? '<br><span><b>Due Date:&nbsp;</b>'.$invoice->invoice_due_date.'</span>' : '';
                         $inv_date .= $invoice->tenor ? '<br><span><b>Tenor In Days:&nbsp;</b>'.$invoice->tenor.'</span>' : '';
                         return $inv_date;
-                })  
-                ->addColumn(            
+                })
+                ->addColumn(
                     'invoice_amount',
-                    function ($invoice) {                        
+                    function ($invoice) {
                         $inv_amount = '';
                         $inv_amount .= $invoice->invoice_amount ? '<span><b>Inv. Amount:&nbsp;</b>'.number_format($invoice->invoice_amount).'</span>' : '';
                         $inv_amount .= $invoice->invoice_approve_amount ? '<br><span><b>Inv. Approve Amount:&nbsp;</b>'.number_format($invoice->invoice_approve_amount).'</span>' : '';
@@ -1439,7 +1521,7 @@ class DataRenderer implements DataProviderInterface
                  ->addColumn(
                     'invoice_upload',
                     function ($invoice) {
-                     
+
                         $action ="";
                       if(($invoice->file_id != 0)) {
                           $action .='<a href="'.route('frontend_download_storage_file', ['file_id' => $invoice->userFile->file_id ]).'" ><i class="fa fa-file-pdf-o" aria-hidden="true"></i></a>';
@@ -1447,19 +1529,19 @@ class DataRenderer implements DataProviderInterface
                             /// return '<input type="file" name="doc_file" id="file'.$invoice->invoice_id.'" dir="1"  onchange="uploadFile('.$invoice->app_id.','.$invoice->invoice_id.')" title="Upload Invoice">';
                            $action .='<div class="image-upload"><label for="file-input"><i class="fa fa-upload circle btnFilter" aria-hidden="true"></i> </label>
                                      <input name="doc_file" id="file-input" type="file" class="file'.$invoice->invoice_id.'" dir="1"  onchange="uploadFile('.$invoice->app_id.','.$invoice->invoice_id.')" title="Upload Invoice"/></div>';
-                         }               
+                         }
                     return $action;
                 })
-                ->addColumn(            
+                ->addColumn(
                     'status',
-                    function ($invoice) {                        
-                    
+                    function ($invoice) {
+
                         return  $invoice->mstStatus->status_name ? $invoice->mstStatus->status_name : '';
-                       
-                })    
-                ->addColumn(            
+
+                })
+                ->addColumn(
                     'action',
-                    function ($invoice) {  
+                    function ($invoice) {
                         $action = "";
                         if($invoice->mstStatus->status_name === "Pending") {
                             $action .='<a title="Edit" href="#" data-amount="'.(($invoice->invoice_amount) ? $invoice->invoice_amount : '' ).'" data-approve="'.(($invoice->invoice_approve_amount) ? $invoice->invoice_approve_amount : '' ).'"  data-id="'.(($invoice->invoice_id) ? $invoice->invoice_id : '' ).'" data-statusId="'.(($invoice->status_id) ? $invoice->status_id : '' ).'" data-toggle="modal" data-target="#myModal7" class="btn btn-action-btn btn-sm changeInvoiceAmount"><i class="fa fa-edit" aria-hidden="true"></i></a>';
@@ -1468,17 +1550,17 @@ class DataRenderer implements DataProviderInterface
                             $action .= '&nbsp;&nbsp;<a data-toggle="modal"  data-height="550px" class="frontViewInterestAccrualFrame" data-width="100%" data-target="#frontViewInterestAccrualFrame" data-disburse="'.($invoice->invoice_disbursed->invoice_disbursed_id).'"  data-placement="top" class="btn btn-action-btn btn-sm" title="View Interest Accrual"><i class="fa fa-eye"></i></a>';              
                         }
                         return $action;
-                })    
+                })
                 ->filter(function ($query) use ($request) {
-                    
-                    if ($request->get('status_id') != '') {                        
+
+                    if ($request->get('status_id') != '') {
                         $query->where(function ($query) use ($request) {
                             $search_keyword = trim($request->get('status_id'));
                             $query->where('status_id',"$search_keyword");
-                        });                        
+                        });
                     }
 
-                    if ($request->get('biz_id') != '') {                        
+                    if ($request->get('biz_id') != '') {
                         $query->where(function ($query) use ($request) {
                             $search_keyword = trim($request->get('biz_id'));
                             $query->where('invoice_no', 'like',"%$search_keyword%")
@@ -1490,48 +1572,48 @@ class DataRenderer implements DataProviderInterface
                             });
                         });
                     }
-                   
-                    
+
+
                 })
               ->make(true);
-    } 
-    
-    
-     /*      
+    }
+
+
+     /*
      * Get Invoice list for backend
      */
     public function getBackendInvoiceListApprove(Request $request,$invoice)
-    { 
-    
+    {
+
     return DataTables::of($invoice)
                ->rawColumns(['updated_at','anchor_name','supplier_name','invoice_date','invoice_amount','view_upload_invoice','status','anchor_id','action','invoice_id','invoice_due_date'])
-           
+
                 ->addColumn(
                     'anchor_id',
-                    function ($invoice) { 
+                    function ($invoice) {
                     $id = Auth::user()->user_id;
                     $role_id = DB::table('role_user')->where(['user_id' => $id])->pluck('role_id');
                     $chkUser =    DB::table('roles')->whereIn('id',$role_id)->first();
-                    if($chkUser->id!=11 && (!empty($invoice->processing_fee) || $invoice->program_offer->is_invoice_processingfee == 0)) 
+                    if($chkUser->id!=11 && (!empty($invoice->processing_fee) || $invoice->program_offer->is_invoice_processingfee == 0))
                         {
                            return '<input type="checkbox" name="chkstatus" value="'.(($invoice->invoice_id) ? $invoice->invoice_id : '' ).'" class="chkstatus">';
-                
+
                         }
                         })
                  ->addColumn(
                     'invoice_id',
-                    function ($invoice) use ($request)  {  
+                    function ($invoice) use ($request)  {
                             $link = '';
                             if(Helpers::checkPermission('view_invoice_details') ){
                               $link = '<a href="'.route("view_invoice_details",["invoice_id" => $invoice->invoice_id]).'">'.$invoice->invoice_no.'</a>';
                             }
                             return $link;
-                       
+
              })
-             
+
               ->addColumn(
                     'anchor_name',
-                    function ($invoice) {  
+                    function ($invoice) {
                         $comp_name = '';
                         $comp_name .= $invoice->anchor->comp_name ? '<span><b>Anchor Business Name:&nbsp;</b>'.$invoice->anchor->comp_name.'</span>' : '';
                         $comp_name .= $invoice->program->prgm_name ? '<br><span><b>Program:&nbsp;</b>'.$invoice->program->prgm_name.'</span>' : '';
@@ -1539,7 +1621,7 @@ class DataRenderer implements DataProviderInterface
                 })
                 ->addColumn(
                     'supplier_name',
-                    function ($invoice) { 
+                    function ($invoice) {
                         $custo_name = '';
                         $custo_name .= "<a id=\"" . $invoice->lms_user->user_id . "\" href=\"".route('lms_get_customer_applications', ['user_id' => $invoice->lms_user->user_id,'app_id' => $invoice->lms_user->app_id])."\" rel=\"tooltip\"   >".$invoice->lms_user->customer_id."</a></br>";
                         $custo_name .= $invoice->supplier->f_name ? '<span><b>Name:&nbsp;</b>'.$invoice->supplier->f_name.'</span>' : '';
@@ -1549,16 +1631,16 @@ class DataRenderer implements DataProviderInterface
                 })
                 ->addColumn(
                     'invoice_date',
-                    function ($invoice) {                        
+                    function ($invoice) {
                         $inv_date = '';
                         $inv_date .= $invoice->invoice_date ? '<span><b>Date:&nbsp;</b>'.Carbon::parse($invoice->invoice_date)->format('d-m-Y').'</span>' : '';
                         $inv_date .= $invoice->invoice_due_date ? '<br><span><b>Due Date:&nbsp;</b>'.Carbon::parse($invoice->invoice_due_date)->format('d-m-Y').'</span>' : '';
                         $inv_date .= $invoice->tenor ? '<br><span><b>Tenor In Days:&nbsp;</b>'.$invoice->tenor.'</span>' : '';
                         return $inv_date;
-                })  
-              ->addColumn(            
+                })
+              ->addColumn(
                     'invoice_amount',
-                    function ($invoice) {                        
+                    function ($invoice) {
                         $inv_amount = '';
                         $inv_amount .= $invoice->invoice_amount ? '<span><b>Inv. Amt.:&nbsp;</b>'.number_format($invoice->invoice_amount).'</span></br>' : '';
                         $inv_amount .= $invoice->invoice_approve_amount ? '<span><b>Inv. Appr. Amt.</b>:&nbsp;'.number_format($invoice->invoice_approve_amount).'</span>' : '';
@@ -1566,9 +1648,9 @@ class DataRenderer implements DataProviderInterface
                         $inv_amount .= $invoice->invoice_margin_amount ? '</br><span><b>Inv. Margin Amt.</b>:&nbsp;'.number_format($invoice->invoice_margin_amount, 2).'</span>' : '';
                         return $inv_amount;
                 })
-                 ->addColumn(            
+                 ->addColumn(
                     'updated_at',
-                    function ($invoice) {                        
+                    function ($invoice) {
                         $inv_amount = '';
                         $inv_amount .= $invoice->Invoiceuser ? '<span><b>Name:&nbsp;</b>'.$invoice->Invoiceuser->f_name.'&nbsp;'.$invoice->Invoiceuser->l_name.'</span>' : '';
                         $inv_amount .= $invoice->invoice_approve_amount ? '<br><span><b>Date & Time:&nbsp;</b>'.\Helpers::convertDateTimeFormat($invoice->updated_at, 'Y-m-d H:i:s','d-m-Y h:i A').'</span>' : '';
@@ -1581,7 +1663,7 @@ class DataRenderer implements DataProviderInterface
                      $id = Auth::user()->user_id;
                      $role_id = DB::table('role_user')->where(['user_id' => $id])->pluck('role_id');
                      $chkUser =    DB::table('roles')->whereIn('id',$role_id)->first();
-                      if($chkUser->id!=11) 
+                      if($chkUser->id!=11)
                      {
                       if(Helpers::checkPermission('iframe_update_invoice_chrg') && ($invoice->program_offer->is_invoice_processingfee == 1)){
 
@@ -1601,86 +1683,102 @@ class DataRenderer implements DataProviderInterface
                      return  $action;
                 })
                  ->filter(function ($query) use ($request) {
-                  
-                   if ($request->get('biz_id') != '') {                        
+
+                   if ($request->get('biz_id') != '') {
                        $query->where(function ($query) use ($request) {
                     $search_keyword = trim($request->get('biz_id'));
                     $query->where('invoice_no', 'like',"%$search_keyword%")
                     ->orwhereHas('business', function ($q) use ($search_keyword){
                         $q->where('biz_entity_name', 'like', "%$search_keyword%");
-                     })
-                     ->orwhereHas('anchor', function ($q) use ($search_keyword){
+                    })
+                    ->orwhereHas('anchor', function ($q) use ($search_keyword){
                         $q->where('comp_name', 'like', "%$search_keyword%");
-                     });
+                    })
+                    ->orwhereHas('lms_user', function ($q) use ($search_keyword){
+                        $q->where('customer_id', 'like', "%$search_keyword%");
+                    });
                 });
                         }
-                    
+
                 })
               ->make(true);
-    } 
-    
-       
-   /*      
+    }
+
+
+   /*
      * Get Invoice list for backend
      */
     public function getBackendInvoiceListDisbursedQue(Request $request,$invoice)
-    { 
-    
+    {
+
       return DataTables::of($invoice)
                 ->rawColumns(['updated_at','invoice_checkbox', 'anchor_name','supplier_name','invoice_date','invoice_amount','status','anchor_id','action'])
 
                 ->addColumn(
                     'invoice_checkbox',
-                    function ($invoice) { 
+                    function ($invoice) {
                         $id = Auth::user()->user_id;
                         $role_id = DB::table('role_user')->where(['user_id' => $id])->pluck('role_id');
                         $chkUser =    DB::table('roles')->whereIn('id',$role_id)->first();
 
                         $this->overDueFlag = 0;
                         $disburseAmount = 0;
-                        $apps = $invoice['supplier']['apps'];
-                        if ($this->overDueFlag == 0) {
-                            foreach ($apps as $app) {
-                                foreach ($app['disbursed_invoices'] as $inv) {
-                                    $invc = $inv;
-                                    $invc['invoice_disbursed'] = $inv['invoice_disbursed'];
-                                    if ((isset($invc['invoice_disbursed']['payment_due_date']))) {
-                                        if (!is_null($invc['invoice_disbursed']['payment_due_date'])) {
-                                            $calDay = $invc['invoice_disbursed']['grace_period'];
-                                            $dueDate = strtotime($invc['invoice_disbursed']['payment_due_date']."+ $calDay Days");
-                                            $dueDate = $dueDate ?? 0; // or your date as well
-                                            $now = strtotime(date('Y-m-d'));
-                                            $datediff = ($dueDate - $now);
-                                            $days = round($datediff / (60 * 60 * 24));
-                                            if ($this->overDueFlag == 0 && $days < 0 && $invc['is_repayment'] == 0) {
-                                                $this->overDueFlag = 0;
+                        if((int)$invoice['supplier']['is_active'] != 0){
+                            $apps = $invoice['supplier']['apps'];
+                            if ($this->overDueFlag == 0) {
+                                foreach ($apps as $app) {
+                                    foreach ($app['disbursed_invoices'] as $inv) {
+                                        $invc = $inv;
+                                        $invc['invoice_disbursed'] = $inv['invoice_disbursed'];
+                                        if ((isset($invc['invoice_disbursed']['payment_due_date']))) {
+                                            if (!is_null($invc['invoice_disbursed']['payment_due_date'])) {
+                                                $calDay = $invc['invoice_disbursed']['grace_period'];
+                                                $dueDate = strtotime($invc['invoice_disbursed']['payment_due_date']."+ $calDay Days");
+                                                $dueDate = $dueDate ?? 0; // or your date as well
+                                                $now = strtotime(date('Y-m-d'));
+                                                $datediff = ($dueDate - $now);
+                                                $days = round($datediff / (60 * 60 * 24));
+                                                if ($this->overDueFlag == 0 && $days < 0 && $invc['is_repayment'] == 0) {
+                                                    $this->overDueFlag = 0;
+                                                }
                                             }
                                         }
                                     }
                                 }
                             }
+                            $IsOverdue = InvoiceTrait::invoiceOverdueCheck($invoice->invoice_id);
+                            $isLimitExpired = InvoiceTrait::limitExpire($invoice->supplier_id);
+                            $isLimitExceed = InvoiceTrait::isLimitExceed($invoice->invoice_id);
+                            $isAnchorLimitExceeded = InvoiceTrait::isAnchorLimitExceeded($invoice->anchor_id, 0);
+                            $this->IsOverdue = $IsOverdue;  
+                            $this->isLimitExpired = $isLimitExpired;
+                            $this->isLimitExceed  = $isLimitExceed;
+                            $this->isAnchorLimitExceeded  = $isAnchorLimitExceeded;
+                        // return  "<input type='checkbox' class='invoice_id' name='checkinvoiceid' value=".$invoice->invoice_id.">";
+                            return ($this->overDueFlag == 1 || $chkUser->id == 11  || $this->isLimitExpired || $this->isLimitExceed || $isAnchorLimitExceeded) ? '-' : "<input type='checkbox' class='invoice_id' name='checkinvoiceid' value=".$invoice->invoice_id.">";
+                        }else{
+                            $IsOverdue = InvoiceTrait::invoiceOverdueCheck($invoice->invoice_id);
+                            $isLimitExpired = InvoiceTrait::limitExpire($invoice->supplier_id);
+                            $isLimitExceed = InvoiceTrait::isLimitExceed($invoice->invoice_id);
+                            $isAnchorLimitExceeded = InvoiceTrait::isAnchorLimitExceeded($invoice->anchor_id, 0);
+                            $this->IsOverdue = $IsOverdue;  
+                            $this->isLimitExpired = $isLimitExpired;
+                            $this->isLimitExceed  = $isLimitExceed;
+                            $this->isAnchorLimitExceeded  = $isAnchorLimitExceeded;
+                            return '';
                         }
-                        $IsOverdue = InvoiceTrait::invoiceOverdueCheck($invoice->invoice_id);
-                        $isLimitExpired = InvoiceTrait::limitExpire($invoice->supplier_id);
-                        $isLimitExceed = InvoiceTrait::isLimitExceed($invoice->invoice_id);
-                        $isAnchorLimitExceeded = InvoiceTrait::isAnchorLimitExceeded($invoice->anchor_id, 0);
-                        $this->IsOverdue = $IsOverdue;  
-                        $this->isLimitExpired = $isLimitExpired;
-                        $this->isLimitExceed  = $isLimitExceed;
-                        $this->isAnchorLimitExceeded  = $isAnchorLimitExceeded;
-                       // return  "<input type='checkbox' class='invoice_id' name='checkinvoiceid' value=".$invoice->invoice_id.">";
-                        return ($this->overDueFlag == 1 || $chkUser->id == 11  || $this->isLimitExpired || $this->isLimitExceed || $isAnchorLimitExceeded) ? '-' : "<input type='checkbox' class='invoice_id' name='checkinvoiceid' value=".$invoice->invoice_id.">";
+                        
                      })
                 ->addColumn(
                     'anchor_id',
-                    function ($invoice) use ($request)  {    
-                   
+                    function ($invoice) use ($request)  {
+
                         return '<a href="'.route("view_invoice_details",["invoice_id" => $invoice->invoice_id]).'">'.$invoice->invoice_no.'</a>';
-        
+
                 })
                ->addColumn(
                     'anchor_name',
-                    function ($invoice) {  
+                    function ($invoice) {
                         $comp_name = '';
                         $comp_name .= $invoice->anchor->comp_name ? '<span><b>Anchor Business Name:&nbsp;</b>'.$invoice->anchor->comp_name.'</span>' : '';
                         $comp_name .= $invoice->program->prgm_name ? '<br><span><b>Program:&nbsp;</b>'.$invoice->program->prgm_name.'</span>' : '';
@@ -1688,7 +1786,7 @@ class DataRenderer implements DataProviderInterface
                 })
                 ->addColumn(
                     'supplier_name',
-                    function ($invoice) { 
+                    function ($invoice) {
                        $custo_name = '';
                         $custo_name .= "<a id=\"" . $invoice->lms_user->user_id . "\" href=\"".route('lms_get_customer_applications', ['user_id' => $invoice->lms_user->user_id,'app_id' => $invoice->lms_user->app_id])."\" rel=\"tooltip\"   >".$invoice->lms_user->customer_id."</a></br>";
                         $custo_name .= $invoice->supplier->f_name ? '<span><b>Name:&nbsp;</b>'.$invoice->supplier->f_name.'</span>' : '';
@@ -1698,7 +1796,7 @@ class DataRenderer implements DataProviderInterface
                 })
                   ->addColumn(
                     'invoice_date',
-                    function ($invoice) {                        
+                    function ($invoice) {
                         $inv_date = '';
                         $inv_date .= $invoice->invoice_date ? '<span><b>Date:&nbsp;</b>'.Carbon::parse($invoice->invoice_date)->format('d-m-Y').'</span>' : '';
                         $inv_date .= $invoice->invoice_due_date ? '<br><span><b>Due Date:&nbsp;</b>'.Carbon::parse($invoice->invoice_due_date)->format('d-m-Y').'</span>' : '';
@@ -1709,12 +1807,12 @@ class DataRenderer implements DataProviderInterface
                             $remark = '<br><span class="badge badge-danger">Limit Exceed</span>';
                         } else {
                             $remark = '';
-                        }                        
+                        }
                         return $inv_date.$remark;
-                })  
-              ->addColumn(            
+                })
+              ->addColumn(
                     'invoice_amount',
-                    function ($invoice) {                        
+                    function ($invoice) {
                         $inv_amount = '';
                         $inv_amount .= $invoice->invoice_amount ? '<span><b>Inv. Amt.:&nbsp;</b>'.number_format($invoice->invoice_amount).'</span></br>' : '';
                         $inv_amount .= $invoice->invoice_approve_amount ? '<span><b>Inv. Appr. Amt.</b>:&nbsp;'.number_format($invoice->invoice_approve_amount).'</span>' : '';
@@ -1722,9 +1820,9 @@ class DataRenderer implements DataProviderInterface
                         $inv_amount .= $invoice->invoice_margin_amount ? '</br><span><b>Inv. Margin Amt.</b>:&nbsp;'.number_format($invoice->invoice_margin_amount, 2).'</span>' : '';
                         return $inv_amount;
                 })
-                    ->addColumn(            
+                    ->addColumn(
                     'updated_at',
-                    function ($invoice) {                        
+                    function ($invoice) {
                         $inv_amount = '';
                         $inv_amount .= $invoice->Invoiceuser ? '<span><b>Name:&nbsp;</b>'.$invoice->Invoiceuser->f_name.'&nbsp;'.$invoice->Invoiceuser->l_name.'</span>' : '';
                         $inv_amount .= $invoice->invoice_approve_amount ? '<br><span><b>Date & Time:&nbsp;</b>'. \Helpers::convertDateTimeFormat($invoice->updated_at, 'Y-m-d H:i:s','d-m-Y h:i A').'</span>' : '';
@@ -1750,76 +1848,82 @@ class DataRenderer implements DataProviderInterface
                         {
                             $customer  = 3;
                         }
-                         $expl  =  explode(",",$invoice->program->invoice_approval); 
+                         $expl  =  explode(",",$invoice->program->invoice_approval);
                          $action = "";
                     if($customer!=3 && $chkUser->id!=11)
-                      { 
+                      {
                           $action .='</br><div class="d-flex"><select data-amount="'.(($invoice->invoice_approve_amount) ? $invoice->invoice_approve_amount  : '' ).'"  data-user="'.(($invoice->supplier_id) ? $invoice->supplier_id : '' ).'"  data-id="'.(($invoice->invoice_id) ? $invoice->invoice_id : '' ).'" class=" btn-success rounded approveInv3"><option value="0">Change Status</option><option value="7">Pending</option>';
-                          if(in_array($customer, $expl)) 
+                          if(in_array($customer, $expl))
                           {
                             $action .='<option value="8">Approve</option>';
                           }
                            $action .='<option value="14">Reject</option></select></div>';
-                        
                      }
-
-                     if ($this->isLimitExpired) {
-                        $remark = '<span class="badge badge-danger">Limit Expired</span><br>';
-                    } else if ($this->isLimitExceed) {
-                        $remark = '<span class="badge badge-danger">Limit Exceed</span><br>';
-                    } else if ($this->IsOverdue) {
-                        $remark = '<span class="badge badge-danger">Customer A/C is in Overdue</span><br>';
-                    } else if ($this->isAnchorLimitExceeded) {
-                        $remark = '<span class="badge badge-danger">Anchor Limit Exceeded</span><br>';
-                    } else {
-                        $remark = '';
+                    if((int)$invoice['supplier']['is_active'] != 0){
+                        if ($this->isLimitExpired) {
+                            $remark = '<span class="badge badge-danger">Limit Expired</span><br>';
+                        } else if ($this->isLimitExceed) {
+                            $remark = '<span class="badge badge-danger">Limit Exceed</span><br>';
+                        } else if ($this->IsOverdue) {
+                            $remark = '<span class="badge badge-danger">Customer A/C is in Overdue</span><br>';
+                        } else if ($this->isAnchorLimitExceeded) {
+                            $remark = '<span class="badge badge-danger">Anchor Limit Exceeded</span><br>';
+                        } else {
+                            $remark = '';
+                        }
+                    }else{
+                        $remark = '<span class="badge badge-danger">Customer A/C is Blocked</span><br>';
                     }
+                    
                         return  $remark . $action;
                 })
                  ->filter(function ($query) use ($request) {
-                  
-                    if ($request->get('biz_id') != '') {                        
+
+                    if ($request->get('biz_id') != '') {
                        $query->where(function ($query) use ($request) {
                     $search_keyword = trim($request->get('biz_id'));
                     $query->where('invoice_no', 'like',"%$search_keyword%")
                     ->orwhereHas('business', function ($q) use ($search_keyword){
                         $q->where('biz_entity_name', 'like', "%$search_keyword%");
-                     })
-                     ->orwhereHas('anchor', function ($q) use ($search_keyword){
+                    })
+                    ->orwhereHas('anchor', function ($q) use ($search_keyword){
                         $q->where('comp_name', 'like', "%$search_keyword%");
-                     });
+                    })
+                    ->orwhereHas('lms_user', function ($q) use ($search_keyword){
+                        $q->where('customer_id', 'like', "%$search_keyword%");
+                    });
                 });
                         }
                 })
               ->make(true);
-    }  
-    
-    
-     /*      
+    }
+
+
+     /*
      * Get Invoice list for backend
      */
     public function getBackendInvoiceListBank(Request $request,$invoice)
-    { 
-    
+    {
+
          return DataTables::of($invoice)
                ->rawColumns(['updated_at','anchor_name','supplier_name','invoice_date','invoice_amount','view_upload_invoice','status','anchor_id','action','invoice_id','invoice_due_date'])
                ->addColumn(
                     'invoice_id',
-                    function ($invoice) use ($request)  {     
+                    function ($invoice) use ($request)  {
                            if($request->front)
                            {
                               return '<a href="'.route("frontend_view_invoice_details",["invoice_id" => $invoice->invoice_id]).'">'.$invoice->invoice_no.'</a>';
-            
+
                            }
                         else {
                               return '<a href="'.route("view_invoice_details",["invoice_id" => $invoice->invoice_id]).'">'.$invoice->invoice_no.'</a>';
-        
+
                         }
              })
-             
+
               ->addColumn(
                     'anchor_name',
-                    function ($invoice) {  
+                    function ($invoice) {
                         $comp_name = '';
                         $comp_name .= $invoice->anchor->comp_name ? '<span><b>Anchor Business Name:&nbsp;</b>'.$invoice->anchor->comp_name.'</span>' : '';
                         $comp_name .= $invoice->program->prgm_name ? '<br><span><b>Program:&nbsp;</b>'.$invoice->program->prgm_name.'</span>' : '';
@@ -1827,7 +1931,7 @@ class DataRenderer implements DataProviderInterface
                 })
                 ->addColumn(
                     'supplier_name',
-                    function ($invoice) { 
+                    function ($invoice) {
                         $custo_name = '';
                         $custo_name .= "<a id=\"" . $invoice->lms_user->user_id . "\" href=\"".route('lms_get_customer_applications', ['user_id' => $invoice->lms_user->user_id,'app_id' => $invoice->lms_user->app_id])."\" rel=\"tooltip\"   >".$invoice->lms_user->customer_id."</a></br>";
                         $custo_name .= $invoice->supplier->f_name ? '<span><b>Name:&nbsp;</b>'.$invoice->supplier->f_name.'</span>' : '';
@@ -1837,61 +1941,61 @@ class DataRenderer implements DataProviderInterface
                 })
                   ->addColumn(
                     'invoice_date',
-                    function ($invoice) {                        
+                    function ($invoice) {
                         $inv_date = '';
                         $inv_date .= $invoice->invoice_date ? '<span><b>Date:&nbsp;</b>'.Carbon::parse($invoice->invoice_date)->format('d-m-Y').'</span>' : '';
                         $inv_date .= $invoice->invoice_due_date ? '<br><span><b>Due Date:&nbsp;</b>'.Carbon::parse($invoice->invoice_due_date)->format('d-m-Y').'</span>' : '';
                         $inv_date .= $invoice->tenor ? '<br><span><b>Tenor In Days:&nbsp;</b>'.$invoice->tenor.'</span>' : '';
                         return $inv_date;
-                })  
-              ->addColumn(            
+                })
+              ->addColumn(
                     'invoice_amount',
-                    function ($invoice) {                        
+                    function ($invoice) {
                         $inv_amount = '';
                         $inv_amount .= $invoice->invoice_amount ? '<span><b>Inv. Amt.:&nbsp;</b>'.number_format($invoice->invoice_amount).'</span></br>' : '';
                         $inv_amount .= $invoice->invoice_approve_amount ? '<span><b>Inv. Appr. Amt.</b>:&nbsp;'.number_format($invoice->invoice_approve_amount).'</span>' : '';
                         $inv_amount .= $invoice->program_offer ? '<br><span><b>Margin.:&nbsp;</b>'.$invoice->program_offer->margin.' %</span>' : '';
                         return $inv_amount;
                 })
-                ->addColumn(            
+                ->addColumn(
                     'updated_at',
-                    function ($invoice) {                        
+                    function ($invoice) {
                         $inv_amount = '';
                         $inv_amount .= $invoice->Invoiceuser ? '<span><b>Name:&nbsp;</b>'.$invoice->Invoiceuser->f_name.'&nbsp;'.$invoice->Invoiceuser->l_name.'</span>' : '';
                         $inv_amount .= $invoice->invoice_approve_amount ? '<br><span><b>Date & Time:&nbsp;</b>'.Carbon::parse($invoice->updated_at)->format('d-m-Y H:i:s').'</span>' : '';
                         return $inv_amount;
-                }) 
+                })
                  ->filter(function ($query) use ($request) {
-                  
-                   if ($request->get('biz_id') != '') {                        
+
+                   if ($request->get('biz_id') != '') {
                         $query->whereHas('business',function ($query) use ($request) {
                             $search_keyword = trim($request->get('biz_id'));
                             $query->where('invoice_no', 'like',"%$search_keyword%")
                               ->orWhere('biz_entity_name', 'like', "%$search_keyword%");
-                        });                        
+                        });
                     }
-                    
+
                 })
               ->make(true);
-    }  
-    
-    
-   
-     /*      
+    }
+
+
+
+     /*
      * Get Invoice list for backend
      */
     public function getBackendInvoiceListFailedDisbursed(Request $request,$invoice)
-    { 
-      
+    {
+
         return DataTables::of($invoice)
                ->rawColumns(['updated_at','anchor_name','supplier_name','invoice_date','invoice_amount','view_upload_invoice','status','anchor_id','action','invoice_id','invoice_due_date'])
                ->addColumn(
                     'invoice_id',
-                    function ($invoice) use ($request)  {     
+                    function ($invoice) use ($request)  {
                            if($request->front)
                            {
                               return '<a href="'.route("frontend_view_invoice_details",["invoice_id" => $invoice->invoice_id]).'">'.$invoice->invoice_no.'</a>';
-            
+
                            }
                         else {
                               $link = '';
@@ -1901,10 +2005,10 @@ class DataRenderer implements DataProviderInterface
                               return $link;
                         }
              })
-             
+
               ->addColumn(
                     'anchor_name',
-                    function ($invoice) {  
+                    function ($invoice) {
                         $comp_name = '';
                         $comp_name .= $invoice->anchor->comp_name ? '<span><b>Anchor Business Name:&nbsp;</b>'.$invoice->anchor->comp_name.'</span>' : '';
                         $comp_name .= $invoice->program->prgm_name ? '<br><span><b>Program:&nbsp;</b>'.$invoice->program->prgm_name.'</span>' : '';
@@ -1912,7 +2016,7 @@ class DataRenderer implements DataProviderInterface
                 })
                 ->addColumn(
                     'supplier_name',
-                    function ($invoice) { 
+                    function ($invoice) {
                         $custo_name = '';
                         $custo_name .= "<a id=\"" . $invoice->lms_user->user_id . "\" href=\"".route('lms_get_customer_applications', ['user_id' => $invoice->lms_user->user_id,'app_id' => $invoice->lms_user->app_id])."\" rel=\"tooltip\"   >".$invoice->lms_user->customer_id."</a></br>";
                         $custo_name .= $invoice->supplier->f_name ? '<span><b>Name:&nbsp;</b>'.$invoice->supplier->f_name.'</span>' : '';
@@ -1922,30 +2026,30 @@ class DataRenderer implements DataProviderInterface
                 })
                   ->addColumn(
                     'invoice_date',
-                    function ($invoice) {                        
+                    function ($invoice) {
                         $inv_date = '';
                         $inv_date .= $invoice->invoice_date ? '<span><b>Date:&nbsp;</b>'.Carbon::parse($invoice->invoice_date)->format('d-m-Y').'</span>' : '';
                         $inv_date .= $invoice->invoice_due_date ? '<br><span><b>Due Date:&nbsp;</b>'.Carbon::parse($invoice->invoice_due_date)->format('d-m-Y').'</span>' : '';
                         $inv_date .= $invoice->tenor ? '<br><span><b>Tenor In Days:&nbsp;</b>'.$invoice->tenor.'</span>' : '';
                         return $inv_date;
-                })  
-              ->addColumn(            
+                })
+              ->addColumn(
                     'invoice_amount',
-                    function ($invoice) {                        
+                    function ($invoice) {
                        $inv_amount = '';
                         $inv_amount .= $invoice->invoice_amount ? '<span><b>Inv. Amt.:&nbsp;</b>'.number_format($invoice->invoice_amount).'</span></br>' : '';
                         $inv_amount .= $invoice->invoice_approve_amount ? '<span><b>Inv. Appr. Amt.</b>:&nbsp;'.number_format($invoice->invoice_approve_amount).'</span>' : '';
                         $inv_amount .= $invoice->program_offer ? '<br><span><b>Margin.:&nbsp;</b>'.$invoice->program_offer->margin.' %</span>' : '';
                         return $inv_amount;
                 })
-                  ->addColumn(            
+                  ->addColumn(
                     'updated_at',
-                    function ($invoice) {                        
+                    function ($invoice) {
                         $inv_amount = '';
                         $inv_amount .= $invoice->Invoiceuser ? '<span><b>Name:&nbsp;</b>'.$invoice->Invoiceuser->f_name.'&nbsp;'.$invoice->Invoiceuser->l_name.'</span>' : '';
                         $inv_amount .= $invoice->invoice_approve_amount ? '<br><span><b>Date & Time:&nbsp;</b>'. \Helpers::convertDateTimeFormat($invoice->updated_at, 'Y-m-d H:i:s','d-m-Y h:i A').'</span>' : '';
                         return $inv_amount;
-                })      
+                })
                   ->addColumn(
                     'action',
                     function ($invoice) use ($request) {
@@ -1966,56 +2070,59 @@ class DataRenderer implements DataProviderInterface
                         {
                             $customer  = 3;
                         }
-                         $expl  =  explode(",",$invoice->program->invoice_approval); 
+                         $expl  =  explode(",",$invoice->program->invoice_approval);
                        $action = "";
                       if($customer!=3 && $chkUser->id!=11)
-                      { 
-                        
+                      {
+
                        $action .= '<div class="d-flex"><select data-amount="'.(($invoice->invoice_approve_amount) ? $invoice->invoice_approve_amount  : '' ).'"  data-user="'.(($invoice->supplier_id) ? $invoice->supplier_id : '' ).'"  data-id="'.(($invoice->invoice_id) ? $invoice->invoice_id : '' ).'" class=" btn-success rounded approveInv4"><option value="0">Change Status</option>';
-                       if(in_array($customer, $expl)) 
+                       if(in_array($customer, $expl))
                        {
                         $action .='<option value="8">Approve</option>';
                        }
                         $action .= '<option value="9">Disb Que</option></select>&nbsp;&nbsp;<a data-toggle="modal"  data-target="#modalInvoiceFailed" data-height="400px" data-width="100%" accesskey="" data-url ="'.route("invoice_failed_status",["invoice_id" => $invoice->invoice_id]).'"> <button class="btn-upload btn-sm" type="button" title="View Failed Disbursement"> <i class="fa fa-eye"></i></button></a></div>';
-                      }  
+                      }
                         $action .= '&nbsp;&nbsp;<a data-toggle="modal"  data-target="#modalInvoiceFailed" data-height="400px" data-width="100%" accesskey="" data-url ="'.route("invoice_failed_status",["invoice_id" => $invoice->invoice_id]).'"> <button class="btn-upload btn-sm" type="button" title="View Failed Disbursement"> <i class="fa fa-eye"></i></button></a></div>';
-                     
+
                         return $action;
                 })
                  ->filter(function ($query) use ($request) {
-                  
-                   if ($request->get('biz_id') != '') {                        
+
+                   if ($request->get('biz_id') != '') {
                        $query->where(function ($query) use ($request) {
                     $search_keyword = trim($request->get('biz_id'));
                     $query->where('invoice_no', 'like',"%$search_keyword%")
                     ->orwhereHas('business', function ($q) use ($search_keyword){
                         $q->where('biz_entity_name', 'like', "%$search_keyword%");
-                     })
-                     ->orwhereHas('anchor', function ($q) use ($search_keyword){
+                    })
+                    ->orwhereHas('anchor', function ($q) use ($search_keyword){
                         $q->where('comp_name', 'like', "%$search_keyword%");
-                     });
+                    })
+                    ->orwhereHas('lms_user', function ($q) use ($search_keyword){
+                        $q->where('customer_id', 'like', "%$search_keyword%");
+                    });
                 });
                         }
-                    
+
                 })
               ->make(true);
-    }  
-     
-     /*      
+    }
+
+     /*
      * Get Invoice list for backend
      */
     public function getBackendInvoiceListDisbursed(Request $request,$invoice)
-    { 
-        
+    {
+
       return DataTables::of($invoice)
                ->rawColumns(['updated_at','anchor_name','customer_detail','invoice_date','invoice_amount','view_upload_invoice','status','anchor_id','action','invoice_id','invoice_due_date'])
                ->addColumn(
                     'invoice_id',
-                    function ($invoice) use ($request)  {     
+                    function ($invoice) use ($request)  {
                            if($request->front)
                            {
                               return '<a href="'.route("frontend_view_invoice_details",["invoice_id" => $invoice->invoice_id]).'">'.$invoice->invoice_no.'</a>';
-            
+
                            }
                         else {
                               $link = '';
@@ -2023,17 +2130,17 @@ class DataRenderer implements DataProviderInterface
                                 $link = '<a href="'.route("view_invoice_details",["invoice_id" => $invoice->invoice_id]).'">'.$invoice->invoice_no.'</a>';
                               }
                               return $link;
-                              
+
                         }
              })
              ->addColumn(
                     'batch_id',
-                    function ($invoice) {  
+                    function ($invoice) {
                        return  (isset($invoice->invoice_disbursed->disbursal->disbursal_batch->batch_id)) ? $invoice->invoice_disbursed->disbursal->disbursal_batch->batch_id : '';
                 })
               ->addColumn(
                     'anchor_name',
-                    function ($invoice) {  
+                    function ($invoice) {
                         $comp_name = '';
                         $comp_name .= $invoice->anchor->comp_name ? '<span><b>Anchor Business Name:&nbsp;</b>'.$invoice->anchor->comp_name.'</span>' : '';
                         $comp_name .= $invoice->program->prgm_name ? '<br><span><b>Program:&nbsp;</b>'.$invoice->program->prgm_name.'</span>' : '';
@@ -2041,7 +2148,7 @@ class DataRenderer implements DataProviderInterface
                 })
                 ->addColumn(
                     'customer_detail',
-                    function ($invoice) { 
+                    function ($invoice) {
                         $custo_name = '';
                         $custo_name .= "<a id=\"" . $invoice->lms_user->user_id . "\" href=\"".route('lms_get_customer_applications', ['user_id' => $invoice->lms_user->user_id,'app_id' => $invoice->lms_user->app_id])."\" rel=\"tooltip\"   >".$invoice->lms_user->customer_id."</a></br>";
                         $custo_name .= $invoice->supplier->f_name ? '<span><b>Name:&nbsp;</b>'.$invoice->supplier->f_name.'</span>' : '';
@@ -2051,16 +2158,24 @@ class DataRenderer implements DataProviderInterface
                 })
                    ->addColumn(
                     'invoice_date',
-                    function ($invoice) {                        
+                    function ($invoice) {
                         $inv_date = '';
                         $inv_date .= $invoice->disbursal ? '<span><b>Disburse Date:&nbsp;</b>'.Carbon::parse($invoice->disbursal->disburse_date)->format('d-m-Y').'</span>' : '';
                         $inv_date .= $invoice->disbursal ? '<br><span><b>Payment Due Date:&nbsp;</b>'.Carbon::parse($invoice->disbursal->payment_due_date)->format('d-m-Y').'</span>' : '';
-                        $inv_date .= $invoice->tenor ? '<br><span><b>Tenor In Days:&nbsp;</b>'.$invoice->tenor.'</span>' : '';
+                        if($invoice->invoice_disbursed){
+                            if($invoice->tenor == $invoice->invoice_disbursed->tenor_days){
+                                $inv_date .= '<br><span><b>Tenor In Days:&nbsp;</b>'.$invoice->tenor.'</span>';
+                            }else{
+                                $inv_date .= '<br><span><b>Tenor In Days:&nbsp;</b>'.$invoice->tenor .'/'. $invoice->invoice_disbursed->tenor_days.'</span>';
+                            }
+                        }else{
+                            $inv_date .= '<br><span><b>Tenor In Days:&nbsp;</b>'.$invoice->tenor.'</span>';
+                        }
                         return $inv_date;
-                })  
-                 ->addColumn(            
+                })
+                 ->addColumn(
                     'invoice_amount',
-                    function ($invoice) {                        
+                    function ($invoice) {
                         $inv_amount = '';
                         $inv_amount .= $invoice->invoice_approve_amount ? '<span><b>Inv. Appr. Amt.:&nbsp;</b>'.number_format($invoice->invoice_approve_amount).'</span>' : '';
                         $inv_amount .= ($invoice->disbursal) ? '<br><span><b>Disburse Amt.:&nbsp;</b>'.number_format($invoice->disbursal->principal_amount).'</span>' : '';
@@ -2069,58 +2184,64 @@ class DataRenderer implements DataProviderInterface
                         $inv_amount .= $invoice->invoice_margin_amount ? '</br><span><b>Inv. Margin Amt.</b>:&nbsp;'.number_format($invoice->invoice_margin_amount, 2).'</span>' : '';
                         return $inv_amount;
                })
-                 ->addColumn(            
+                 ->addColumn(
                     'updated_at',
-                    function ($invoice) {                        
+                    function ($invoice) {
                         $inv_amount = '';
                         $inv_amount .= $invoice->Invoiceuser ? '<span><b>Name:&nbsp;</b>'.$invoice->Invoiceuser->f_name.'&nbsp;'.$invoice->Invoiceuser->l_name.'</span>' : '';
                         // $inv_amount .= $invoice->invoice_approve_amount ? '<br><span><b>Date & Time:&nbsp;</b>'. \Helpers::convertDateTimeFormat($invoice->updated_at, 'Y-m-d H:i:s','d-m-Y h:i A').'</span>' : '';
                         $inv_amount .= $invoice->invoice_disbursed ? '<br><span><b>Date & Time:&nbsp;</b>'. \Helpers::convertDateTimeFormat($invoice->invoice_disbursed->created_at, 'Y-m-d H:i:s','d-m-Y h:i A').'</span>' : '';
                         return $inv_amount;
-                })     
+                })
                    ->addColumn(
                     'action',
                     function ($invoice) use ($request) {
                        $act="";
                      /// $act .='<div class="d-flex inline-action-btn">&nbsp;&nbsp;<a data-toggle="modal"  data-target="#modalInvoiceDisbursed" data-height="430px" data-width="100%" accesskey="" data-url ="'.route("invoice_success_status",["invoice_id" => $invoice->invoice_id,'app_id' => $invoice->app_id]).'"> <button class="btn-upload btn-sm" type="button" title="View Disbursement"> <i class="fa fa-eye"></i></button></a></div>';
-                      if(($invoice->invoice_disbursed)) { 
-                      $act .='</br><a data-toggle="modal"  data-height="550px" 
-                            data-width="100%" 
+                      if(($invoice->invoice_disbursed)) {
+                      $act .='</br><a data-toggle="modal"  data-height="550px"
+                            data-width="100%"
                             data-target="#viewInterestAccrual"
                             data-url="' . route('view_interest_accrual', ['invoice_disbursed_id' =>$invoice->invoice_disbursed->invoice_disbursed_id]) . '"  data-placement="top" class="btn btn-action-btn btn-sm" title="View Interest Accrual"><i class="fa fa-eye"></i></a>';
                       }
                             return $act;
                 })
                   ->filter(function ($query) use ($request) {
-                  
-                   if ($request->get('biz_id') != '') {                        
+
+                   if ($request->get('biz_id') != '') {
                        $query->where(function ($query) use ($request) {
                     $search_keyword = trim($request->get('biz_id'));
                     $query->where('invoice_no', 'like',"%$search_keyword%")
                     ->orwhereHas('business', function ($q) use ($search_keyword){
                         $q->where('biz_entity_name', 'like', "%$search_keyword%");
-                     })
-                     ->orwhereHas('anchor', function ($q) use ($search_keyword){
+                    })
+                    ->orwhereHas('anchor', function ($q) use ($search_keyword){
                         $q->where('comp_name', 'like', "%$search_keyword%");
-                     });
+                    })
+                    ->orwhereHas('lms_user', function ($q) use ($search_keyword){
+                        $q->where('customer_id', 'like', "%$search_keyword%");
+                    })
+                    ->orwhereHas('invoice_disbursed.disbursal.disbursal_batch', function ($q) use ($search_keyword){
+                        $q->where('batch_id', 'like', "%$search_keyword%");
+                    });
                 });
                         }
-                    
+
                 })
               ->make(true);
-    }  
-    
-      /*      
+    }
+
+      /*
      * Get Invoice list for backend
      */
     public function getBackendInvoiceListRepaid(Request $request,$invoice)
-    { 
-    
+    {
+
       return DataTables::of($invoice)
                ->rawColumns(['updated_at','anchor_name','supplier_name','invoice_date','invoice_amount','view_upload_invoice','status','anchor_id','action','invoice_id','invoice_due_date'])
                ->addColumn(
                     'invoice_id',
-                    function ($invoice) use ($request)  {     
+                    function ($invoice) use ($request)  {
                            if($request->front)
                            {
                                if(Helpers::checkPermission('frontend_view_invoice_details')){
@@ -2131,13 +2252,13 @@ class DataRenderer implements DataProviderInterface
                             if(Helpers::checkPermission('view_invoice_details')){
                                 return '<a href="'.route("view_invoice_details",["invoice_id" => $invoice->invoice_id]).'">'.$invoice->invoice_no.'</a>';
                             }
-        
+
                         }
              })
-             
+
               ->addColumn(
                     'anchor_name',
-                    function ($invoice) {  
+                    function ($invoice) {
                         $comp_name = '';
                         $comp_name .= $invoice->anchor->comp_name ? '<span><b>Anchor Business Name:&nbsp;</b>'.$invoice->anchor->comp_name.'</span>' : '';
                         $comp_name .= $invoice->program->prgm_name ? '<br><span><b>Program:&nbsp;</b>'.$invoice->program->prgm_name.'</span>' : '';
@@ -2145,7 +2266,7 @@ class DataRenderer implements DataProviderInterface
                 })
                 ->addColumn(
                     'supplier_name',
-                    function ($invoice) { 
+                    function ($invoice) {
                         $custo_name = '';
                         $custo_name .= "<a id=\"" . $invoice->lms_user->user_id . "\" href=\"".route('lms_get_customer_applications', ['user_id' => $invoice->lms_user->user_id,'app_id' => $invoice->lms_user->app_id])."\" rel=\"tooltip\"   >".$invoice->lms_user->customer_id."</a></br>";
                         $custo_name .= $invoice->supplier->f_name ? '<span><b>Name:&nbsp;</b>'.$invoice->supplier->f_name.'</span>' : '';
@@ -2155,60 +2276,95 @@ class DataRenderer implements DataProviderInterface
                 })
                  ->addColumn(
                     'invoice_date',
-                    function ($invoice) {                        
+                    function ($invoice) {
                         $inv_date = '';
                         $inv_date .= $invoice->invoice_date ? '<span><b>Date:&nbsp;</b>'.Carbon::parse($invoice->invoice_date)->format('d-m-Y').'</span>' : '';
                         $inv_date .= $invoice->invoice_due_date ? '<br><span><b>Due Date:&nbsp;</b>'.Carbon::parse($invoice->invoice_due_date)->format('d-m-Y').'</span>' : '';
                         $inv_date .= $invoice->tenor ? '<br><span><b>Tenor In Days:&nbsp;</b>'.$invoice->tenor.'</span>' : '';
                         return $inv_date;
-                })  
-              ->addColumn(            
+                })
+              ->addColumn(
                     'invoice_amount',
-                    function ($invoice) {                        
+                    function ($invoice) {
                         $inv_amount = '';
                         $inv_amount .= $invoice->invoice_amount ? '<span><b>Inv. Amt.:&nbsp;</b>'.number_format($invoice->invoice_amount).'</span></br>' : '';
                         $inv_amount .= $invoice->invoice_approve_amount ? '<span><b>Inv. Appr. Amt.</b>:&nbsp;'.number_format($invoice->invoice_approve_amount).'</span>' : '';
                         $inv_amount .= $invoice->program_offer ? '<br><span><b>Margin.:&nbsp;</b>'.$invoice->program_offer->margin.' %</span>' : '';
                         return $inv_amount;
                 })
-                 ->addColumn(            
+                 ->addColumn(
                     'updated_at',
-                    function ($invoice) {                        
+                    function ($invoice) {
                         $inv_amount = '';
                         $inv_amount .= $invoice->Invoiceuser ? '<span><b>Name:&nbsp;</b>'.$invoice->Invoiceuser->f_name.'&nbsp;'.$invoice->Invoiceuser->l_name.'</span>' : '';
                         $inv_amount .= $invoice->invoice_approve_amount ? '<br><span><b>Date & Time:&nbsp;</b>'. \Helpers::convertDateTimeFormat($invoice->updated_at, 'Y-m-d H:i:s','d-m-Y h:i A').'</span>' : '';
                         return $inv_amount;
-                })  
+                })
                  ->filter(function ($query) use ($request) {
-                  
-                    if ($request->get('biz_id') != '') {                        
+
+                    if ($request->get('biz_id') != '') {
                        $query->where(function ($query) use ($request) {
                     $search_keyword = trim($request->get('biz_id'));
                     $query->where('invoice_no', 'like',"%$search_keyword%")
                     ->orwhereHas('business', function ($q) use ($search_keyword){
                         $q->where('biz_entity_name', 'like', "%$search_keyword%");
-                     })
-                     ->orwhereHas('anchor', function ($q) use ($search_keyword){
+                    })
+                    ->orwhereHas('anchor', function ($q) use ($search_keyword){
                         $q->where('comp_name', 'like', "%$search_keyword%");
-                     });
+                    })
+                    ->orwhereHas('lms_user', function ($q) use ($search_keyword){
+                        $q->where('customer_id', 'like', "%$search_keyword%");
+                    });
                 });
                         }
-                    
+
                 })
               ->make(true);
-    }  
-    
-      /*      
+    }
+
+      /*
      * Get execption list for backend
      */
     public function getBackendEpList(Request $request,$invoice)
-    { 
-    
+    {
+
        return DataTables::of($invoice)
                ->rawColumns(['updated_at','anchor_name','supplier_name','invoice_date','invoice_amount','view_upload_invoice','status','anchor_id','action','invoice_id','invoice_due_date'])
                ->addColumn(
+                'anchor_id',
+                function ($invoice) {
+                    $id = Auth::user()->user_id;
+                    $inv_approval = Config::get('common.inv_approval');
+                    $role_id = DB::table('role_user')->where(['user_id' => $id])->pluck('role_id');
+                    $chkUser =    DB::table('roles')->whereIn('id',$role_id)->first();
+                    $user_type  =  DB::table('users')->where(['user_id' => $id])->first();
+                    if(in_array($chkUser->id,$inv_approval) && $user_type->user_type==2)
+                    {
+                         $customer  = 1;
+                    }
+                    else if( $chkUser->id==11)
+                    {
+                         $customer  = 2;
+                    }
+                    else
+                    {
+                        $customer  = 3;
+                    }
+
+                   $expl  =  explode(",",$invoice->program->invoice_approval);
+                  if(in_array($customer, $expl))
+                  {
+
+                         return '<input type="checkbox" data-id="'.$invoice->supplier_id.'" name="chkstatus" value="'.(($invoice->invoice_id) ? $invoice->invoice_id : '' ).'" class="chkstatus">';
+                  }
+                  else {
+                    return "";
+                  }
+                })
+
+               ->addColumn(
                     'invoice_id',
-                    function ($invoice) use ($request)  {     
+                    function ($invoice) use ($request)  {
                            if($request->front)
                            {
                                if(Helpers::checkPermission('frontend_view_invoice_details')){
@@ -2217,15 +2373,15 @@ class DataRenderer implements DataProviderInterface
                             }
                         else {
                             if(Helpers::checkPermission('view_invoice_details')){
-                                return '<a href="'.route("view_invoice_details",["invoice_id" => $invoice->invoice_id]).'">'.$invoice->invoice_no.'</a>';   
+                                return '<a href="'.route("view_invoice_details",["invoice_id" => $invoice->invoice_id]).'">'.$invoice->invoice_no.'</a>';
                             }
-        
+
                         }
              })
-             
+
               ->addColumn(
                     'anchor_name',
-                    function ($invoice) {  
+                    function ($invoice) {
                         $comp_name = '';
                         $comp_name .= $invoice->anchor->comp_name ? '<span><b>Anchor Business Name:&nbsp;</b>'.$invoice->anchor->comp_name.'</span>' : '';
                         $comp_name .= $invoice->program->prgm_name ? '<br><span><b>Program:&nbsp;</b>'.$invoice->program->prgm_name.'</span>' : '';
@@ -2233,9 +2389,9 @@ class DataRenderer implements DataProviderInterface
                 })
                 ->addColumn(
                     'supplier_name',
-                    function ($invoice) { 
+                    function ($invoice) {
                         $custo_name = '';
-                        
+
                         if(Helpers::checkPermission('lms_get_customer_applications')){
                             $custo_name .= "<a id=\"" . $invoice->lms_user->user_id . "\" href=\"".route('lms_get_customer_applications', ['user_id' => $invoice->lms_user->user_id,'app_id' => $invoice->lms_user->app_id])."\" rel=\"tooltip\"   >".$invoice->lms_user->customer_id."</a></br>";
                         }
@@ -2247,16 +2403,16 @@ class DataRenderer implements DataProviderInterface
                 })
                    ->addColumn(
                     'invoice_date',
-                    function ($invoice) {                        
+                    function ($invoice) {
                         $inv_date = '';
                         $inv_date .= $invoice->invoice_date ? '<span><b>Date:&nbsp;</b>'.Carbon::parse($invoice->invoice_date)->format('d-m-Y').'</span>' : '';
                         $inv_date .= $invoice->invoice_due_date ? '<br><span><b>Due Date:&nbsp;</b>'.Carbon::parse($invoice->invoice_due_date)->format('d-m-Y').'</span>' : '';
                         $inv_date .= $invoice->tenor ? '<br><span><b>Tenor In Days:&nbsp;</b>'.$invoice->tenor.'</span>' : '';
                         return $inv_date;
-                })  
-              ->addColumn(            
+                })
+              ->addColumn(
                     'invoice_amount',
-                    function ($invoice) {                        
+                    function ($invoice) {
                         $inv_amount = '';
                         $inv_amount .= $invoice->invoice_amount ? '<span><b>Inv. Amt.:&nbsp;</b>'.number_format($invoice->invoice_amount).'</span>' : '';
                         $inv_amount .= $invoice->invoice_approve_amount ? '<br><span><b>Inv. Appr. Amt.:&nbsp;</b>'.number_format($invoice->invoice_approve_amount).'</span>' : '';
@@ -2264,19 +2420,19 @@ class DataRenderer implements DataProviderInterface
                         $inv_amount .= $invoice->invoice_margin_amount ? '</br><span><b>Inv. Margin Amt.</b>:&nbsp;'.number_format($invoice->invoice_margin_amount, 2).'</span>' : '';
                         $inv_amount .= $invoice->limit_exceed ? '<br><span class="error">Limit Exceed</span>' : '';
                         return $inv_amount;
-                       
+
                 })
-                ->addColumn(            
+                ->addColumn(
                     'remark',
-                    function ($invoice) {                        
-                    
+                    function ($invoice) {
+
                  return $invoice->remark;
-                      
-                       
+
+
                 })
-                ->addColumn(            
+                ->addColumn(
                     'updated_at',
-                    function ($invoice) {                        
+                    function ($invoice) {
                         $inv_amount = '';
                         $inv_amount .= $invoice->Invoiceuser ? '<span><b>Name:&nbsp;</b>'.strip_tags($invoice->Invoiceuser->f_name).'&nbsp;'.$invoice->Invoiceuser->l_name.'</span>' : '';
                         $inv_amount .= $invoice->invoice_approve_amount ? '<br><span><b>Date & Time:&nbsp;</b>'.\Helpers::convertDateTimeFormat($invoice->updated_at, 'Y-m-d H:i:s','d-m-Y h:i A').'</span>' : '';
@@ -2302,78 +2458,82 @@ class DataRenderer implements DataProviderInterface
                         {
                             $customer  = 3;
                         }
-                         $expl  =  explode(",",$invoice->program->invoice_approval); 
+                         $expl  =  explode(",",$invoice->program->invoice_approval);
                        $action = "";
                       if($customer!=3 && $chkUser->id!=11)
-                      {  
+                      {
                        $action .= '<div class="d-flex"><select data-amount="'.(($invoice->invoice_approve_amount) ? $invoice->invoice_approve_amount  : '' ).'"  data-user="'.(($invoice->supplier_id) ? $invoice->supplier_id : '' ).'"  data-id="'.(($invoice->invoice_id) ? $invoice->invoice_id : '' ).'" class=" btn-success rounded approveInv6"><option value="0">Change Status</option>';
-                       if(in_array($customer, $expl)) 
+                       if(in_array($customer, $expl))
                        {
                         $action .='<option value="8">Approve</option>';
                         $action .='<option value="7">Pending</option>';
+                        $action .='<option value="14">Reject</option>';
                        }
-                      }  
-                     
+                      }
+
                         return $action;
                 })
                  ->filter(function ($query) use ($request) {
-                  
-                    if ($request->get('biz_id') != '') {                        
+
+                    if ($request->get('biz_id') != '') {
                        $query->where(function ($query) use ($request) {
                     $search_keyword = trim($request->get('biz_id'));
                     $query->where('invoice_no', 'like',"%$search_keyword%")
                     ->orwhereHas('business', function ($q) use ($search_keyword){
                         $q->where('biz_entity_name', 'like', "%$search_keyword%");
-                     })
-                     ->orwhereHas('anchor', function ($q) use ($search_keyword){
+                    })
+                    ->orwhereHas('anchor', function ($q) use ($search_keyword){
                         $q->where('comp_name', 'like', "%$search_keyword%");
-                     });
+                    })
+                    ->orwhereHas('lms_user', function ($q) use ($search_keyword){
+                        $q->where('customer_id', 'like', "%$search_keyword%");
+                    });
                 });
                         }
-                    
+
                 })
               ->make(true);
-    }  
-    
-    
-      /*      
+    }
+
+
+      /*
      * Get Invoice list for backend
      */
     public function getBackendInvoiceListReject(Request $request,$invoice)
-    { 
-    
+    {
+
       return DataTables::of($invoice)
                ->rawColumns(['updated_at','anchor_name','supplier_name','invoice_date','invoice_amount','view_upload_invoice','status','anchor_id','action','invoice_id','invoice_due_date'])
                ->addColumn(
                     'invoice_id',
-                    function ($invoice) use ($request)  {     
+                    function ($invoice) use ($request)  {
                            if($request->front)
                            {
                                if(Helpers::checkPermission('frontend_view_invoice_details')){
                                 return '<a href="'.route("frontend_view_invoice_details",["invoice_id" => $invoice->invoice_id]).'">'.$invoice->invoice_no.'</a>';
                                }
-                              
-            
+
+
                            }
                         else {
                             if(Helpers::checkPermission('view_invoice_details')){
-                                return '<a href="'.route("view_invoice_details",["invoice_id" => $invoice->invoice_id]).'">'.$invoice->invoice_no.'</a>';  
+                                return '<a href="'.route("view_invoice_details",["invoice_id" => $invoice->invoice_id]).'">'.$invoice->invoice_no.'</a>';
                             }
-        
+
                         }
              })
-             
+
               ->addColumn(
                     'anchor_name',
-                    function ($invoice) {  
+                    function ($invoice) {
                         $comp_name = '';
                         $comp_name .= $invoice->anchor->comp_name ? '<span><b>Anchor Business Name:&nbsp;</b>'.$invoice->anchor->comp_name.'</span>' : '';
-                        $comp_name .= $invoice->program->prgm_name ? '<br><span><b>Program:&nbsp;</b>'.$invoice->program->prgm_name.'</span>' : '';
+                        $comp_name .= isset($invoice->program->prgm_name) ? '<br><span><b>Program:&nbsp;</b>'.isset($invoice->program->prgm_name).'</span>' : '';
                         return $comp_name;
                 })
                 ->addColumn(
                     'supplier_name',
-                    function ($invoice) { 
+                    function ($invoice) {
                         $custo_name = '';
 
                         if(Helpers::checkPermission('lms_get_customer_applications')){
@@ -2390,16 +2550,16 @@ class DataRenderer implements DataProviderInterface
                 })
                   ->addColumn(
                     'invoice_date',
-                    function ($invoice) {                        
+                    function ($invoice) {
                         $inv_date = '';
                         $inv_date .= $invoice->invoice_date ? '<span><b>Date:&nbsp;</b>'.Carbon::parse($invoice->invoice_date)->format('d-m-Y').'</span>' : '';
                         $inv_date .= $invoice->invoice_due_date ? '<br><span><b>Due Date:&nbsp;</b>'.Carbon::parse($invoice->invoice_due_date)->format('d-m-Y').'</span>' : '';
                         $inv_date .= $invoice->tenor ? '<br><span><b>Tenor In Days:&nbsp;</b>'.$invoice->tenor.'</span>' : '';
                         return $inv_date;
-                })  
-              ->addColumn(            
+                })
+              ->addColumn(
                     'invoice_amount',
-                    function ($invoice) {                        
+                    function ($invoice) {
                         $inv_amount = '';
                         $inv_amount .= $invoice->invoice_amount ? '<span><b>Inv. Amt.:&nbsp;</b>'.number_format($invoice->invoice_amount).'</span>' : '';
                         $inv_amount .= $invoice->invoice_approve_amount ? '<br><span><b>Inv. Appr. Amt.:&nbsp;</b>'.number_format($invoice->invoice_approve_amount).'</span>' : '';
@@ -2407,14 +2567,14 @@ class DataRenderer implements DataProviderInterface
                         $inv_amount .= $invoice->invoice_margin_amount ? '</br><span><b>Inv. Margin Amt.</b>:&nbsp;'.number_format($invoice->invoice_margin_amount, 2).'</span>' : '';
                         return $inv_amount;
                 })
-                   ->addColumn(            
+                   ->addColumn(
                     'updated_at',
-                    function ($invoice) {                        
+                    function ($invoice) {
                         $inv_amount = '';
                         $inv_amount .= $invoice->Invoiceuser ? '<span><b>Name:&nbsp;</b>'.$invoice->Invoiceuser->f_name.'&nbsp;'.$invoice->Invoiceuser->l_name.'</span>' : '';
                         $inv_amount .= $invoice->invoice_approve_amount ? '<br><span><b>Date & Time:&nbsp;</b>'. \Helpers::convertDateTimeFormat($invoice->updated_at, 'Y-m-d H:i:s','d-m-Y h:i A').'</span>' : '';
                         return $inv_amount;
-                })     
+                })
                  ->addColumn(
                     'action',
                     function ($invoice) {
@@ -2422,7 +2582,7 @@ class DataRenderer implements DataProviderInterface
                         $inv_approval = Config::get('common.inv_approval');
                         $role_id = DB::table('role_user')->where(['user_id' => $id])->pluck('role_id');
                         $chkUser =    DB::table('roles')->whereIn('id',$role_id)->first();
-                        
+
                          $user_type  =  DB::table('users')->where(['user_id' => $id])->first();
                         if(in_array($chkUser->id,$inv_approval) && $user_type->user_type==2)
                         {
@@ -2436,68 +2596,71 @@ class DataRenderer implements DataProviderInterface
                         {
                             $customer  = 3;
                         }
-                       $expl  =  explode(",",$invoice->program->invoice_approval); 
+                       $expl  =  explode(",",$invoice->program->invoice_approval);
                        $action = "";
                      if($invoice->userDetail->is_active==1)
                      {
                        if( $chkUser->id!=11)
-                      { 
+                      {
                        $action .= '<div class="d-flex"><select data-amount="'.(($invoice->invoice_approve_amount) ? $invoice->invoice_approve_amount  : '' ).'"   data-user="'.(($invoice->supplier_id) ? $invoice->supplier_id : '' ).'" data-id="'.(($invoice->invoice_id) ? $invoice->invoice_id : '' ).'" class=" btn-success rounded approveInv5"><option value="0">Change Status</option>';
                        $action .= '<option value="7">Pending</option>';
-                    //    if(in_array($customer, $expl)) 
+                    //    if(in_array($customer, $expl))
                     //    {
                     //     $action .='<option value="8">Approve</option>';
                     //    }
                         $action .='</select></div>';
                       }
                      }
-                     
+
                         return $action;
 
                 })
                  ->filter(function ($query) use ($request) {
-                  
-                    if ($request->get('biz_id') != '') {                        
+
+                    if ($request->get('biz_id') != '') {
                        $query->where(function ($query) use ($request) {
                     $search_keyword = trim($request->get('biz_id'));
                     $query->where('invoice_no', 'like',"%$search_keyword%")
                     ->orwhereHas('business', function ($q) use ($search_keyword){
                         $q->where('biz_entity_name', 'like', "%$search_keyword%");
-                     })
-                     ->orwhereHas('anchor', function ($q) use ($search_keyword){
+                    })
+                    ->orwhereHas('anchor', function ($q) use ($search_keyword){
                         $q->where('comp_name', 'like', "%$search_keyword%");
-                     });
+                    })
+                    ->orwhereHas('lms_user', function ($q) use ($search_keyword){
+                        $q->where('customer_id', 'like', "%$search_keyword%");
+                    });
                 });
                         }
-                    
-                }) 
-                 
+
+                })
+
               ->make(true);
-    }  
-    
+    }
+
     /*
-     * Get bulk transaction  
+     * Get bulk transaction
      */
-     
+
      public function getAllManualTransaction(Request $request,$trans)
      {
          return DataTables::of($trans)
                ->rawColumns(['trans_by', 'customer_name', 'customer_id','customer_detail','trans_type','created_by', 'action'])
                 ->addIndexColumn()
-                
+
                 ->addColumn(
                     'customer_id',
-                    function ($trans) { 
+                    function ($trans) {
                         $cId = $trans->lmsUser->customer_id;
                         $link = '';
                         if(Helpers::checkPermission('lms_get_customer_applications') ){
-                            $link = "<a id=\"" . $trans->user_id . "\" href=\"".route('lms_get_customer_applications', ['user_id' => $trans->user_id])."\" rel=\"tooltip\"   >$cId</a> "; 
+                            $link = "<a id=\"" . $trans->user_id . "\" href=\"".route('lms_get_customer_applications', ['user_id' => $trans->user_id])."\" rel=\"tooltip\"   >$cId</a> ";
                         }
                         return $link;
                 })
                 ->addColumn(
                     'customer_name',
-                    function ($trans) { 
+                    function ($trans) {
                         $full_name = $trans->user->f_name.' '.$trans->user->l_name;
                         $email = $trans->user->email;
 
@@ -2509,13 +2672,13 @@ class DataRenderer implements DataProviderInterface
                 })
                 ->addColumn(
                     'customer_detail',
-                    function ($trans) { 
+                    function ($trans) {
                         $payment = '';
                         $payment .= $trans->created_at ? '<span><b>Trans. Date:&nbsp;</b>'.Carbon::parse($trans->date_of_payment)->format('d-m-Y').'</span>' : '';
                         $payment .= $trans->amount ? '<br><span><b>Trans. Amount:&nbsp;</b> ₹ '.number_format($trans->amount,2).'</span>' : '';
                         return $payment;
                 })
-               
+
                  ->addColumn(
                     'trans_type',
                     function ($trans) {
@@ -2526,13 +2689,13 @@ class DataRenderer implements DataProviderInterface
                          $tType = '<br><span><b>Manual Payment</b></span>';
                      }
 
-                        return $trans->paymentname.$tType;
+                        return $trans->paymentname?? NULL.$tType;
                 })
                  ->addColumn(
                     'comment',
-                    function ($trans) {                        
+                    function ($trans) {
                         return $trans->description ? $trans->description : '';
-                })  
+                })
                 ->addColumn(
                     'created_by',
                     function ($trans) {
@@ -2540,20 +2703,20 @@ class DataRenderer implements DataProviderInterface
                         $created_by .= $trans->creator ? '<span><b>Name:&nbsp;</b>'.$trans->creator->f_name.'&nbsp;'.$trans->creator->l_name.'</span>' : '';
                         $created_by .= '<br><span><b>Date & Time:&nbsp;</b>'.\Helpers::convertDateTimeFormat($trans->created_at, $fromDateFormat='Y-m-d H:i:s', $toDateFormat='d-m-Y h:i A').'</span>';
 
-                        return $created_by;                        
+                        return $created_by;
                 })
                 ->addColumn(
                     'action',
                     function ($trans) {
                         $act = '';
 
-                        if($trans->is_settled == '0' && $trans->action_type == '1' && $trans->trans_type == '17' && strtotime(\Helpers::convertDateTimeFormat($trans->sys_created_at, 'Y-m-d H:i:s', 'Y-m-d')) == strtotime(\Helpers::convertDateTimeFormat(Helpers::getSysStartDate(), 'Y-m-d H:i:s', 'Y-m-d')) ){
+                        if($trans->is_settled == '0' && $trans->action_type == '1' && $trans->trans_type == '17' /*&& strtotime(\Helpers::convertDateTimeFormat($trans->sys_created_at, 'Y-m-d H:i:s', 'Y-m-d')) == strtotime(\Helpers::convertDateTimeFormat(Helpers::getSysStartDate(), 'Y-m-d H:i:s', 'Y-m-d')) */){
                             if(Helpers::checkPermission('delete_payment') ){
                                 $act .= '<button  onclick="delete_payment(\''. route('delete_payment', ['payment_id' => $trans->payment_id, '_token'=> csrf_token()] ) .'\',this)" ><i class="fa fa-trash"></i></button>';
                             }
                         }
 
-                        if (($trans->action_type == 3 || ($trans->action_type == 1 && $trans->payment_type == 2)) && isset($trans->userFile->file_path)) {                            
+                        if (($trans->action_type == 3 || ($trans->action_type == 1 && $trans->payment_type == 2)) && isset($trans->userFile->file_path)) {
                             //$act .= '<a title="Download Cheque" href="'. \Storage::url($trans->userFile->file_path) .'" download="'. $trans->userFile->file_name . '"><i class="fa fa-download"></i></a>';
                             if(Helpers::checkPermission('download_storage_file') ){
                                 $act .= '<a title="Download" href="'. route('download_storage_file', ['file_id' => $trans->userFile->file_id ]) .'" class="btn btn-action-btn btn-sm" ><i class="fa fa-download"></i></a>';
@@ -2564,42 +2727,42 @@ class DataRenderer implements DataProviderInterface
                         }
                         if (Helpers::checkPermission('edit_payment') && ($trans->action_type == 3 || ($trans->action_type == 1 && $trans->payment_type == 2))) {
                             $act .= "<a  data-toggle=\"modal\" data-target=\"#editPaymentFrm\" data-url =\"" . route('edit_payment', ['payment_id' => $trans->payment_id, 'payment_type' => $trans->payment_type]) . "\" data-height=\"400px\" data-width=\"100%\" data-placement=\"top\" class=\"btn btn-action-btn btn-sm\" title=\"Edit Payment\"><i class=\"fa fa-edit\"></i></a>";
-                        }                        
+                        }
                     return $act;
-                   
+
                 })
                 ->filter(function ($query) use ($request) {
-                    if ($request->get('type') != '') {                        
+                    if ($request->get('type') != '') {
                         $query->where(function ($query) use ($request) {
                             $search_keyword = trim($request->get('type'));
                             $query->where('s',$search_keyword);
-                           
-                        });                        
+
+                        });
                     }
-                    if ($request->get('date') != '') {                        
+                    if ($request->get('date') != '') {
                         $query->where(function ($query) use ($request) {
                              $search_keyword = Carbon::createFromFormat('d/m/Y', $request->get('date'))->format('Y-m-d');
                             $query->where('created_at', 'like',"%$search_keyword%");
-                        });                        
+                        });
                     }
-                    if ($request->get('search_keyword') != '') {                        
+                    if ($request->get('search_keyword') != '') {
                         $query->where(function ($query) use ($request) {
                             $search_keyword = trim($request->get('search_keyword'));
                             $query->whereHas('lmsUser', function ($query) use($search_keyword) {
                                 $query->where('customer_id', 'like',"%$search_keyword%");
 
-                            }); 
-                        });                        
+                            });
+                        });
                     }
                })
               ->make(true);
      }
-     
+
      /* Get Invoice list for backend
      */
     public function getBackendInvoiceActivityList(Request $request,$invoice)
-    { 
-       
+    {
+
       return DataTables::of($invoice)
                ->rawColumns(['anchor_id','action','status','comment','update'])
                 ->addIndexColumn()
@@ -2607,46 +2770,46 @@ class DataRenderer implements DataProviderInterface
                     'amount',
                     function ($invoice) {
                     //   dd($invoice->invoice->invoice_amount);
-                       return ($invoice->invoice_id) ? number_format($invoice->invoice->invoice_approve_amount) : 'N/A'; 
+                       return ($invoice->invoice_id) ? number_format($invoice->invoice->invoice_approve_amount) : 'N/A';
              })
                 ->addColumn(
                     'comment',
-                    function ($invoice) { 
-                     return ($invoice->comm_txt) ? $invoice->comm_txt : 'N/A'; 
+                    function ($invoice) {
+                     return ($invoice->comm_txt) ? $invoice->comm_txt : 'N/A';
                 })
                ->addColumn(
                     'status',
                     function ($invoice) {
                            $color  = ['0' =>'','7'=>"badge badge-warning",'8' => "badge badge-success",'9' =>"badge badge-success",'10' =>"badge badge-success",'11' => "badge badge-danger",'12' => "badge badge-danger",'13' =>"badge badge-success",'14' => "badge badge-danger",'28' =>"badge badge-danger"];
-                                 
+
                            if($invoice->invoice_amt=='')
                            {
                               return '<button type="button" class="'.$color[$invoice->status->id].' btn-sm">'.$invoice->status->status_name.'</button>';
                            }
-                           
+
                   })
                   ->addColumn(
                     'update',
                     function ($invoice) {
                           return '&nbsp;'.$invoice->user->f_name.'&nbsp;'.$invoice->user->l_name.'';
-                           
+
                   })
                  ->addColumn(
                     'timestamp',
                     function ($invoice) {
                         return \Helpers::convertDateTimeFormat($invoice->created_at, 'Y-m-d H:i:s','d-m-Y h:i A');
                 })
-                 
-                 
+
+
               ->make(true);
-    }  
-    
-    
+    }
+
+
     /*
      * get application pool
-     * 
+     *
      */
-    
+
     public function getAppLicationPool(Request $request, $app)
     {
         return DataTables::of($app)
@@ -2656,10 +2819,10 @@ class DataRenderer implements DataProviderInterface
                     function ($app) {
                         //$roleData = User::getBackendUser(\Auth::user()->user_id);
                         //if ($roleData[0]->is_superadmin == 1) {
-                        //    $link = route('company_details', ['biz_id' => $app->biz_id, 'app_id' => $app->app_id]);                                                            
+                        //    $link = route('company_details', ['biz_id' => $app->biz_id, 'app_id' => $app->app_id]);
                         //} else {
                             $link = '#';
-                        //}                        
+                        //}
                         //$link = route('company_details', ['biz_id' => $app->biz_id, 'app_id' => $app->app_id, 'user_id' => $app->user_id]);
                         //return '<a id="app-id-' . $app->app_id . ' rel="tooltip" href="' . $link . '">' . \Helpers::formatIdWithPrefix($app->app_id, 'APP') . '</a>';
                         return \Helpers::formatIdWithPrefix($app->app_id, 'APP');
@@ -2667,14 +2830,14 @@ class DataRenderer implements DataProviderInterface
                 )
                 ->addColumn(
                     'biz_entity_name',
-                    function ($app) {                        
+                    function ($app) {
                         return $app->biz_entity_name ? $app->biz_entity_name : '';
                 })
                 ->addColumn(
                     'name',
-                    function ($app) {                        
+                    function ($app) {
                         if($app->user_type && $app->user_type==1){
-                            $anchorUserType='<small class="aprveAppListBtn">(Supplier)</small>'; 
+                            $anchorUserType='<small class="aprveAppListBtn">(Supplier)</small>';
                         }else if($app->user_type && $app->user_type==2){
                             $anchorUserType='<small class="aprveAppListBtn">(Buyer)</small>';
                         }else{
@@ -2690,14 +2853,14 @@ class DataRenderer implements DataProviderInterface
                 //        //$achorName= $userInfo->f_name . ' ' . $userInfo->l_name;
                 //         $achorName = Helpers::getAnchorsByUserId($app->user_id);
                 //     } else {
-                //        $achorName='';  
-                //     }                    
+                //        $achorName='';
+                //     }
                 //     return $achorName;
-                    
+
                 // })
                 ->addColumn(
                     'contact',
-                    function ($app) {                        
+                    function ($app) {
                         $contact = '';
                         $contact .= $app->email ? '<span><b>Email:&nbsp;</b>'.$app->email.'</span>' : '';
                         $contact .= $app->mobile_no ? '<br><span><b>Mob:&nbsp;</b>'.$app->mobile_no.'</span>' : '';
@@ -2705,9 +2868,9 @@ class DataRenderer implements DataProviderInterface
                 })
                 // ->addColumn(
                 //     'user_type',
-                //     function ($app) {                        
+                //     function ($app) {
                 //     if($app->user_type && $app->user_type==1){
-                //        $anchorUserType='Supplier'; 
+                //        $anchorUserType='Supplier';
                 //     }else if($app->user_type && $app->user_type==2){
                 //         $anchorUserType='Buyer';
                 //     }else{
@@ -2719,7 +2882,7 @@ class DataRenderer implements DataProviderInterface
                     'assigned_by',
                     function ($app) {
                         return isset($app->assigned_by) ? $app->assigned_by : '';
-                })                
+                })
                 ->addColumn(
                     'assignee',
                     function ($app) {
@@ -2735,8 +2898,8 @@ class DataRenderer implements DataProviderInterface
                     'status',
                     function ($app) {
                     //return $app->status == 1 ? 'Completed' : 'Incomplete';
-                    $app_status = config('common.app_status');                               
-                    return isset($app_status[$app->status]) ? $app_status[$app->status] : ''; 
+                    $app_status = config('common.app_status');
+                    return isset($app_status[$app->status]) ? $app_status[$app->status] : '';
                 })
                 ->addColumn(
                     'action',
@@ -2748,27 +2911,27 @@ class DataRenderer implements DataProviderInterface
                 <div>";
                     }
                      return $act;
-                   
+
               }
                 )
                 ->filter(function ($query) use ($request) {
-                    
-                    if ($request->get('search_keyword') != '') {                        
+
+                    if ($request->get('search_keyword') != '') {
                         $query->where(function ($query) use ($request) {
                             $search_keyword = trim($request->get('search_keyword'));
                             $query->where('app_code', 'like',"%$search_keyword%")
                             ->orWhere('biz.biz_entity_name', 'like', "%$search_keyword%")
                             ->orWhere('users.email', 'like',"%$search_keyword%");
-                        });                        
+                        });
                     }
-                    if ($request->get('is_assign') != '') {                                 
-                    }                    
-                    
+                    if ($request->get('is_assign') != '') {
+                    }
+
                 })
                 ->make(true);
-    } 
-    
-    
+    }
+
+
     public function getAnchorList(Request $request, $user)
     {
         return DataTables::of($user)
@@ -2779,19 +2942,19 @@ class DataRenderer implements DataProviderInterface
                     $link = '000'.$user->anchor_id;
                     return $link;
                       // return "<a id=\"" . $user->user_id . "\" href=\"".route('lead_detail', ['user_id' => $user->user_id])."\" rel=\"tooltip\"   >$link</a> ";
-                        
+
                     } )
                 ->editColumn(
                         'name',
                         function ($user) {
                     $full_name = $user->f_name;
                     return $full_name;
-                    
-                })              
+
+                })
                 ->editColumn(
                     'biz_name',
                     function ($user) {
-                    $comp_name = ucwords(strtolower($user->comp_name)); 
+                    $comp_name = ucwords(strtolower($user->comp_name));
                     return $comp_name;
 
                 })
@@ -2804,9 +2967,9 @@ class DataRenderer implements DataProviderInterface
                 ->editColumn(
                     'phone',
                     function ($user) {
-                    $achorId = $user->comp_phone; 
+                    $achorId = $user->comp_phone;
                     return $achorId;
-                }) 
+                })
                 ->editColumn(
                     'created_at',
                     function ($user) {
@@ -2817,17 +2980,17 @@ class DataRenderer implements DataProviderInterface
                     'action',
                     function ($users) {
                        $act = '';
-                      
-                     if(Helpers::checkPermission('manage_program')){                        
+
+                     if(Helpers::checkPermission('manage_program')){
                         $act.=  '<a title="Manage Program" href="'.route('manage_program',['anchor_id' => $users->anchor_id]).'" class="btn btn-action-btn btn-sm "><i class="fa fa-cog" aria-hidden="true"></i></a>';
                      }
-                     if(Helpers::checkPermission('edit_anchor_reg')){                        
+                     if(Helpers::checkPermission('edit_anchor_reg')){
                         $act .= "<a  data-toggle=\"modal\" data-target=\"#editAnchorFrm\" data-url =\"" . route('edit_anchor_reg', ['anchor_id' => $users->anchor_id]) . "\" data-height=\"475px\" data-width=\"100%\" data-placement=\"top\" class=\"btn btn-action-btn btn-sm\" title=\"Edit Anchor Detail\"><i class=\"fa fa-edit\"></i></a>";
                      }
-                     
+
                      if(Helpers::checkPermission('download_storage_file') && isset($users->file_path)){
                         $act .= "<a  href=". route('download_storage_file', ['file_id' => $users->file_id ]) ." class=\"btn btn-action-btn   btn-sm\" type=\"button\" target=\"blank\" title=\"View CAM\"> <i class=\"fa fa-eye\"></i></a>";
-                        // 
+                        //
                      }
                      if(Helpers::checkPermission('add_anchor_bank_account') && isset($users->bank_account_id)){
                         $act .= "<a  data-toggle=\"modal\" data-target=\"#edit_bank_account\" data-url =\"" . route('add_anchor_bank_account',['anchor_id' => $users->anchor_id,'bank_account_id'=>$users->bank_account_id]) . "\" data-height=\"475px\" data-width=\"100%\" data-placement=\"top\" class=\"btn btn-action-btn btn-sm\" title=\"Edit Bank Detail\"><i class=\"fa fa-plus-square\"></i></a>";
@@ -2838,7 +3001,7 @@ class DataRenderer implements DataProviderInterface
 //                     if(isset($users)){
 //                        $act .= "<a  data-toggle=\"modal\" data-target=\"#add_bank_account\" data-url =\"" . route('add_anchor_bank_account',['anchor_id' => $users->anchor_id, 'bank_account_id' => $bank['bank_account_id']]) . "\" data-height=\"475px\" data-width=\"100%\" data-placement=\"top\" class=\"btn btn-action-btn btn-sm\" title=\"Edit Bank Detail\"><i class=\"fa fa-edit\"></i></a>";
 //                     }
-                     
+
                      return $act;
                     }
                 )
@@ -2846,7 +3009,7 @@ class DataRenderer implements DataProviderInterface
                     if ($request->get('by_email') != '') {
                         if ($request->has('by_email')) {
                             $query->where(function ($query) use ($request) {
-                                $by_nameOrEmail = trim($request->get('by_email'));                                
+                                $by_nameOrEmail = trim($request->get('by_email'));
                                 $query->where('u.f_name', 'like',"%$by_nameOrEmail%")
                                 ->orWhere('u.l_name', 'like', "%$by_nameOrEmail%")
                                 ->orWhere(\DB::raw("CONCAT(rta_u.f_name,' ',rta_u.l_name)"), 'like', "%$by_nameOrEmail%")
@@ -2858,7 +3021,7 @@ class DataRenderer implements DataProviderInterface
                         if ($request->has('is_assign')) {
                             $query->where(function ($query) use ($request) {
                                 $by_status = (int) trim($request->get('is_assign'));
-                                
+
                                 $query->where('users.is_assigned', 'like',
                                         "%$by_status%");
                             });
@@ -2867,11 +3030,9 @@ class DataRenderer implements DataProviderInterface
                 })
                 ->make(true);
     }
-    
+
     public function getAnchorLeadList(Request $request, $user)
     {
-        
-        
         return DataTables::of($user)
                 ->rawColumns(['id','name', 'checkbox', 'action', 'assoc_anchor', 'email','assigned', 'status'])
                 ->addColumn(
@@ -2879,7 +3040,7 @@ class DataRenderer implements DataProviderInterface
                     function ($user) {
                     $link = '000'.$user->anchor_user_id;
                         //return "<a id=\"" . $user->user_id . "\" href=\"".route('lead_detail', ['user_id' => $user->user_id])."\" rel=\"tooltip\"   >$link</a> ";
-                        
+
                     }
                 )
                 ->editColumn(
@@ -2887,12 +3048,12 @@ class DataRenderer implements DataProviderInterface
                         function ($user) {
                     $full_name = $user->name.' '.$user->l_name;
                     return $full_name;
-                    
-                })               
+
+                })
                 ->editColumn(
                     'biz_name',
                     function ($user) {
-                    //$panInfo = $user->pan_no && !empty($user->pan_no) ? '<br><strong>PAN:</strong> ' . $user->pan_no : ''; 
+                    //$panInfo = $user->pan_no && !empty($user->pan_no) ? '<br><strong>PAN:</strong> ' . $user->pan_no : '';
                     $biz_name = ucwords(strtolower($user->biz_name));
                     return $biz_name;
 
@@ -2912,7 +3073,7 @@ class DataRenderer implements DataProviderInterface
                 ->editColumn(
                     'phone',
                     function ($user) {
-                    $achorId = $user->phone; 
+                    $achorId = $user->phone;
                     return $achorId;
                 })
                 ->addColumn(
@@ -2921,13 +3082,13 @@ class DataRenderer implements DataProviderInterface
                     if($user->anchor_id){
                        //$userInfo = User::getUserByAnchorId($app->anchor_id);
                        $achorName= ucwords($user->comp_name);
-                        // $achorName = Helpers::getAnchorById($user->anchor_id);                        
+                        // $achorName = Helpers::getAnchorById($user->anchor_id);
                     } else {
-                       $achorName='';  
-                    }                    
+                       $achorName='';
+                    }
                     return $achorName;
-                    
-                })                
+
+                })
                 ->editColumn(
                     'created_at',
                     function ($user) {
@@ -2964,7 +3125,7 @@ class DataRenderer implements DataProviderInterface
                             $query->where(function ($query) use ($request) {
                                 $by_nameOrEmail = trim($request->get('by_email'));
                                 $query->where('anchor_user.name', 'like',"%$by_nameOrEmail%")
-                                ->orWhere('anchor_user.l_name', 'like', "%$by_nameOrEmail%")                                  
+                                ->orWhere('anchor_user.l_name', 'like', "%$by_nameOrEmail%")
                                 ->orWhere(\DB::raw("CONCAT(rta_anchor_user.name,' ',rta_anchor_user.l_name)"), 'like', "%$by_nameOrEmail%")
                                 ->orWhere('anchor_user.email', 'like', "%$by_nameOrEmail%")
                                 ->orWhere('anchor_user.pan_no', 'like', "%$by_nameOrEmail%")
@@ -2976,7 +3137,7 @@ class DataRenderer implements DataProviderInterface
                         if ($request->has('is_assign')) {
                             $query->where(function ($query) use ($request) {
                                 $by_status = (int) trim($request->get('is_assign'));
-                                
+
                                 $query->where('users.is_assigned', 'like',
                                         "%$by_status%");
                             });
@@ -2985,42 +3146,42 @@ class DataRenderer implements DataProviderInterface
                     if ($request->has('pan')) {
                         if ($request->get('pan') != '') {
                             $query->where(function ($query) use ($request) {
-                                $pan = $request->get('pan');                                
+                                $pan = $request->get('pan');
                                 $query->where('anchor_user.pan_no',$pan);
                                 //$query->where('anchor_user.pan_no', 'like',"%$pan%");
                             });
                         }
-                    }                    
+                    }
                 })
                 ->make(true);
     }
-    
-   
-    
+
+
+
     public function getRoleList(Request $request, $role)
     {
-        
+
         return DataTables::of($role)
                 ->rawColumns(['role_id', 'checkbox', 'action', 'active','assigned'])
-                
+
                 ->addColumn(
                     'role_id',
                     function ($role) {
                     $link = '000'.$role->id;
                        return "<a id=\"" . $role->user_id . "\" href=\"#\" rel=\"tooltip\"   >$link</a> ";
                     })
-                    
+
                 ->editColumn(
                         'name',
                         function ($role) {
                     $name = $role->name;
                     return $name;
-                    
-                })              
+
+                })
                 ->editColumn(
                     'description',
                     function ($role) {
-                    $disc = $role->description; 
+                    $disc = $role->description;
                     return $disc;
 
                 })
@@ -3029,21 +3190,21 @@ class DataRenderer implements DataProviderInterface
                     function ($role) {
                     return ($role->is_active == '0')?'<div class="btn-group ">
                                              <label class="badge badge-danger current-status">In Active</label>
-                                             
+
                                           </div></b>':'<div class="btn-group ">
                                              <label class="badge badge-success current-status">Active</label>
-                                             
+
                                           </div></b>';
 
                 })
-                
+
                 ->editColumn(
                     'created_at',
                     function ($role) {
                     return ($role->created_at)? date('d-M-Y',strtotime($role->created_at)) : '---';
 
                 })
-                
+
                 ->addColumn(
                     'action',
                     function ($role) {
@@ -3065,7 +3226,7 @@ class DataRenderer implements DataProviderInterface
                             if ($request->has('is_assign')) {
                                 $query->where(function ($query) use ($request) {
                                     $by_status = (int) trim($request->get('is_assign'));
-                                    
+
                                     $query->where('users.is_assigned', 'like',
                                             "%$by_status%");
                                 });
@@ -3073,27 +3234,27 @@ class DataRenderer implements DataProviderInterface
                         }
                     })
                     ->make(true);
-                
+
     }
     /**
      * Get user wise role
-     * 
+     *
      * @param Request $request
      * @param type $role
      * @return type
      */
     public function getUserRoleList(Request $request, $role)
     {
-        
+
         return DataTables::of($role)
                 ->rawColumns(['role_id', 'name', 'checkbox', 'action', 'active','assigned'])
-                
+
                 ->addColumn(
                     'srno',
                     function ($role) {
                       return "==";
                     })
-                    
+
                 ->editColumn(
                         'name',
                         function ($role) {
@@ -3102,40 +3263,40 @@ class DataRenderer implements DataProviderInterface
                         $name .= '<br><small>(Approval Authority)</small>';
                     }
                     return $name;
-                    
-                })              
+
+                })
                 ->editColumn(
                     'email',
                     function ($role) {
-                    $disc = $role->email; 
+                    $disc = $role->email;
                     return $disc;
 
                 })
                 ->editColumn(
                     'mobile',
                     function ($role) {
-                    $disc = $role->mobile_no; 
+                    $disc = $role->mobile_no;
                     return $disc;
 
                 })
                 ->editColumn(
                     'rolename',
                     function ($role) {
-                    $disc = $role->name; 
+                    $disc = $role->name;
                     return $disc;
 
                 })
                 ->editColumn(
                     'reporting_mgr',
                     function ($role) {
-                    $reporting_mgr = $role->reporting_mgr; 
+                    $reporting_mgr = $role->reporting_mgr;
                     return $reporting_mgr;
 
-                })                                
+                })
                 ->editColumn(
                     'active',
                     function ($role) {
-                    return ($role->u_active == 1)?'<div class="btn-group "> <label class="badge badge-success current-status">Active</label>  
+                    return ($role->u_active == 1)?'<div class="btn-group "> <label class="badge badge-success current-status">Active</label>
                                           </div></b>':'<div class="btn-group "> <label class="badge badge-danger current-status">In Active</label> </div></b>';
                 })
                 ->editColumn(
@@ -3153,9 +3314,9 @@ class DataRenderer implements DataProviderInterface
                 ->addColumn(
                     'action',
                     function ($role) {
-                    $user_edit =  "<a title=\"Edit User\"  data-toggle=\"modal\" data-target=\"#manageUserRole\" data-url =\"" . route('edit_user_role', ['role_id' => $role->id,'user_id'=>$role->user_id]) . "\" data-height=\"430px\" data-width=\"100%\" data-placement=\"top\" class=\"btn btn-action-btn btn-sm\"><i class=\"fa fa-edit\"></i></a>"; 
+                    $user_edit =  "<a title=\"Edit User\"  data-toggle=\"modal\" data-target=\"#manageUserRole\" data-url =\"" . route('edit_user_role', ['role_id' => $role->id,'user_id'=>$role->user_id]) . "\" data-height=\"430px\" data-width=\"100%\" data-placement=\"top\" class=\"btn btn-action-btn btn-sm\"><i class=\"fa fa-edit\"></i></a>";
                     $user_email = "<a title=\"Change User Password\"  data-toggle=\"modal\" data-target=\"#manageUserRolePassword\" data-url =\"" . route('change_user_role_password', ['role_id' => $role->id,'user_id'=>$role->user_id]) . "\" data-height=\"195px\" data-width=\"100%\" data-placement=\"top\" class=\"btn btn-action-btn btn-sm\"><i class=\"fa fa-expeditedssl\"></i></a>";
-                    //$assign_doa_level =  "<a title=\"Assign Doa Level Role\"  data-toggle=\"modal\" data-target=\"#assignDoaLevelRole\" data-url =\"" . route('assign_doal_level_role', ['role_id' => $role->id,'user_id'=>$role->user_id]) . "\" data-height=\"430px\" data-width=\"100%\" data-placement=\"top\" class=\"btn btn-action-btn btn-sm\"><i class=\"fa fa-edit\"></i></a>"; 
+                    //$assign_doa_level =  "<a title=\"Assign Doa Level Role\"  data-toggle=\"modal\" data-target=\"#assignDoaLevelRole\" data-url =\"" . route('assign_doal_level_role', ['role_id' => $role->id,'user_id'=>$role->user_id]) . "\" data-height=\"430px\" data-width=\"100%\" data-placement=\"top\" class=\"btn btn-action-btn btn-sm\"><i class=\"fa fa-edit\"></i></a>";
                     return '<div class="btn-group"><label>'. $user_edit .'</label> <label>'. $user_email .'</label></div>';
                     })
                     ->filter(function ($query) use ($request) {
@@ -3174,7 +3335,7 @@ class DataRenderer implements DataProviderInterface
                             if ($request->has('is_assign')) {
                                 $query->where(function ($query) use ($request) {
                                     $by_status = (int) trim($request->get('is_assign'));
-                                    
+
                                     $query->where('role_user.role_id', 'like',
                                             "%$by_status%");
                                 });
@@ -3182,10 +3343,10 @@ class DataRenderer implements DataProviderInterface
                         }
                     })
                     ->make(true);
-                
+
     }
 
-    /*      
+    /*
      * Get address list for FI
      */
     public function getFiListsList(Request $request, $data)
@@ -3203,19 +3364,19 @@ class DataRenderer implements DataProviderInterface
                 )
                 ->addColumn(
                     'address_type',
-                    function ($data) use ($type) {                        
+                    function ($data) use ($type) {
                         return $type[$data->address_type];
                 })
                 ->addColumn(
                     'name',
-                    function ($data) {                        
+                    function ($data) {
                         return $data->name ? $data->name : '';
                 })
                 ->addColumn(
                     'address',
                     function ($data) {
                     return $data->address ? $data->address: '';
-                }) 
+                })
                 ->addColumn(
                     'status',
                     function ($data) {
@@ -3231,13 +3392,13 @@ class DataRenderer implements DataProviderInterface
                             </div>';
                     }
                 )
-                ->filter(function ($query) use ($request) {            
-                    /*if ($request->get('search_keyword') != '') {                        
+                ->filter(function ($query) use ($request) {
+                    /*if ($request->get('search_keyword') != '') {
                         $query->where(function ($query) use ($request) {
                             $search_keyword = trim($request->get('search_keyword'));
                             $query->where('app.app_id', 'like',"%$search_keyword%")
                             ->orWhere('biz.biz_entity_name', 'like', "%$search_keyword%");
-                        });                        
+                        });
                     }*/
                     /*if ($request->get('is_status') != '') {
                         $query->where(function ($query) use ($request) {
@@ -3245,59 +3406,59 @@ class DataRenderer implements DataProviderInterface
                             $query->where('app.status', $is_assigned);
                         });
                     }*/
-                    
+
                 })
                 ->make(true);
     }
 
-    
-    
+
+
     /**
-     * 
+     *
      * @param type $request
      * @param type $program
      * @return type
-     * 
+     *
      */
-    
-    
+
+
     function getPromgramList($request , $program)
     {
          return DataTables::of($program)
-                ->rawColumns([ 'action', 'active','status','reason' ,'anchor_limit'])                
+                ->rawColumns([ 'action', 'active','status','reason' ,'anchor_limit'])
                 ->editColumn(
                     'prgm_id',
-                    function ($program) {                   
+                    function ($program) {
                       return $program->prgm_id;
-                    })                
+                    })
                 ->editColumn(
                     'product_id',
-                    function ($program) {                   
+                    function ($program) {
                       return $program->mp_product_name;
                     })
                 ->editColumn(
                     'prgm_name',
-                    function ($program) {                   
+                    function ($program) {
                       return $program->prgm_name;
                     })
                 ->editColumn(
                     'f_name',
-                    function ($program) {                   
+                    function ($program) {
                         return $program->f_name;
                     })
                 ->editColumn(
                     'anchor_limit',
-                    function ($program) {                   
+                    function ($program) {
                       return  \Helpers::formatCurreny($program->anchor_limit);
                     })
                 ->addColumn(
                     'anchor_sub_limit',
-                    function ($program) {                   
+                    function ($program) {
                       return '-';
                     })
                 ->addColumn(
                     'loan_size',
-                    function ($program) {                   
+                    function ($program) {
                       return '-';
                     })
                 ->editColumn(
@@ -3306,10 +3467,10 @@ class DataRenderer implements DataProviderInterface
 
                           return ($program->status == '0')?'<div class="btn-group ">
                                              <label class="badge badge-warning current-status">In Active</label>
-                                             
+
                                           </div></b>':'<div class="btn-group ">
                                              <label class="badge badge-success current-status">Active</label>
-                                             
+
                                           </div></b>';
                         })
                 /*
@@ -3319,12 +3480,12 @@ class DataRenderer implements DataProviderInterface
                     $res = '';
                     if ($program->modify_reason_type) {
                         $reasonList = config('common.program_modify_reasons');
-                        $link = route('view_end_program_reason', ['program_id'=> $program->prgm_id] );                                
+                        $link = route('view_end_program_reason', ['program_id'=> $program->prgm_id] );
                         $res .= '<small><a href="#" title="View Reason" data-toggle="modal" data-target="#showEndProgramReason" data-url="'. $link . '" data-height="200px" data-width="100%" data-placement="top">' .$reasonList[$program->modify_reason_type]  . '</a></small>';
                         }
                          return  $res;
 
-                    })*/                        
+                    })*/
                         ->addColumn(
                     'action',
                     function ($program) {
@@ -3332,16 +3493,16 @@ class DataRenderer implements DataProviderInterface
                       if(Helpers::checkPermission('manage_sub_program')){
                           $action .='<a title="View Sub-Program" href="'.route('manage_sub_program',['program_id'=>$program->prgm_id ,'anchor_id'=>$program->anchor_id]).'" class="btn btn-action-btn btn-sm "><i class="fa fa-cog" aria-hidden="true"></i></a>';
                       }
-                   
+
                       /*
                       $editType = \Helpers::isProgamEditAllowed($program->prgm_id);
-                      if (Helpers::checkPermission('edit_program') && $editType == 2){  
-                          $action .= '<a href="#" title="Modify Program Limit" data-toggle="modal" data-target="#modifyProgramLimit" data-url="' . route('confirm_end_program', ['anchor_id'=> $program->anchor_id, 'program_id'=> $program->prgm_id ,'parent_program_id' => request()->get('program_id'), 'action' => 'edit', 'type' => 'anchor_program']) . '" data-height="350px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm"><i class="fa fa-edit" aria-hidden="true"></i></a> ';                          
+                      if (Helpers::checkPermission('edit_program') && $editType == 2){
+                          $action .= '<a href="#" title="Modify Program Limit" data-toggle="modal" data-target="#modifyProgramLimit" data-url="' . route('confirm_end_program', ['anchor_id'=> $program->anchor_id, 'program_id'=> $program->prgm_id ,'parent_program_id' => request()->get('program_id'), 'action' => 'edit', 'type' => 'anchor_program']) . '" data-height="350px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm"><i class="fa fa-edit" aria-hidden="true"></i></a> ';
                       } else if (Helpers::checkPermission('edit_program') && $editType == 1) {
                           $action .= '<a title="Edit Program" data-toggle="modal"  data-height="420px" data-width="100%" data-target="#editProgram" data-url="' . route('edit_program', ['program_id'=>$program->prgm_id ,'anchor_id'=>$program->anchor_id]) . '"  data-placement="top" class="btn btn-action-btn btn-sm" title="Edit Program"><i class="fa fa-edit"></i></a>';
                       }
                       */
-                      
+
                       if($program->status){
                            return $action.'<a title="In Active" href="'.route('change_program_status', [ 'program_id'=> $program->prgm_id , 'status'=>0 ]).'"  class="btn btn-action-btn btn-sm program_status "><i class="fa fa-eye" aria-hidden="true"></i></a>';
                       }else{
@@ -3349,12 +3510,12 @@ class DataRenderer implements DataProviderInterface
                       }
                     })
                     ->filter(function ($query) use ($request) {
-                        if ($request->get('search_keyword') != '') {                        
+                        if ($request->get('search_keyword') != '') {
                             $query->where(function ($query) use ($request) {
                                 $search_keyword = trim($request->get('search_keyword'));
                                 $query->where('prgm_name', 'like',"%$search_keyword%")
                                 ->orWhere('f_name', 'like', "%$search_keyword%");
-                            });                        
+                            });
                         }
                     })
                     ->make(true);
@@ -3363,7 +3524,7 @@ class DataRenderer implements DataProviderInterface
 
     public function getAgencyList(Request $request, $agency)
     {
-        
+
         return DataTables::of($agency)
                 ->rawColumns(['agency_id', 'action','status'])
                 ->addColumn(
@@ -3372,17 +3533,17 @@ class DataRenderer implements DataProviderInterface
                     $link = '000'.$agency->agency_id;
                     return $link;
                       // return "<a id=\"" . $user->user_id . "\" href=\"".route('lead_detail', ['user_id' => $user->user_id])."\" rel=\"tooltip\"   >$link</a> ";
-                        
+
                     } )
                 ->editColumn(
                     'agency_name',
                     function ($agency) {
                     return $agency->comp_name;
-                })              
+                })
                 ->editColumn(
                     'address',
                     function ($agency) {
-                    return $agency->comp_addr; 
+                    return $agency->comp_addr;
                 })
                 ->editColumn(
                     'email',
@@ -3393,8 +3554,8 @@ class DataRenderer implements DataProviderInterface
                 ->editColumn(
                     'phone',
                     function ($agency) {
-                    return $agency->comp_phone; 
-                }) 
+                    return $agency->comp_phone;
+                })
                 ->editColumn(
                     'created_at',
                     function ($agency) {
@@ -3409,7 +3570,7 @@ class DataRenderer implements DataProviderInterface
                     </div></b>':'<div class="btn-group ">
                     <label class="badge badge-success current-status">Active</label>
                     </div></b>';
-                }) 
+                })
                 ->addColumn(
                     'action',
                     function ($agency) {
@@ -3445,7 +3606,7 @@ class DataRenderer implements DataProviderInterface
             '3' => 'Outstanding Principal',
             '4' => 'Outstanding Interest',
             '5' => 'Overdue Amount'
-        );               
+        );
         return DataTables::of($charges)
                 ->rawColumns(['is_active'])
                 ->addColumn(
@@ -3467,27 +3628,27 @@ class DataRenderer implements DataProviderInterface
                     'chrg_calculation_type',
                     function ($charges) {
                     return $charges->chrg_calculation_type == 1 ? 'Fixed' : 'Percent';
-                })  
+                })
                 ->addColumn(
                     'chrg_calculation_amt',
                     function ($charges) {
                     return number_format($charges->chrg_calculation_amt,2);
-                })              
+                })
                 ->addColumn(
                     'is_gst_applicable',
                     function ($charges) {
-                    return ($charges->is_gst_applicable == 1) ? 'Yes' : 'No'; 
+                    return ($charges->is_gst_applicable == 1) ? 'Yes' : 'No';
                 })
                 ->addColumn(
                     'chrg_applicable_id',
                     function ($charges) {
-                    return $this->chrg_applicable_ids[$charges->chrg_applicable_id] ?? 'N/A'; 
-                }) 
+                    return $this->chrg_applicable_ids[$charges->chrg_applicable_id] ?? 'N/A';
+                })
                 ->addColumn(
                     'chrg_tiger_id',
                     function ($charges) {
-                    return config('common.chrg_trigger_list')[$charges->chrg_tiger_id] ?? 'N/A'; 
-                })                 
+                    return config('common.chrg_trigger_list')[$charges->chrg_tiger_id] ?? 'N/A';
+                })
                 ->addColumn(
                     'chrg_desc',
                     function ($charges) {
@@ -3524,7 +3685,7 @@ class DataRenderer implements DataProviderInterface
                 })
                 ->make(true);
     }
-    
+
      public function getVouchersList(Request $request, $vouchers){
         return DataTables::of($vouchers)
                 ->addColumn(
@@ -3549,7 +3710,7 @@ class DataRenderer implements DataProviderInterface
                 })
                 ->make(true);
     }
-    
+
        public function getLmsChargeLists(Request $request, $charges){
          $this->chrg_applicable_ids = array(
             '1' => 'Limit Amount',
@@ -3583,27 +3744,27 @@ class DataRenderer implements DataProviderInterface
                     'chrg_calculation_amt',
                     function ($charges) {
                     return $charges->amount;
-                })  
+                })
                 ->addColumn(
                     'is_gst_applicable',
                     function ($charges) {
-                     return (!empty($charges->transaction->gst) && $charges->transaction->gst == 1) ? 'Yes' : 'No'; 
-                })      
+                     return (!empty($charges->transaction->gst) && $charges->transaction->gst == 1) ? 'Yes' : 'No';
+                })
                  ->addColumn(
                     'charge_percent',
                     function ($charges) {
-                     return ($charges->percent) ? $charges->percent : 'N/A'; 
-                })   
+                     return ($charges->percent) ? $charges->percent : 'N/A';
+                })
                 ->addColumn(
                     'chrg_applicable_id',
                     function ($charges) {
-                   return $this->chrg_applicable_ids[$charges->chrg_applicable_id] ?? 'N/A'; 
+                   return $this->chrg_applicable_ids[$charges->chrg_applicable_id] ?? 'N/A';
                 })
                 ->addColumn(
                     'effective_date',
                     function ($charges) {
                    return $charges->transaction->trans_date ? date('d-m-Y',strtotime($charges->transaction->trans_date)) : 'N/A';
-                }) 
+                })
                 ->addColumn(
                     'applicability',
                     function ($charges) {
@@ -3668,8 +3829,8 @@ class DataRenderer implements DataProviderInterface
                 })                
                 ->make(true);
     }
-    
-      
+
+
 
      public function getDocumentsList(Request $request, $documents){
          $this->doc_type_ids = array(
@@ -3682,8 +3843,8 @@ class DataRenderer implements DataProviderInterface
                 ->rawColumns(['is_active'])
                 ->addColumn(
                     'doc_type_id',
-                    function ($documents) {                    
-                    return $this->doc_type_ids[$documents->doc_type_id] ?? 'N/A'; 
+                    function ($documents) {
+                    return $this->doc_type_ids[$documents->doc_type_id] ?? 'N/A';
                 })
                 ->addColumn(
                     'doc_name',
@@ -3705,7 +3866,7 @@ class DataRenderer implements DataProviderInterface
                     'is_rcu',
                     function ($documents) {
                     return $documents->is_rcu == 1 ? 'Enabled' : 'Disabled';
-                })  
+                })
                 ->addColumn(
                     'created_at',
                     function ($documents) {
@@ -3756,7 +3917,7 @@ class DataRenderer implements DataProviderInterface
                     'name',
                     function ($industries) {
                     return $industries->name;
-                }) 
+                })
                 ->addColumn(
                     'created_at',
                     function ($industries) {
@@ -3826,7 +3987,7 @@ class DataRenderer implements DataProviderInterface
                     }
                 })
                 ->make(true);
-       
+
     }
 
     public function getAgencyUserLists(Request $request, $user)
@@ -3838,18 +3999,18 @@ class DataRenderer implements DataProviderInterface
                     function ($user) {
                     $link = '000'.$user->user_id;
                     return $link;
-                    } )             
+                    } )
                 ->editColumn(
                     'user_name',
                     function ($user) {
-                    return $user->f_name.' '.$user->l_name; 
+                    return $user->f_name.' '.$user->l_name;
                 })
                 ->editColumn(
                     'agency_name',
                     function ($user) {
                         // dd($user);
                     return isset($user->agency->comp_name) ? $user->agency->comp_name : '';
-                }) 
+                })
                 ->editColumn(
                     'email',
                     function ($user) {
@@ -3859,18 +4020,18 @@ class DataRenderer implements DataProviderInterface
                 ->editColumn(
                     'phone',
                     function ($user) {
-                    return $user->mobile_no; 
+                    return $user->mobile_no;
                 })
                 ->editColumn(
                     'status',
                     function ($user) {
-                    return ($user->is_active == 0)? 
+                    return ($user->is_active == 0)?
                     '<div class="btn-group ">
                     <label class="badge badge-warning current-status">In Active</label>
                     </div></b>':'<div class="btn-group ">
                     <label class="badge badge-success current-status">Active</label>
                     </div></b>';
-                }) 
+                })
                 ->editColumn(
                     'created_at',
                     function ($user) {
@@ -3905,15 +4066,15 @@ class DataRenderer implements DataProviderInterface
                 })
                 ->make(true);
     }
-    
-    
-    
+
+
+
     /**
-     * sub program 
-     * 
+     * sub program
+     *
      * @param type $request
      * @param type $program
-     * @return type mixed 
+     * @return type mixed
      */
     function getSubProgramList($request, $program)
     {
@@ -3922,16 +4083,16 @@ class DataRenderer implements DataProviderInterface
                         ->rawColumns(['prgm_id','f_name','updated_by','user_id', 'status', 'action' ,'anchor_sub_limit' ,'anchor_limit' ,'loan_size','utilized_limit','reason'])
                         ->editColumn(
                                 'prgm_id',
-                                function ($program) {                                                      
+                                function ($program) {
                             $ret = '<strong>ID:</strong> '. $program->prgm_id . '<br>';
                             $ret .= '<strong>Name:</strong> ' . $program->product_name . '<br>';
                             $ret .= '<strong>Type:</strong> ' . ($program->prgm_type == 1 ? 'Vendor Finance' : 'Channel Finance');
                             if ($program->copied_prgm_id) {
-                            $link = route('view_sub_program',['anchor_id'=> $program->anchor_id, 'program_id'=> $program->copied_prgm_id ,'parent_program_id' => request()->get('program_id') ,  'action' => 'view'] );  
+                            $link = route('view_sub_program',['anchor_id'=> $program->anchor_id, 'program_id'=> $program->copied_prgm_id ,'parent_program_id' => request()->get('program_id') ,  'action' => 'view'] );
                             $ret .= '<br><strong>Parent: </strong><a href="' . $link . '">' . $program->copied_prgm_id . '</a>';
                             }
                             return $ret;
-                        })                        
+                        })
                         ->editColumn(
                                 'f_name',
                                 function ($program) {
@@ -3946,7 +4107,7 @@ class DataRenderer implements DataProviderInterface
                             }
 
                             return $ret;
-                        })                        
+                        })
                         ->editColumn(
                                 'anchor_sub_limit',
                                 function ($program) {
@@ -3958,14 +4119,14 @@ class DataRenderer implements DataProviderInterface
                                 $ret .= '<strong>Utilized Limit in Offer:</strong> '. \Helpers::formatCurreny(\Helpers::getPrgmBalLimit($program->prgm_id)) . '<br>';
                             }
                             return  $ret;
-                        })                       
+                        })
                         ->addColumn(
                                 'updated_by',
-                                function ($program) {                            
+                                function ($program) {
                             $ret = '<strong>By:</strong> '. (isset($program->updatedByUser) ? $program->updatedByUser->f_name . ' ' . $program->updatedByUser->l_name : '') . '<br>';
                             $ret .= '<strong>Date:</strong> '. \Helpers::convertDateTimeFormat($program->updated_at, $fromDateFormat='Y-m-d H:i:s', $toDateFormat='d/m/Y') ;
                              return  $ret;
-                           
+
                         })
                         ->addColumn(
                                 'reason',
@@ -3973,36 +4134,36 @@ class DataRenderer implements DataProviderInterface
                             $res = '';
                             if ($program->copied_prgm_id) {
                                 $reasonList = config('common.program_modify_reasons');
-                                $link = route('view_end_program_reason', ['program_id'=> $program->prgm_id] );                                
+                                $link = route('view_end_program_reason', ['program_id'=> $program->prgm_id] );
                                 $res .= '<small><a href="#" title="View Reason" data-toggle="modal" data-target="#showEndProgramReason" data-url="'. $link . '" data-height="200px" data-width="100%" data-placement="top">' .$reasonList[$program->modify_reason_type]  . '</a></small>';
                             }
                              return  $res;
-                           
-                        })                        
+
+                        })
                         ->editColumn(
                                 'status',
                                 function ($program) {
                             if ($program->status == '0') {
                                 $res = '<div class="btn-group ">
-                            
+
                                              <label class="badge badge-warning current-status">In Active</label>
-                                             
+
                                           </div></b>';
                             } else if ($program->status == '1') {
                                 $res = '<div class="btn-group ">
-                            
+
                                              <label class="badge badge-success current-status">Active</label>
-                                             
-                                          </div></b>';                                
+
+                                          </div></b>';
                             } else if ($program->status == '2') {
                                 $res = '<div class="btn-group ">
                                              <label class="badge badge-secondary current-status">End</label>
-                                             
+
                                           </div></b>';
                             } else if ($program->status == '3') {
                                 $res = '<div class="btn-group ">
                                              <label class="badge badge-danger current-status">Reject</label>
-                                             
+
                                           </div></b>';
                             }
                             return $res;
@@ -4014,21 +4175,21 @@ class DataRenderer implements DataProviderInterface
                             //if (Helpers::checkPermission('view_sub_program')){
                                 $act = "<a  href='". route('view_sub_program',['anchor_id'=> $program->anchor_id, 'program_id'=> $program->prgm_id ,'parent_program_id' => request()->get('program_id') ,  'action' => 'view'] )."' class=\"btn btn-action-btn btn-sm\" title=\"View Sub-Program\"><i class=\"fa fa-eye\" aria-hidden=\"true\"></i></a>";
                             //}
-                            if (!in_array($program->status, [2,3]) && !Helpers::checkApprPrgm($program->prgm_id, $isOfferAcceptedOrRejected=false)) { 
-                            if ($program->is_edit_allow == 1) {    
+                            if (!in_array($program->status, [2,3]) && !Helpers::checkApprPrgm($program->prgm_id, $isOfferAcceptedOrRejected=false)) {
+                            if ($program->is_edit_allow == 1) {
                                 $act .= '<a href="#" title="Modify Program Limit" data-toggle="modal" data-target="#modifyProgramLimit" data-url="' . route('confirm_end_program', ['anchor_id'=> $program->anchor_id, 'program_id'=> $program->prgm_id ,'parent_program_id' => request()->get('program_id'), 'action' => 'edit']) . '" data-height="350px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm"><i class="fa fa-edit" aria-hidden="true"></i></a> ';
-                            } else {                                
+                            } else {
                                 $act .= "<a  href='". route('add_sub_program',['anchor_id'=> $program->anchor_id, 'program_id'=> $program->prgm_id ,'parent_program_id' => request()->get('program_id') ,  'action' => 'edit', 'reason_type'=> $program->modify_reason_type] )."' class=\"btn btn-action-btn btn-sm\" title=\"Edit Sub-Program\"><i class=\"fa fa-edit\" aria-hidden=\"true\"></i></a>";
                             }
                             }
-                            
+
                             return $act;
                         }
                         )->make(true);
     }
 
     /*
-     * 
+     *
      * get all lms customer list
      */
     public function lmsGetCustomers(Request $request, $customer)
@@ -4042,7 +4203,7 @@ class DataRenderer implements DataProviderInterface
                         //return $customer->app_id;
                         return \Helpers::formatIdWithPrefix($customer->app_id, 'APP');
                     }
-                ) 
+                )
                 ->addColumn(
                     'customer_id',
                     function ($customer) {
@@ -4055,7 +4216,7 @@ class DataRenderer implements DataProviderInterface
                     function ($customer) {
                         return $customer->virtual_acc_id;
                     }
-                )     
+                )
                 ->editColumn(
                         'customer_name',
                         function ($customer) {
@@ -4128,9 +4289,20 @@ class DataRenderer implements DataProviderInterface
                 })
                 ->editColumn(
                     'status',
-                    function ($customer) {
+                    function ($customer) { 
+                    $status = '';
+                    $status_id = Helpers::getLatestLmsUserLogByUserId($customer->user->user_id);
                     if ($customer->is_assign == 0) {
-                        return "<label class=\"badge badge-success current-status\">Sanctioned</label>";
+                        $status = "<label class=\"badge badge-success current-status\">Sanctioned</label></br>";
+                        if($status_id == 35){
+                            $status .= "<label class=\"badge badge-primary current-status\">Account Closure
+                            </label></br>";
+                        }
+                        if($status_id == 41){
+                            $status .= "<label class=\"badge badge-primary current-status\">Write Off
+                            </label></br>";
+                        }
+                        return $status;
                     } else {
                         return "<span style='color:green'>Assigned</span>";
                     }
@@ -4156,9 +4328,9 @@ class DataRenderer implements DataProviderInterface
                 })
                 ->make(true);
     }
-    
+
     /*
-     * 
+     *
      * get all lms customer list
      */
     public function lmsGetDisbursalCustomers(Request $request, $customer)
@@ -4213,7 +4385,7 @@ class DataRenderer implements DataProviderInterface
                         }
                         return $benName;
                     }
-                )     
+                )
                 ->editColumn(
                     'bank',
                         function ($customer) {
@@ -4282,7 +4454,7 @@ class DataRenderer implements DataProviderInterface
                                 $invoice = $inv->toArray();
                                 $margin = $invoice['program_offer']['margin'];
                                 $fundedAmount = $this->calculateFundedAmount($invoice, $margin);
-                                
+
                                 $tenorDays = $this->calculateTenorDays($invoice);
                                 $tInterest = $this->calInterest($fundedAmount, $invoice['program_offer']['interest_rate'], $tenorDays);
                                 if( $invoice['program']['interest_borne_by'] == 2 && ($invoice['program_offer']['payment_frequency'] == 1 || empty($invoice['program_offer']['payment_frequency'])) ) {
@@ -4296,27 +4468,27 @@ class DataRenderer implements DataProviderInterface
                 })
                 ->editColumn(
                     'total_invoice',
-                    function ($customer) {   
+                    function ($customer) {
                         $invCount = 0;
                         $apps = $customer->app;
                         foreach ($apps as $app) {
                             foreach ($app->invoices as $inv) {
                                 $invCount++;
                             }
-                        }                 
+                        }
                         return $invCount;
-                })                       
+                })
                 ->addColumn(
                     'status',
                     function ($customer) {
                         return ($this->overDueFlag == 1) ? '<label class="badge badge-warning current-status">pending</label>' : '<label class="badge badge-success current-status">success</label>';
-                })                       
+                })
                 ->addColumn(
                     'action',
                     function ($customer) {
                         $act = '';
                         $act = '<a  data-toggle="modal" data-target="#viewDisbursalCustomerInvoice" data-url ="' . route('lms_disbursal_invoice_view', ['user_id' => $customer->user_id, 'status' => $this->overDueFlag]) . '" data-height="350px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm" title="View Invoices"><i class="fa fa-eye"></i></a>';
-                        
+
                         return $act;
                 })
                 ->filter(function ($query) use ($request) {
@@ -4329,13 +4501,13 @@ class DataRenderer implements DataProviderInterface
                 })
                 ->make(true);
     }
-    
+
     /**
-     * List Doa Levels  
-     * 
+     * List Doa Levels
+     *
      * @param Request $request
      * @param mixed $doa
-     * @return mixed 
+     * @return mixed
      */
     function getDoaLevelsList($request, $doa)
     {
@@ -4376,19 +4548,19 @@ class DataRenderer implements DataProviderInterface
                 });
               $rolesName = implode(',', array_unique($roles->toArray()));
                 return rtrim($rolesName,', ');
-            })                        
+            })
             ->addColumn(
                 'is_active',
                 function ($doa) {
                     return ($doa->is_active == '0')?'<div class="btn-group "> <label class="badge badge-warning current-status">In Active</label> </div></b>':'<div class="btn-group "> <label class="badge badge-success current-status">Active</label> </div></b>';
-            })   
+            })
             ->addColumn(
                 'action',
                 function ($doa) {
                     $action = '<a  data-toggle="modal" data-target="#editDoaLevelFrame" data-url ="' . route('edit_doa_level', ['doa_level_id' => $doa->doa_level_id]) . '" data-height="350px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm" title="Edit Level"><i class="fa fa-edit"></i></a>';
-                    
+
                     //add_sub_program
-                
+
                     if($doa->is_active){
                         return $action.'<a title="In Active" href="'.route('change_doa_status', [ 'doa_level_id'=> $doa->doa_level_id , 'is_active'=>0 ]).'"  class="btn btn-action-btn btn-sm doa_status "><i class="fa fa-eye" aria-hidden="true"></i></a>';
                     }else{
@@ -4401,19 +4573,19 @@ class DataRenderer implements DataProviderInterface
                         $search_keyword = trim($request->get('search_keyword'));
                         $query->where('doa_level.level_name', 'like',"%$search_keyword%")
                         ->orWhere('doa_level.level_code', 'like',"%$search_keyword%")
-                        ;                                    
+                        ;
                     });
                 }
             })
             ->make(true);
     }
-    
-    
-    
-    
+
+
+
+
     /**
-     * bank list 
-     * 
+     * bank list
+     *
      * @param type $request
      * @param type $bank
      * @return type mixed
@@ -4436,10 +4608,10 @@ class DataRenderer implements DataProviderInterface
                             if($bank->is_active){
                               $act .= '    <input type="checkbox"  ' . $checked . ' data-rel = "' . \Crypt::encrypt($bank->bank_account_id) . '"  class="make_default" name="add"><label for="add">Default</label> ';
                             }
-                          
+
                             if (Helpers::checkPermission('add_bank_account')) {
-                                $act .= '<a data-toggle="modal"  data-height="550px" 
-                           data-width="100%" 
+                                $act .= '<a data-toggle="modal"  data-height="550px"
+                           data-width="100%"
                            data-target="#add_bank_account"
                            data-url="' . route('add_bank_account', ['bank_account_id' => $bank->bank_account_id]) . '"  data-placement="top" class="btn btn-action-btn btn-sm" title="Edit Bank Account"><i class="fa fa-edit"></i></a>';
                             }
@@ -4456,8 +4628,8 @@ class DataRenderer implements DataProviderInterface
                         })
                         ->make(true);
     }
-    
-    
+
+
     function getColenderList($request, $data)
     {
         return DataTables::of($data)
@@ -4496,17 +4668,17 @@ class DataRenderer implements DataProviderInterface
                         ->editColumn(
                                 'status',
                                 function ($user) {
-                            
-                          
+
+
                             if ($user->is_active) {
                                 return '<div class="btn-group ">
                                              <label class="badge badge-success current-status">Active</label>
-                                             
+
                                           </div></b>';
                             } else {
                                 return '<div class="btn-group ">
                                              <label class="badge badge-warning current-status">In Active</label>
-                                             
+
                                           </div></b>';
                             }
                         })
@@ -4515,12 +4687,12 @@ class DataRenderer implements DataProviderInterface
                                 function ($data) {
                             $act = '';
                              if (Helpers::checkPermission('add_co_lender')) {
-                                $act .= '<a data-toggle="modal"  data-height="550px" 
-                           data-width="100%" 
+                                $act .= '<a data-toggle="modal"  data-height="550px"
+                           data-width="100%"
                            data-target="#addcolenders"
                            data-url="' . route('add_co_lender', ['co_lender_id' => $data->co_lender_id]) . '"  data-placement="top" class="btn btn-action-btn btn-sm" title="Edit Co-lender"><i class="fa fa-edit"></i></a>';
                             }
-                            
+
                             return $act;
                         })
                         ->filter(function ($query) use ($request) {
@@ -4534,11 +4706,11 @@ class DataRenderer implements DataProviderInterface
                             }
                         })
                         ->make(true);
-    }    
-    
+    }
+
     /**
      * get disbursal list
-     * 
+     *
      * @param object $request
      * @param object $data
      * @return mixed
@@ -4593,13 +4765,13 @@ class DataRenderer implements DataProviderInterface
                         ->addColumn(
                                 'action',
                                 function ($data) {
-                            $act = '<a data-toggle="modal"  data-height="550px" 
-                            data-width="100%" 
+                            $act = '<a data-toggle="modal"  data-height="550px"
+                            data-width="100%"
                             data-target="#viewInterestAccrual"
                             data-url="' . route('view_interest_accrual', ['disbursal_id' => $data->disbursal_id]) . '"  data-placement="top" class="btn btn-action-btn btn-sm" title="View Interest Accrual"><i class="fa fa-eye"></i></a>';
 
                             return $act;
-                        })                        
+                        })
                         ->filter(function ($query) use ($request) {
                             if ($request->get('search_keyword') != '') {
                                 $query->where(function ($query) use ($request) {
@@ -4629,7 +4801,7 @@ class DataRenderer implements DataProviderInterface
     {
         return DataTables::of($data)
                 ->rawColumns(['is_active', 'action'])
-                
+
                 ->addColumn(
                     'tax_id',
                     function ($data) {
@@ -4641,12 +4813,12 @@ class DataRenderer implements DataProviderInterface
                     return $data->tax_value."%";
                 })
                 ->addColumn(
-                'tax_from', 
+                'tax_from',
                 function ($data) {
                     return ($data->tax_from) ? date('d-M-Y', strtotime($data->tax_from)) : '---';
                 })
                 ->addColumn(
-                'tax_to', 
+                'tax_to',
                 function ($data) {
                     return ($data->tax_to) ? date('d-M-Y', strtotime($data->tax_to)) : '---';
                 })
@@ -4671,12 +4843,84 @@ class DataRenderer implements DataProviderInterface
                 ->make(true);
     }
 
+
+    // Borrower Limit
+    public function getAllLimit(Request $request, $data)
+    {
+        return DataTables::of($data)
+                ->rawColumns(['is_active', 'action'])
+                ->addColumn(
+                    'limit_id',
+                    function ($data) {
+                        return $data->limit_id;
+                })
+                ->addColumn(
+                    'single_limit',
+                    function ($data) {
+                    return $data->single_limit;
+                })
+                ->addColumn(
+                    'multiple_limit', 
+                    function ($data) {
+                        return $data->multiple_limit;
+                })
+                ->addColumn(
+                'start_date', 
+                function ($data) {
+                    return ($data->start_date)?date('d-M-Y',strtotime($data->start_date)):'---';
+                })
+                ->addColumn(
+                'end_date', 
+                function ($data) {
+                    return ($data->end_date)?date('d-M-Y',strtotime($data->end_date)):'---';
+                })
+                ->addColumn(
+                    'is_active',
+                    function ($data) {
+                        $startDate = Carbon::parse($data->start_date);
+                        $todayDate = Carbon::now();
+                        if ($startDate->gte($todayDate)) { 
+                            $futureDate = true;
+                        }else{
+                            $futureDate = false;
+                        }
+                        
+                        $end_date = $data->end_date; 
+                        $act = $data->is_active;
+                        $edit='';
+                        //if(!empty($end_date) && strtotime($end_date) < strtotime(Carbon::now()->format('Y-m-d')))
+                            //$edit='';
+                        if ($futureDate && $act == 1)
+                            $edit = '<a class="btn btn-action-btn btn-sm" data-toggle="modal" data-target="#editBorrowerLimitFrame" title="Edit Limit" data-url ="'.route('edit_borrower_limit', ['limit_id' => $data->limit_id]).'" data-height="310px" data-width="100%" data-placement="top"><i class="fa fa-edit"></a>';
+                        if ($futureDate && $act == 1){
+                            $status = '<div class="btn-group"><label class="badge badge-warning pt-2 pl-3 pr-3 current-status" style="color: black;font-size: 11px;margin: 4px;">Pending </label> &nbsp;'. $edit.'</div>';
+                        }else if($futureDate == false && $act == 1){
+                            $status = '<div class="btn-group"><label class="badge badge-success pt-2 pl-3 pr-3 current-status">Active</div>';
+                        }else{
+                            $status = '<div class="btn-group"><label class="badge badge-danger pt-2 current-status">Limit-Expired</div>';
+                        }
+                        //$status = '<div class="btn-group"><label class="badge badge-'.(($futureDate && $act==1) ?'warning pt-2 pl-3 pr-3': 'success pt-2 pl-3 pr-3'($futureDate == false && $act==1)?'success pt-2 pl-3 pr-3' : 'danger pt-2').' current-status">'.($act==1 ? 'Active' : 'Limit-Expired').'&nbsp; &nbsp;</label> &nbsp;'. $edit.'</div>';
+                        return $status;
+                    }
+                )
+                ->filter(function ($query) use ($request) {
+                    if ($request->get('search_keyword') != '') {
+                        $query->where(function ($query) use ($request) {
+                            $search_keyword = trim($request->get('search_keyword'));
+                            $query->where('single_limit', 'like',"%$search_keyword%")
+                            ->orWhere('multiple_limit', 'like', "%$search_keyword%");
+                        });
+                    }
+                })
+                ->make(true);
+    }
+
     // Segment
     public function getSegmentLists(Request $request, $data)
     {
         return DataTables::of($data)
                 ->rawColumns(['is_active', 'action'])
-                
+
                 ->addColumn(
                     'id',
                     function ($data) {
@@ -4712,7 +4956,7 @@ class DataRenderer implements DataProviderInterface
     {
         return DataTables::of($data)
                 ->rawColumns(['is_active', 'action'])
-                
+
                 ->addColumn(
                     'id',
                     function ($data) {
@@ -4763,7 +5007,6 @@ class DataRenderer implements DataProviderInterface
             ->addColumn(
                 'action',
                 function ($data) use ($request) {
-
                     $checked = ($data->is_default == 1) ? 'checked' : null;
                     $act = '';
 
@@ -4772,8 +5015,8 @@ class DataRenderer implements DataProviderInterface
                     }*/
 
                     if (Helpers::checkPermission('edit_addr') && $request->baid != $data->biz_addr_id) {
-                        $act .= '<a data-toggle="modal"  data-height="450px" 
-                            data-width="100%" 
+                        $act .= '<a data-toggle="modal"  data-height="450px"
+                            data-width="100%"
                             data-target="#editAddressFrame"
                             data-url="' . route('edit_addr', ['biz_addr_id' => $data->biz_addr_id, 'user_id' => $request->get('user_id')]) . '"  data-placement="top" class="btn btn-action-btn btn-sm" title="Edit Address Detail"><i class="fa fa-edit"></i></a>';
                     }
@@ -4805,6 +5048,7 @@ class DataRenderer implements DataProviderInterface
                     if (Helpers::checkPermission('chng_fi_status') && $data->rcu_status == 0 && $data->is_active == 1) {
                         $act .= '<a title="Change FI Status" href="'.route('chng_fi_status', ['user_id' => $data->Customer_id, 'biz_addr_id' => $data->biz_addr_id, 'status'=> $data->rcu_status]).'" class="btn btn-action-btn btn-sm"><i class="fa fa-thumbs-up" aria-hidden="true"></i></a>';
                     }
+                    
                     if ($data->rcu_status) {
                         return '<span class="badge badge-success">Approved</span>&nbsp;'.$act;
                     } else {
@@ -4812,7 +5056,7 @@ class DataRenderer implements DataProviderInterface
                     }
                 }
             )
-            
+
             ->filter(function ($query) use ($request) {
                 if ($request->get('search_keyword') != '') {
                     $query->where(function ($query) use ($request) {
@@ -4827,7 +5071,7 @@ class DataRenderer implements DataProviderInterface
 
     /**
      * get soa list
-     * 
+     *
      * @param object $request
      * @param object $data
      * @return mixed
@@ -4888,6 +5132,21 @@ class DataRenderer implements DataProviderInterface
                 'trans_type',
                 function ($trans) {
                     return $trans->transaction->transname;
+                }
+            )
+            ->editColumn(
+                'tran_id',
+                function ($trans) {
+                    if(isset($trans->transaction)){
+                        if($trans->transaction->trans_type == 16 && $trans->transaction->entry_type == 0){
+                            return (isset($trans->transaction->invoiceDisbursed->disbursal->tran_id)) ? $trans->transaction->invoiceDisbursed->disbursal->tran_id : '';
+                        }elseif($trans->transaction->entry_type == 1 && !is_null($trans->transaction->payment_id)){
+                            return $trans->transaction->payment->transactionNo;
+                        }elseif($trans->transaction->trans_type == 32 && $trans->transaction->entry_type == 0 ){
+                            return $trans->transaction->refundTrans->refundReq->tran_no;
+                        }
+                    }
+                    
                 }
             )
             ->editColumn(
@@ -5007,6 +5266,21 @@ class DataRenderer implements DataProviderInterface
                 }
             )
             ->editColumn(
+                'tran_id',
+                function ($trans) {
+                    if(isset($trans->transaction)){
+                        if($trans->transaction->trans_type == 16 && $trans->transaction->entry_type == 0){
+                            return (isset($trans->transaction->invoiceDisbursed->disbursal->tran_id)) ? $trans->transaction->invoiceDisbursed->disbursal->tran_id : '';
+                        }elseif($trans->transaction->entry_type == 1 && !is_null($trans->transaction->payment_id)){
+                            return $trans->transaction->payment->transactionNo;
+                        }elseif($trans->transaction->trans_type == 32 && $trans->transaction->entry_type == 0 ){
+                            return $trans->transaction->refundTrans->refundReq->tran_no;
+                        }
+                    }
+                    
+                }
+            )
+            ->editColumn(
                 'currency',
                 function ($trans) {
                     return $trans->currency;
@@ -5059,7 +5333,7 @@ class DataRenderer implements DataProviderInterface
 
     /**
      * get Colender soa list
-     * 
+     *
      * @param object $request
      * @param object $data
      * @return mixed
@@ -5093,7 +5367,8 @@ class DataRenderer implements DataProviderInterface
             return $trans->batchNo;
         })
         ->addColumn('narration',function($trans){
-            return "<b>".$trans->narration."<b>";
+            $trans->narration_calculate = $this->colender_share;
+            return "<b>".$trans->narration_calculate."<b>";
         })
         ->addColumn('virtual_acc_id', function ($trans) {
             return $trans->virtual_acc_id;
@@ -5160,42 +5435,16 @@ class DataRenderer implements DataProviderInterface
             return $data;
         })
         ->filter(function ($query) use ($request) {
-            if($request->get('from_date')!= '' && $request->get('to_date')!=''){
-                $query->where(function ($query) use ($request) {
-                    $from_date = Carbon::createFromFormat('d/m/Y', $request->get('from_date'))->format('Y-m-d 00:00:00');
-                    $to_date = Carbon::createFromFormat('d/m/Y', $request->get('to_date'))->format('Y-m-d 23:59:59');
-                    $query->WhereBetween('sys_created_at', [$from_date, $to_date]);
-                });
-            }
-            if($request->has('trans_entry_type')){
-                if($request->trans_entry_type != ''){
-                    $trans_entry_type = explode('_',$request->trans_entry_type);
-                    $trans_type = $trans_entry_type[0];
-                    $entry_type = $trans_entry_type[1];
-                    if($trans_type){
-                        $query->where('trans_type',$trans_type);
-                    }
-                    if($entry_type != ''){
-                        $query->where('entry_type',$entry_type);
-                    }
-                }
-            }
-            if($request->get('user_id')!= ''){
-                $query->where(function ($query) use ($request) {
-                    $user_id = trim($request->get('user_id'));
-                    $query->where('transactions.user_id', '=', "$user_id");
-                });
-            }
-        })
-        ->make(true);
+            })
+            ->make(true);
     }
-    
+
     // Equipment
     public function getEquipments(Request $request, $data)
     {
         return DataTables::of($data)
                 ->rawColumns(['is_active', 'action'])
-                
+
                 ->addColumn(
                     'id',
                     function ($data) {
@@ -5227,7 +5476,7 @@ class DataRenderer implements DataProviderInterface
     }
 
     /**
-     * 
+     *
      * get all lms customer list
      */
     public function lmsGetRefundCustomers(Request $request, $data)
@@ -5255,7 +5504,7 @@ class DataRenderer implements DataProviderInterface
                             return (isset($data->bank_details->acc_name)) ? $data->bank_details->acc_name : '';
                         }
                     }
-                )     
+                )
                 ->editColumn(
                     'ben_bank_name',
                         function ($data) {
@@ -5264,7 +5513,7 @@ class DataRenderer implements DataProviderInterface
                         } else {
                             return (isset($data->bank_details->bank->bank_name)) ? $data->bank_details->bank->bank_name : '';
                         }
-                        
+
                     }
                 )
                 ->editColumn(
@@ -5276,7 +5525,7 @@ class DataRenderer implements DataProviderInterface
                             $ifsc_code = (isset($data->bank_details->ifsc_code)) ? $data->bank_details->ifsc_code : '';
                         }
                         return $ifsc_code;
-                    
+
                 })
                 ->editColumn(
                     'ben_account_no',
@@ -5287,14 +5536,14 @@ class DataRenderer implements DataProviderInterface
                             $benAcc = (isset($data->bank_details->acc_no)) ? $data->bank_details->acc_no : '';
                         }
                         return $benAcc;
-                    
+
                 })
                 ->editColumn(
                     'surplus_amount',
                     function ($data) {
                         return $data->surplus_amount;
 
-                })                      
+                })
                 ->addColumn(
                     'status',
                     function ($data) {
@@ -5321,7 +5570,7 @@ class DataRenderer implements DataProviderInterface
 
     /**
      * get Payment Advice list
-     * 
+     *
      * @param object $request
      * @param object $data
      * @return mixed
@@ -5334,7 +5583,7 @@ class DataRenderer implements DataProviderInterface
             ->addColumn('customer_id',function($trans){
                 $data = '';
                 if($trans->lmsUser->customer_id){
-                    $data = $trans->lmsUser->customer_id; 
+                    $data = $trans->lmsUser->customer_id;
                 }
                 return $data;
             })
@@ -5383,14 +5632,14 @@ class DataRenderer implements DataProviderInterface
                 if($request->get('search_keyword')!= ''){
                     $query->whereHas('lmsUser',function ($query) use ($request) {
                         $search_keyword = trim($request->get('search_keyword'));
-                        $query->where('customer_id', 'like', "%$search_keyword%");                       
+                        $query->where('customer_id', 'like', "%$search_keyword%");
                     });
                 }
             })
             ->make(true);
     }
 
-    /*      
+    /*
      * Get application list for colenders
      */
     public function getColenderAppList(Request $request, $app)
@@ -5403,74 +5652,74 @@ class DataRenderer implements DataProviderInterface
                 })
                 ->addColumn(
                     'biz_entity_name',
-                    function ($app) {                        
+                    function ($app) {
                         return $app->biz_entity_name ? $app->biz_entity_name : '';
                 })
                 ->addColumn(
                     'user_name',
-                    function ($app) {                        
+                    function ($app) {
                         return $app->f_name.' '.$app->m_name.' '.$app->l_name;
                 })
                 ->addColumn(
                     'user_email',
-                    function ($app) {                        
+                    function ($app) {
                         return $app->email;
                 })
                 ->addColumn(
                     'user_phone',
-                    function ($app) {                        
+                    function ($app) {
                         return $app->mobile_no;
                 })
                 ->addColumn(
                     'assoc_anchor',
-                    function ($app) {                        
+                    function ($app) {
                      if($app->anchor_id){
                         //$userInfo=User::getUserByAnchorId((int)$app->anchor_id);
-                        //$achorName= ($userInfo)? ucwords($userInfo->f_name.' '.$userInfo->l_name): 'NA';                        
+                        //$achorName= ($userInfo)? ucwords($userInfo->f_name.' '.$userInfo->l_name): 'NA';
                         $achorName = Helpers::getAnchorsByUserId($app->user_id);
                     }else{
-                      $achorName='';  
-                    }                    
+                      $achorName='';
+                    }
                     return $achorName;
                 })
                 ->addColumn(
                     'applied_loan_amount',
                     function ($app) {
                     return $app->loan_amt ? number_format($app->loan_amt) : '';
-                })                
+                })
                 ->addColumn(
                     'created_at',
-                    function ($app) {                    
+                    function ($app) {
                     return $app->created_at ? date('d/m/Y', strtotime($app->created_at)) : '';
                 })
                 ->addColumn(
                     'status',
                     function ($app) {
                     $status = $app->colender->co_lender_status;
-                    $soaBtn = '<a href="'. route('view_colander_soa', ['biz_id' => $app->biz_id, 'app_id' => $app->app_id, 'user_id' => $app->user_id]) .'" class="badge badge-success">View SOA</a>';                    
+                    $soaBtn = '<a href="'. route('view_colander_soa', ['biz_id' => $app->biz_id, 'app_id' => $app->app_id, 'user_id' => $app->user_id]) .'" class="badge badge-success">View SOA</a>';
                     return '<label class="badge '.(($status == 0)? "badge-primary":(($status == 1)? "badge-success": "badge-warning")).'">'.(($status == 0)? "Pending":(($status == 1)? "Accepted": "Rejected")).'</label> &nbsp; ' . $soaBtn;
 
                 })
                 ->filter(function ($query) use ($request) {
-                    if ($request->get('search_keyword') != '') {                        
+                    if ($request->get('search_keyword') != '') {
                         $query->where(function ($query) use ($request) {
                             $search_keyword = trim($request->get('search_keyword'));
                             $query->where('app.app_id', 'like',"%$search_keyword%")
                             ->orWhere('biz.biz_entity_name', 'like', "%$search_keyword%");
-                        });                        
+                        });
                     }
-                    if ($request->get('is_status') != '') {                        
+                    if ($request->get('is_status') != '') {
                         $query->whereHas('colender', function($query1) use ($request) {
                         $is_status = trim($request->get('is_status'));
                             $query1->where('co_lender_status', $is_status);
-                        });                        
+                        });
                     }
                 })
                 ->make(true);
     }
 
     /*
-     * 
+     *
      * get all lms customer list
      */
     public function lmsColenderCustomers(Request $request, $customer) {
@@ -5480,7 +5729,7 @@ class DataRenderer implements DataProviderInterface
                 ->editColumn('app_id', function ($customer) {
                     $link = route('colender_view_offer', ['biz_id' => $customer->getBusinessId->biz_id ?? '', 'app_id' => $customer->app_id]);
                         return "<a id=\"app-id-" . $customer->app_id . "\" href=\"" . $link . "\" title=\"View Offer\" rel=\"tooltip\">" . \Helpers::formatIdWithPrefix($customer->app_id, 'APP')  . "</a> ";
-                }) 
+                })
                 ->addColumn('customer_id', function ($customer) {
                         $link = $customer->customer_id;
                         return "<a id=\"" . $customer->user_id . "\" href=\"".route('lms_get_customer_applications', ['user_id' => $customer->user_id,'app_id' => $customer->app_id])."\" rel=\"tooltip\"   >$link</a> ";
@@ -5488,7 +5737,7 @@ class DataRenderer implements DataProviderInterface
                 })
                 ->addColumn('virtual_acc_id', function ($customer) {
                         return $customer->virtual_acc_id;
-                })     
+                })
                 ->editColumn('customer_name', function ($customer) {
                         $full_name = $customer->user->f_name.' '.$customer->user->l_name;
                         $email = $customer->user->email;
@@ -5497,7 +5746,7 @@ class DataRenderer implements DataProviderInterface
                         $data .= $email ? '<br><span><b>Email:&nbsp;</b>'.$email.'</span>' : '';
                         return $data;
                 })
-                ->editColumn('limit', function ($customer) {                        
+                ->editColumn('limit', function ($customer) {
                         $this->totalLimit = 0;
                         $appPrgmLimit = AppProgramLimit::getProductLimit($customer->app_id, 1);
                         foreach ($appPrgmLimit as $value) {
@@ -5505,12 +5754,12 @@ class DataRenderer implements DataProviderInterface
                         }
                         return '<label><i class="fa fa-inr">'.number_format($this->totalLimit).'</i></label>';
                 })
-                ->editColumn('consume_limit',  function ($customer) {                        
+                ->editColumn('consume_limit',  function ($customer) {
                         $this->totalCunsumeLimit = 0;
-                        $appPrgmLimit = AppProgramLimit::getUtilizeLimit($customer->app_id, 1);                        
+                        $appPrgmLimit = AppProgramLimit::getUtilizeLimit($customer->app_id, 1);
                         foreach ($appPrgmLimit as $value) {
                             $this->totalCunsumeLimit += $value->utilize_limit;
-                        }                      
+                        }
                         return '<label><i class="fa fa-inr">'.number_format($this->totalCunsumeLimit).'</i></label>';
                 })
                 ->editColumn('available_limit', function ($customer) {
@@ -5552,7 +5801,6 @@ class DataRenderer implements DataProviderInterface
 
     //Base Rate
     public function getBaseRateList(Request $request, $baserates) {
-
         return DataTables::of($baserates)
                         ->rawColumns(['is_active','action'])
                         ->addColumn(
@@ -5602,37 +5850,97 @@ class DataRenderer implements DataProviderInterface
                         ->make(true);
     }
 
+    //Lending Rate
+    public function getLendingRateList(Request $request, $lendingrates) {
+        return DataTables::of($lendingrates)
+                        ->rawColumns(['status', 'action'])
+                        ->addColumn('lending_rate', function ($lendingrates) {
+                            return $lendingrates->lending_rate;
+                        })
+                        ->addColumn('start_date', function ($lendingrates) {
+                            return ($lendingrates->start_date) ? date('d-M-Y', strtotime($lendingrates->start_date)) : '---';
+                        })
+                        ->addColumn('end_date', function ($lendingrates) {
+                            return ($lendingrates->end_date) ? date('d-M-Y', strtotime($lendingrates->end_date)) : '---';
+                        })
+                        ->addColumn('created_by', function ($lendingrates) {
+                            return $lendingrates->userDetail->f_name . ' ' . $lendingrates->userDetail->l_name;
+                        })
+                        ->addColumn('status', function ($lendingrates) {
+                            $startDate = $lendingrates->start_date;
+                            $endDate = $lendingrates->end_date;
+                            $currDate = Carbon::parse(date('d-m-Y'));
+
+                            if($startDate && !$endDate && $currDate < $startDate || (!$endDate && !$lendingrates->status)) {
+                                $act = 0;   
+                            }else if (($startDate <= $currDate && $currDate <= $endDate && $lendingrates->status) || (!$endDate && $currDate >= $startDate && $lendingrates->status)) {
+                                $act = 1;
+                            }else {
+                                $act = 2;
+                            }
+
+                            // $act = $lendingrates->status;
+                            switch ($act) {
+                                case 0:
+                                    $class = 'warning';
+                                    $text = 'Pending';
+                                    break;
+                                case 1:
+                                    $class = 'success';
+                                    $text = 'Active';
+                                    break;
+                                case 2:
+                                    $class = 'danger';
+                                    $text = 'Expired';
+                                    break;
+                            }
+                            $status = '<div class="btn-group"><label class="badge badge-' . $class . ' current-status">' . $text . '&nbsp; &nbsp;</label></div>';
+                            return $status;
+                        })
+                        ->addColumn('action', function ($lendingrates) {
+                            if ($lendingrates->status == 0) {
+                                $edit = '';
+                                if(Helpers::checkPermission('lending_rate_affect_users')){
+                                    $edit = '<a class="btn btn-action-btn btn-sm" title="Lending Rate Affect Users" href="' . route('lending_rate_affect_users', ['id' => $lendingrates->id]) . '"><i class="fa fa-eye"></a>';
+                                }    
+                                return $edit;
+                            }
+                        })
+                        ->make(true);
+    }
+
+
         public function getTransTypeListByDataProvider(Request $request, $dataRecords)
         {
-            
+
             return DataTables::of($dataRecords)
                     ->editColumn(
                         'trans_type',
                         function ($dataRecords) {
                         return $dataRecords->trans_type;
-                    }) 
+                    })
                     ->make(true);
         }
 
         public function getJournalByDataProvider(Request $request, $dataRecords)
         {
-            
+
             return DataTables::of($dataRecords)
                     ->editColumn(
                         'name',
                         function ($dataRecords) {
                         return $dataRecords->name;
-                    }) 
+                    })
                     ->editColumn(
                         'journal_type',
                         function ($dataRecords) {
                         return $dataRecords->journal_type;
-                    }) 
+                    })
                     ->editColumn(
                         'is_active',
                         function ($dataRecords) {
                         return ($dataRecords->is_active==1) ? 'Yes' : 'No';
-                    }) 
+                    })
                     ->addColumn(
                         'action',
                         function ($dataRecords) {
@@ -5644,23 +5952,23 @@ class DataRenderer implements DataProviderInterface
 
         public function getAccountByDataProvider(Request $request, $dataRecords)
         {
-            
+
             return DataTables::of($dataRecords)
                     ->editColumn(
                         'account_code',
                         function ($dataRecords) {
                         return $dataRecords->account_code;
-                    }) 
+                    })
                     ->editColumn(
                         'account_name',
                         function ($dataRecords) {
                         return $dataRecords->account_name;
-                    }) 
+                    })
                     ->editColumn(
                         'is_active',
                         function ($dataRecords) {
                         return ($dataRecords->is_active==1) ? 'Yes' : 'No';
-                    }) 
+                    })
                     ->addColumn(
                         'action',
                         function ($dataRecords) {
@@ -5672,7 +5980,7 @@ class DataRenderer implements DataProviderInterface
 
         public function getVariableByDataProvider(Request $request, $dataRecords)
         {
-            
+
             return DataTables::of($dataRecords)
                     ->editColumn(
                         'name',
@@ -5684,7 +5992,7 @@ class DataRenderer implements DataProviderInterface
 
         public function getJeConfigByDataProvider(Request $request, $dataRecords)
         {
-            
+
             return DataTables::of($dataRecords)
                     ->editColumn(
                         'journal_name',
@@ -5718,7 +6026,7 @@ class DataRenderer implements DataProviderInterface
 
         public function getJiConfigByDataProvider(Request $request, $dataRecords)
         {
-            
+
             return DataTables::of($dataRecords)
                     ->editColumn(
                         'account_name',
@@ -5770,12 +6078,12 @@ class DataRenderer implements DataProviderInterface
                         'amount',
                         function ($dataRecords) {
                         return $dataRecords->amount;
-                    }) 
+                    })
                     ->editColumn(
                         'amount_type',
                         function ($dataRecords) {
                         return $dataRecords->entry_type;
-                    }) 
+                    })
                     ->editColumn(
                         'reference_no',
                         function ($dataRecords) {
@@ -5785,32 +6093,32 @@ class DataRenderer implements DataProviderInterface
                         'batch_no',
                         function ($dataRecords) {
                         return $dataRecords->batch_no;
-                    })   
+                    })
                     ->editColumn(
                         'voucher_type',
                         function ($dataRecords) {
                         return $dataRecords->voucher_type;
-                    })     
+                    })
                     ->editColumn(
                         'voucher_code',
                         function ($dataRecords) {
                         return sprintf('%04d', $dataRecords->voucher_no);
-                    })      
+                    })
                     ->editColumn(
                         'mode_of_pay',
                         function ($dataRecords) {
                         return $dataRecords->mode_of_pay;
-                    })        
+                    })
                     ->editColumn(
                         'trans_type',
                         function ($dataRecords) {
                         return $dataRecords->trans_type;
-                    })       
+                    })
                     ->editColumn(
                         'narration',
                         function ($dataRecords) {
                         return $dataRecords->narration;
-                    }) 
+                    })
                     ->make(true);
         }
 
@@ -5840,13 +6148,13 @@ class DataRenderer implements DataProviderInterface
                         'records_in_batch',
                         function ($dataRecords) {
                         return $dataRecords->record_cnt;
-                    }) 
+                    })
                     ->editColumn(
                         'action',
                         function ($dataRecords) {
                         $btn = '<a class="btn btn-success btn-sm" href="'.route('export_txns', ['batch_no' => $dataRecords->batch_no]).'">Download Report</a>';
                         return $btn;
-                    }) 
+                    })
                     ->make(true);
         }
 
@@ -5884,7 +6192,7 @@ class DataRenderer implements DataProviderInterface
                         'amount',
                         function ($dataRecords) {
                         return "₹ ".number_format($dataRecords->amount,2);
-                    }) 
+                    })
                     ->editColumn(
                         'trans_type',
                         function ($dataRecords) {
@@ -5895,11 +6203,11 @@ class DataRenderer implements DataProviderInterface
                             } else if($dataRecords->is_manual == 1) {
                                 $tType = '<br><span><b>Manual Payment</b></span>';
                             }
-
-                            return $dataRecords->paymentname.$tType;
+                            
+                            return $dataRecords->paymentname??null.$tType;
                     }) 
                     ->addColumn(
-                        'date_of_payment', 
+                        'date_of_payment',
                         function ($dataRecords) {
                         return Carbon::parse($dataRecords->date_of_payment)->format('d-m-Y');
                     })
@@ -5910,7 +6218,7 @@ class DataRenderer implements DataProviderInterface
                         $dateofPay = \Helpers::convertDateTimeFormat($dataRecords->created_at, $fromDateFormat='Y-m-d H:i:s', $toDateFormat='d-m-Y h:i A');
                         $updated_by = "$createdByName<br />$dateofPay";
                         return $updated_by;
-                    }) 
+                    })
                     ->editColumn(
                         'action',
                         function ($dataRecords) {
@@ -5920,7 +6228,7 @@ class DataRenderer implements DataProviderInterface
                             $paymentAppor = PaymentApportionment::checkApportionmentHold($dataRecords->user_id);
                             if ($dataRecords->is_settled == Payment::PAYMENT_SETTLED) {
                                 if(Helpers::checkPermission('undo_apportionment')){
-                                    if($dataRecords->is_settled == Payment::PAYMENT_SETTLED && (($dataRecords->action_type == '1' && $dataRecords->trans_type == '17') || ($dataRecords->action_type == '3' && $dataRecords->trans_type == '7') ) && $dataRecords->validRevertPayment){
+                                    if($dataRecords->is_settled == Payment::PAYMENT_SETTLED && (($dataRecords->action_type == '1' && $dataRecords->trans_type == '17') || ($dataRecords->action_type == '3' && $dataRecords->trans_type == '7') || ($dataRecords->action_type == '5' && $dataRecords->trans_type == '31') ) && $dataRecords->validRevertPayment){
                                         if (!$paymentAppor) {  
                                         $btn .= '<button class="btn btn-action-btn btn-sm"  title="Revert Apportionment" onclick="delete_payment(\''. route('undo_apportionment', ['payment_id' => $dataRecords->payment_id, '_token'=> csrf_token()] ) .'\',this)" ><i class="fa fa-undo"></i></button>';
                                         }else{
@@ -5947,13 +6255,13 @@ class DataRenderer implements DataProviderInterface
                                         $btn .= '<button class="btn btn-action-btn btn-sm"  title="Delete Payment" onclick="delete_payment(\''. route('delete_payment', ['payment_id' => $dataRecords->payment_id, '_token'=> csrf_token()] ) .'\',this)" ><i class="fa fa-trash"></i></button>';
                                     }
 
-                                    if((Auth::user()->user_id == $dataRecords->updated_by || $is_superadmin) && $dataRecords->is_settled == Payment::PAYMENT_SETTLED_PROCESSING && in_array($dataRecords->action_type,[1,3]) && in_array($dataRecords->trans_type, [7,17])){
+                                    if((Auth::user()->user_id == $dataRecords->updated_by || $is_superadmin) && in_array($dataRecords->is_settled, [Payment::PAYMENT_SETTLED_PROCESSING, Payment::PAYMENT_SETTLED_PROCESSED]) && in_array($dataRecords->action_type,[1,3]) && in_array($dataRecords->trans_type, [7,17])){
                                         $btn .= '<button class="btn btn-action-btn btn-sm"  title="Delete Payment" onclick="delete_payment(\''. route('delete_payment', ['payment_id' => $dataRecords->payment_id, '_token'=> csrf_token()] ) .'\',this)" ><i class="fa fa-trash"></i></button>';
                                     }
                                 }
 
                                 if(Helpers::checkPermission('apport_unsettled_view')){
-                                    if($dataRecords->action_type == '1' && in_array($dataRecords->trans_type, [2,17])) {
+                                    if($dataRecords->action_type == '1' && in_array($dataRecords->trans_type, [2,17])){
                                         if($dataRecords->isApportPayValid['isValid']){
                                             if($dataRecords->is_settled == Payment::PAYMENT_SETTLED_PENDING){
                                                 $btn .= "<a title=\"Unsettled Transactions\"  class='btn btn-action-btn btn-sm' href ='".route('apport_unsettled_view',[ 'user_id' => $dataRecords->user_id , 'payment_id' => $dataRecords->payment_id])."'>Unsettled Transactions</a>"; 
@@ -6015,7 +6323,7 @@ class DataRenderer implements DataProviderInterface
                                 }
                             }
                             return $btn;
-                    }) 
+                    })
                     ->make(true);
         }
 
@@ -6025,66 +6333,66 @@ class DataRenderer implements DataProviderInterface
                         'date',
                         function ($dataRecords) {
                         return $dataRecords->date;
-                    }) 
+                    })
                     ->editColumn(
                         'label',
                         function ($dataRecords) {
                         return $dataRecords->label;
-                    }) 
+                    })
                     ->editColumn(
                         'account_name',
                         function ($dataRecords) {
                         return $dataRecords->account_name.'-'.$dataRecords->account_code;
-                    }) 
+                    })
                     ->editColumn(
                         'biz_id',
                         function ($dataRecords) {
                         return $dataRecords->biz_id;
-                    })  
+                    })
                     ->editColumn(
                         'invoice_id',
                         function ($dataRecords) {
                         return $dataRecords->invoice_id;
-                    })   
+                    })
                     ->editColumn(
                         'invoice_no',
                         function ($dataRecords) {
                         return !empty($dataRecords->invoice_id) ? $dataRecords->invoice_id : $dataRecords->trans_id;
-                    }) 
+                    })
                     ->editColumn(
                         'debit_amount',
                         function ($dataRecords) {
                         return $dataRecords->debit_amount;
-                    }) 
+                    })
                     ->editColumn(
                         'credit_amount',
                         function ($dataRecords) {
                         return $dataRecords->credit_amount;
-                    })  
+                    })
                     ->editColumn(
                         'reference',
                         function ($dataRecords) {
                         return $dataRecords->reference;
-                    })   
+                    })
                     ->editColumn(
                         'journals_name',
                         function ($dataRecords) {
                         return $dataRecords->journals_name;
-                    })      
+                    })
                     ->editColumn(
                         'journal_type',
                         function ($dataRecords) {
                         return $dataRecords->journal_type;
-                    })    
+                    })
                     ->editColumn(
                         'full_name',
                         function ($dataRecords) {
                         return $dataRecords->f_name . ' ' . $dataRecords->m_name . ' ' . $dataRecords->l_name;
-                    }) 
+                    })
                     ->make(true);
         }
 
-    
+
     public function getCreateBatchData(Request $request, $data){
         return DataTables::of($data)
         ->rawColumns(['trans_id','action'])
@@ -6106,7 +6414,7 @@ class DataRenderer implements DataProviderInterface
             function ($data) {
                 return date('d-M-Y',strtotime($data->trans_date));
             }
-        )     
+        )
         ->addColumn(
             'invoice_no',
             function ($data) {
@@ -6135,7 +6443,7 @@ class DataRenderer implements DataProviderInterface
                 return '<input type="text"  class="transType'.$data->trans_type.'" transId="trans_id'.$data->trans_id.'" name="settledAmount['.$data->trans_id.']" value="'.($data->amount-$data->settled_amount).'">';
 
             }
-        )     
+        )
         ->filter(function ($query) use ($request) {
 
             if($request->get('from_date')!= '' && $request->get('to_date')!=''){
@@ -6150,11 +6458,11 @@ class DataRenderer implements DataProviderInterface
                     $query->whereIn('user_id',$request->user_ids);
                 });
             //}
-          
-        })                 
-     
+
+        })
+
         ->make(true);
-    } 
+    }
 
     public function getEditBatchData(Request $request, $data){
         return DataTables::of($data)
@@ -6176,7 +6484,7 @@ class DataRenderer implements DataProviderInterface
             function ($data) {
                 return date('d-M-Y',strtotime($data->trans_date));
             }
-        )     
+        )
         ->addColumn(
             'invoice_no',
             function ($data) {
@@ -6205,7 +6513,7 @@ class DataRenderer implements DataProviderInterface
                 return '<input type="text" name="settledAmount['.$data->trans_id.']" value="'.($data->amount-$data->settled_amount).'">';
 
             }
-        )     
+        )
         ->filter(function ($query) use ($request) {
 
            /*  if($request->get('from_date')!= '' && $request->get('to_date')!=''){
@@ -6220,9 +6528,9 @@ class DataRenderer implements DataProviderInterface
                     $query->whereIn('user_id',$request->user_ids);
                 });
             //} */
-          
-        })                 
-     
+
+        })
+
         ->make(true);
     }
     //refund
@@ -6232,12 +6540,12 @@ class DataRenderer implements DataProviderInterface
         ->editColumn(
             'ref_code',
             function ($data) {
-                $result = '<a 
-                data-toggle="modal" 
-                data-target="#lms_view_process_refund" 
+                $result = '<a
+                data-toggle="modal"
+                data-target="#lms_view_process_refund"
                 data-url="'.route('lms_refund_request_view', ['req_id' => $data->refund_req_id, 'view' => 1 ]).'"
-                data-height="400px" 
-                data-width="100%" 
+                data-height="400px"
+                data-width="100%"
                 data-placement="top" title="Process Refund" class="btn btn-action-btn btn-sm">' . $data->ref_code . '</a>';
                 return $result;
             }
@@ -6254,13 +6562,13 @@ class DataRenderer implements DataProviderInterface
                 // return \Helpers::getEntityNameByUserId($data->payment->user_id);  //$data->req_type_name;
                 return $data->payment->getUserName->biz->biz_entity_name;
             }
-        )            
+        )
         ->editColumn(
             'amount',
             function ($data) {
                 return number_format($data->refund_amount,2);
             }
-        )     
+        )
         ->editColumn(
             'created_at',
             function ($data) {
@@ -6301,14 +6609,14 @@ class DataRenderer implements DataProviderInterface
                 $result = '';
                 if (Helpers::checkPermission('refund_udpate_disbursal') && (int)$data->status == (int)config('lms.REQUEST_STATUS.SEND_TO_BANK') ) {
                     $result = '<a  data-toggle="modal" data-target="#invoiceDisbursalTxnUpdate" data-url ="' . route('refund_udpate_disbursal', [
-                    'payment_id' => $data->payment_id,  
+                    'payment_id' => $data->payment_id,
                     'refund_req_batch_id' => $data->refund_req_batch_id,
                     'refund_req_id'=>$data->refund_req_id
                     ]) . '" data-height="350px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm" title="View Invoices"><i class="fa fa-plus-square"></i></a>';
                 }
                 return $result;
             }
-        )  
+        )
         ->filter(function ($query) use ($request) {
             if ($request->get('search_keyword') != '') {
                 $query->where(function ($query) use ($request) {
@@ -6339,12 +6647,12 @@ class DataRenderer implements DataProviderInterface
         ->editColumn(
             'ref_code',
             function ($data) {
-                $result = '<a 
-                data-toggle="modal" 
-                data-target="#lms_view_process_refund" 
+                $result = '<a
+                data-toggle="modal"
+                data-target="#lms_view_process_refund"
                 data-url="'.route('lms_refund_request_view', ['req_id' => $data->refund_req_id, 'view' => 1 ]).'"
-                data-height="400px" 
-                data-width="100%" 
+                data-height="400px"
+                data-width="100%"
                 data-placement="top" title="Process Refund" class="btn btn-action-btn btn-sm">' . $data->ref_code . '</a>';
                 return $result;
             }
@@ -6361,7 +6669,7 @@ class DataRenderer implements DataProviderInterface
                 // return \Helpers::getEntityNameByUserId($data->payment->user_id);  //$data->req_type_name;
                 return $data->payment->getUserName->biz->biz_entity_name;
             }
-        )            
+        )
         ->editColumn(
             'type',
             function ($data) {
@@ -6373,7 +6681,7 @@ class DataRenderer implements DataProviderInterface
             function ($data) {
                 return number_format($data->refund_amount,2);
             }
-        )     
+        )
         ->editColumn(
             'created_at',
             function ($data) {
@@ -6399,7 +6707,7 @@ class DataRenderer implements DataProviderInterface
                 $from = \Helpers::getReqCurrentAssignee($data->refund_req_id);
                 return $from ? $from->assigned_by .  '<br><small>(' . $from->from_role . ')</small>' : '';
             }
-        )  
+        )
         ->editColumn(
             'status',
             function ($data){
@@ -6425,34 +6733,34 @@ class DataRenderer implements DataProviderInterface
 
     public function getBankInvoiceByDataProvider(Request $request, $dataRecords)
     {
-        
+
         return DataTables::of($dataRecords)
                 ->editColumn(
                     'batch_id',
                     function ($dataRecords) {
                     return $dataRecords->batch_id;
-                }) 
+                })
                 ->editColumn(
                     'total_users',
                     function ($dataRecords) {
                     return $dataRecords->total_users;
-                }) 
+                })
                 ->editColumn(
                     'total_amt',
                     function ($dataRecords) {
                     return "₹ ".number_format($dataRecords->total_amt);
-                }) 
+                })
                 ->editColumn(
                     'created_by_user',
                     function ($dataRecords) {
                     return $dataRecords->created_by_user;
-                }) 
+                })
                 ->editColumn(
                     'created_at',
                     function ($dataRecords) {
-                    //return $dataRecords->created_at->format('j F Y H:i:s A'); 
+                    //return $dataRecords->created_at->format('j F Y H:i:s A');
                     return ($dataRecords->created_at)? date('d-M-Y H:i:s A',strtotime($dataRecords->created_at)) : '---';
-                }) 
+                })
                 ->addColumn(
                     'action',
                     function ($dataRecords) {
@@ -6465,24 +6773,24 @@ class DataRenderer implements DataProviderInterface
 
     public function getBankInvoiceCustomersByDataProvider(Request $request, $dataRecords)
     {
-        
+
         return DataTables::of($dataRecords)
-                ->rawColumns(['bank_detail', 'action']) 
+                ->rawColumns(['bank_detail', 'action'])
                 ->editColumn(
                     'customer_id',
                     function ($dataRecords) {
                     return $dataRecords->customer_id;
-                }) 
+                })
                 ->editColumn(
                     'biz_entity_name',
                     function ($dataRecords) {
                     return $dataRecords->biz_entity_name; // \Helpers::formatIdWithPrefix($dataRecords->app_id, 'APP');
-                }) 
+                })
                 ->editColumn(
                     'ben_name',
                     function ($dataRecords) {
                     return $dataRecords->ben_name;
-                }) 
+                })
                 ->editColumn(
                     'bank_detail',
                     function ($dataRecords) {
@@ -6491,17 +6799,17 @@ class DataRenderer implements DataProviderInterface
                         $account .= $dataRecords->ifsc_code ? '<br><span><b>IFSC:&nbsp;</b>'.$dataRecords->ifsc_code.'</span>' : '';
                         $account .= $dataRecords->acc_no ? '<br><span><b>Acc. #:&nbsp;</b>'.$dataRecords->acc_no.'</span>' : '';
                         return $account;
-                }) 
+                })
                 ->editColumn(
                     'total_amt',
                     function ($dataRecords) {
                     return "₹ ".number_format($dataRecords->total_amt);
-                }) 
+                })
                 ->editColumn(
                     'total_invoice',
                     function ($dataRecords) {
                     return $dataRecords->total_invoice;
-                }) 
+                })
                 ->addColumn(
                     'action',
                     function ($dataRecords) use($request) {
@@ -6514,45 +6822,45 @@ class DataRenderer implements DataProviderInterface
 
     public function getDisburseInvoiceByDataProvider(Request $request, $dataRecords)
     {
-        
+
         return DataTables::of($dataRecords)
-                ->rawColumns([]) 
+                ->rawColumns([])
                 ->editColumn(
                     'app_id',
                     function ($dataRecords) {
                     return \Helpers::formatIdWithPrefix($dataRecords->app_id, 'APP');
-                }) 
+                })
                 ->editColumn(
                     'invoice_no',
                     function ($dataRecords) {
-                    return $dataRecords->invoice_no; 
-                }) 
+                    return $dataRecords->invoice_no;
+                })
                 ->editColumn(
                     'disburse_date',
                     function ($dataRecords) {
                     return $dataRecords->disburse_date;
-                })  
+                })
                 ->editColumn(
                     'inv_due_date',
                     function ($dataRecords) {
                     return $dataRecords->inv_due_date;
-                })               
+                })
                 ->editColumn(
                     'disburse_amount',
                     function ($dataRecords) {
                     return "₹ ".number_format($dataRecords->disburse_amount);
-                })    
+                })
                 ->editColumn(
                     'disburse_type',
                     function ($dataRecords) {
                     return ($dataRecords->disburse_type==1) ? 'Online' : 'Offline';
-                })              
+                })
                 ->make(true);
     }
 
 
     /*
-     * 
+     *
      * get all lms customer list
      */
     public function lmsGetSentToBankInvCustomers(Request $request, $disbursal)
@@ -6583,7 +6891,7 @@ class DataRenderer implements DataProviderInterface
                         }
                         return $benName;
                     }
-                )     
+                )
                 ->editColumn(
                     'bank',
                         function ($disbursal) {
@@ -6604,9 +6912,9 @@ class DataRenderer implements DataProviderInterface
                 })
                 ->editColumn(
                     'total_invoice',
-                    function ($disbursal) {   
+                    function ($disbursal) {
                         return $disbursal->invoice_disbursed->count();
-                }) 
+                })
                 ->editColumn('updated_at', function($disbursal){
                     return \Helpers::convertDateTimeFormat($disbursal->updated_at, 'Y-m-d H:i:s','d-m-Y h:i A');
                 })
@@ -6622,7 +6930,7 @@ class DataRenderer implements DataProviderInterface
                             $act = '<a  data-toggle="modal" data-target="#viewBatchSendToBankInvoice" data-url ="' . route('view_batch_user_invoice', ['user_id' => $disbursal->user_id, 'disbursal_batch_id' => $disbursal->disbursal_batch_id]) . '" data-height="350px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm" title="View Invoices"><i class="fa fa-eye"></i></a>';
                         }
                         if( $chkUser->id!=11 && $disbursal->disburse_type == 2)
-                        {  
+                        {
                             if(Helpers::checkPermission('invoice_udpate_disbursal') ){
                                 $act .= '<a  data-toggle="modal" data-target="#invoiceDisbursalTxnUpdate" data-url ="' . route('invoice_udpate_disbursal', ['user_id' => $disbursal->user_id, 'disbursal_batch_id' => $disbursal->disbursal_batch_id]) . '" data-height="350px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm" title="Update Transaction"><i class="fa fa-plus-square"></i></a>';
                             }
@@ -6631,14 +6939,16 @@ class DataRenderer implements DataProviderInterface
                 })
                 ->filter(function ($query) use ($request) {
                     if ($request->get('customer_code') != '') {
-                        if ($request->has('customer_code')) {
-                            $customer_code = trim($request->get('customer_code'));
-                            $query->whereHas('lms_user', function($query1) use ($customer_code) {
-                                $query1->where('customer_id', 'like',"%$customer_code%");
-                            });
-
-                        }
-                    }
+                        $query->where(function ($query) use ($request) {
+                     $search_keyword = trim($request->get('customer_code'));
+                     $query->orwhereHas('lms_user', function ($q) use ($search_keyword){
+                         $q->where('customer_id', 'like', "%$search_keyword%");
+                     })
+                     ->orwhereHas('disbursal_batch', function ($q) use ($search_keyword){
+                         $q->where('batch_id', 'like', "%$search_keyword%");
+                     });
+                 });
+            }
                     if ($request->get('selected_date') != '') {
                         if ($request->has('selected_date')) {
                             $selected_date = trim($request->get('selected_date'));
@@ -6648,15 +6958,15 @@ class DataRenderer implements DataProviderInterface
 
                         }
                     }
-                    if ($request->get('batch_id') != '') {
-                        if ($request->has('batch_id')) {
-                            $batch_id = trim($request->get('batch_id'));
-                            $query->whereHas('disbursal_batch', function($query1) use ($batch_id) {
-                                $query1->where('disbursal_batch_id', 'like',"%$batch_id%");
-                            });
+                    // if ($request->get('batch_id') != '') {
+                    //     if ($request->has('batch_id')) {
+                    //         $batch_id = trim($request->get('batch_id'));
+                    //         $query->whereHas('disbursal_batch', function($query1) use ($batch_id) {
+                    //             $query1->where('disbursal_batch_id', 'like',"%$batch_id%");
+                    //         });
 
-                        }
-                    }
+                    //     }
+                    // }
                 })
                 ->make(true);
     }
@@ -6677,48 +6987,48 @@ class DataRenderer implements DataProviderInterface
                 function ($data) {
                     return date('d/m/Y', strtotime($data->invoice_date));
                 }
-            ) 
+            )
             ->editColumn(
                 'due_date',
                 function ($data) {
                     return $data->due_date ? date('d/m/Y', strtotime($data->due_date)) : '';
                 }
-            )  
+            )
             ->editColumn('invoice_type',  function ($data) {
                     return ($data->invoice_type == 'C' ? 'Charge' : 'Interest');
                 }
-            )   
+            )
             ->editColumn(
                 'pan_no',
                 function ($data) {
                     return $data->pan_no;
                 }
-            )     
+            )
             ->editColumn(
                 'biz_gst_no',
                 function ($data) {
                     return $data->biz_gst_no;
                 }
-            )     
+            )
             ->editColumn(
                 'reference_no',
                 function ($data) {
                     // return $data->reference_no;
                     return \Helpers::formatIdWithPrefix($data->user_id, 'CUSTID');
                 }
-            )      
+            )
             ->editColumn(
                 'invoice_no',
                 function ($data) {
                     return $data->invoice_no;
                 }
-            )        
+            )
             ->editColumn(
                 'place_of_supply',
                 function ($data) {
                     return $data->place_of_supply;
                 }
-            )      
+            )
             ->editColumn(
                 'action',
                 function ($data) {
@@ -6730,12 +7040,12 @@ class DataRenderer implements DataProviderInterface
                 }
             )
             ->filter(function ($query) use ($request) {
-                   if (!empty($request->get('from_date')) && !empty($request->get('to_date'))) {               
+                   if (!empty($request->get('from_date')) && !empty($request->get('to_date'))) {
                         $query->where(function ($query) use ($request) {
                             $from_date = Carbon::createFromFormat('d/m/Y', $request->get('from_date'))->format('Y-m-d H:i:s');
                             $to_date = Carbon::createFromFormat('d/m/Y', $request->get('to_date'))->format('Y-m-d H:i:s');
                             $query->whereBetween('invoice_date',  [$from_date, $to_date]);
-                        });                        
+                        });
                     }
                     if(!empty($request->get('invoice_no'))){
                         $query->where(function ($query) use ($request) {
@@ -6743,12 +7053,12 @@ class DataRenderer implements DataProviderInterface
                            $query->where('invoice_no', 'like', "%$invoice_no%");
                         });
                     }
-                    
+
                 })
             ->make(true);
     }
-        
-    /*      
+
+    /*
      * Get application list
      */
     public function getRenewalAppList(Request $request, $app)
@@ -6771,20 +7081,20 @@ class DataRenderer implements DataProviderInterface
                             return "<a id='app-id-$app_id' rel='tooltip'>" . \Helpers::formatIdWithPrefix($app_id, 'APP') . "</a>";
                         }
                         */
-                        $link = route('company_details', ['biz_id' => $app->biz_id, 'app_id' => $app_id]);                        
+                        $link = route('company_details', ['biz_id' => $app->biz_id, 'app_id' => $app_id]);
                         return "<a id='app-id-$app_id' href='$link' rel='tooltip'>" . \Helpers::formatIdWithPrefix($app_id, 'APP') . "</a>";
                     }
                 )
                 ->addColumn(
                     'biz_entity_name',
-                    function ($app) {                        
+                    function ($app) {
                         return $app->biz_entity_name ? $app->biz_entity_name : '';
                 })
                 ->addColumn(
                     'name',
-                    function ($app) {                        
+                    function ($app) {
                         if($app->user_type && $app->user_type==1){
-                            $anchorUserType='<small class="aprveAppListBtn">( Supplier )</small>'; 
+                            $anchorUserType='<small class="aprveAppListBtn">( Supplier )</small>';
                         }else if($app->user_type && $app->user_type==2){
                             $anchorUserType='<small class="aprveAppListBtn">( Buyer )</small>';
                         }else{
@@ -6800,33 +7110,33 @@ class DataRenderer implements DataProviderInterface
                         $contact .= $app->mobile_no ? '<br><span><b>Mob:&nbsp;</b>'.$app->mobile_no.'</span>' : '';
                         return $contact;
                     }
-                )               
+                )
                 ->addColumn(
                     'assoc_anchor',
                     function ($app) {
                         //return "<a  data-original-title=\"Edit User\" href=\"#\"  data-placement=\"top\" class=\"CreateUser\" >".$user->email."</a> ";
                     /////return isset($app->assoc_anchor) ? $app->assoc_anchor : '';
-                    
+
                     if($app->anchor_id){
                        //$userInfo = User::getUserByAnchorId($app->anchor_id);
                        //$achorName= $userInfo->f_name . ' ' . $userInfo->l_name;
                         $achorName = Helpers::getAnchorsByUserId($app->user_id);
                     } else {
-                       $achorName='';  
-                    }                    
+                       $achorName='';
+                    }
                     return $achorName;
-                    
-                })            
+
+                })
                 ->addColumn(
                     'assignee',
-                    function ($app) {  
-                        $data = '';                  
+                    function ($app) {
+                        $data = '';
                     //if ($app->to_id){
-                    //    $userInfo = Helpers::getUserInfo($app->to_id);                    
-                    //    $assignName = $userInfo->f_name. ' ' . $userInfo->l_name;  
+                    //    $userInfo = Helpers::getUserInfo($app->to_id);
+                    //    $assignName = $userInfo->f_name. ' ' . $userInfo->l_name;
                     //} else {
-                    //    $assignName=''; 
-                    //} 
+                    //    $assignName='';
+                    //}
                     //return $assignName;
                     $userInfo = Helpers::getAppCurrentAssignee($app->app_id);
                     if($userInfo){
@@ -6854,7 +7164,7 @@ class DataRenderer implements DataProviderInterface
                         return $data;
                         //$fromData = AppAssignment::getOrgFromUser($app->app_id);
                         //return isset($fromData->assigned_by) ? $fromData->assigned_by . '<br><small>(' . $fromData->from_role . ')</small>' : '';
-                })                
+                })
                 ->addColumn(
                     'shared_detail',
                     function ($app) {
@@ -6864,7 +7174,7 @@ class DataRenderer implements DataProviderInterface
                 ->addColumn(
                     'status',
                     function ($app) {
-                    //$app_status = config('inv_common.app_status');                    
+                    //$app_status = config('inv_common.app_status');
                     return $app->status == 1 ? 'Completed' : 'Incomplete';
 
                 })
@@ -6874,23 +7184,23 @@ class DataRenderer implements DataProviderInterface
                         $act = '';
                         $view_only = Helpers::isAccessViewOnly($app->app_id);
                         if ($view_only && $app->renewal_status == 1) {
-                            
+
                             /*
                             if (Helpers::checkPermission('add_app_note')){
                                 $act = $act . '<a title="Add App Note" href="#" data-toggle="modal" data-target="#addCaseNote" data-url="' . route('add_app_note', ['app_id' => $app->app_id, 'biz_id' => $request->get('biz_id')]) . '" data-height="190px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm"><i class="fa fa-file-image-o" aria-hidden="true"></i></a>';
                             }
                             if(Helpers::checkPermission('send_case_confirmBox')){
                                 $currentStage = Helpers::getCurrentWfStage($app->app_id);
-                                $roleData = Helpers::getUserRole();     
+                                $roleData = Helpers::getUserRole();
                                 $hasSupplyChainOffer = Helpers::hasSupplyChainOffer($app->app_id);
-                                if ($currentStage && $currentStage->order_no <= 16 ) {                                                                                                           
+                                if ($currentStage && $currentStage->order_no <= 16 ) {
                                     $moveToBackStageUrl = '&nbsp;<a href="#" title="Move to Back Stage" data-toggle="modal" data-target="#assignCaseFrame" data-url="' . route('send_case_confirmBox', ['user_id' => $app->user_id,'app_id' => $app->app_id, 'biz_id' => $request->get('biz_id'), 'assign_case' => 1]) . '" data-height="320px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm"><i class="fa fa-window-restore" aria-hidden="true"></i></a> ';
                                     if ($currentStage->order_no == 16 && !$hasSupplyChainOffer ) {
                                         if ($app->curr_status_id != config('common.mst_status_id')['DISBURSED']) {
                                             $act = $act . $moveToBackStageUrl;
                                         }
                                     } else {
-                                        $act = $act . '&nbsp;<a href="#" title="Move to Next Stage" data-toggle="modal" data-target="#sendNextstage" data-url="' . route('send_case_confirmBox', ['user_id' => $app->user_id,'app_id' => $app->app_id, 'biz_id' => $request->get('biz_id')]) . '" data-height="370px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm"><i class="fa fa-window-restore" aria-hidden="true"></i></a> ';    
+                                        $act = $act . '&nbsp;<a href="#" title="Move to Next Stage" data-toggle="modal" data-target="#sendNextstage" data-url="' . route('send_case_confirmBox', ['user_id' => $app->user_id,'app_id' => $app->app_id, 'biz_id' => $request->get('biz_id')]) . '" data-height="370px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm"><i class="fa fa-window-restore" aria-hidden="true"></i></a> ';
 
                                         if ($roleData[0]->id != 4 && !empty($currentStage->assign_role)) {
                                             $act = $act . $moveToBackStageUrl;
@@ -6900,20 +7210,20 @@ class DataRenderer implements DataProviderInterface
                             }
                             */
                             $act = $act . '&nbsp;<a href="#" title="Copy/Renew Application" data-toggle="modal" data-target="#confirmCopyApp" data-url="' . route('copy_app_confirmbox', ['user_id' => $app->user_id,'app_id' => $app->app_id, 'biz_id' => $app->biz_id]) . '" data-height="200px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm"><i class="fa fa-window-restore" aria-hidden="true"></i></a> ';
-                            
+
                         }
                         return $act;
-                                      
+
                     }
                 )
                 ->filter(function ($query) use ($request) {
-                    
-                    if ($request->get('search_keyword') != '') {                        
+
+                    if ($request->get('search_keyword') != '') {
                         $query->where(function ($query) use ($request) {
                             $search_keyword = trim($request->get('search_keyword'));
                             $query->where('app.app_id', 'like',"%$search_keyword%")
                             ->orWhere('biz.biz_entity_name', 'like', "%$search_keyword%");
-                        });                        
+                        });
                     }
                     if ($request->get('is_assign') != '') {
                         $query->where(function ($query) use ($request) {
@@ -6921,13 +7231,13 @@ class DataRenderer implements DataProviderInterface
                             $query->where('app.is_assigned', $is_assigned);
                         });
                     }
-                    
+
                 })
             ->make(true);
     }
-        
+
      /*
-    * 
+    *
     * Get All Running Transactions
     */
     public function getRunningTrans(Request $request, $trans)
@@ -6938,9 +7248,7 @@ class DataRenderer implements DataProviderInterface
                 return Carbon::parse($trans->trans_date)->format('d-m-Y');
             })
             ->addColumn('invoice_no', function($trans){
-                if($trans->invoice_disbursed_id && $trans->invoiceDisbursed->invoice_id){
-                    return $trans->invoiceDisbursed->invoice->invoice_no;
-                }
+                    return $trans->invoiceDisbursed->invoice->invoice_no ?? '';
             })
             ->addColumn('trans_type', function($trans){
                 return $trans->transName;
@@ -6958,10 +7266,10 @@ class DataRenderer implements DataProviderInterface
             })
         ->make(true);
     }
-       
+
 
      /*
-     * 
+     *
      * Get All Unsettled Transactions
      */
     public function getUnsettledTrans(Request $request, $trans,$payment, $showSuggestion)
@@ -6970,6 +7278,9 @@ class DataRenderer implements DataProviderInterface
             ->rawColumns(['select', 'pay','outstanding_amt'])
             ->addColumn('disb_date', function($trans){
                 return Carbon::parse($trans->parenttransdate)->format('d-m-Y');
+            })
+            ->addColumn('payment_due_date', function($trans){
+                return Carbon::parse($trans->paymentDueDate)->format('d-m-Y');
             })
             ->addColumn('invoice_no', function($trans){
                 if($trans->invoice_disbursed_id && $trans->invoiceDisbursed->invoice_id){
@@ -6999,6 +7310,7 @@ class DataRenderer implements DataProviderInterface
             })
             ->addColumn('pay', function($trans)use($payment,$showSuggestion){
                 $result = '';
+                $encryptedTransId = $trans->trans_id;
                 if($payment){
                     $userInvoiceDate = $trans->userInvTrans->getUserInvoice->created_at ?? NULL;
                     $paymentDate = $payment->date_of_payment ?? NULL;
@@ -7029,6 +7341,7 @@ class DataRenderer implements DataProviderInterface
                 $transDisabled = '';
                 $payEnable = 1;
                 $class = 'check';
+                $encryptedTransId = $trans->trans_id;
                 $userInvoiceDate = $trans->userInvTrans->getUserInvoice->created_at ?? NULL;
                 $paymentDate = $paymentDetails['date_of_payment'] ?? NULL; 
                 if (isset($userInvoiceDate)) {
@@ -7044,16 +7357,16 @@ class DataRenderer implements DataProviderInterface
                         $class = '';
                     }
                 }
+                
                 $type = $trans->transType->chrg_master_id != 0  ? 'charges' : ($trans->transType->id == config('lms.TRANS_TYPE.INTEREST') ? 'interest' : '');
                 $result = "<input class='$class' id='check_".$trans->trans_id."' $transDisabled payenabled='$payEnable' pay='$paymentDate' userInv='$userInvoiceDate' transtype='$type' type='checkbox' name='check[".$trans->trans_id."]' onchange='apport.onCheckChange(".$trans->trans_id.")'>";
                 return $result;
             })
-           
             ->make(true);
     }
 
     /*
-     * 
+     *
      * Get All Settled Transactions
      */
     public function getSettledTrans(Request $request, $trans)
@@ -7062,6 +7375,9 @@ class DataRenderer implements DataProviderInterface
             ->rawColumns(['select', 'pay'])
             ->addColumn('disb_date', function($trans){
                 return Carbon::parse($trans->parenttransdate)->format('d-m-Y');
+            })
+            ->addColumn('payment_due_date', function($trans){
+                return Carbon::parse($trans->paymentDueDate)->format('d-m-Y');
             })
             ->addColumn('invoice_no', function($trans){
                 if($trans->invoice_disbursed_id && $trans->invoiceDisbursed->invoice_id){
@@ -7099,7 +7415,7 @@ class DataRenderer implements DataProviderInterface
     }
 
     /*
-     * 
+     *
      * Get All Refund Transactions
      */
     public function getRefundTrans(Request $request, $trans)
@@ -7146,27 +7462,27 @@ class DataRenderer implements DataProviderInterface
                'sr_no',
                function ($user) {
                return $this->sr_no++;
-           })  
+           })
            ->editColumn(
                'created_at',
                function ($user) {
                return ($user->created_at)? date('d-M-Y',strtotime($user->created_at)) : '---';
-           })  
+           })
            ->editColumn(
                'comp_addr',
                function ($user) {
                return $user->capsavBizAddr->cmp_add .' '. $user->capsavBizAddr->city;
-           })  
+           })
            ->editColumn(
                'user_addr',
                function ($user) {
                return $user->userBizAddr->addr_1. ' '. $user->userBizAddr->addr_2. ' '. $user->userBizAddr->city_name;
-           })  
+           })
            ->editColumn(
                'comp_state',
                function ($user) {
                return $user->getCompanyState->name;
-           })  
+           })
            ->editColumn(
                'user_state',
                function ($user) {
@@ -7183,7 +7499,7 @@ class DataRenderer implements DataProviderInterface
                    $status = ($data->is_active == '2')?'<div class="btn-group "> <label class="badge badge-warning current-status">In Active</label> </div></b>':'<div class="btn-group "> <label class="badge badge-success current-status">Active</label>&nbsp;'. $btn.'</div></b>';
                    return $status;
            })
-           
+
            ->make(true);
    }
 
@@ -7193,22 +7509,22 @@ class DataRenderer implements DataProviderInterface
            ->rawColumns(['is_active'])
            ->editColumn('sr_no', function ($user) {
                return $this->sr_no++;
-           })  
+           })
            ->editColumn('customer_name', function ($user) {
                return $user->f_name. ' '. $user->m_name. ' '. $user->l_name;
-           })  
+           })
            ->editColumn('email', function ($user) {
                return $user->email;
-           })  
+           })
            ->editColumn('mobile', function ($user) {
                return $user->mobile_no;
-           })   
+           })
            ->editColumn('biz_name', function ($user) {
                return $user->biz_name;
-           })  
+           })
            ->editColumn('registered_on',  function ($user) {
                return $user->created_at;
-           })  
+           })
            ->addColumn('is_active',  function ($user) {
                    $status = ($user->is_active == '2')?'<div class="btn-group "> <label class="badge badge-warning current-status">In Active</label> </div></b>':'<div class="btn-group "> <label class="badge badge-success current-status">Active</label></div></b>';
                    return $status;
@@ -7227,9 +7543,9 @@ class DataRenderer implements DataProviderInterface
                         $query->where('f_name', 'like',"%$search_keyword%");
                     });
                 }
-              
+
             })
-           
+
            ->make(true);
    }
     public function leaseRegister(Request $request, $data) {
@@ -7241,19 +7557,19 @@ class DataRenderer implements DataProviderInterface
            ->editColumn('gstn', function ($invoiceRec) {
                $inv_comp_data = json_decode($invoiceRec->inv_comp_data, TRUE);
                return ($inv_comp_data['gst_no'] ?? $invoiceRec->biz_gst_no);
-           })    
+           })
            ->editColumn('user_id', function ($invoiceRec) {
                return \Helpers::formatIdWithPrefix($invoiceRec->user_id, 'LEADID');
-           })      
+           })
            ->editColumn('customer_name', function ($invoiceRec) {
                return $invoiceRec->biz_entity_name;
-           })  
+           })
            ->editColumn('customer_address', function ($invoiceRec) {
                return $invoiceRec->gst_addr;
-           })   
+           })
            ->editColumn('customer_gstn', function ($invoiceRec) {
                return $invoiceRec->biz_gst_no;
-           })  
+           })
            ->editColumn('sac_code',  function ($invoiceRec) {
                return ($invoiceRec->sac_code != 0 ? $invoiceRec->sac_code : '000');
            })   
@@ -7278,50 +7594,49 @@ class DataRenderer implements DataProviderInterface
                return $invoiceRec->capinvoice;
            })    
            ->editColumn('invoice_no', function ($invoiceRec) {
-            //    dd($invoiceRec);
                return $invoiceRec->invoice;
            })    
            ->editColumn('invoice_date', function ($invoiceRec) {
                return date('d-m-Y', strtotime($invoiceRec->invoice_date));
-           })  
+           })
            ->editColumn('base_amount',  function ($invoiceRec) {
                return number_format($invoiceRec->base_amount, 2);
-           })    
+           })
            ->editColumn('sgst_rate',  function ($invoiceRec) {
                return ($invoiceRec->sgst_rate != 0 ? $invoiceRec->sgst_rate . '%' : '-');
-           })    
+           })
            ->editColumn('sgst_amount',  function ($invoiceRec) {
                return ($invoiceRec->sgst_amount != 0 ? number_format($invoiceRec->sgst_amount, 2) : '-');
-           })    
+           })
            ->editColumn('cgst_rate',  function ($invoiceRec) {
                return ($invoiceRec->cgst_rate != 0 ? $invoiceRec->cgst_rate . '%' : '-');
-           })    
+           })
            ->editColumn('cgst_amount',  function ($invoiceRec) {
                return ($invoiceRec->cgst_amount != 0 ? number_format($invoiceRec->cgst_amount, 2) : '-');
-           })    
+           })
            ->editColumn('igst_rate',  function ($invoiceRec) {
                return ($invoiceRec->igst_rate != 0 ? $invoiceRec->igst_rate . '%' : '-');
-           })      
+           })
            ->editColumn('igst_amount',  function ($invoiceRec) {
                return ($invoiceRec->igst_amount != 0 ? number_format($invoiceRec->igst_amount, 2) : '-');
-           })        
+           })
            ->editColumn('total_rate',  function ($invoiceRec) {
                 $totalRate = ($invoiceRec->sgst_rate + $invoiceRec->igst_rate + $invoiceRec->cgst_rate);
                return ($totalRate != 0 ? $totalRate . '%' : '-');
-           })          
+           })
            ->editColumn('total_tax',  function ($invoiceRec) {
                 $totalTax = ($invoiceRec->sgst_amount + $invoiceRec->igst_amount + $invoiceRec->cgst_amount);
                return ($totalTax != 0 ? number_format($totalTax, 2) : '-');
-           })         
+           })
            ->editColumn('total_amt',  function ($invoiceRec) {
                return number_format($invoiceRec->base_amount + $invoiceRec->sgst_amount + $invoiceRec->cgst_amount + $invoiceRec->igst_amount, 2);
-           })           
+           })
            ->editColumn('cash_flow',  function ($invoiceRec) {
                return (!empty($invoiceRec->invoice_type) && $invoiceRec->invoice_type == 'C') ? 'Charge' : 'Interest';
-           })           
+           })
            ->editColumn('considered_in',  function ($invoiceRec) {
                return date('M-Y', strtotime($invoiceRec->invoice_date));
-           })  
+           })
            ->filter(function ($query) use ($request) {
                 if($request->get('from_date')!= '' && $request->get('to_date')!=''){
                     $query->where(function ($query) use ($request) {
@@ -7336,12 +7651,12 @@ class DataRenderer implements DataProviderInterface
                         $query->where('user_invoice.user_id', '=',$user_id);
                     });
                 }
-              
+
             })
-           
+
            ->make(true);
     }
-   
+
     public function interestBreakup(Request $request, $data) {
         return DataTables::of($data)
         ->editColumn('loan', function($trans) {
@@ -7391,34 +7706,34 @@ class DataRenderer implements DataProviderInterface
 
     public function chargeBreakup(Request $request, $data) {
         return DataTables::of($data)
-        ->editColumn('loan', function($trans) { 
+        ->editColumn('loan', function($trans) {
             return $trans['loan']?$trans['loan']:'';
         })
         ->editColumn('cust_id', function($trans) {
             return $trans['cust_id'];
         })
-        ->editColumn('client_name', function($trans) { 
+        ->editColumn('client_name', function($trans) {
             return $trans['client_name']?$trans['client_name']:'';
         })
-        ->editColumn('chrg_name', function($trans) { 
+        ->editColumn('chrg_name', function($trans) {
             return $trans['chrg_name']?$trans['chrg_name']:'';
         })
-        ->editColumn('chrg_rate', function($trans) { 
+        ->editColumn('chrg_rate', function($trans) {
             return $trans['chrg_rate']?number_format($trans['chrg_rate'],2):'';
         })
-        ->editColumn('chrg_amt', function($trans) { 
+        ->editColumn('chrg_amt', function($trans) {
             return $trans['chrg_amt']?number_format($trans['chrg_amt'],2):'';
         })
-        ->editColumn('trans_date', function($trans) { 
+        ->editColumn('trans_date', function($trans) {
             return $trans['trans_date']?Carbon::parse($trans['trans_date'])->format('d-m-Y'):'';
         })
-        ->editColumn('gst', function($trans) { 
+        ->editColumn('gst', function($trans) {
             return $trans['gst']?number_format($trans['gst'],2):'';
         })
-        ->editColumn('net_amt', function($trans) { 
+        ->editColumn('net_amt', function($trans) {
             return $trans['net_amt']?number_format($trans['net_amt'],2):'';
         })
-        ->editColumn('tally_batch', function($trans) { 
+        ->editColumn('tally_batch', function($trans) {
             return $trans['tally_batch']?$trans['tally_batch']:'';
         })
         ->make(true);
@@ -7426,83 +7741,83 @@ class DataRenderer implements DataProviderInterface
 
     public function tdsBreakup(Request $request, $data) {
         return DataTables::of($data)
-        ->editColumn('loan', function($trans) { 
+        ->editColumn('loan', function($trans) {
             return $trans['loan']?$trans['loan']:'';
         })
         ->editColumn('cust_id', function($trans) {
             return $trans['cust_id'];
         })
-        ->editColumn('client_name', function($trans) { 
+        ->editColumn('client_name', function($trans) {
             return $trans['client_name']?$trans['client_name']:'';
         })
-        ->editColumn('trans_date', function($trans) { 
+        ->editColumn('trans_date', function($trans) {
             return $trans['trans_date']?Carbon::parse($trans['trans_date'])->format('d-m-Y'):'';
         })
-        ->editColumn('int_amt', function($trans) { 
+        ->editColumn('int_amt', function($trans) {
             return $trans['int_amt']?number_format($trans['int_amt'],2):'';
         })
-        ->editColumn('deduction_date', function($trans) { 
+        ->editColumn('deduction_date', function($trans) {
             return $trans['deduction_date']?Carbon::parse($trans['deduction_date'])->format('d-m-Y'):'';
         })
-        ->editColumn('tds_amt', function($trans) { 
+        ->editColumn('tds_amt', function($trans) {
             return $trans['tds_amt']?number_format($trans['tds_amt'],2):'';
         })
-        ->editColumn('tds_certificate', function($trans) { 
+        ->editColumn('tds_certificate', function($trans) {
             return $trans['tds_certificate']?$trans['tds_certificate']:'';
         })
-        ->editColumn('tally_batch', function($trans) { 
+        ->editColumn('tally_batch', function($trans) {
             return $trans['tally_batch']?$trans['tally_batch']:'';
         })
         ->make(true);
     }
-    
+
 
     public function getReportAllInvoice(Request $request,$invoice)
-    {  
-        
+    {
+
         return DataTables::of($invoice)
                ->rawColumns(['batch_no'])
-           
+
                 ->addColumn(
                     'batch_no',
-                    function ($invoice) { 
-                        
+                    function ($invoice) {
+
                         return '<b>'.$invoice->disbursal->disbursal_batch->batch_id.'</b>';
-                     
+
                     })
                   ->addColumn(
                     'batch_date',
-                    function ($invoice)  {     
+                    function ($invoice)  {
                            return  date('d/m/Y',strtotime($invoice->disbursal->disbursal_batch->created_at));
                   })
-             
+
               ->addColumn(
                     'bills_no',
-                    function ($invoice) {  
+                    function ($invoice) {
                       return $invoice->invoice->invoice_no;
                    })
                 ->addColumn(
                     'bill_date',
-                    function ($invoice) { 
+                    function ($invoice) {
                     return  Carbon::parse($invoice->invoice->invoice_date)->format('d/m/Y');
                         })
                  ->addColumn(
                     'due_date',
-                    function ($invoice) {                        
+                    function ($invoice) {
                       return  Carbon::parse($invoice->payment_due_date)->format('d/m/Y');
-                     
-                })  
-                ->addColumn(            
-                    'invoice_amount',
-                    function ($invoice) {                        
-                        return number_format($invoice->invoice->invoice_amount);
-                       
-                      
+
                 })
-                ->addColumn(            
+                ->addColumn(
+                    'invoice_amount',
+                    function ($invoice) {
+                        return number_format($invoice->invoice->invoice_amount);
+
+
+                })
+                ->addColumn(
                     'invoice_appr_amount',
-                    function ($invoice) {                        
-                          return number_format($invoice->invoice->invoice_approve_amount);  
+                    function ($invoice) {
+                          return number_format($invoice->invoice->invoice_approve_amount);
                          })
                 ->addColumn(
                     'balance',
@@ -7511,73 +7826,73 @@ class DataRenderer implements DataProviderInterface
                         $balance = $invoice->disburse_amt - $invoice->invoice->repayment_amt;
                         $balance = ($balance > 0)?$balance:0;
                         return number_format($balance);
-                       
+
                     })
                    ->filter(function ($query) use ($request) {
-                    if ($request->get('from_date') != '' && $request->get('to_date') != '') {                        
+                    if ($request->get('from_date') != '' && $request->get('to_date') != '') {
                         $from_date = Carbon::createFromFormat('d/m/Y', $request->get('from_date'))->format('Y-m-d');
                         $to_date = Carbon::createFromFormat('d/m/Y', $request->get('to_date'))->format('Y-m-d');
                         $query->whereRaw("BETWEEN ADDDATE(DATE(payment_due_date),grace_period) '".$from_date."' AND  '".$to_date."'");
                     }
-                     if ($request->get('customer_id') != '') {                        
+                     if ($request->get('customer_id') != '') {
                         $query->where(function ($query) use ($request) {
                             $customer_id = trim($request->get('customer_id'));
                              $query->whereHas('invoice.lms_user', function($query1) use ($customer_id) {
                                 $query1->where('customer_id', 'like',"%$customer_id%");
                              });
-                            
-                        });                        
+
+                        });
                     }
                  })
               ->make(true);
-    }  
-    
+    }
+
      public function getReportAllOverdueInvoice(Request $request,$invoice)
-    {  
-        
+    {
+
         return DataTables::of($invoice)
                ->rawColumns(['batch_no','od'])
-           
+
                 ->addColumn(
                     'batch_no',
-                    function ($invoice) { 
-                        
+                    function ($invoice) {
+
                         return '<b>'.$invoice->disbursal->disbursal_batch->batch_id.'</b>';
-                     
+
                     })
                   ->addColumn(
                     'batch_date',
-                    function ($invoice)  {     
+                    function ($invoice)  {
                            return  date('d/m/Y',strtotime($invoice->disbursal->disbursal_batch->created_at));
                   })
-             
+
               ->addColumn(
                     'bills_no',
-                    function ($invoice) {  
+                    function ($invoice) {
                       return $invoice->invoice->invoice_no;
                    })
                 ->addColumn(
                     'bill_date',
-                    function ($invoice) { 
+                    function ($invoice) {
                     return  Carbon::parse($invoice->invoice->invoice_date)->format('d/m/Y');
                         })
                  ->addColumn(
                     'due_date',
-                    function ($invoice) {                        
+                    function ($invoice) {
                       return  Carbon::parse($invoice->payment_due_date)->format('d/m/Y');
-                     
-                })  
-                ->addColumn(            
-                    'invoice_amount',
-                    function ($invoice) {                        
-                        return   number_format($invoice->invoice->invoice_amount);
-                       
-                      
+
                 })
-                ->addColumn(            
+                ->addColumn(
+                    'invoice_amount',
+                    function ($invoice) {
+                        return   number_format($invoice->invoice->invoice_amount);
+
+
+                })
+                ->addColumn(
                     'invoice_appr_amount',
-                    function ($invoice) {                        
-                          return number_format($invoice->invoice->invoice_approve_amount);  
+                    function ($invoice) {
+                          return number_format($invoice->invoice->invoice_approve_amount);
                          })
                 ->addColumn(
                     'balance',
@@ -7586,105 +7901,105 @@ class DataRenderer implements DataProviderInterface
                         $balance = $invoice->disburse_amt - $invoice->invoice->repayment_amt;
                         $balance = ($balance > 0)?$balance:0;
                         return number_format($balance);
-                       
+
                     })
                    ->addColumn(
                     'od',
                     function ($invoice) {
-                       
+
                            return '<b>'.$invoice->InterestAccrual->count().'</b>';
-                       
-                    }) 
+
+                    })
                    ->filter(function ($query) use ($request) {
-                    if ($request->get('from_date') != '' && $request->get('to_date') != '') {                        
+                    if ($request->get('from_date') != '' && $request->get('to_date') != '') {
                         $from_date = Carbon::createFromFormat('d/m/Y', $request->get('from_date'))->format('Y-m-d');
                         $to_date = Carbon::createFromFormat('d/m/Y', $request->get('to_date'))->format('Y-m-d');
                         $query->whereRaw("ADDDATE(DATE(payment_due_date),grace_period) BETWEEN '".$from_date."' AND  '".$to_date."'");
                     }
-                     if ($request->get('customer_id') != '') {                        
+                     if ($request->get('customer_id') != '') {
                         $query->where(function ($query) use ($request) {
                             $customer_id = trim($request->get('customer_id'));
                              $query->whereHas('invoice.lms_user', function($query1) use ($customer_id) {
                                 $query1->where('customer_id', 'like',"%$customer_id%");
                              });
 
-                            
-                        });                        
+
+                        });
                     }
                  })
               ->make(true);
-    }  
+    }
      public function getInvoiceRealisationList(Request $request,$invoice)
-    {  
-        
+    {
+
         return DataTables::of($invoice)
                ->rawColumns(['debtor_name','od','business','relisation_date'])
-           
+
                 ->addColumn(
                     'debtor_name',
-                    function ($invoice) { 
+                    function ($invoice) {
                      return '<b>'.$invoice->invoice->anchor->comp_name.'</b>';
                     })
                   ->addColumn(
                     'debtor_acc_no',
-                    function ($invoice)  {     
+                    function ($invoice)  {
                            return  ($invoice->Invoice->anchor->anchorAccount) ? $invoice->Invoice->anchor->anchorAccount->acc_no : '' ;
                   })
-             
+
               ->addColumn(
                     'invoice_date',
-                    function ($invoice) {  
+                    function ($invoice) {
                         return  Carbon::parse($invoice->invoice->invoice_date)->format('d/m/Y');
                    })
                      ->addColumn(
                     'invoice_due_amount',
-                    function ($invoice) {  
-                        $approveAmt = $invoice->invoice->invoice_approve_amount;                      
+                    function ($invoice) {
+                        $approveAmt = $invoice->invoice->invoice_approve_amount;
                         $margin = round(($invoice->invoice->invoice_approve_amount*$invoice->margin)/100,2);
                         return number_format($approveAmt - $margin);
                    })
                 ->addColumn(
                     'invoice_due_amount_date',
-                    function ($invoice) { 
+                    function ($invoice) {
                     return  Carbon::parse($invoice->payment_due_date)->format('d/m/Y');
                         })
                  ->addColumn(
                     'grace_period',
-                    function ($invoice) {                        
+                    function ($invoice) {
                       return  $invoice->grace_period;
-                     
-                })  
-                ->addColumn(            
+
+                })
+                ->addColumn(
                     'relisation_date',
-                    function ($invoice) {  
-                      $payment  = '';                   
+                    function ($invoice) {
+                      $payment  = '';
                        foreach($invoice->transaction as $row)
                       {
                            if(!empty($row->payment->date_of_payment))
                            {
                              $payment.= Carbon::parse($row->payment->date_of_payment)->format('d/m/Y')."</br>";
                            }
-                           
+
                       }
                     return substr($payment,0,-1);
-                       
+
                 })
-                ->addColumn(            
+                ->addColumn(
                     'relisation_amount',
-                    function ($invoice) {                        
-                        $approveAmt = $invoice->invoice->invoice_approve_amount;                      
+                    function ($invoice) {
+                        $approveAmt = $invoice->invoice->invoice_approve_amount;
                         $margin = round(($invoice->invoice->invoice_approve_amount*$invoice->margin)/100,2);
                         $discountedAmt = $approveAmt - $margin;
                         if($discountedAmt <= $invoice->invoice->repayment_amt){
                             return number_format($discountedAmt);
                         }
-                        return number_format($invoice->invoice->repayment_amt);  
+                        return number_format($invoice->invoice->repayment_amt);
                 })
                 ->addColumn(
                     'cheque',
                     function ($invoice) {
-                       
-                      $chk  = '';                   
+
+                      $chk  = '';
                        foreach($invoice->transaction as $row)
                       {
                            if(!empty($row->payment->utr_no))
@@ -7701,46 +8016,46 @@ class DataRenderer implements DataProviderInterface
                            }
                       }
                     return substr($chk,0,-1);
-                     
-                       
+
+
                     })
                    ->addColumn(
                     'od',
                     function ($invoice) {
-                       
+
                            return '<b>'.($invoice->InterestAccrual) ? $invoice->InterestAccrual->count() : ''.'</b>';
-                       
-                    }) 
+
+                    })
                     ->addColumn(
                     'business',
                     function ($invoice) {
-                       
+
                            return '<b>'.$invoice->invoice->business->biz_entity_name.'</b>';
-                       
-                    }) 
+
+                    })
                    ->filter(function ($query) use ($request) {
-                    if ($request->get('from_date') != '' && $request->get('to_date') != '') {                        
+                    if ($request->get('from_date') != '' && $request->get('to_date') != '') {
                         $from_date = Carbon::createFromFormat('d/m/Y', $request->get('from_date'))->format('Y-m-d');
                         $to_date = Carbon::createFromFormat('d/m/Y', $request->get('to_date'))->format('Y-m-d');
                         $query->WhereBetween('payment_due_date', [$from_date, $to_date]);
                     }
-                     if ($request->get('customer_id') != '') {                        
+                     if ($request->get('customer_id') != '') {
                         $query->where(function ($query) use ($request) {
                             $customer_id = trim($request->get('customer_id'));
                              $query->whereHas('invoice.lms_user', function($query1) use ($customer_id) {
                                 $query1->where('customer_id', 'like',"%$customer_id%");
                              });
 
-                            
-                        });                        
+
+                        });
                     }
                  })
               ->make(true);
     }
 
-    
+
     /*
-     * 
+     *
      * get all disbursal batch request
      */
     public function lmsGetDisbursalBatchRequest(Request $request, $disbursalBatchRequest)
@@ -7755,9 +8070,9 @@ class DataRenderer implements DataProviderInterface
                 )
                 ->editColumn(
                     'total_customer',
-                    function ($disbursalBatchRequest) {   
+                    function ($disbursalBatchRequest) {
                         return $disbursalBatchRequest->disbursal->count();
-                }) 
+                })
                 ->editColumn(
                     'total_disburse_amount',
                     function ($disbursalBatchRequest) {
@@ -7769,8 +8084,8 @@ class DataRenderer implements DataProviderInterface
                     function ($disbursalBatchRequest) {
                         $act = '';
                         if(Helpers::checkPermission('online_disbursal_rollback')){
-                            $act .='</br><a data-toggle="modal"  data-height="400px" 
-                            data-width="100%" 
+                            $act .='</br><a data-toggle="modal"  data-height="400px"
+                            data-width="100%"
                             data-target="#viewOnlineDisbursalRollback"
                             data-url="' . route('online_disbursal_rollback', ['disbursal_batch_id' =>$disbursalBatchRequest->disbursal_batch_id]) . '"  data-placement="top" class="btn btn-action-btn btn-sm" title="View/Rollback Disbursal Request"><i class="fa fa-eye"></i></a>';
                         }
@@ -7792,7 +8107,7 @@ class DataRenderer implements DataProviderInterface
                 })
                 ->make(true);
     }/*
-     * 
+     *
      * get all refund batch request
      */
     public function lmsGetRefundBatchRequest(Request $request, $refundBatchRequest)
@@ -7807,9 +8122,9 @@ class DataRenderer implements DataProviderInterface
                 )
                 ->editColumn(
                     'total_customer',
-                    function ($refundBatchRequest) {   
+                    function ($refundBatchRequest) {
                         return $refundBatchRequest->refund->count();
-                }) 
+                })
                 ->editColumn(
                     'total_disburse_amount',
                     function ($refundBatchRequest) {
@@ -7820,7 +8135,7 @@ class DataRenderer implements DataProviderInterface
                     'action',
                     function ($refundBatchRequest) {
                         $act = '<a   href="' . route('refund_payment_enquiry', ['refund_req_batch_id' => $refundBatchRequest->refund_req_batch_id]) . '" data-height="350px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm" title="IDFC Batch Enquiry Trigger Api"><i class="fa fa-rotate-right"></i></a>';
-                        
+
                         return $act;
                 })
                 ->filter(function ($query) use ($request) {
@@ -7832,26 +8147,26 @@ class DataRenderer implements DataProviderInterface
                     }
                 })
                 ->make(true);
-    }   
+    }
 
     public function getEodList(Request $request,$eod)
-    {  
+    {
         return DataTables::of($eod)
             ->rawColumns(['status'])
-           
+
             ->addColumn( 'current_sys_date', function ($eod) {
-                if($eod->created_at) 
+                if($eod->created_at)
                 return \Helpers::convertDateTimeFormat($eod->created_at, $fromDateFormat='Y-m-d H:i:s', $toDateFormat='d-m-Y h:i A');
             })
 
             ->addColumn( 'sys_started_at', function ($eod) {
-                if($eod->sys_start_date) 
+                if($eod->sys_start_date)
                 return \Helpers::convertDateTimeFormat($eod->sys_start_date, $fromDateFormat='Y-m-d H:i:s', $toDateFormat='d-m-Y h:i A');
             })
 
             ->addColumn( 'sys_stopped_at', function ($eod) {
                 if($eod->sys_end_date)
-                return \Helpers::convertDateTimeFormat($eod->sys_end_date, $fromDateFormat='Y-m-d H:i:s', $toDateFormat='d-m-Y h:i A'); 
+                return \Helpers::convertDateTimeFormat($eod->sys_end_date, $fromDateFormat='Y-m-d H:i:s', $toDateFormat='d-m-Y h:i A');
             })
 
             ->addColumn( 'eod_process_mode', function ($eod) {
@@ -7864,23 +8179,23 @@ class DataRenderer implements DataProviderInterface
                         $processedBy = 'Manually';
                         break;
                     default:
-                        $processedBy = ''; 
+                        $processedBy = '';
                         break;
                 }
                 return $processedBy;
             })
 
             ->addColumn( 'eod_process_started_at', function ($eod) {
-                if($eod->eod_process_start) 
+                if($eod->eod_process_start)
                 return \Helpers::convertDateTimeFormat($eod->eod_process_start, $fromDateFormat='Y-m-d H:i:s', $toDateFormat='d-m-Y h:i:s A');
             })
 
             ->addColumn( 'eod_process_stopped_at', function ($eod) {
                 if($eod->eod_process_end)
-                return \Helpers::convertDateTimeFormat($eod->eod_process_end, $fromDateFormat='Y-m-d H:i:s', $toDateFormat='d-m-Y h:i:s A'); 
+                return \Helpers::convertDateTimeFormat($eod->eod_process_end, $fromDateFormat='Y-m-d H:i:s', $toDateFormat='d-m-Y h:i:s A');
             })
 
-            ->addColumn( 'total_sec', function ($eod) { 
+            ->addColumn( 'total_sec', function ($eod) {
                 if($eod->total_sec){
                     $dt1 = new DateTime("@0");
                     $dt2 = new DateTime("@$eod->total_sec");
@@ -7889,32 +8204,32 @@ class DataRenderer implements DataProviderInterface
                     $minutes = $dt1->diff($dt2)->format('%i');
                     $seconds =  $dt1->diff($dt2)->format('%s');
                     $result = '';
-                     
-                    $result .= $days? $days. ' days, ':''; 
-                    $result .= $hours? $hours. ' hours, ':''; 
-                    $result .= $minutes? $minutes. ' minutes, ':''; 
-                    $result .= $seconds? $seconds. ' seconds ':'';   
-                    return $result;              
+
+                    $result .= $days? $days. ' days, ':'';
+                    $result .= $hours? $hours. ' hours, ':'';
+                    $result .= $minutes? $minutes. ' minutes, ':'';
+                    $result .= $seconds? $seconds. ' seconds ':'';
+                    return $result;
                 }
             })
 
-            ->addColumn( 'status', function ($eod) { 
+            ->addColumn( 'status', function ($eod) {
                 $status = null;
                 switch ($eod->status) {
                     case '0':
-                        $status = '<i class="fa fa-circle-o-notch fa-spin  fa-fw margin-bottom"></i>'; 
+                        $status = '<i class="fa fa-circle-o-notch fa-spin  fa-fw margin-bottom"></i>';
                         break;
                     case '1':
-                        $status = '<i class="fa fa-check" title="Passed" style="color:green" aria-hidden="true"></i>'; 
+                        $status = '<i class="fa fa-check" title="Passed" style="color:green" aria-hidden="true"></i>';
                         break;
                     case '2':
-                        $status = '<i class="fa fa-ban" title="Stopped" style="color:black" aria-hidden="true"></i>'; 
+                        $status = '<i class="fa fa-ban" title="Stopped" style="color:black" aria-hidden="true"></i>';
                         break;
                     case '3':
-                        $status = '<i class="fa fa-times" title="Failed" style="color:red" aria-hidden="true"></i>'; 
+                        $status = '<i class="fa fa-times" title="Failed" style="color:red" aria-hidden="true"></i>';
                         break;
                     default:
-                        $status = ''; 
+                        $status = '';
                         break;
                 }
                 return $status;
@@ -7922,7 +8237,7 @@ class DataRenderer implements DataProviderInterface
             // ->filter(function ($query) use ($request) {
             // })
             ->make(true);
-    } 
+    }
 
     public function getCibilReportLms(Request $request, $data) {
        return DataTables::of($data)
@@ -7949,26 +8264,26 @@ class DataRenderer implements DataProviderInterface
             })
            ->make(true);
    }
-   
+
    /**
     * TDS Data table listing
-    * 
+    *
     * @param Request $request
     * @param type $data
     * @return type
     */
    public function tds(Request $request, $data) {
        $this->sr_no = 1;
-       return DataTables::of($data)    
+       return DataTables::of($data)
            ->editColumn('user_id', function ($tds) {
                return \Helpers::formatIdWithPrefix($tds->user_id, 'LEADID');
-           })      
+           })
            ->editColumn('customer_name', function ($tds) {
                return $tds->biz_entity_name;
-           })  
+           })
            ->editColumn('trans_name', function ($tds) {
                return $tds->trans_name ;//== 3 ? 'tds' : '';
-           })   
+           })
            ->editColumn('date_of_payment', function ($tds) {
                return date('d-m-Y', strtotime($tds->date_of_payment));
            })
@@ -7987,7 +8302,7 @@ class DataRenderer implements DataProviderInterface
            })
            ->editColumn('file_id',  function ($tds) {
                return $tds->file_id == 0 ? 'N' : '';
-           }) 
+           })
            ->filter(function ($query) use ($request) {
                 if($request->get('user_id')!= ''){
                     $query->where(function ($query) use ($request) {
@@ -7995,12 +8310,12 @@ class DataRenderer implements DataProviderInterface
                         $query->where('payments.user_id', '=',$user_id);
                     });
                 }
-              
+
             })
-           
+
            ->make(true);
    }
-   
+
 
 
     // TDS in master
@@ -8009,19 +8324,19 @@ class DataRenderer implements DataProviderInterface
         $this->sr_no = 1;
         return DataTables::of($data)
                 ->rawColumns(['is_active', 'action', ''])
-                
+
                 ->editColumn(
                     'sr_no',
                     function ($data) {
                     return $this->sr_no++;
-                }) 
+                })
                 ->addColumn(
-                'start_date', 
+                'start_date',
                 function ($data) {
                     return ($data->start_date) ? date('d-M-Y', strtotime($data->start_date)) : '---';
                 })
                 ->addColumn(
-                'end_date', 
+                'end_date',
                 function ($data) {
                     return ($data->end_date) ? date('d-M-Y', strtotime($data->end_date)) : '---';
                 })
@@ -8041,10 +8356,10 @@ class DataRenderer implements DataProviderInterface
                 )
                 ->make(true);
     }
-    
+
     /**
     * Nach Data table listing
-    * 
+    *
     * @param Request $request
     * @param type $data
     * @return type
@@ -8066,7 +8381,7 @@ class DataRenderer implements DataProviderInterface
            })
            ->editColumn('sponsor_bank_code', function ($nachData) {
                return $nachData->sponsor_bank_code;
-           })  
+           })
            ->editColumn('acc_name', function ($nachData) {
                return $nachData->acc_name ;
            })
@@ -8105,15 +8420,15 @@ class DataRenderer implements DataProviderInterface
                if(($nachData->uploaded_file_id != 0)) {
                    return '<a href="'.route('download_storage_file', ['file_id' => $nachData->uploaded_file_id ]).'"><i class="fa fa-file-pdf-o" aria-hidden="true"></i></a>';
                }
-           }) 
+           })
            ->filter(function ($query) use ($request) {
-                if ($request->get('search_keyword') != '') { 
+                if ($request->get('search_keyword') != '') {
                     $query->where(function ($query) use ($request) {
                         $search_keyword = trim($request->get('search_keyword'));
                         $query->where('email_id', 'like',"%$search_keyword%");
                         $query->orWhere('acc_name', 'like',"%$search_keyword%");
                         $query->orWhere('acc_no', 'like',"%$search_keyword%");
-                    });                        
+                    });
                 }
             })
            ->make(true);
@@ -8124,35 +8439,35 @@ class DataRenderer implements DataProviderInterface
             ->rawColumns(['status', 'action'])
 
             ->editColumn(
-                'customer_id', 
+                'customer_id',
                 function ($nachData) {
                     return $nachData->lms_user->customer_id;
             })
             ->editColumn(
-                'customer_name', 
+                'customer_name',
                 function ($nachData) {
                     return $nachData->user->f_name.' '.$nachData->user->l_name;;
-            })  
+            })
             ->editColumn(
-                'bank_name', 
+                'bank_name',
                 function ($nachData) {
                     return $nachData->user_bank->bank->bank_name ;
             })
             ->editColumn(
-                'start_date', 
+                'start_date',
                 function ($nachData) {
                     return ($nachData->period_from) ? date('d-m-Y',strtotime($nachData->period_from)) : '---' ;
             })
             ->editColumn(
-                'end_date', 
+                'end_date',
                 function ($nachData) {
                     return ($nachData->period_to) ? date('d-m-Y',strtotime($nachData->period_to)) : '---' ;
             })
             ->editColumn(
-                'status', 
+                'status',
                 function ($nachData) {
 
-                    $statusArray =  [    
+                    $statusArray =  [
                        1 => 'PENDING',
                        2 => 'PDF_UPLOADED',
                        3 => 'SENT_TO_APPROVAL',
@@ -8168,7 +8483,7 @@ class DataRenderer implements DataProviderInterface
                     return $status ? $status : 'NA' ;
             })
             ->editColumn(
-                'created', 
+                'created',
                 function ($nachData) {
                     return $nachData->created_at ? date('d-m-Y', strtotime($nachData->created_at)) : '';
             })
@@ -8200,30 +8515,30 @@ class DataRenderer implements DataProviderInterface
             ->rawColumns(['status', 'action'])
 
             ->editColumn(
-                'customer_name', 
+                'customer_name',
                 function ($nachData) {
                     return $nachData->user->f_name.' '.$nachData->user->l_name;
-            })  
+            })
             ->editColumn(
-                'bank_name', 
+                'bank_name',
                 function ($nachData) {
                     return $nachData->user_bank->bank->bank_name ;
             })
             ->editColumn(
-                'start_date', 
+                'start_date',
                 function ($nachData) {
                     return ($nachData->period_from) ? date('d-m-Y',strtotime($nachData->period_from)) : '---' ;
             })
             ->editColumn(
-                'end_date', 
+                'end_date',
                 function ($nachData) {
                     return ($nachData->period_to) ? date('d-m-Y',strtotime($nachData->period_to)) : '---' ;
             })
             ->editColumn(
-                'status', 
+                'status',
                 function ($nachData) {
 
-                    $statusArray =  [    
+                    $statusArray =  [
                        1 => 'PENDING',
                        2 => 'PDF_UPLOADED',
                        3 => 'SENT_TO_APPROVAL',
@@ -8237,11 +8552,11 @@ class DataRenderer implements DataProviderInterface
                     } else {
                         $status = '<label class="badge badge-'.($nachData->nach_status == 5 ? 'danger' : 'success pt-2').' current-status" style="margin-bottom: 13px">'.($statusArray[$nachData->nach_status]).'&nbsp; &nbsp;</label>';
                     }
-                    
+
                     return $status ? $status : 'NA' ;
             })
             ->editColumn(
-                'created', 
+                'created',
                 function ($nachData) {
                     return $nachData->created_at ? date('d-m-Y', strtotime($nachData->created_at)) : '';
             })
@@ -8274,35 +8589,35 @@ class DataRenderer implements DataProviderInterface
             ->rawColumns(['status', 'action'])
 
             ->editColumn(
-                'user_type', 
+                'user_type',
                 function ($nachData) {
                     return ($nachData->user_type == 1) ? 'Customer' : 'Anchor' ;
-            }) 
+            })
             ->editColumn(
-                'customer_name', 
+                'customer_name',
                 function ($nachData) {
                     return $nachData->user->f_name.' '.$nachData->user->l_name;
-            })  
+            })
             ->editColumn(
-                'bank_name', 
+                'bank_name',
                 function ($nachData) {
                     return $nachData->user_bank->bank->bank_name ;
             })
             ->editColumn(
-                'start_date', 
+                'start_date',
                 function ($nachData) {
                     return ($nachData->period_from) ? date('d-m-Y',strtotime($nachData->period_from)) : '---' ;
             })
             ->editColumn(
-                'end_date', 
+                'end_date',
                 function ($nachData) {
                     return ($nachData->period_to) ? date('d-m-Y',strtotime($nachData->period_to)) : '---' ;
             })
             ->editColumn(
-                'status', 
+                'status',
                 function ($nachData) {
 
-                    $statusArray =  [    
+                    $statusArray =  [
                        1 => 'PENDING',
                        2 => 'PDF_UPLOADED',
                        3 => 'SENT_TO_APPROVAL',
@@ -8321,7 +8636,7 @@ class DataRenderer implements DataProviderInterface
                     return $status ? $status : 'NA' ;
             })
             ->editColumn(
-                'created', 
+                'created',
                 function ($nachData) {
                     return $nachData->created_at ? date('d-m-Y', strtotime($nachData->created_at)) : '';
             })
@@ -8347,15 +8662,15 @@ class DataRenderer implements DataProviderInterface
                     $nach_status = trim($request->get('nach_status'));
                     $query->where('nach_status', $nach_status);
                 }
-              
+
             })
             ->filter(function ($query) use ($request) {
-                if ($request->get('search_keyword') != '') { 
+                if ($request->get('search_keyword') != '') {
                     $query->where(function ($query) use ($request) {
                         $search_keyword = trim($request->get('search_keyword'));
                         $query->where('email_id', 'like',"%$search_keyword%");
                         $query->orWhere('acc_name', 'like',"%$search_keyword%");
-                    });                        
+                    });
                 }
                 if($request->get('nach_status') != '') {
                     $nach_status = trim($request->get('nach_status'));
@@ -8376,46 +8691,46 @@ class DataRenderer implements DataProviderInterface
                 }
             )
             ->editColumn(
-                'customer_id', 
+                'customer_id',
                 function ($nachData) {
                     return $nachData->cust_ref_no ?? '';
             })
             ->editColumn(
-                'umr_no', 
+                'umr_no',
                 function ($nachData) {
                     return $nachData->umrn;
             })
             ->editColumn(
-                'nach_amount', 
+                'nach_amount',
                 function ($nachData) {
                     return $nachData->amount;
             })
             ->editColumn(
-                'amount', 
+                'amount',
                 function ($nachData) {
                     return $nachData->outstandingAmt;
             })
            ->filter(function ($query) use ($request) {
-                if ($request->get('search_keyword') != '') { 
+                if ($request->get('search_keyword') != '') {
                     // $query->where('lms_user',function ($query) use ($request) {
                         $search_keyword = trim($request->get('search_keyword'));
                         $query->where('cust_ref_no', 'like',"%$search_keyword%");
-                    // });                        
+                    // });
                 }
             })
            ->make(true);
    }
-   
+
    public function getNachRepaymentTransList(Request $request, $data) {
        return DataTables::of($data)
             ->rawColumns(['action'])
             ->editColumn(
-                'customer_id', 
+                'customer_id',
                 function ($nachData) {
                     return $nachData->lms_user->customer_id;
             })
             ->editColumn(
-                'Reference', 
+                'Reference',
                 function ($nachData) {
                     return $nachData->ref_no;
             })
@@ -8425,39 +8740,39 @@ class DataRenderer implements DataProviderInterface
                     return $nachData->req_date;
             })
             ->editColumn(
-                'amount', 
+                'amount',
                 function ($nachData) {
                     return $nachData->amount;
             })
            ->make(true);
    }
-   
+
    public function getNachRepaymentReq(Request $request, $data) {
        return DataTables::of($data)
             ->rawColumns(['status', 'action'])
 
             ->editColumn(
-                'customer_id', 
+                'customer_id',
                 function ($nachReq) {
                     return $nachReq->lms_user->customer_id ?? '';
-            }) 
+            })
             ->editColumn(
-                'ref_no', 
+                'ref_no',
                 function ($nachReq) {
                     return $nachReq->ref_no ?? '';
-            })  
+            })
             ->editColumn(
-                'umr_no', 
+                'umr_no',
                 function ($nachReq) {
                     return $nachReq->user_nach ? $nachReq->user_nach->umrn : '' ;
             })
             ->editColumn(
-                'outstanding_amount', 
+                'outstanding_amount',
                 function ($nachReq) {
                     return ($nachReq->amount ?? '0.00') ;
             })
             ->editColumn(
-                'status', 
+                'status',
                 function ($nachReq) {
 
                     $statusArray =  [
@@ -8469,22 +8784,149 @@ class DataRenderer implements DataProviderInterface
                     return $status ? $status : 'NA' ;
             })
             ->editColumn(
-                'req_date', 
+                'req_date',
                 function ($nachReq) {
                     return ($nachReq->req_date) ? date('d-m-Y',strtotime($nachReq->req_date)) : '---' ;
             })
            ->filter(function ($query) use ($request) {
-                if ($request->get('search_keyword') != '') { 
+                if ($request->get('search_keyword') != '') {
                     $query->whereHas('lms_user',function ($query) use ($request) {
                         $search_keyword = trim($request->get('search_keyword'));
                         $query->where('customer_id', 'like',"%$search_keyword%");
-                    });                        
+                    });
                 }
-            })            
+            })
            ->make(true);
    }
+   
+   // Master Group
+    public function getAllGroup(Request $request, $data)
+    {
+        $this->sr_no = 1;
+        return DataTables::of($data)
+                ->rawColumns(['is_active', 'action'])
+                
+                ->addColumn(
+                    'sr_no',
+                    function ($data) {
+                        return $this->sr_no++;
+                })
+                ->addColumn(
+                    'group_name',
+                    function ($data) {
+                    return $data->name;
+                })
+                ->addColumn(
+                    'created_at',
+                    function ($data) {
+                    return $data->created_at ? date('d-m-Y h:i A', strtotime($data->created_at)) : '';
+                })
+                ->addColumn(
+                    'updated_at',
+                    function ($data) {
+                    return $data->updated_at ? date('d-m-Y h:i A', strtotime($data->updated_at)) : '';
+                })
+                ->addColumn(
+                    'is_active',
+                    function ($data) {
+                    $act = $data->is_active;
+                    $status = '<div class="btn-group"><label class="badge badge-'.($act==1 ? 'success pt-2 pl-3 pr-3' : 'danger pt-2').' current-status">'.($act==1 ? 'Active' : 'In-Active').'&nbsp; &nbsp;</label></div>';
+                    return $status;
+                })
+                ->addColumn(
+                    'action',
+                    function ($data) {
+                    $edit = '<a class="btn btn-action-btn btn-sm" data-toggle="modal" data-target="#addGroupFrame" title="Edit Group" data-url ="'.route('add_group', ['id' => $data->id]).'" data-height="250px" data-width="100%" data-placement="top"><i class="fa fa-edit"></i></a>';
+                    $addCompany = '<a class="btn btn-action-btn btn-sm" title="View and Add Group Company" href ="'.route('get_group_company_list', ['group_id' => $data->id]).'" data-placement="top"><i class="fa fa-plus"></i></a>';
+                    return $edit . ' ' . $addCompany;
+                })
+                ->filter(function ($query) use ($request) {
+                    if ($request->get('search_keyword') != '') {
+                        $query->where(function ($query) use ($request) {
+                            $search_keyword = trim($request->get('search_keyword'));
+                            $query->where('name', 'like',"%$search_keyword%");
+                        });
+                    }
+                })
+                ->make(true);
+    }
+    
+    public function getAllGroupCompanyByGroupId(Request $request, $data)
+    {
+        $this->sr_no = 1;
+        return DataTables::of($data)
+                ->rawColumns(['is_active', 'action'])
+                
+                ->addColumn(
+                    'sr_no',
+                    function ($data) {
+                        return $this->sr_no++;
+                })
+                ->addColumn(
+                    'company_name',
+                    function ($data) {
+                    return $data->company_name;
+                })
+                ->addColumn(
+                    'product_type',
+                    function ($data) {
+                    return $data->product ? $data->product->product_name : '';
+                })
+                ->addColumn(
+                    'group_name',
+                    function ($data) {
+                    return $data->group ? $data->group->name : '';
+                })
+                ->addColumn(
+                    'sanction_limit',
+                    function ($data) {
+                    return $data->sanction_limit;
+                })
+                ->addColumn(
+                    'outstanding_exposure',
+                    function ($data) {
+                    return $data->outstanding_exposure;
+                })
+                ->addColumn(
+                    'proposed_limit',
+                    function ($data) {
+                    return $data->proposed_exposure;
+                })
+                ->addColumn(
+                    'created_at',
+                    function ($data) {
+                    return $data->created_at ? date('d-m-Y h:i A', strtotime($data->created_at)) : '';
+                })
+                ->addColumn(
+                    'updated_at',
+                    function ($data) {
+                    return $data->updated_at ? date('d-m-Y h:i A', strtotime($data->updated_at)) : '';
+                })
+                ->addColumn(
+                    'is_active',
+                    function ($data) {
+                    $act = $data->is_active;
+                    $status = '<div class="btn-group"><label class="badge badge-'.($act==1 ? 'success pt-2 pl-3 pr-3' : 'danger pt-2').' current-status">'.($act==1 ? 'Active' : 'In-Active').'&nbsp; &nbsp;</label></div>';
+                    return $status;
+                })
+                ->addColumn(
+                    'action',
+                    function ($data) {
+                    $addCompany = '<a class="btn btn-action-btn btn-sm" data-toggle="modal" data-target="#addGroupCompanyFrame" title="Edit Group Company" data-url ="'.route('add_group_company', ['group_id' => $data->group_id, 'company_id' => $data->group_company_id]).'" data-height="500px" data-width="100%" data-placement="top"><i class="fa fa-edit"></i></a>';
+                    return $addCompany;
+                })
+                ->filter(function ($query) use ($request) {
+                    if ($request->get('search_keyword') != '') {
+                        $query->where(function ($query) use ($request) {
+                            $search_keyword = trim($request->get('search_keyword'));
+                            $query->where('company_name', 'like',"%$search_keyword%");
+                        });
+                    }
+                })
+                ->make(true);
+    }
 
-   public function getBankList(Request $request, $bank){              
+   public function getBankList(Request $request, $bank){
         return DataTables::of($bank)
             ->rawColumns(['status','action'])
             ->addColumn(
@@ -8710,6 +9152,21 @@ class DataRenderer implements DataProviderInterface
             ->editColumn('trans_type', function ($trans) {
                 return $trans->transaction->transname;
             })
+            ->editColumn(
+                'tran_id',
+                function ($trans) {
+                    if(isset($trans->transaction)){
+                        if($trans->transaction->trans_type == 16 && $trans->transaction->entry_type == 0){
+                            return (isset($trans->transaction->invoiceDisbursed->disbursal->tran_id)) ? $trans->transaction->invoiceDisbursed->disbursal->tran_id : '';
+                        }elseif($trans->transaction->entry_type == 1 && !is_null($trans->transaction->payment_id)){
+                            return $trans->transaction->payment->transactionNo;
+                        }elseif($trans->transaction->trans_type == 32 && $trans->transaction->entry_type == 0 ){
+                            return $trans->transaction->refundTrans->refundReq->tran_no;
+                        }
+                    }
+                    
+                }
+            )
             ->editColumn('currency', function ($trans) {
                 return $trans->currency;
             })
@@ -8790,6 +9247,21 @@ class DataRenderer implements DataProviderInterface
             ->editColumn('trans_type', function ($trans) {
                 return $trans->transaction->transname;
             })
+            ->editColumn(
+                'tran_id',
+                function ($trans) {
+                    if(isset($trans->transaction)){
+                        if($trans->transaction->trans_type == 16 && $trans->transaction->entry_type == 0){
+                            return (isset($trans->transaction->invoiceDisbursed->disbursal->tran_id)) ? $trans->transaction->invoiceDisbursed->disbursal->tran_id : '';
+                        }elseif($trans->transaction->entry_type == 1 && !is_null($trans->transaction->payment_id)){
+                            return $trans->transaction->payment->transactionNo;
+                        }elseif($trans->transaction->trans_type == 32 && $trans->transaction->entry_type == 0 ){
+                            return $trans->transaction->refundTrans->refundReq->tran_no;
+                        }
+                    }
+                    
+                }
+            )
             ->editColumn('currency', function ($trans) {
                 return $trans->currency;
             })
@@ -8891,7 +9363,7 @@ class DataRenderer implements DataProviderInterface
                     return \Carbon\Carbon::parse($data->created_at)->format('d-m-Y H:i:s');
                 }
             )  
-            ->editColumn('date_of_final_submission',  function ($data) {
+           ->editColumn('date_of_final_submission',  function ($data) {
                 if($data->date_of_final_submission){
                    return \Carbon\Carbon::parse($data->date_of_final_submission)->format('d-m-Y');
                 }else{
@@ -8907,12 +9379,12 @@ class DataRenderer implements DataProviderInterface
                 }
                 if(Helpers::checkPermission('create_new_sanction_letter') ){
                     if (in_array($data->status,[0,1])){
-                        $link .="<a href=\"".route('create_new_sanction_letter', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id'),'sanction_letter_id' => $data->sanction_letter_id, 'action_type' => 'edit'] ) ."\" title='Edit' class='btn btn-action-btn btn-sm mr-1'><i class='fa fa-pencil-square-o' aria-hidden='true'></i></a>";
+                       $link .="<a href=\"".route('create_new_sanction_letter', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id'),'sanction_letter_id' => $data->sanction_letter_id, 'action_type' => 'edit'] ) ."\" title='Edit' class='btn btn-action-btn btn-sm mr-1'><i class='fa fa-pencil-square-o' aria-hidden='true'></i></a>";
                     }
                 }
-                if(Helpers::checkPermission('download_new_sanction_letter') ){
+               if(Helpers::checkPermission('download_new_sanction_letter') ){
                     $link .="<a href=\"".route('download_new_sanction_letter', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id'),'sanction_letter_id' => $data->sanction_letter_id, 'action_type' => 'download'] ) ."\" title='Download' class='btn btn-action-btn btn-sm mr-1'><i class='fa fa-download' aria-hidden='true'></i></a>";
-                }
+               }
                 if(Helpers::checkPermission('update_regenerate_sanction_letter') ){
                     if ($data->status == 2){
                         if($data->is_regenerated == 1){
@@ -8944,6 +9416,7 @@ class DataRenderer implements DataProviderInterface
                 })
             ->make(true);
     }
+    
     public function getSecurityDocumentLists(Request $request, $securityDoc){
 
         return DataTables::of($securityDoc)
@@ -8987,7 +9460,6 @@ class DataRenderer implements DataProviderInterface
                 })
                 ->make(true);
     }
-    
     public function getAllNonAnchorLeadsList(Request $request, $lead)
     {        
         return DataTables::of($lead)
@@ -9056,6 +9528,208 @@ class DataRenderer implements DataProviderInterface
                 ->make(true);
     }
 
+    // Master Group
+    public function getAllGroupsData(Request $request, $data)
+    {
+        return DataTables::of($data)
+                ->rawColumns(['is_active', 'action'])               
+                ->addColumn('group_code', function ($data) {
+                    $isApproved = MakerChecker::checkGroupIsApproved($data->group_id);
+                    return $data->group_code && $isApproved ? $data->group_code : '---';
+                })
+                ->addColumn('group_name', function ($data) {
+                    return $data->group_name;
+                })
+                ->addColumn('created_at', function ($data) {
+                    return $data->created_at ? date('d-m-Y h:i A', strtotime($data->created_at)) : '';
+                })
+                ->addColumn('updated_at', function ($data) {
+                    return $data->updated_at ? date('d-m-Y h:i A', strtotime($data->updated_at)) : '';
+                })
+                ->addColumn('is_active', function ($data) {
+                    $isApproved = MakerChecker::checkGroupIsApproved($data->group_id);
+                    $status = '<div class="btn-group"><label class="badge badge-'.($isApproved == 1 ? 'success pt-2 pl-3 pr-3' : 'danger pt-2').' current-status">'.($isApproved == 1 ? 'Active' : 'Pending For Approval').'&nbsp; &nbsp;</label></div>';
+                    return $status;
+                })
+                ->addColumn('action', function ($data) {
+                    $action = '';
+                    $isApproved = MakerChecker::checkGroupIsApproved($data->group_id);
+                    if(Helpers::checkPermission('edit_new_group')){
+                        $action .= '<a class="btn btn-action-btn btn-sm" title="Edit Group" href="'.route('edit_new_group', ['group_id' => $data->group_id]).'"><i class="fa fa-edit"></i></a>';
+                    }
+                    if(Helpers::checkPermission('view_group_ucic') && $isApproved){
+                        $action .= '<a class="btn btn-action-btn btn-sm" title="View Group UCIC" href="'.route('view_group_ucic', ['group_id' => $data->group_id]).'"><i class="fa fa-eye"></i></a>';
+                    }
+                    return $action;
+                })
+                ->filter(function ($query) use ($request) {
+                    if ($request->get('search_keyword') != '') {
+                        $query->where(function ($query) use ($request) {
+                            $search_keyword = trim($request->get('search_keyword'));
+                            $query->where('group_name', 'like',"%$search_keyword%")
+                                  ->orWhere('group_code', 'like', "%$search_keyword%");
+                        });
+                    }
+                })
+                ->make(true);
+    }
+    
+    public function getGroupUcicData(Request $request, $data)
+    {
+        return DataTables::of($data)
+                ->rawColumns([])
+                ->addColumn('group_code', function ($data) {
+                    return $data->group->group_code;
+                })
+                ->addColumn('group_name', function ($data) {
+                    return $data->group->group_name;
+                })
+                ->addColumn('app_id', function ($data) {
+                    return \Helpers::formatIdWithPrefix($data->app_id, 'APP');
+                })
+                ->addColumn('ucic_code', function ($data) {
+                    return $data->ucic->ucic_code;
+                })
+                ->addColumn('customer_name', function ($data) {
+                    return $data->ucic->user->full_name;
+                })
+                ->make(true);
+    }
+                
+    public function getUcicList(Request $request, $data)
+    {
+        
+        $this->sr_no = 1;
+    
+        return Datatables::of($data)
+        ->rawColumns(['ucic_code','app_id','group_code','group_name','f_name','email','created_at'])
+            ->addColumn(
+                'ucic_code',
+                function($data) {
+                    // return isset($data->ucic_code) ? $data->ucic_code : 'N/A';
+                    $link = $data->ucic_code;
+                    if(isset($data->app_id)){
+                        return "<a href=\"".route('business_details', ['user_ucic_id' => $data->user_ucic_id, 'app_id' => $data->app_id, 'biz_id' => $data->app->biz_id])."\" rel=\"tooltip\">$link</a> ";
+                    }else{
+                       return $data->ucic_code;
+                    }
+                        
+            })
+
+            ->addColumn(
+                'app_id',
+                function($data) {
+                    $ret='';
+                    if(!empty($data->app)){
+                        $parent_app_id = $data->app->parent_app_id;
+                        $app_id = $data->app->app_id;
+                        $app_code = $data->app->app_code;
+                        $userId = $data->user_id;
+                        if (!empty($parent_app_id)) {
+                            
+                            $link = route('business_details', ['biz_id' => $data->app->biz_id, 'app_id' => $parent_app_id, 'user_id'=>$userId]);
+                            $ret = "<a id='app-id-$app_id' href='$link' rel='tooltip'>" . $app_code . "</a>";
+                            $ret .= "<br><small>Parent:</small><br><a href='" . route('business_details', ['biz_id' => $data->app->biz_id, 'app_id' => $parent_app_id]) . "' rel='tooltip'>" . \Helpers::formatIdWithPrefix($parent_app_id, 'APP') . "</a>";
+                        }else{
+                            
+                            $link = route('business_details', ['biz_id' => $data->app->biz_id, 'app_id' => $app_id, 'user_id'=>$userId]);
+                            $ret = "<a id='app-id-$app_id' href='$link' rel='tooltip'>" . $app_code . "</a>";
+                            //$ret = "<br><small>Parent:</small><br><a href='" . route('business_details', ['biz_id' => $data->app->biz_id, 'app_id' => $app_id]) . "' rel='tooltip'>" . \Helpers::formatIdWithPrefix($app_id, 'APP') . "</a>";
+
+                        }
+                    }else{
+                        $ret='NA';
+                    }
+                    
+                    return $ret;
+            })
+            ->addColumn(
+                'group_code',
+                function($data) {
+                    $groupCode = 'N/A';$ret='N/A';
+                    if(!empty($data->app)){
+                    $app_id = $data->app->app_id;
+                    $userId = $data->user_id;
+                    if (isset($data->appgroupdetails) && !empty($data->appgroupdetails)){
+                        $groupCode = $data->appgroupdetails->group->group_code;
+                        $link = route('group_linking', ['biz_id' => $data->app->biz_id, 'app_id' => $app_id, 'user_id'=>$userId]);
+                        $ret = "<a id='app-id-$app_id' href='$link' rel='tooltip'>" . $groupCode . "</a>";
+                    }
+                  }
+                    return $ret;
+                            
+            })
+            ->addColumn(
+                'group_name',
+                function($data) {
+                    $groupName = 'N/A';$ret='N/A';
+                    if(!empty($data->app)){
+                    $app_id = $data->app->app_id;
+                    $userId = $data->user_id;
+                    if (isset($data->appgroupdetails) && !empty($data->appgroupdetails)){
+                        $groupName = $data->appgroupdetails->group->group_name;
+                        $link = route('group_linking', ['biz_id' => $data->app->biz_id, 'app_id' => $app_id, 'user_id'=>$userId]);
+                        $ret = "<a id='app-id-$app_id' href='$link' rel='tooltip'>" . $groupName . "</a>";
+                    }
+                  }
+                    return $ret;
+            })
+
+            ->addColumn(
+                'f_name',
+                function($data) {
+                    // return isset($data->user) ? $data->user->f_name : 'N/A';
+                    $panInfo = $data->pan_no && !empty($data->pan_no) ? '<br><strong>PAN:</strong> ' . $data->pan_no : ((isset($data->pan_no) && $data->pan_no && !empty($data->pan_no)) ? '<br><strong>PAN:</strong> ' . $data->pan_no : ''); 
+                    $full_name = $data->user->f_name.' '.$data->user->l_name . $panInfo;
+                    return $full_name;
+            })
+
+            ->addColumn(
+                'email',
+                function($data) {
+                    return isset($data->user) ? $data->user->email : 'N/A';
+            })
+
+            /*->addColumn(
+                'name',
+                function($data) {
+                    return isset($data->anchor) ? $data->anchor->name: 'N/A';
+            })*/
+
+            ->addColumn(
+                'created_at',
+                function($data) {
+                    return !empty($data->user->created_at) ? Carbon::parse($data->user->created_at)->format('d-m-Y') : 'N/A';
+            })
+
+            // ->editColumn(
+            //     'action',
+            //     function($data) {
+            //        return '<a title="view Application" href="'.route("view_business_detail", ["app_id" => $data->app_id]).'" class="btn btn-action-btn btn-sm "><i class="text-secondary fa fa-cog" aria-hidden="true"></i></a><a title="edit Application" href="'.route("edit_business_details", ["app_id" => $data->app_id]).'" class="btn btn-action-btn btn-sm "><i class="text-secondary fa fa-edit" aria-hidden="true"></i></a>';
+            // })
+       
+            ->filter(function ($query) use ($request) {
+                DB::enableQueryLog();
+                if ($request->get('by_code') != '') {
+                    $query->where(function ($query) use ($request) {
+                         $search = trim($request->get('by_code'));
+                        $query->where('ucic_code', 'like',$search)
+                         ->orwhere('pan_no', 'like',"%$search%");
+                       
+                    });
+                    $query->orWhereHas('appgroupdetails.group',function ($query) use ($request) {
+                        $search = trim($request->get('by_code'));
+                        $query->where('group_code', 'like',"%$search%");
+                    });
+                    $query->orWhereHas('appgroupdetails.group',function ($query) use ($request) {
+                        $search = trim($request->get('by_code'));
+                        $query->where('group_name', 'like',"%$search%");
+                    });   
+                }
+            })  
+            ->make(true);
+    }                  
+
     public function getOutstandingReportLogs(Request $request, $data)
     {
         return DataTables::of($data)
@@ -9085,6 +9759,39 @@ class DataRenderer implements DataProviderInterface
                     }
                 }
                 return '';
+            })
+            ->make(true);
+    }
+    public function getLendingRateAffectUsersList(Request $request, $data)
+    {
+        return DataTables::of($data)
+            ->rawColumns(['changed_lending_rate','action'])
+            ->addColumn('anchor_name', function ($data) {
+                return $data->anchor->comp_name;
+            })
+            ->addColumn('cust_id', function ($data) {
+                return $data->app->user->lms_user->customer_id;
+            })
+            ->addColumn('app_id', function ($data) {
+                return \Helpers::formatIdWithPrefix($data->app_id, 'APP');
+            })
+            ->addColumn('entity_name', function ($data) {
+                return $data->app->business->biz_entity_name;
+            })
+            ->addColumn('applied_lending_rate', function ($data) {
+                return $data->userLendingRateActive->lending_rate ?? '';
+            })
+            ->addColumn('effective_interest_rate', function ($data) {
+                return $data->userLendingRateActive->interest_rate ?? '';
+            })
+            ->addColumn('changed_lending_rate', function ($data) use ($request) {
+                return "<input class='form-control lending_rate' type='text' name=\"lending_rate[".$data->prgm_offer_id."]\" id=\"change_". $data->prgm_offer_id."\" disabled value=\"".$request->lending_rate."\" onkeyup='changeLendingRate(this.id)'>";
+            })
+            ->addColumn('changed_interest_rate', function ($data) use ($request) {
+                return \Helpers::calUpdatedIntRateForLendingRate($request->lending_rate, $data->userLendingRateActive->lending_rate ?? 0, $data->userLendingRateActive->interest_rate ?? 0);
+            })
+            ->addColumn('action', function ($data) {
+                return "<input class='check' id=\"check_". $data->prgm_offer_id."\" type='checkbox' name=\"check[".$data->prgm_offer_id."]\" onchange=\"onCheckChange(".$data->prgm_offer_id.")\">";
             })
             ->make(true);
     }
