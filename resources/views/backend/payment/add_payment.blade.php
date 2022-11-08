@@ -177,7 +177,7 @@
                                                 <select class="form-control bank_id" name="bank_id" id="bank_id">
                                                     <option value=""> Select Bank </option>
                                                     @foreach($comp_bank_list as $key=>$val)
-                                                    <option value="{{$val->bank_account_id}}"> {{$val->bank_name}}</option>
+                                                    <option value="{{$val->bank_account_id}}"> {{$val->bank_name}} - {{$val->acc_no}}</option>
                                                     @endforeach
                                                 </select>
                                             </div>
