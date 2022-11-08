@@ -393,6 +393,7 @@ class InvoiceController extends Controller {
     }
     
     public function updateTransactionInvoiceDisbursed($disbursalIds, $fundedDate) {
+        $oldTimeZone = trim(strtolower(date_default_timezone_get()));
         $invoiceDisbursed = $this->lmsRepo->getInvoiceDisbursed($disbursalIds)->toArray();
         $selectDate = (!empty($fundedDate)) ? date("Y-m-d h:i:s", strtotime(str_replace('/','-',$fundedDate))) : \Carbon\Carbon::now()->format('Y-m-d h:i:s');
         $curData = \Carbon\Carbon::now()->format('Y-m-d h:i:s');
@@ -429,7 +430,6 @@ class InvoiceController extends Controller {
 
             /* Sudesh: Code to save Invoice Disbursed details : S */
             if(1){
-                $oldTimeZone = trim(strtolower(date_default_timezone_get()));
                 date_default_timezone_set("UTC");
                 $invoiceDetails = [
                     'invoice_id' => $value['invoice']['invoice_id'],
@@ -554,7 +554,6 @@ class InvoiceController extends Controller {
         }
 
         date_default_timezone_set($oldTimeZone);
-        
         $disbursals = $this->lmsRepo->getDisbursals($disbursalIds)->toArray();
         foreach ($disbursals as $key => $value) {
         if($value['lms_user']['user']['is_buyer'] == 2) {
