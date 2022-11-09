@@ -1275,7 +1275,10 @@ class DataRenderer implements DataProviderInterface
                     function ($invoice) {
 
                         $act = $invoice->mstStatus->status_name ? $invoice->mstStatus->status_name : '';
-
+                        if(($invoice->file_id != 0)) {
+                            $act .='&nbsp;<a href="'.route('download_storage_file', ['file_id' => $invoice->userFile->file_id ]).'" title="Download" target="_blank" class="btn btn-action-btn btn-sm"> <i class="fa fa-file-pdf-o" aria-hidden="true"></i></a>';
+                            $act .='&nbsp;<a href="'.route('see_invoice_file', ['file_id' => $invoice->userFile->file_id ]).'" title="View Document" target="_blank" class="btn btn-action-btn btn-sm"> <i class="fa fa-eye" aria-hidden="true"></i></a>';
+                        }
                         if($invoice->invoice_disbursed) {
                             if(Helpers::checkPermission('view_interest_accrual') ){
                                 $act .='&nbsp;&nbsp;<a data-toggle="modal"  data-height="550px" data-width="100%" data-target="#viewInterestAccrual" data-url="' . route('view_interest_accrual', ['invoice_disbursed_id' =>$invoice->invoice_disbursed->invoice_disbursed_id]) . '"  data-placement="top" class="btn btn-action-btn btn-sm" title="View Interest Accrual"><i class="fa fa-info" aria-hidden="true"></i></a>';
@@ -1723,7 +1726,6 @@ class DataRenderer implements DataProviderInterface
 
                         $this->overDueFlag = 0;
                         $disburseAmount = 0;
-                        if((int)$invoice['supplier']['is_active'] != 0){
                             $apps = $invoice['supplier']['apps'];
                             if ($this->overDueFlag == 0) {
                                 foreach ($apps as $app) {
@@ -1756,17 +1758,6 @@ class DataRenderer implements DataProviderInterface
                             $this->isAnchorLimitExceeded  = $isAnchorLimitExceeded;
                         // return  "<input type='checkbox' class='invoice_id' name='checkinvoiceid' value=".$invoice->invoice_id.">";
                             return ($this->overDueFlag == 1 || $chkUser->id == 11  || $this->isLimitExpired || $this->isLimitExceed || $isAnchorLimitExceeded) ? '-' : "<input type='checkbox' class='invoice_id' name='checkinvoiceid' value=".$invoice->invoice_id.">";
-                        }else{
-                            $IsOverdue = InvoiceTrait::invoiceOverdueCheck($invoice->invoice_id);
-                            $isLimitExpired = InvoiceTrait::limitExpire($invoice->supplier_id);
-                            $isLimitExceed = InvoiceTrait::isLimitExceed($invoice->invoice_id);
-                            $isAnchorLimitExceeded = InvoiceTrait::isAnchorLimitExceeded($invoice->anchor_id, 0);
-                            $this->IsOverdue = $IsOverdue;  
-                            $this->isLimitExpired = $isLimitExpired;
-                            $this->isLimitExceed  = $isLimitExceed;
-                            $this->isAnchorLimitExceeded  = $isAnchorLimitExceeded;
-                            return '';
-                        }
                         
                      })
                 ->addColumn(
@@ -1859,7 +1850,6 @@ class DataRenderer implements DataProviderInterface
                           }
                            $action .='<option value="14">Reject</option></select></div>';
                      }
-                    // if((int)$invoice['supplier']['is_active'] != 0){
                         if ($this->isLimitExpired) {
                             $remark = '<span class="badge badge-danger">Limit Expired</span><br>';
                         } else if ($this->isLimitExceed) {
@@ -1871,9 +1861,6 @@ class DataRenderer implements DataProviderInterface
                         } else {
                             $remark = '';
                         }
-                    // }else{
-                    //     $remark = '<span class="badge badge-danger">Customer A/C is Blocked</span><br>';
-                    // }
                     
                         return  $remark . $action;
                 })
@@ -5435,6 +5422,32 @@ class DataRenderer implements DataProviderInterface
             return $data;
         })
         ->filter(function ($query) use ($request) {
+            if($request->get('from_date')!= '' && $request->get('to_date')!=''){
+                $query->where(function ($query) use ($request) {
+                    $from_date = Carbon::createFromFormat('d/m/Y', $request->get('from_date'))->format('Y-m-d 00:00:00');
+                    $to_date = Carbon::createFromFormat('d/m/Y', $request->get('to_date'))->format('Y-m-d 23:59:59');
+                    $query->WhereBetween('sys_created_at', [$from_date, $to_date]);
+                });
+            }
+            if($request->has('trans_entry_type')){
+                if($request->trans_entry_type != ''){
+                    $trans_entry_type = explode('_',$request->trans_entry_type);
+                    $trans_type = $trans_entry_type[0];
+                    $entry_type = $trans_entry_type[1];
+                    if($trans_type){
+                        $query->where('trans_type',$trans_type);
+                    }
+                    if($entry_type != ''){
+                        $query->where('entry_type',$entry_type);
+                    }
+                }
+            }
+            if($request->get('user_id')!= ''){
+                $query->where(function ($query) use ($request) {
+                    $user_id = trim($request->get('user_id'));
+                    $query->where('transactions.user_id', '=', "$user_id");
+                });
+            }
             })
             ->make(true);
     }
