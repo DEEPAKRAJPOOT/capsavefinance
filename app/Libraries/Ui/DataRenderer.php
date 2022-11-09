@@ -1859,7 +1859,7 @@ class DataRenderer implements DataProviderInterface
                           }
                            $action .='<option value="14">Reject</option></select></div>';
                      }
-                    if((int)$invoice['supplier']['is_active'] != 0){
+                    // if((int)$invoice['supplier']['is_active'] != 0){
                         if ($this->isLimitExpired) {
                             $remark = '<span class="badge badge-danger">Limit Expired</span><br>';
                         } else if ($this->isLimitExceed) {
@@ -1871,9 +1871,9 @@ class DataRenderer implements DataProviderInterface
                         } else {
                             $remark = '';
                         }
-                    }else{
-                        $remark = '<span class="badge badge-danger">Customer A/C is Blocked</span><br>';
-                    }
+                    // }else{
+                    //     $remark = '<span class="badge badge-danger">Customer A/C is Blocked</span><br>';
+                    // }
                     
                         return  $remark . $action;
                 })
