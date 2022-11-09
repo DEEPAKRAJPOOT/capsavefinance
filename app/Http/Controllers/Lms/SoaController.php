@@ -212,7 +212,7 @@ class SoaController extends Controller
                         $utr = $data->transaction->payment->transactionNo;
                         
                     }elseif($data->transaction->trans_type == 32 && $data->transaction->entry_type == 0){
-                        $utr = $data->transaction->refundTrans->refundReq->tran_no;
+                        $utr = $data->transaction->refundTrans->refundReq->tran_no??'';
                     }
                 }
                 $balance = round(($balance + $dr - $cr),2);
@@ -332,7 +332,7 @@ class SoaController extends Controller
                 }
             }
 
-            $transactionList->with('transaction.invoiceDisbursed.disbursal','transaction.payment')->whereHas('lmsUser',function ($query) use ($request) {
+            $transactionList->with('transaction.invoiceDisbursed.disbursal','transaction.payment','transaction.refundTrans.refundReq')->whereHas('lmsUser',function ($query) use ($request) {
                 $customer_id = trim($request->get('customer_id'));
                 $query->where('customer_id', '=', "$customer_id");
             });
