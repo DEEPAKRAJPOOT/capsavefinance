@@ -59,6 +59,7 @@ class Payment extends BaseModel {
         'parent_trans_id',
         'amount',
         'date_of_payment',
+        'bank_account_id',
         'gst',
         'sgst_amt',
         'cgst_amt',
@@ -226,6 +227,15 @@ class Payment extends BaseModel {
         return self::with('userRelation')->where(['is_settled' => 1, 'generated_by' => 0, 'is_refundable' => 1, 'trans_type' => config('lms.TRANS_TYPE.REPAYMENT'), 'action_type' => 1])
         ->where($where)
         ->get();
+    }
+
+    public function companyBank()
+    {
+        return $this->hasOne('App\Inv\Repositories\Models\Master\Bank', 'id','bank_id');
+    }
+
+    public function companyUserAccount(){
+        return $this->hasOne('App\Inv\Repositories\Models\UserBankAccount', 'bank_account_id','bank_account_id');
     }
 
     public function getSettledTxns() {

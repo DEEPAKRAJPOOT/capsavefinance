@@ -144,10 +144,13 @@ class ApiController
           'acc_no' =>  '',
           'ifsc_code' =>  '',
           'bank_name' =>  '',
+          'company_bank_name'=>'',
+          'company_bank_acc'=>'',
           'cheque_amount' =>  '',
           'cross_using' => '',
           'mode_of_pay' => '',
           'inst_no' =>  NULL,
+          'utr_no'  => NULL,
           'inst_date' =>  NULL,
           'favoring_name' =>  '',
           'remarks' => '',
@@ -311,7 +314,10 @@ class ApiController
             'cheque_amount' =>  '',
             'cross_using' => '',
             'mode_of_pay' => '',
+            'company_bank_name'=>'',
+            'company_bank_acc'=>'',
             'inst_no' =>  NULL,
+            'utr_no'  => NULL,
             'inst_date' =>  NULL,
             'favoring_name' =>  '',
             'remarks' => '',
@@ -380,7 +386,10 @@ class ApiController
           'cheque_amount' =>  '',
           'cross_using' => '',
           'mode_of_pay' => '',
+          'company_bank_name'=>'',
+          'company_bank_acc'=>'',
           'inst_no' =>  NULL,
+          'utr_no'  => NULL,
           'inst_date' =>  NULL,
           'favoring_name' =>  '',
           'remarks' => '',
@@ -408,8 +417,11 @@ class ApiController
           'bank_name' =>  $accountDetails->bank->bank_name ?? '',
           'cheque_amount' =>  '',
           'cross_using' => '',
+          'company_bank_name'=>'',
+          'company_bank_acc'=>'',
           'mode_of_pay' => 'e-Fund-Transfer',
           'inst_no' =>  $inst_no,
+          'utr_no'  => NULL,
           'inst_date' =>  $inst_date,
           'favoring_name' =>  $userName,
           'remarks' => '',
@@ -464,8 +476,11 @@ class ApiController
               'cross_using' => '',
               'mode_of_pay' => '',
               'inst_no' =>  NULL,
+              'utr_no'  => NULL,
               'inst_date' =>  NULL,
               'favoring_name' =>  '',
+              'company_bank_name'=>'',
+              'company_bank_acc'=>'',
               'remarks' => '',
               'generated_by' => '0',
               'narration' => 'Being  Payment Disbursed towards UserId ' . $user_id . ', Invoice No '. $invoice_no .' & Batch no '. $batch_no .$payment_id,
@@ -493,9 +508,12 @@ class ApiController
               'cross_using' => '',
               'mode_of_pay' => 'e-Fund-Transfer',
               'inst_no' =>  $dsbrsl->invoiceDisbursed->disbursal->tran_id ?? NULL,
+              'utr_no'  => NULL,
               'inst_date' =>  $dsbrsl->invoiceDisbursed->disbursal->funded_date ?? NULL,
               'favoring_name' =>  $userName,
               'remarks' => '',
+              'company_bank_name'=>'',
+              'company_bank_acc'=>'',
               'generated_by' => '1',
               'narration' => 'Being  Payment Disbursed towards UserId ' . $user_id . ', Invoice No '. $invoice_no .' & Batch no '. $batch_no .$payment_id,
      ];
@@ -505,45 +523,51 @@ class ApiController
       $where = ['trans_date' => $disbursalDate, 'payment_id' => NULL, 'trans_type' => config('lms.TRANS_TYPE.INTEREST'), 'entry_type' => 1];
       $interestBooked = $dsbrsl->getInterestForDisbursal($where);
       if(isset($interestBooked)){
-        $interestTransId = $interestBooked->trans_id;
-        $this->selectedTxnData[] = $interestBooked->trans_id;
-        $InterestRow = [
-                'batch_no' =>  $batch_no,
-                'transactions_id' =>  $interestTransId,
-                'voucher_no' => $this->voucherNo,
-                'voucher_type' => 'Payment',
-                'voucher_date' => NULL,
-                'transaction_date'=>$dsbrsl->created_at,
-                'is_debit_credit' =>  'Credit',
-                'trans_type' =>  'Interest',
-                'invoice_no' =>   $invoice_no,
-                'invoice_date' =>  $invoice_date,
-                'ledger_name' =>  'Interest',
-                'amount' =>  $interestBooked->amount,
-                'ref_no' =>  $invoice_no,
-                'ref_amount' =>  $interestBooked->amount,
-                'acc_no' =>  '',
-                'ifsc_code' =>  '',
-                'bank_name' =>  '',
-                'cheque_amount' =>  '',
-                'cross_using' => '',
-                'mode_of_pay' => '',
-                'inst_no' =>  NULL,
-                'inst_date' =>  NULL,
-                'favoring_name' =>  '',
-                'remarks' => '',
-                'generated_by' => '1',
-                'narration' => 'Being Interest Payment towards UserId ' . $user_id . ', Invoice No '. $invoice_no .' & Batch no '. $batch_no .$payment_id,
-        ];
-        $disbursalPayment[] = $InterestRow;
-      }
+       $interestTransId = $interestBooked->trans_id;
+       $this->selectedTxnData[] = $interestBooked->trans_id;
+       $InterestRow = [
+              'batch_no' =>  $batch_no,
+              'transactions_id' =>  $interestTransId,
+              'voucher_no' => $this->voucherNo,
+              'voucher_type' => 'Payment',
+              'voucher_date' => NULL,
+              'transaction_date'=>$dsbrsl->created_at,
+              'is_debit_credit' =>  'Credit',
+              'trans_type' =>  'Interest',
+              'invoice_no' =>   $invoice_no,
+              'invoice_date' =>  $invoice_date,
+              'ledger_name' =>  'Interest',
+              'amount' =>  $interestBooked->amount,
+              'ref_no' =>  $invoice_no,
+              'ref_amount' =>  $interestBooked->amount,
+              'acc_no' =>  '',
+              'ifsc_code' =>  '',
+              'bank_name' =>  '',
+              'cheque_amount' =>  '',
+              'cross_using' => '',
+              'mode_of_pay' => '',
+              'inst_no' =>  NULL,
+              'utr_no'  => NULL,
+              'inst_date' =>  NULL,
+              'favoring_name' =>  '',
+              'company_bank_name'=>'',
+              'company_bank_acc'=>'',
+              'remarks' => '',
+              'generated_by' => '1',
+              'narration' => 'Being Interest Payment towards UserId ' . $user_id . ', Invoice No '. $invoice_no .' & Batch no '. $batch_no .$payment_id,
+     ];
+     $disbursalPayment[] = $InterestRow;
+     }
     }
     return $disbursalPayment;
   }
 
   private function createReceiptData($receiptData, $batch_no) {
+    
     $receiptPayment = [];
     foreach($receiptData as $rcpt){
+      
+      
      $this->voucherNo = $this->voucherNo + 1;
      $settledTransactoions =  $rcpt->getSettledTxns;
      $refrenceTxns = $rcpt->paymentRefrenceTxns->first();
@@ -553,6 +577,17 @@ class ApiController
      if (empty($accountDetails)) {
         continue;
      }
+     $utr_no=NULL;
+     if($rcpt->payment_type === '1'){
+       $utr_no = $rcpt->utr_no ?? NULL;
+     }else if($rcpt->payment_type === '2'){
+      $utr_no = $rcpt->cheque_no ?? NULL;
+     }else if($rcpt->payment_type === '3'){
+      $utr_no = $rcpt->unr_no ?? NULL;
+     }else if($rcpt->payment_type === '4'){
+      $utr_no = $rcpt->unr_no ?? NULL;
+     }
+
      $inst_no = $rcpt->refundReq->tran_no ?? NULL;
      $inst_date = $rcpt->refundReq->actual_refund_date ?? NULL;
      $this->selectedPaymentData[] = $rcpt->payment_id;
@@ -595,8 +630,11 @@ class ApiController
               'cross_using' => $rcpt->payment_type == 2 ? 'a/c payee' : NULL,
               'mode_of_pay' => $mode_of_pay,
               'inst_no' =>  $inst_no,
+              'utr_no'  => $utr_no,
               'inst_date' =>  $inst_date,
               'favoring_name' =>  $userName,
+              'company_bank_name'=>$rcpt->companyUserAccount?$rcpt->companyUserAccount->bank->bank_name:NULL,
+              'company_bank_acc'=>$rcpt->companyUserAccount?$rcpt->companyUserAccount->acc_no:NULL,
               'remarks' => '',
               'generated_by' => '1',
               'narration' => 'Being Repayment towards UserId ' . $user_id . ' & Batch no '. $batch_no,
@@ -639,8 +677,11 @@ class ApiController
               'cross_using' => '',
               'mode_of_pay' => '',
               'inst_no' =>  NULL,
+              'utr_no'  => $utr_no,
               'inst_date' =>  NULL,
               'favoring_name' =>  '',
+              'company_bank_name'=>$rcpt->companyUserAccount?$rcpt->companyUserAccount->bank->bank_name:NULL,
+              'company_bank_acc'=>$rcpt->companyUserAccount?$rcpt->companyUserAccount->acc_no:NULL,
               'remarks' => '',
               'generated_by' => '0',
               'narration' => 'Being '.$trans_type_name.' towards UserId ' . $user_id . ', Invoice No '. $invoice_no .' & Batch no '. $batch_no,
@@ -736,8 +777,8 @@ class ApiController
     $disbursalArray = $this->createDisbursalData($disbursalData, $batch_no);
     $receiptArray = $this->createReceiptData($receiptData, $batch_no);
     $refundArray = $this->createRefundData($refundData, $batch_no);
-    $tally_data = array_merge($disbursalArray, $journalArray , $receiptArray, $refundArray);
     
+    $tally_data = array_merge($disbursalArray, $journalArray , $receiptArray, $refundArray);
     try {
         if (empty($tally_data)) {
            $response['message'] =  'No Records are selected to Post in tally.';

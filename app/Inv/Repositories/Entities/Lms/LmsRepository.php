@@ -10,6 +10,7 @@ use BlankDataExceptions;
 use App\Http\Requests\Request;
 use InvalidDataTypeExceptions;
 use App\Inv\Repositories\Models\User;
+use App\Inv\Repositories\Models\Master\Company;
 use App\Inv\Repositories\Models\LmsUser;
 use App\Inv\Repositories\Models\Payment;
 use App\Inv\Repositories\Models\AppLimit;
@@ -1858,9 +1859,12 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
 		return LmsUsersLog::getAccountStatus($userId);
 	}
 
-	public function maxDpdTransaction($userId){
-
+	public function maxDpdTransaction($userId){	
 		return Transactions::maxDpdTransaction($userId);
+	}
+	
+	public function getCapsavAddr(){
+		return Company::getCapsavAddr();
 	}
 
     public function getAllBusinessForSheet($whereCond) {

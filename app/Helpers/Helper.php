@@ -1331,6 +1331,14 @@ class Helper extends PaypalHelper
         return  $bank_acc;
     }
 
+    public static function getAllCompBankAccList($id)
+    {
+        //        dd($id);
+        $bank_acc = UserBankAccount::getAllCompBankAccList($id);
+
+        return  $bank_acc;
+    }
+
     /**
      * Get User detail by user_id
      *      

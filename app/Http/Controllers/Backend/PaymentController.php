@@ -73,8 +73,10 @@ class PaymentController extends Controller {
 	   $tranType=$this->lmsRepo->getManualTranType();
 	   //dd($tranType);
 	   $getGstDropVal=$this->lmsRepo->getActiveGST();
-	   $result= $this->lmsRepo->getAllLmsUser();  
-	  return view('backend.payment.add_payment')->with(['bank' => $bank,'customer' => $result, 'tranType'=>$tranType, 'getGstDropVal'=>$getGstDropVal]);
+	   $result= $this->lmsRepo->getAllLmsUser();
+	   $comp_bank_list = Helpers::getAllCompBankAccList(config('lms.COMP_ADDR_ID'));
+	   $companyList= $this->lmsRepo->getCapsavAddr();  
+	  return view('backend.payment.add_payment')->with(['comp_bank_list'=>$comp_bank_list,'bank' => $bank,'customer' => $result, 'tranType'=>$tranType, 'getGstDropVal'=>$getGstDropVal]);
    
 	}
 	  /*     Excel  Payment list page   */
@@ -148,7 +150,7 @@ class PaymentController extends Controller {
 					return ($request->action_type == 1)?true:false;
 				}),
 				'customer_id' => 'required', 
-				'virtual_acc' => 'required',  
+				'virtual_acc' => 'required', 
 				'date_of_payment' => 'required|date_format:d/m/Y|before_or_equal:'.$curdate,
 				'amount' => 'required|numeric|gt:0', 
 				'description' => 'required',
@@ -186,10 +188,11 @@ class PaymentController extends Controller {
 			  	$uploadData = Helpers::uploadUserLMSFile($arrFileData, $app_data->app_id);
 				$userFile = $this->docRepo->saveFile($uploadData);
 			}                        
-
-			$paymentData = [
+			
+			$paymentData = [	
 				'user_id' => $request->user_id,
 				'biz_id' => $request->biz_id,
+				'bank_account_id'=> $request->bank_id,
 				'virtual_acc' => $request->virtual_acc,
 				'action_type' => $request->action_type,
 				'trans_type' => $request->trans_type,
