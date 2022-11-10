@@ -16,6 +16,8 @@ use App\Inv\Repositories\Models\Master\EmailTemplate;
 use Storage;
 use Session;
 use Carbon\Carbon;
+use DB;
+use App\Inv\Repositories\Models\TallyFactVoucher;
 
 /**
  * 
@@ -26,6 +28,13 @@ class ApiController
   protected $secret_key = "0702f2c9c1414b70efc1e69f2ff31af0";
   protected $download_xlsx = true;
   protected $voucherNo = 0;
+  protected $voucherFormat = null;
+  protected $paymentFactVoucherSeq = 0;
+  protected $journalFactVoucherSeq = 0;
+  protected $paymentFactStartVoucherNumber = null;
+  protected $journalFactStartVoucherNumber = null;
+  protected $paymentFactEndVoucherNumber = null;
+  protected $journalFactEndVoucherNumber = null;
   protected $selectedTxnData = [];
   protected $selectedPaymentData = [];
 	function __construct(){
@@ -112,23 +121,17 @@ class ApiController
               $inst_no = $parentRecord->refundReq->tran_no ?? NULL;
               $inst_date = $parentRecord->refundReq->actual_refund_date ?? NULL;
         }
-        
-        /*if ($jrnls->trans_type == config('lms.TRANS_TYPE.WAVED_OFF')) {
-          if ($parentRecord->is_invoice_generated == 0 || ($invoice_date > $jrnls->trans_date && $parentRecord->is_invoice_generated == 1)) {
-            continue;
-          }
-        }*/
       }
-      /*if (is_null($jrnls->parent_trans_id) && $jrnls->entry_type == 0 && $jrnls->outstanding > 0 && $is_charge) {
-       continue;
-      }*/
-
+      $this->journalFactVoucherSeq++;     
+      $factvoucherNumber = 'SJV'.$this->voucherFormat.sprintf('%06d',$this->journalFactVoucherSeq);
+      $this->journalFactEndVoucherNumber = $factvoucherNumber;
       $this->voucherNo = $this->voucherNo + 1;
       $entry_type = $jrnls->entry_type == 1 ? 'Credit' : 'Debit';
       $this->selectedTxnData[] = $jrnls->trans_id;
       $JournalRow = [
           'batch_no' =>  $batch_no,
           'transactions_id' =>  $jrnls->trans_id,
+          'fact_voucher_number'=>$factvoucherNumber,
           'voucher_no' => $this->voucherNo,
           'voucher_type' => 'Journal',
           'voucher_date' => $jrnls->trans_date,
@@ -294,6 +297,7 @@ class ApiController
             'batch_no' =>  $batch_no,
             'transactions_id' =>  $rvrsl->trans_id,
             'voucher_no' => $this->voucherNo,
+            'fact_voucher_number'=>$factvoucherNumber,
             'voucher_type' => 'Journal',
             'voucher_date' => $rvrsl->trans_date,
             'transaction_date'=>$rvrsl->created_at,
@@ -327,6 +331,9 @@ class ApiController
   private function createRefundData($refundData, $batch_no) {
     $refundPayment = [];
     foreach($refundData as $rfnd){
+      $this->paymentFactVoucherSeq++;
+      $factvoucherNumber = 'SRP'.$this->voucherFormat.sprintf('%06d',$this->paymentFactVoucherSeq); 
+      $this->paymentFactEndVoucherNumber = $factvoucherNumber;
       $this->voucherNo = $this->voucherNo + 1;
       $accountDetails = $rfnd->userRelation->companyBankDetails ?? NULL;
       if (empty($accountDetails)) {
@@ -363,6 +370,7 @@ class ApiController
           'batch_no' =>  $batch_no,
           'transactions_id' =>  $rfnd->trans_id,
           'voucher_no' => $this->voucherNo,
+          'fact_voucher_number'=>$factvoucherNumber,
           'voucher_type' => 'Payment',
           'voucher_date' => $rfnd->trans_date,
           'transaction_date'=>$rfnd->created_at,
@@ -392,6 +400,7 @@ class ApiController
           'batch_no' =>  $batch_no,
           'transactions_id' =>  NULL,
           'voucher_no' => $this->voucherNo,
+          'fact_voucher_number'=>$factvoucherNumber,
           'voucher_type' => 'Payment',
           'voucher_date' => NULL,
           'transaction_date'=>$rfnd->created_at,
@@ -424,6 +433,9 @@ class ApiController
   private function createDisbursalData($disbursalData, $batch_no) {
     $disbursalPayment = [];
     foreach($disbursalData as $dsbrsl){
+      $this->paymentFactVoucherSeq++;  
+      $factvoucherNumber = 'SRP'.$this->voucherFormat.sprintf('%06d',$this->paymentFactVoucherSeq);
+      $this->paymentFactEndVoucherNumber = $factvoucherNumber;
       $this->voucherNo = $this->voucherNo + 1;
       $accountDetails = $dsbrsl->userRelation->companyBankDetails ?? NULL;
       if (empty($accountDetails)) {
@@ -446,6 +458,7 @@ class ApiController
               'batch_no' =>  $batch_no,
               'transactions_id' =>  $dsbrsl->trans_id,
               'voucher_no' => $this->voucherNo,
+              'fact_voucher_number'=>$factvoucherNumber,
               'voucher_type' => 'Payment',
               'voucher_date' => $dsbrsl->trans_date,
               'transaction_date'=>$dsbrsl->created_at,
@@ -475,6 +488,7 @@ class ApiController
               'batch_no' =>  $batch_no,
               'transactions_id' =>  NULL,
               'voucher_no' => $this->voucherNo,
+              'fact_voucher_number'=>$factvoucherNumber,
               'voucher_type' => 'Payment',
               'voucher_date' => NULL,
               'transaction_date'=>$dsbrsl->created_at,
@@ -511,6 +525,7 @@ class ApiController
                 'batch_no' =>  $batch_no,
                 'transactions_id' =>  $interestTransId,
                 'voucher_no' => $this->voucherNo,
+                'fact_voucher_number'=>$factvoucherNumber,
                 'voucher_type' => 'Payment',
                 'voucher_date' => NULL,
                 'transaction_date'=>$dsbrsl->created_at,
@@ -544,6 +559,9 @@ class ApiController
   private function createReceiptData($receiptData, $batch_no) {
     $receiptPayment = [];
     foreach($receiptData as $rcpt){
+     $this->paymentFactVoucherSeq++;
+     $factvoucherNumber = 'SRP'.$this->voucherFormat.sprintf('%06d',$this->paymentFactVoucherSeq); 
+     $this->paymentFactEndVoucherNumber = $factvoucherNumber;
      $this->voucherNo = $this->voucherNo + 1;
      $settledTransactoions =  $rcpt->getSettledTxns;
      $refrenceTxns = $rcpt->paymentRefrenceTxns->first();
@@ -577,6 +595,7 @@ class ApiController
               'batch_no' =>  $batch_no,
               'transactions_id' => NULL,
               'voucher_no' => $this->voucherNo,
+              'fact_voucher_number'=>$factvoucherNumber,
               'voucher_type' => 'Receipt',
               'voucher_date' => $rcpt->date_of_payment,
               'transaction_date'=>$refrenceTxns->created_at?:NULL,
@@ -621,6 +640,7 @@ class ApiController
               'batch_no' =>  $batch_no,
               'transactions_id' =>  $stldTxn->trans_id,
               'voucher_no' => $this->voucherNo,
+              'fact_voucher_number'=>$factvoucherNumber,
               'voucher_type' => 'Receipt',
               'voucher_date' => $stldTxn->trans_date,
               'transaction_date'=>$stldTxn->created_at?$stldTxn->created_at:NULL,
@@ -724,7 +744,12 @@ class ApiController
     if (!empty($latestRecord)) {
       $lastVoucherNo = $latestRecord[0]->voucher_no ?? 0;
     }
-    $this->voucherNo = $this->voucherNo + 1;
+    $lastFactVoucher = Helper::getfactVoucherNumber($startDate);
+    $this->paymentFactVoucherSeq = (int)$lastFactVoucher['fact_srp_seq_number'];
+    $this->journalFactVoucherSeq = (int)$lastFactVoucher['fact_sjv_seq_number'];
+    $this->voucherFormat = $lastFactVoucher['voucher_format'];
+    $this->journalFactStartVoucherNumber = 'SJV'.$this->voucherFormat.sprintf('%06d',$this->journalFactVoucherSeq+1);
+    $this->paymentFactStartVoucherNumber = 'SRP'.$this->voucherFormat.sprintf('%06d',$this->paymentFactVoucherSeq+1);
     $batch_no = _getRand(15);
     $where = [['is_posted_in_tally', '=', '0'], ['created_at', '>=', $startDate],['created_at', '<=', $endDate]];
     $journalData = Transactions::getJournalTxnTally($where);
@@ -773,10 +798,25 @@ class ApiController
           'batch_no' => $batch_no,
           'record_cnt' => $recordsTobeInserted,
           'start_date' => $startDate,
+          'fact_payment_start_vn'=>$this->paymentFactEndVoucherNumber?$this->paymentFactStartVoucherNumber:NULL,
+          'fact_payment_end_vn'=>$this->paymentFactEndVoucherNumber,
+          'fact_journal_start_vn'=>$this->journalFactEndVoucherNumber?$this->journalFactStartVoucherNumber:NULL,
+          'fact_journal_end_vn'=>$this->journalFactEndVoucherNumber,
           'end_date' => $endDate,
           'created_at' => now(),
         ];
         $tally_inst_data = FinanceModel::dataLogger($batchData, 'tally');
+        if($tally_inst_data){
+          $tallyfactVoucher = [
+            'tally_id'=>$tally_inst_data,
+            'fact_year1'=>$lastFactVoucher['year1'],
+            'fact_year2'=>$lastFactVoucher['year2'],
+            'fact_month'=>$lastFactVoucher['month'],
+            'fact_srp_seq_number'=>$this->paymentFactVoucherSeq,
+            'fact_sjv_seq_number'=>$this->journalFactVoucherSeq,
+          ];
+          TallyFactVoucher::create($tallyfactVoucher);
+        }
         $response['message'] =  ($recordsTobeInserted > 1 ? $recordsTobeInserted .' Records inserted successfully' : '1 Record inserted.');
       }
     }else{
