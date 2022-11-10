@@ -675,7 +675,7 @@ class ApiController
               'cross_using' => '',
               'mode_of_pay' => '',
               'inst_no' =>  NULL,
-              'utr_no'  => NULL,
+              'utr_no'  => $utr_no,
               'inst_date' =>  NULL,
               'favoring_name' =>  '',
               'company_bank_name'=>$rcpt->companyUserAccount?$rcpt->companyUserAccount->bank->bank_name:NULL,
