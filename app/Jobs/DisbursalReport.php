@@ -140,8 +140,9 @@ class DisbursalReport implements ShouldQueue
             ->setCellValue('AQ'.$rows, 'Gross')
             ->setCellValue('AR'.$rows, 'Net of interest, PF & Stamp')
             ->setCellValue('AS'.$rows, 'Interest Borne By')
-            ->setCellValue('AT'.$rows, 'Grace Period (Days)');
-        $sheet->getActiveSheet()->getStyle('A'.$rows.':AT'.$rows)->applyFromArray(['font' => ['bold'  => true]]);
+            ->setCellValue('AT'.$rows, 'Grace Period (Days)')
+            ->setCellValue('AU'.$rows, 'Anchor Address');
+        $sheet->getActiveSheet()->getStyle('A'.$rows.':AU'.$rows)->applyFromArray(['font' => ['bold'  => true]]);
         $rows++;
         foreach($exceldata as $rowData){
 			
@@ -191,7 +192,8 @@ class DisbursalReport implements ShouldQueue
             ->setCellValueExplicit('AQ'.$rows, !empty($rowData['gross']) ? $rowData['gross'] : '---', \PHPExcel_Cell_DataType::TYPE_STRING)
             ->setCellValueExplicit('AR'.$rows, !empty($rowData['net_of_interest']) ? $rowData['net_of_interest'] : '---', \PHPExcel_Cell_DataType::TYPE_STRING)
             ->setCellValueExplicit('AS'.$rows, !empty($rowData['interest_borne_by']) ? $rowData['interest_borne_by'] : '---', \PHPExcel_Cell_DataType::TYPE_STRING)
-            ->setCellValueExplicit('AT'.$rows, !empty($rowData['grace_period']) ? $rowData['grace_period'] : '---', \PHPExcel_Cell_DataType::TYPE_STRING);
+            ->setCellValueExplicit('AT'.$rows, !empty($rowData['grace_period']) ? $rowData['grace_period'] : '---', \PHPExcel_Cell_DataType::TYPE_STRING)
+            ->setCellValueExplicit('AU'.$rows, !empty($rowData['anchor_address']) ? $rowData['anchor_address'] : '---', \PHPExcel_Cell_DataType::TYPE_STRING);
             $rows++;
         }
 

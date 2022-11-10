@@ -146,6 +146,7 @@ class DisbursalReport extends Command
                             "Net of interest_PF _Stamp"             => $dataRecord['Net of interest_PF _Stamp'],
                             "Interest Borne By"                     => $dataRecord['Interest Borne By'],
                             "Grace Period"                          => $dataRecord['Grace Period'],
+                            "Anchor Address"                          => $dataRecord['Anchor Address'],
                         ]);
                     }
                 }        

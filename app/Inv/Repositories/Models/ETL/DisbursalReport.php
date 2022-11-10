@@ -58,6 +58,7 @@ class DisbursalReport extends BaseModel
         "Gross",
         "Net of interest_PF _Stamp",
         "Interest Borne By",
-        "Grace Period"
+        "Grace Period",
+        "Anchor Address"
     ];
 }

@@ -46,7 +46,6 @@ class DisbursalReport extends Command
     {
         $this->needConsolidatedReport = filter_var($this->argument('need_consolidated_report'), FILTER_VALIDATE_BOOLEAN);
         $this->anchorId               = $this->argument('anchor_id');
-
         if(empty($this->emailTo)){
             dd('DAILY_REPORT_MAIL is missing');
         }
