@@ -99,6 +99,7 @@ class FinanceController extends Controller {
                     $j = [
                         "batch_no" => $fetchedArr['batch_no'],
                         "voucher_no" => sprintf('%04d',$fetchedArr['voucher_no']),
+                        "fact_voucher_number"=>$fetchedArr['fact_voucher_number'],
                         "trans_type" => $fetchedArr['trans_type'],
                         "voucher_type" => $fetchedArr['voucher_type'],
                         "voucher_date" => $voucherDate,
@@ -130,6 +131,7 @@ class FinanceController extends Controller {
                 }else{
                     $paymentRow =  [
                         "voucher_no" => $fetchedArr['voucher_no'],
+                        "fact_voucher_number"=>$fetchedArr['fact_voucher_number'],
                         "voucher_type" => $fetchedArr['voucher_type'],
                         "voucher_date" =>  !empty($fetchedArr['voucher_date']) ? date('d-m-Y',strtotime($fetchedArr['voucher_date'])) : '',
                         "transaction_date"=>$transaction_date,
