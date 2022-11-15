@@ -240,7 +240,6 @@
         </div>
     </div>
 </div>
-<input type="text" id="checkAlertValue" value="0">
 @endsection
 @section('jscript')
 <style>
