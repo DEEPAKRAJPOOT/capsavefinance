@@ -509,8 +509,8 @@ class ApiController
               'voucher_date' => $dsbrsl->trans_date, //code by new add old NULL
               'transaction_date'=>$dsbrsl->created_at,
               'is_debit_credit' =>  'Credit',
-              'trans_type' =>  $accountDetails->bank->bank_name ?? '',
-              //'trans_type' =>  $dsbrsl->getTransNameAttribute(), //OLD CODE by DJ
+              //'trans_type' =>  $accountDetails->bank->bank_name ?? '',//BY DJ
+              'trans_type' =>  $dsbrsl->getTransNameAttribute(),
               'invoice_no' =>   $invoice_no,
               'invoice_date' =>  $invoice_date,
               'ledger_name' =>  $accountDetails->bank->bank_name ?? '',
