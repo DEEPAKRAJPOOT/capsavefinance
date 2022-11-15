@@ -31,6 +31,7 @@ use App\Inv\Repositories\Contracts\MasterInterface;
 use App\Inv\Repositories\Contracts\Traits\ActivityLogTrait;
 use Illuminate\Support\Facades\App;
 use App\Inv\Repositories\Models\Lms\Transactions;
+use App\Inv\Repositories\Models\AppOfferAdhocLimit;
 
 class InvoiceController extends Controller {
 
@@ -730,6 +731,12 @@ class InvoiceController extends Controller {
             'created_at' => $date,
             'invoice_margin_amount' => $marginAmt
         );
+
+        if ($is_adhoc) {
+            $currUserActiveAdhocLimit = AppOfferAdhocLimit::checkUserAdhocLimit($attributes);
+            $arr['app_offer_adhoc_limit_id'] = $currUserActiveAdhocLimit->app_offer_adhoc_limit_id;
+        }
+
         $result = $this->invRepo->save($arr);
        
         if ($result) {

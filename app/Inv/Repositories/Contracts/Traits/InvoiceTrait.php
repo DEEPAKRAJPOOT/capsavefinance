@@ -691,8 +691,10 @@ trait InvoiceTrait
             $uid = Auth::user()->user_id;
             $dueDateGreaterCurrentdate =  self::limitExpire($attr['supplier_id']); /* get App limit by user_id*/
             $isOverDue     =  self::isOverDue($attr['supplier_id']); /* get overdue by user_id*/
+            $adhocData  = self::checkUserAdhoc($attr);
+            $limit   = $adhocData['amount'];
+            $attr['app_offer_adhoc_limit_id'] = $adhocData['ids'];
             $sum  =  self::adhocLimit($attr);
-            $limit  = self::checkUserAdhoc($attr);
             $getMargin =  self::invoiceMargin($attr);
             $finalsum = $sum-$attr['invoice_approve_amount'];
             if($limit  >= $finalsum)
@@ -755,8 +757,10 @@ trait InvoiceTrait
             $uid = Auth::user()->user_id;
             $dueDateGreaterCurrentdate =  self::limitExpire($attr['supplier_id']); /* get App limit by user_id*/
             $isOverDue     =  self::isOverDue($attr['supplier_id']); /* get overdue by user_id*/
+            $adhocData  = self::checkUserAdhoc($attr);
+            $limit   = $adhocData['amount'];
+            $attr['app_offer_adhoc_limit_id'] = $adhocData['ids'];
             $sum  =  self::adhocLimit($attr);
-            $limit  = self::checkUserAdhoc($attr);
             if($limit  >= $sum)
            {
                $remain_amount = $limit-$sum;
@@ -1064,12 +1068,12 @@ trait InvoiceTrait
   {
     $sql   =  BizInvoice::whereIn('status_id',[8,9,10,12,13,15])->where(['supplier_id' =>$attr['user_id']??$attr['supplier_id'],'prgm_offer_id' =>$attr['prgm_offer_id'],'is_adhoc' =>1]);
     if (isset($attr['app_offer_adhoc_limit_id'])) {
-      $sql = $sql->where(['app_offer_adhoc_limit_id' => $attr['app_offer_adhoc_limit_id']]);
+      $sql = $sql->whereIn('app_offer_adhoc_limit_id', $attr['app_offer_adhoc_limit_id']);
     }
     $marginApprAmt = $sql->sum('invoice_approve_amount');
     $sql =  BizInvoice::whereIn('status_id',[8,9,10,12,13,15])->where(['supplier_id' =>$attr['user_id']??$attr['supplier_id'],'prgm_offer_id' =>$attr['prgm_offer_id'],'is_adhoc' =>1]);
     if (isset($attr['app_offer_adhoc_limit_id'])) {
-      $sql = $sql->where(['app_offer_adhoc_limit_id' => $attr['app_offer_adhoc_limit_id']]);
+      $sql = $sql->whereIn('app_offer_adhoc_limit_id', $attr['app_offer_adhoc_limit_id']);
     }
     $marginReypayAmt = $sql->sum('principal_repayment_amt');
     return $marginApprAmt-$marginReypayAmt;
@@ -1079,7 +1083,8 @@ trait InvoiceTrait
     {
         $mytime = Carbon::now();
         $dateTime  =  $mytime->toDateTimeString();
-        return AppOfferAdhocLimit::where(['user_id' => $attr['user_id'] ?? $attr['supplier_id'],'prgm_offer_id' => $attr['prgm_offer_id'],'status' => 1])->whereRaw('CAST("'.$dateTime.'" AS DATE) between `start_date` and `end_date`')->sum('limit_amt');
+        $data = AppOfferAdhocLimit::where(['user_id' => $attr['user_id'] ?? $attr['supplier_id'],'prgm_offer_id' => $attr['prgm_offer_id'],'status' => 1])->whereRaw('CAST("'.$dateTime.'" AS DATE) between `start_date` and `end_date`')->get();
+        return ['amount' => $data->sum('limit_amt'), 'ids' => $data->pluck('app_offer_adhoc_limit_id')->unique()->toArray()];
 
     }
   public static function updateReject($attr)
