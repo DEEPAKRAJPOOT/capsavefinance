@@ -79,6 +79,7 @@ class BizInvoice extends BaseModel
         'invoice_margin_amount',
         'is_margin_deduct',
         'prgm_offer_id',
+        'app_offer_adhoc_limit_id',
         'file_id',
         'status_id',
         'is_bulk_upload',

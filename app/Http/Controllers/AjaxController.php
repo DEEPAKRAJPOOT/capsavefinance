@@ -3914,7 +3914,8 @@ if ($err) {
         // $sum   =   InvoiceTrait::invoiceApproveLimit($res);
         // $sum   =   Helpers::anchorSupplierUtilizedLimitByInvoice($res['user_id'], $res['anchor_id']);
         $sum   =   Helpers::anchorSupplierPrgmUtilizedLimitByInvoice($res);
-        $is_adhoc   =  $this->invRepo->checkUserAdhoc($res);
+        $adhocData   =  $this->invRepo->checkUserAdhoc($res);
+        $is_adhoc   = $adhocData['amount'];
         $remainAmount = round(($limit - $sum), 2);
         $offer = AppProgramOffer::getAppPrgmOfferById($res['prgm_offer_id']);
         $margin = $offer && $offer->margin ? $offer->margin : 0;
@@ -3938,9 +3939,11 @@ if ($err) {
     
        if($request->is_adhoc=='true') 
        { 
-        $limit   =  $this->invRepo->checkUserAdhoc($res);
+        $adhocData   =  $this->invRepo->checkUserAdhoc($res);
+        $limit   = $adhocData['amount'];
+        $res['app_offer_adhoc_limit_id'] = $adhocData['ids'];
         $sum     = InvoiceTrait::adhocLimit($res);
-        $remainAmount = $limit-$sum;
+        $remainAmount = $limit -$sum;
         $is_adhoc = 1;
        }
        else
