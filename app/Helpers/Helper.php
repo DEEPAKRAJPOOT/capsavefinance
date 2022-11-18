@@ -44,6 +44,7 @@ use App\Inv\Repositories\Models\Lms\InvoiceDisbursed;
 use App\Inv\Repositories\Models\AppProgramOffer;
 use App\Inv\Repositories\Models\Lms\InvoiceDisbursedDetail;
 use App\Inv\Repositories\Models\AppSecurityDoc;
+use App\Inv\Repositories\Models\TallyFactVoucher;
 
 class Helper extends PaypalHelper
 {
@@ -1331,6 +1332,14 @@ class Helper extends PaypalHelper
         return  $bank_acc;
     }
 
+    public static function getAllCompBankAccList($id)
+    {
+        //        dd($id);
+        $bank_acc = UserBankAccount::getAllCompBankAccList($id);
+
+        return  $bank_acc;
+    }
+
     /**
      * Get User detail by user_id
      *      
@@ -1397,6 +1406,37 @@ class Helper extends PaypalHelper
                 ->setTimezone(config('common.timezone'))->format($toDateFormat);
         return $convertedDateTime;
     }
+
+    /**
+     * Convert Datetime Format
+     * 
+     * @param string $dateTime
+     * @param string $fromDateFormat
+     * @param string $toDateFormat
+     * @return string
+     */
+    public static function istToUtc($dateTime, $inputDateFormat='Y-m-d H:i:s', $outputDateFormat='Y-m-d H:i:s') 
+    {
+        $convertedDateTime = \Carbon\Carbon::createFromFormat($inputDateFormat, $dateTime, config('common.timezone'))
+                ->setTimezone(config('app.timezone'))->format($outputDateFormat);
+        return $convertedDateTime;
+    }
+
+    /**
+     * Convert Datetime Format
+     * 
+     * @param string $dateTime
+     * @param string $fromDateFormat
+     * @param string $toDateFormat
+     * @return string
+     */
+    public static function utcToIst($dateTime, $inputDateFormat='Y-m-d H:i:s', $outputDateFormat='Y-m-d H:i:s') 
+    {
+        $convertedDateTime = \Carbon\Carbon::createFromFormat($inputDateFormat, $dateTime, config('app.timezone'))
+                ->setTimezone(config('common.timezone'))->format($outputDateFormat);
+        return $convertedDateTime;
+    }
+
     
     /**
      * Format Id with Prefix
@@ -2798,5 +2838,38 @@ class Helper extends PaypalHelper
             return false;
         }
         return false;
+    }
+
+    public static function getfactVoucherNumber($startDate){
+        $startDate = Helper::utcToIst($startDate,'Y-m-d H:i:s', 'Y-m-d H:i:s');
+        
+        $month =  Carbon::parse($startDate)->format('M');
+        $year =  Carbon::parse($startDate)->format('Y');
+        $year2 = Carbon::parse($startDate)->format('y');
+        $factResult = array(
+            'year1'=>$year,
+            'year2'=>($year+1),
+            'month'=>$month,
+            'fact_srp_seq_number'=>0,
+            'fact_sjv_seq_number'=>0,
+            'voucher_format'=> $year2.($year2+1).'/'.mb_substr($month, 0, 1)
+        );
+
+        $factvoucherData = TallyFactVoucher::getfactVoucherNumber();
+        if($factvoucherData){
+            if(!($factvoucherData->fact_month == $month)){
+                $factvoucherData->fact_srp_seq_number = 0;
+                $factvoucherData->fact_sjv_seq_number = 0;
+            }
+            $factResult = array(
+                'year1'=>$year,
+                'year2'=>($year+1),
+                'month'=>$month,
+                'fact_srp_seq_number'=>$factvoucherData->fact_srp_seq_number,
+                'fact_sjv_seq_number'=>$factvoucherData->fact_sjv_seq_number,
+                'voucher_format'=> $year2.($year2+1).'/'.mb_substr($month, 0, 1)
+            );
+        }
+        return $factResult;
     }
 }

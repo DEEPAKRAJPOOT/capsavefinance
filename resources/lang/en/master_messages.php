@@ -36,5 +36,6 @@ return [
     'location_edit_success' => 'Location updated successfully',
     'security_document_add_success' => 'Security Document Type added successfully',
     'security_document_edit_success' => 'Security Document Type updated successfully',    
+    'borrower_limit_success' => 'Borrower Limit updated successfully',  
 ];
 

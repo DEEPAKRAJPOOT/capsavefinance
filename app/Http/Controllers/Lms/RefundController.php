@@ -1037,7 +1037,8 @@ class RefundController extends Controller
                     if ($refundBatchId) {
                         $updateDisbursal = $this->lmsRepo->updateRefundBatchById([
                                 'batch_status' => 2], $refundBatchId);
-
+                        $oldTimeZone = trim(strtolower(date_default_timezone_get()));
+                        date_default_timezone_set("UTC");
                         foreach ($result['result']['body']['Transaction'] as $key => $value) {
                             if ($value['RefStatus'] == 'SUCCESS') {
                                 
@@ -1057,6 +1058,7 @@ class RefundController extends Controller
                                 ], $value['RefNo']);
                             }
                         }
+                        date_default_timezone_set($oldTimeZone);
                     }            
                     
                 } else {

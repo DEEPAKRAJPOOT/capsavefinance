@@ -39,11 +39,11 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-
+        
         //$schedule->command('PaypalRefund:refund')->twiceDaily(1, 13);
         //$schedule->command('ScoutPayoutDetail:BatchDetail')->twiceDaily(2, 14);
         //$schedule->command('PaypalScoutRefund:ScoutRefund')->twiceDaily(3, 12);
-        
+       
         if(config('lms.LMS_STATUS')){
             $schedule->command('lms:interestaccrual')->timezone(config('common.timezone'))->dailyAt('00:01');
             $schedule->command('lms:interestaccrual')->dailyAt('00:01');
@@ -94,7 +94,7 @@ class Kernel extends ConsoleKernel
         $schedule->command('alert:approvalMailForPendingCases')->timezone(config('common.timezone'))->tuesdays()->dailyAt('20:45');
         $schedule->command('etl:report_outstanding_monthly')->timezone(config('common.timezone'))->monthlyOn(1, '01:45');
         $schedule->command('alert:app_security_document_renewal')->timezone(config('common.timezone'))->dailyAt('23:00');
-        
+           
     }
     
     /**

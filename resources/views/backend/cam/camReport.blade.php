@@ -79,7 +79,7 @@
                   <tr role="row" class="odd">
                      <td class="">{{ $preval['mst_security_docs']['name']??'N/A' }}</td>
                      <td class="">{{ $preval['due_date']?\Carbon\Carbon::parse($preval['due_date'])->format('d-m-Y'):'N/A' }}</td>
-                     <td style="white-space: pre-wrap;">{{ $preval['description']??'N/A' }}</td>
+                     <td style="white-space: normal;">{{ $preval['description']??'N/A' }}</td>
                   </tr>
                   @endforeach
                @else
@@ -115,7 +115,7 @@
                   <tr role="row" class="odd">
                      <td class="">{{ $postval['mst_security_docs']['name']??'N/A' }}</td>
                      <td class="">{{ $postval['due_date']?\Carbon\Carbon::parse($postval['due_date'])->format('d-m-Y'):'N/A' }}</td>
-                     <td style="white-space: pre-wrap;">{{ $postval['description']??'N/A' }}</td>
+                     <td style="white-space: normal;">{{ $postval['description']??'N/A' }}</td>
                   </tr>
                   @endforeach
                @else
@@ -790,13 +790,13 @@
                <tr>
                   <td>3</td>
                   <td>Single Borrower Limit</td>
-                  <td>Max 15% of Net owned funds (Rs 150 Mn)</td>
+                  <td>Max 15% of Net owned funds (Rs {{$borrowerLimitData['single_limit']}} Mn)</td>
                   <td>{{isset($reviewerSummaryData->criteria_sing_borr_remark) ? $reviewerSummaryData->criteria_sing_borr_remark : ''}}</td>
                </tr>
                <tr>
                   <td>4</td>
                   <td>Borrower Group Limit</td>
-                  <td>Max 25% of Net owned funds (Rs 250 Mn)</td>
+                  <td>Max 25% of Net owned funds (Rs {{$borrowerLimitData['multiple_limit']}} Mn)</td>
                   <td>{{isset($reviewerSummaryData->criteria_borr_grp_remark) ? $reviewerSummaryData->criteria_borr_grp_remark : ''}}</td>
                </tr>
                <tr>

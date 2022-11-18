@@ -147,7 +147,7 @@ class CustomerTransactionSOA extends BaseModel
     }
 
     public static function getConsolidatedSoaList(){
-        return self::whereHas('transaction', function ($q) {
+        return self::with('transaction.invoiceDisbursed.disbursal','transaction.payment')->whereHas('transaction', function ($q) {
             $q->where('is_transaction', true);
         })
         ->orderBy('user_id', 'asc')

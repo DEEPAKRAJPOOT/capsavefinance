@@ -111,6 +111,7 @@
 													<th>Tran Date</th>
 													<th>Value Date</th>
 													<th>Tran Type</th>
+													<th>UTR No</th>
 													<th>Batch No</th>
 													<th>Invoice No</th>
                                                     <th>Capsave Invoice No</th>

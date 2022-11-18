@@ -85,10 +85,11 @@ class FinanceController extends Controller {
         $transDate = "";
         if (!empty($result)) {
            foreach ($result as $key => $value) {
+               
                 $new[] = $fetchedArr = (array)$value;
                 $voucherDate = date('d-m-Y',strtotime($fetchedArr['voucher_date']));
                 $trans_date = date('Y-m-d', strtotime($fetchedArr['voucher_date'])); 
-                $transaction_date = date('Y-m-d', strtotime($fetchedArr['transaction_date']));
+                $transaction_date = $fetchedArr['transaction_date']?Helpers::utcToIst($fetchedArr['transaction_date'],'Y-m-d H:i:s', 'Y-m-d'):NULL;
                 $entry_type = strtolower($fetchedArr['entry_type']);
                 $is_first_n_old = (empty($transType) || empty($transDate) || ($transType == $fetchedArr['trans_type'] && $transDate == $trans_date));
                 $j_is_first_or_old = NULL;
@@ -98,6 +99,7 @@ class FinanceController extends Controller {
                     $j = [
                         "batch_no" => $fetchedArr['batch_no'],
                         "voucher_no" => sprintf('%04d',$fetchedArr['voucher_no']),
+                        "fact_voucher_number"=>$fetchedArr['fact_voucher_number'],
                         "trans_type" => $fetchedArr['trans_type'],
                         "voucher_type" => $fetchedArr['voucher_type'],
                         "voucher_date" => $voucherDate,
@@ -111,7 +113,7 @@ class FinanceController extends Controller {
                         "cr_amount" => ($entry_type == 'credit' ? $fetchedArr['amount'] : ''),
                         "cr_ref_no" => $fetchedArr['ref_no'],
                         "cr_ref_amount" => $fetchedArr['amount'],
-                        "narration" => $fetchedArr['narration'] 
+                        "narration" => $fetchedArr['narration'],
                     ];
                     if (!$is_first_n_old) {
                         if (!empty($journal[0])) {
@@ -129,8 +131,10 @@ class FinanceController extends Controller {
                 }else{
                     $paymentRow =  [
                         "voucher_no" => $fetchedArr['voucher_no'],
+                        "fact_voucher_number"=>$fetchedArr['fact_voucher_number'],
                         "voucher_type" => $fetchedArr['voucher_type'],
                         "voucher_date" =>  !empty($fetchedArr['voucher_date']) ? date('d-m-Y',strtotime($fetchedArr['voucher_date'])) : '',
+                        "transaction_date"=>$transaction_date,
                         "ledger_name" => $fetchedArr['ledger_name'],
                         "amount" => $fetchedArr['amount'],
                         "dr_/_cr" => $fetchedArr['entry_type'],
@@ -142,11 +146,14 @@ class FinanceController extends Controller {
                         "bank_name" => $fetchedArr['bank_name'],
                         "cheque_amount" => ($fetchedArr['cheque_amount'] != 0 ? $fetchedArr['cheque_amount'] : ''),
                         "cross_using" => $fetchedArr['cross_using'],
+                        "utr_no" => $fetchedArr['utr_no'],
                         "inst_no" => $fetchedArr['inst_no'],
                         "inst_date" => $fetchedArr['inst_date'],
                         "favoring_name" => $fetchedArr['favoring_name'],
                         "remarks" => $fetchedArr['remarks'],
                         "narration" => $fetchedArr['narration'],
+                        "company_bank_name"=> $fetchedArr['company_bank_name']?$fetchedArr['company_bank_name']:'',
+                        "company_bank_acc"=> $fetchedArr['company_bank_acc']?$fetchedArr['company_bank_acc']:'',
                     ];
                     $records['PAYMENT'][] = $paymentRow;
                 }
@@ -185,11 +192,14 @@ class FinanceController extends Controller {
                 "bank_name" => '',
                 "cheque_amount" => '',
                 "cross_using" => '',
+                "utr_no" => '',
                 "inst_no" => '',
                 "inst_date" => '',
                 "favoring_name" => '',
                 "remarks" => '',
                 "narration" => '',
+                "company_bank_name"=> '',
+                "company_bank_acc"=> '',
             ];
         }
 
@@ -216,7 +226,7 @@ class FinanceController extends Controller {
           unset($records['JOURNAL'][$key]['batch_no']);
         }
         $toExportData = $records;
-        return $this->fileHelper->array_to_excel($toExportData, "execl.xlsx");
+        return $this->fileHelper->array_to_excel($toExportData, "Tally-$batch_no.xlsx");
     }
 
     public function crateJeConfig(Request $request) {

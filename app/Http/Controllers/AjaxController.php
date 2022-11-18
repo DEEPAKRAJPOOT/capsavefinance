@@ -60,6 +60,7 @@ use App\Inv\Repositories\Models\Anchor;
 use App\Inv\Repositories\Models\AppApprover;
 use App\Inv\Repositories\Models\User;
 use App\Inv\Repositories\Models\Lms\OutstandingReportLog;
+use App\Inv\Repositories\Models\BizInvoice;
 
 class AjaxController extends Controller {
 
@@ -3182,7 +3183,7 @@ if ($err) {
     
    public function updateInvoiceApprove(Request $request)
    {
-           
+        
            if($request->status==8)
            {
               return  InvoiceTrait::updateApproveStatus($request);
@@ -3198,6 +3199,15 @@ if ($err) {
               }
                * 
                */              
+           }elseif($request->status==14)
+           {
+            $invoice_id = $request->invoice_id;
+             $mytime = Carbon::now(); 
+             $cDate   =  $mytime->toDateTimeString();
+             $uid = Auth::user()->user_id;
+             InvoiceStatusLog::saveInvoiceStatusLog($invoice_id,$request->status);
+              $res = BizInvoice::where(['invoice_id' =>$invoice_id])->update(['status_id' =>$request->status,'status_update_time' => $cDate,'updated_by' =>$uid]);
+             return \Response::json(['status' => $res]);
            }
            else
            {
@@ -3944,7 +3954,8 @@ if ($err) {
         // $sum   =   InvoiceTrait::invoiceApproveLimit($res);
         // $sum   =   Helpers::anchorSupplierUtilizedLimitByInvoice($res['user_id'], $res['anchor_id']);
         $sum   =   Helpers::anchorSupplierPrgmUtilizedLimitByInvoice($res);
-        $is_adhoc   =  $this->invRepo->checkUserAdhoc($res);
+        $adhocData   =  $this->invRepo->checkUserAdhoc($res);
+        $is_adhoc   = $adhocData['amount'];
         $remainAmount = round(($limit - $sum), 2);
         $offer = AppProgramOffer::getAppPrgmOfferById($res['prgm_offer_id']);
         $margin = $offer && $offer->margin ? $offer->margin : 0;
@@ -3968,9 +3979,11 @@ if ($err) {
     
        if($request->is_adhoc=='true') 
        { 
-        $limit   =  $this->invRepo->checkUserAdhoc($res);
+        $adhocData   =  $this->invRepo->checkUserAdhoc($res);
+        $limit   = $adhocData['amount'];
+        $res['app_offer_adhoc_limit_id'] = $adhocData['ids'];
         $sum     = InvoiceTrait::adhocLimit($res);
-        $remainAmount = $limit-$sum;
+        $remainAmount = $limit -$sum;
         $is_adhoc = 1;
        }
        else
@@ -4131,7 +4144,6 @@ if ($err) {
     
    function updateBulkInvoice(Request $request)
    {
-      
        $result = InvoiceTrait::checkInvoiceLimitExced($request); 
        foreach($request['invoice_id'] as $row)
        {  
@@ -4140,6 +4152,16 @@ if ($err) {
             $attr['invoice_id']=$row; 
             $response =  InvoiceTrait::updateApproveStatus($attr);  
          
+          }elseif($request->status==14)
+          {
+            $attr['invoice_id']=$row;
+            $mytime = Carbon::now(); 
+            $cDate   =  $mytime->toDateTimeString();
+            $uid = Auth::user()->user_id;
+            $response = InvoiceStatusLog::saveInvoiceStatusLog($attr['invoice_id'],$request->status);
+            BizInvoice::where(['invoice_id' =>$attr['invoice_id']])->update(['status_id' =>$request->status,'status_update_time' => $cDate,'updated_by' =>$uid]);
+            // return redirect()->back()->with('message', 'Invoice move to reject tab successfully');
+            // return redirect('http://admin.rent.local/lms/invoice/backend_get_reject_invoice')->with('message', 'Invoice move to reject tab successfully');
           }
           else
           {
@@ -4371,13 +4393,11 @@ if ($err) {
                 }
             }
         }
-
-        $transactionList = $transactionList->whereHas('lmsUser',function ($query) use ($request) {
+        $transactionList = $transactionList->with('transaction.invoiceDisbursed.disbursal','transaction.payment','transaction.refundTrans.refundReq')->whereHas('lmsUser',function ($query) use ($request) {
             $customer_id = trim($request->get('customer_id')) ?? null ;
             $query->where('customer_id', '=', "$customer_id");
         })
         ->get();
-
         $users = $dataProvider->getSoaList($this->request, $transactionList);
         return $users;
     }
@@ -5317,6 +5337,29 @@ if ($err) {
         return $data;
     }
 
+    // borrower limit List in master
+    public function getLimitList(DataProviderInterface $dataProvider) 
+    {
+        $limitList = $this->masterRepo->getAllLimit();
+        $data = $dataProvider->getAllLimit($this->request, $limitList);
+        return $data;
+    }
+
+    public function expirePastLimit(Request $request){
+
+        $expirePastLimit = $this->masterRepo->expirePastLimit();
+        if($expirePastLimit){
+            $response['status'] = 1;
+            $response['message'] = 'Limit expired successfully.';
+            return json_encode($response);
+        }else{
+            $response['status'] = 0;
+            $response['message'] = 'Something went wrong!';
+            return json_encode($response);
+        }
+        
+    }
+
     public function getBackendDisbursalBatchRequest(DataProviderInterface $dataProvider) {
         $disbursalBatchRequest = $this->lmsRepo->lmsGetDisbursalBatchRequest();
         $data = $dataProvider->lmsGetDisbursalBatchRequest($this->request, $disbursalBatchRequest);
@@ -5802,7 +5845,7 @@ if ($err) {
                 }
             }
         }
-        $transactionList = $transactionList->whereHas('lmsUser',function ($query) use ($request) {
+        $transactionList = $transactionList->with('transaction.invoiceDisbursed.disbursal','transaction.payment')->whereHas('lmsUser',function ($query) use ($request) {
             $customer_id = trim($request->get('customer_id')) ?? null ;
             $query->where('customer_id', '=', "$customer_id");
         })
@@ -5835,7 +5878,7 @@ if ($err) {
             }
         }
 
-        $transactionList = $transactionList->whereHas('lmsUser',function ($query) use ($request) {
+        $transactionList = $transactionList->with('transaction.invoiceDisbursed.disbursal','transaction.payment')->whereHas('lmsUser',function ($query) use ($request) {
             $customer_id = trim($request->get('customer_id')) ?? null ;
             $query->where('customer_id', '=', "$customer_id");
         })

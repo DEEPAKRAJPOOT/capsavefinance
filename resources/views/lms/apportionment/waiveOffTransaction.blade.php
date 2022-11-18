@@ -73,6 +73,7 @@
             <div class="col">
                 <label for="chrg_name"> GST ({{ $gst }}%)</label>
                 <input type="text" class="form-control" value="{{ $waivedOffGst }}" name="waiveoff_gst" id="waiveoff_gst" readonly="true">
+                <input type="hidden" value="{{ $gst }}" name="waiveOff_gst_per">
                 <span id="waiveoff_gst_error" class="error"></span>
             </div>      
         </div>

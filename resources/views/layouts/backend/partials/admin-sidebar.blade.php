@@ -368,7 +368,7 @@
         'get_documents_list', 'get_industries_list', 'get_vouchers_list',
         'get_segment_list', 'get_entity_list', 'get_constitutions_list',
         'get_gst_list', 'get_equipment_list', 'get_baserate_list', 'get_companies_list',
-        'get_bank_list'
+        'get_bank_list','get_borrower_limit'
         ])
     <li class="nav-item">
         <a class="nav-link" data-toggle="collapse" href="#layoutsSubmenu11" aria-expanded="false"
@@ -446,9 +446,14 @@
                     <a class="nav-link" href="{{ route('get_baserate_list') }}">Manage Base Rate</a>
                 </li>
                 @endcan
-                @can('get_tds_list')
+                @can('get_charges_list')
                 <li class="nav-item">
                     <a class="nav-link" href="{{ route('get_tds_list') }}">Manage TDS</a>
+                </li>
+                @endcan
+                @can('get_borrower_limit')
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ route('get_borrower_limit') }}">Manage Borrower Limit</a>
                 </li>
                 @endcan
                 @can('get_bank_list')

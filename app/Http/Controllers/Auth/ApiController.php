@@ -15,6 +15,9 @@ use App\Helpers\Helper;
 use App\Inv\Repositories\Models\Master\EmailTemplate;
 use Storage;
 use Session;
+use Carbon\Carbon;
+use DB;
+use App\Inv\Repositories\Models\TallyFactVoucher;
 
 /**
  * 
@@ -25,6 +28,13 @@ class ApiController
   protected $secret_key = "0702f2c9c1414b70efc1e69f2ff31af0";
   protected $download_xlsx = true;
   protected $voucherNo = 0;
+  protected $voucherFormat = null;
+  protected $paymentFactVoucherSeq = 0;
+  protected $journalFactVoucherSeq = 0;
+  protected $paymentFactStartVoucherNumber = null;
+  protected $journalFactStartVoucherNumber = null;
+  protected $paymentFactEndVoucherNumber = null;
+  protected $journalFactEndVoucherNumber = null;
   protected $selectedTxnData = [];
   protected $selectedPaymentData = [];
 	function __construct(){
@@ -111,22 +121,17 @@ class ApiController
               $inst_no = $parentRecord->refundReq->tran_no ?? NULL;
               $inst_date = $parentRecord->refundReq->actual_refund_date ?? NULL;
         }
-        
-        /*if ($jrnls->trans_type == config('lms.TRANS_TYPE.WAVED_OFF')) {
-          if ($parentRecord->is_invoice_generated == 0 || ($invoice_date > $jrnls->trans_date && $parentRecord->is_invoice_generated == 1)) {
-            continue;
-          }
-        }*/
       }
-      if (is_null($jrnls->parent_trans_id) && $jrnls->entry_type == 0 && $jrnls->outstanding > 0 && $is_charge) {
-       continue;
-      }
+      $this->journalFactVoucherSeq++;     
+      $factvoucherNumber = 'SJV'.$this->voucherFormat.sprintf('%06d',$this->journalFactVoucherSeq);
+      $this->journalFactEndVoucherNumber = $factvoucherNumber;
       $this->voucherNo = $this->voucherNo + 1;
       $entry_type = $jrnls->entry_type == 1 ? 'Credit' : 'Debit';
       $this->selectedTxnData[] = $jrnls->trans_id;
       $JournalRow = [
           'batch_no' =>  $batch_no,
           'transactions_id' =>  $jrnls->trans_id,
+          'fact_voucher_number'=>$factvoucherNumber,
           'voucher_no' => $this->voucherNo,
           'voucher_type' => 'Journal',
           'voucher_date' => $jrnls->trans_date,
@@ -142,10 +147,13 @@ class ApiController
           'acc_no' =>  '',
           'ifsc_code' =>  '',
           'bank_name' =>  '',
+          'company_bank_name'=>'',
+          'company_bank_acc'=>'',
           'cheque_amount' =>  '',
           'cross_using' => '',
           'mode_of_pay' => '',
           'inst_no' =>  NULL,
+          'utr_no'  => NULL,
           'inst_date' =>  NULL,
           'favoring_name' =>  '',
           'remarks' => '',
@@ -164,7 +172,7 @@ class ApiController
             $cgst_rate = 0;
             $sgst_amt = 0;
             $sgst_rate = 0;
-            $totalGST = 18;
+            $totalGST = $parentRecord->gst_per;
             if ($parentRecord->gst == 1) {
                 $base_amt = $totalamount * 100/(100 + $totalGST);
                 if($userStateId == $companyStateId) {
@@ -292,8 +300,10 @@ class ApiController
             'batch_no' =>  $batch_no,
             'transactions_id' =>  $rvrsl->trans_id,
             'voucher_no' => $this->voucherNo,
+            'fact_voucher_number'=>$factvoucherNumber,
             'voucher_type' => 'Journal',
             'voucher_date' => $rvrsl->trans_date,
+            'transaction_date'=>$rvrsl->created_at,
             'is_debit_credit' => $rvrsl->entry_type == 1 ? 'Credit' : 'Debit',
             'trans_type' =>  $trans_type_name,
             'invoice_no' =>   $invoice_no,
@@ -308,7 +318,10 @@ class ApiController
             'cheque_amount' =>  '',
             'cross_using' => '',
             'mode_of_pay' => '',
+            'company_bank_name'=>'',
+            'company_bank_acc'=>'',
             'inst_no' =>  NULL,
+            'utr_no'  => NULL,
             'inst_date' =>  NULL,
             'favoring_name' =>  '',
             'remarks' => '',
@@ -324,6 +337,9 @@ class ApiController
   private function createRefundData($refundData, $batch_no) {
     $refundPayment = [];
     foreach($refundData as $rfnd){
+      $this->paymentFactVoucherSeq++;
+      $factvoucherNumber = 'SRP'.$this->voucherFormat.sprintf('%06d',$this->paymentFactVoucherSeq); 
+      $this->paymentFactEndVoucherNumber = $factvoucherNumber;
       $this->voucherNo = $this->voucherNo + 1;
       $accountDetails = $rfnd->userRelation->companyBankDetails ?? NULL;
       if (empty($accountDetails)) {
@@ -360,6 +376,7 @@ class ApiController
           'batch_no' =>  $batch_no,
           'transactions_id' =>  $rfnd->trans_id,
           'voucher_no' => $this->voucherNo,
+          'fact_voucher_number'=>$factvoucherNumber,
           'voucher_type' => 'Payment',
           'voucher_date' => $rfnd->trans_date,
           'transaction_date'=>$rfnd->created_at,
@@ -377,7 +394,10 @@ class ApiController
           'cheque_amount' =>  '',
           'cross_using' => '',
           'mode_of_pay' => '',
+          'company_bank_name'=>'',
+          'company_bank_acc'=>'',
           'inst_no' =>  NULL,
+          'utr_no'  => NULL,
           'inst_date' =>  NULL,
           'favoring_name' =>  '',
           'remarks' => '',
@@ -389,6 +409,7 @@ class ApiController
           'batch_no' =>  $batch_no,
           'transactions_id' =>  NULL,
           'voucher_no' => $this->voucherNo,
+          'fact_voucher_number'=>$factvoucherNumber,
           'voucher_type' => 'Payment',
           'voucher_date' => NULL,
           'transaction_date'=>$rfnd->created_at,
@@ -405,8 +426,11 @@ class ApiController
           'bank_name' =>  $accountDetails->bank->bank_name ?? '',
           'cheque_amount' =>  '',
           'cross_using' => '',
+          'company_bank_name'=>'',
+          'company_bank_acc'=>'',
           'mode_of_pay' => 'e-Fund-Transfer',
           'inst_no' =>  $inst_no,
+          'utr_no'  => NULL,
           'inst_date' =>  $inst_date,
           'favoring_name' =>  $userName,
           'remarks' => '',
@@ -421,6 +445,9 @@ class ApiController
   private function createDisbursalData($disbursalData, $batch_no) {
     $disbursalPayment = [];
     foreach($disbursalData as $dsbrsl){
+      $this->paymentFactVoucherSeq++;  
+      $factvoucherNumber = 'SRP'.$this->voucherFormat.sprintf('%06d',$this->paymentFactVoucherSeq);
+      $this->paymentFactEndVoucherNumber = $factvoucherNumber;
       $this->voucherNo = $this->voucherNo + 1;
       $accountDetails = $dsbrsl->userRelation->companyBankDetails ?? NULL;
       if (empty($accountDetails)) {
@@ -443,6 +470,7 @@ class ApiController
               'batch_no' =>  $batch_no,
               'transactions_id' =>  $dsbrsl->trans_id,
               'voucher_no' => $this->voucherNo,
+              'fact_voucher_number'=>$factvoucherNumber,
               'voucher_type' => 'Payment',
               'voucher_date' => $dsbrsl->trans_date,
               'transaction_date'=>$dsbrsl->created_at,
@@ -461,8 +489,11 @@ class ApiController
               'cross_using' => '',
               'mode_of_pay' => '',
               'inst_no' =>  NULL,
+              'utr_no'  => NULL,
               'inst_date' =>  NULL,
               'favoring_name' =>  '',
+              'company_bank_name'=>'',
+              'company_bank_acc'=>'',
               'remarks' => '',
               'generated_by' => '0',
               'narration' => 'Being  Payment Disbursed towards UserId ' . $user_id . ', Invoice No '. $invoice_no .' & Batch no '. $batch_no .$payment_id,
@@ -472,6 +503,7 @@ class ApiController
               'batch_no' =>  $batch_no,
               'transactions_id' =>  NULL,
               'voucher_no' => $this->voucherNo,
+              'fact_voucher_number'=>$factvoucherNumber,
               'voucher_type' => 'Payment',
               'voucher_date' => NULL,
               'transaction_date'=>$dsbrsl->created_at,
@@ -490,55 +522,68 @@ class ApiController
               'cross_using' => '',
               'mode_of_pay' => 'e-Fund-Transfer',
               'inst_no' =>  $dsbrsl->invoiceDisbursed->disbursal->tran_id ?? NULL,
+              'utr_no'  => NULL,
               'inst_date' =>  $dsbrsl->invoiceDisbursed->disbursal->funded_date ?? NULL,
               'favoring_name' =>  $userName,
               'remarks' => '',
+              'company_bank_name'=>'',
+              'company_bank_acc'=>'',
               'generated_by' => '1',
               'narration' => 'Being  Payment Disbursed towards UserId ' . $user_id . ', Invoice No '. $invoice_no .' & Batch no '. $batch_no .$payment_id,
      ];
      $disbursalPayment[] = $BankRow;
-     if (!empty($total_interest) && $total_interest > 0) {
       $disbursalDate = $dsbrsl->trans_date;
-      $where = ['trans_date' => $disbursalDate, 'trans_type' => config('lms.TRANS_TYPE.INTEREST'), 'entry_type' => 0];
+      // change interest entry type for dirbursement in case of upfront for born by customer case
+      $where = ['trans_date' => $disbursalDate, 'payment_id' => NULL, 'trans_type' => config('lms.TRANS_TYPE.INTEREST'), 'entry_type' => 1];
       $interestBooked = $dsbrsl->getInterestForDisbursal($where);
-      $interestTransId = $interestBooked->trans_id;
-       $InterestRow = [
-              'batch_no' =>  $batch_no,
-              'transactions_id' =>  $interestTransId,
-              'voucher_no' => $this->voucherNo,
-              'voucher_type' => 'Payment',
-              'voucher_date' => NULL,
-              'transaction_date'=>$dsbrsl->created_at,
-              'is_debit_credit' =>  'Credit',
-              'trans_type' =>  'Interest',
-              'invoice_no' =>   $invoice_no,
-              'invoice_date' =>  $invoice_date,
-              'ledger_name' =>  'Interest',
-              'amount' =>  $total_interest,
-              'ref_no' =>  $invoice_no,
-              'ref_amount' =>  $total_interest,
-              'acc_no' =>  '',
-              'ifsc_code' =>  '',
-              'bank_name' =>  '',
-              'cheque_amount' =>  '',
-              'cross_using' => '',
-              'mode_of_pay' => '',
-              'inst_no' =>  NULL,
-              'inst_date' =>  NULL,
-              'favoring_name' =>  '',
-              'remarks' => '',
-              'generated_by' => '1',
-              'narration' => 'Being Interest Booked towards UserId ' . $user_id . ', Invoice No '. $invoice_no .' & Batch no '. $batch_no .$payment_id,
-     ];
-     $disbursalPayment[] = $InterestRow;
-     }
+      if(isset($interestBooked)){
+        $interestTransId = $interestBooked->trans_id;
+        $this->selectedTxnData[] = $interestBooked->trans_id;
+        $InterestRow = [
+                'batch_no' =>  $batch_no,
+                'transactions_id' =>  $interestTransId,
+                'voucher_no' => $this->voucherNo,
+                'fact_voucher_number'=>$factvoucherNumber,
+                'voucher_type' => 'Payment',
+                'voucher_date' => NULL,
+                'transaction_date'=>$dsbrsl->created_at,
+                'is_debit_credit' =>  'Credit',
+                'trans_type' =>  'Interest',
+                'invoice_no' =>   $invoice_no,
+                'invoice_date' =>  $invoice_date,
+                'ledger_name' =>  'Interest',
+                'amount' =>  $interestBooked->amount,
+                'ref_no' =>  $invoice_no,
+                'ref_amount' =>  $interestBooked->amount,
+                'acc_no' =>  '',
+                'ifsc_code' =>  '',
+                'bank_name' =>  '',
+                'cheque_amount' =>  '',
+                'cross_using' => '',
+                'mode_of_pay' => '',
+                'inst_no' =>  NULL,
+                'utr_no'  => NULL,
+                'inst_date' =>  NULL,
+                'favoring_name' =>  '',
+                'company_bank_name'=>'',
+                'company_bank_acc'=>'',
+                'remarks' => '',
+                'generated_by' => '1',
+                'narration' => 'Being Interest Payment towards UserId ' . $user_id . ', Invoice No '. $invoice_no .' & Batch no '. $batch_no .$payment_id,
+        ];
+        $disbursalPayment[] = $InterestRow;
+      }
     }
     return $disbursalPayment;
   }
 
   private function createReceiptData($receiptData, $batch_no) {
+    
     $receiptPayment = [];
     foreach($receiptData as $rcpt){
+     $this->paymentFactVoucherSeq++;
+     $factvoucherNumber = 'SRP'.$this->voucherFormat.sprintf('%06d',$this->paymentFactVoucherSeq); 
+     $this->paymentFactEndVoucherNumber = $factvoucherNumber;
      $this->voucherNo = $this->voucherNo + 1;
      $settledTransactoions =  $rcpt->getSettledTxns;
      $refrenceTxns = $rcpt->paymentRefrenceTxns->first();
@@ -548,6 +593,17 @@ class ApiController
      if (empty($accountDetails)) {
         continue;
      }
+     $utr_no=NULL;
+     if($rcpt->payment_type === '1'){
+       $utr_no = $rcpt->utr_no ?? NULL;
+     }else if($rcpt->payment_type === '2'){
+      $utr_no = $rcpt->cheque_no ?? NULL;
+     }else if($rcpt->payment_type === '3'){
+      $utr_no = $rcpt->unr_no ?? NULL;
+     }else if($rcpt->payment_type === '4'){
+      $utr_no = $rcpt->unr_no ?? NULL;
+     }
+
      $inst_no = $rcpt->refundReq->tran_no ?? NULL;
      $inst_date = $rcpt->refundReq->actual_refund_date ?? NULL;
      $this->selectedPaymentData[] = $rcpt->payment_id;
@@ -570,11 +626,12 @@ class ApiController
      }
      $BankRow = [
               'batch_no' =>  $batch_no,
-              'transactions_id' =>  NULL,
+              'transactions_id' => NULL,
               'voucher_no' => $this->voucherNo,
+              'fact_voucher_number'=>$factvoucherNumber,
               'voucher_type' => 'Receipt',
               'voucher_date' => $rcpt->date_of_payment,
-              'transaction_date'=>$refrenceTxns->created_at?$refrenceTxns->created_at:NULL,
+              'transaction_date'=>$refrenceTxns->created_at?:NULL,
               'is_debit_credit' =>  'Debit',
               'trans_type' =>  'Re-Payment',
               'invoice_no' =>   '',
@@ -590,8 +647,11 @@ class ApiController
               'cross_using' => $rcpt->payment_type == 2 ? 'a/c payee' : NULL,
               'mode_of_pay' => $mode_of_pay,
               'inst_no' =>  $inst_no,
+              'utr_no'  => $utr_no,
               'inst_date' =>  $inst_date,
               'favoring_name' =>  $userName,
+              'company_bank_name'=>$rcpt->companyUserAccount?$rcpt->companyUserAccount->bank->bank_name:NULL,
+              'company_bank_acc'=>$rcpt->companyUserAccount?$rcpt->companyUserAccount->acc_no:NULL,
               'remarks' => '',
               'generated_by' => '1',
               'narration' => 'Being Repayment towards UserId ' . $user_id . ' & Batch no '. $batch_no,
@@ -616,9 +676,10 @@ class ApiController
               'batch_no' =>  $batch_no,
               'transactions_id' =>  $stldTxn->trans_id,
               'voucher_no' => $this->voucherNo,
+              'fact_voucher_number'=>$factvoucherNumber,
               'voucher_type' => 'Receipt',
               'voucher_date' => $stldTxn->trans_date,
-              'transaction_date'=>$stldTxn->created_at,
+              'transaction_date'=>$stldTxn->created_at?$stldTxn->created_at:NULL,
               'is_debit_credit' =>  'Credit',
               'trans_type' =>  $trans_type_name,
               'invoice_no' =>   $invoice_no,
@@ -634,8 +695,11 @@ class ApiController
               'cross_using' => '',
               'mode_of_pay' => '',
               'inst_no' =>  NULL,
+              'utr_no'  => $utr_no,
               'inst_date' =>  NULL,
               'favoring_name' =>  '',
+              'company_bank_name'=>$rcpt->companyUserAccount?$rcpt->companyUserAccount->bank->bank_name:NULL,
+              'company_bank_acc'=>$rcpt->companyUserAccount?$rcpt->companyUserAccount->acc_no:NULL,
               'remarks' => '',
               'generated_by' => '0',
               'narration' => 'Being '.$trans_type_name.' towards UserId ' . $user_id . ', Invoice No '. $invoice_no .' & Batch no '. $batch_no,
@@ -663,44 +727,45 @@ class ApiController
   }
 
   public function tally_entry_date_wise(){
-    $activeDate = date('Y-m-d');
+    $activeDate = Carbon::now()->subDays(1)->setTimezone(config('common.timezone'))->format('Y-m-d');
     // $dates = $this->displayDates('2020-01-01', date('Y-m-d'));
     // foreach ($dates as $activeDate) {
-      self::tally_entry($activeDate,$activeDate);
+      $startActiveDate  = "$activeDate 00:00:00"; 
+      $endActiveDate = "$activeDate 23:59:59";
+      self::tally_entry($startActiveDate,$endActiveDate);
     // }
   }
 
   public function tally_entry_Week_wise($weekName){
-    $activeDate = date('Y-m-d');
+    $activeDate = Carbon::now()->subDays(1)->setTimezone(config('common.timezone'))->format('Y-m-d');
     // $dates = $this->displayDates('2022-01-01', date('Y-m-d'));
     // foreach ($dates as $activeDate) {
       if(in_array(strtolower(trim($weekName)),[strtolower(date('D',strtotime($activeDate))), strtolower(date('l',strtotime($activeDate)))])){
-        $weekStartDate = date('Y-m-d',(strtotime ( '-7 day' , strtotime($activeDate))));
+        $weekStartDate = date('Y-m-d',(strtotime ( '-6 day' , strtotime($activeDate))));
+        $weekStartDate  = "$weekStartDate 00:00:00"; 
+        $activeDate = "$activeDate 23:59:59";
         self::tally_entry($weekStartDate,$activeDate);
       }
     // }
   }
 
   public function tally_entry_month_wise(){
-    $activeDate = date('Y-m-d');
+    $activeDate = Carbon::now()->setTimezone(config('common.timezone'))->format('Y-m-d');
     // $dates = $this->displayDates('2020-01-01', '2021-12-31');
     // foreach ($dates as $activeDate) {
       if(date("Y-m-t", strtotime($activeDate)) == $activeDate){
         $monthStartDate = date("Y-m-1", strtotime($activeDate));
-        echo "$monthStartDate"."--"."$activeDate"."\n";
+        $monthStartDate  = "$monthStartDate 00:00:00"; 
+        $activeDate = "$activeDate 23:59:59";
         self::tally_entry($monthStartDate,$activeDate);
       }
     // }
   }
 
-  public function tally_entry($startDate = null, $endDate = null){
-    
-    if(empty($startDate)){
-      $startDate = date('Y-m-d');
-    }
-    if(empty($endDate)){
-      $endDate = $startDate;
-    }
+  public function tally_entry($startDate, $endDate){  
+    $startDate = Helper::istToUtc($startDate,'Y-m-d H:i:s', 'Y-m-d H:i:s');
+    $endDate = Helper::istToUtc($endDate,'Y-m-d H:i:s', 'Y-m-d H:i:s');
+
     $this->selectedTxnData = [];
     $this->selectedPaymentData = [];
     $this->voucherNo = null;
@@ -718,18 +783,24 @@ class ApiController
     if (!empty($latestRecord)) {
       $lastVoucherNo = $latestRecord[0]->voucher_no ?? 0;
     }
-    $this->voucherNo = $this->voucherNo + 1;
+    $lastFactVoucher = Helper::getfactVoucherNumber($startDate);
+    $this->paymentFactVoucherSeq = (int)$lastFactVoucher['fact_srp_seq_number'];
+    $this->journalFactVoucherSeq = (int)$lastFactVoucher['fact_sjv_seq_number'];
+    $this->voucherFormat = $lastFactVoucher['voucher_format'];
+    $this->journalFactStartVoucherNumber = 'SJV'.$this->voucherFormat.sprintf('%06d',$this->journalFactVoucherSeq+1);
+    $this->paymentFactStartVoucherNumber = 'SRP'.$this->voucherFormat.sprintf('%06d',$this->paymentFactVoucherSeq+1);
     $batch_no = _getRand(15);
-    $where = [['is_posted_in_tally', '=', '0'], ['created_at', '>=', "$startDate 00:00:00"],['created_at', '<=', "$endDate 23:59:59"]];
+    $where = [['is_posted_in_tally', '=', '0'], ['created_at', '>=', $startDate],['created_at', '<=', $endDate]];
     $journalData = Transactions::getJournalTxnTally($where);
     $disbursalData = Transactions::getDisbursalTxnTally($where);
     $refundData = Transactions::getRefundTxnTally($where);
-    $receiptData = Payment::getPaymentReceipt($where);
+    $receiptData = Payment::with('userRelation')->where(['is_settled' => 1, 'trans_type' => config('lms.TRANS_TYPE.REPAYMENT'), 'action_type' => 1])->whereHas('paymentRefrenceTxns',function($query) use($where){ $query->where($where); })->get();
 
     $journalArray = $this->createJournalData($journalData, $batch_no);
     $disbursalArray = $this->createDisbursalData($disbursalData, $batch_no);
     $receiptArray = $this->createReceiptData($receiptData, $batch_no);
     $refundArray = $this->createRefundData($refundData, $batch_no);
+    
     $tally_data = array_merge($disbursalArray, $journalArray , $receiptArray, $refundArray);
     try {
         if (empty($tally_data)) {
@@ -746,11 +817,15 @@ class ApiController
     if ($res === true) {
       $totalTxnRecords = 0;
       if (!empty($selectedTxnData)) {
-        $totalTxnRecords = \DB::update('update rta_transactions set is_posted_in_tally = 1 where trans_id in(' . implode(', ', $selectedTxnData) . ')');
+        foreach(array_chunk($selectedTxnData,100,true) as $selTxnData){
+          $totalTxnRecords = \DB::update('update rta_transactions set is_posted_in_tally = 1 where trans_id in(' . implode(', ', $selTxnData) . ')');
+        }
       }
       $totalPaymentsRecords = 0;
       if (!empty($selectedPaymentData)) {
-        $totalPaymentsRecords = \DB::update('update rta_payments set is_posted_in_tally = 1 where payment_id in(' . implode(', ', $selectedPaymentData) . ')');
+        foreach(array_chunk($selectedPaymentData,100,true) as $selPayData){
+          $totalPaymentsRecords = \DB::update('update rta_payments set is_posted_in_tally = 1 where payment_id in(' . implode(', ', $selPayData) . ')');
+        }
       }
       $totalRecords = $totalTxnRecords + $totalPaymentsRecords;
       $recordsTobeInserted = count($selectedTxnData) + count($selectedPaymentData);
@@ -761,9 +836,26 @@ class ApiController
         $batchData = [
           'batch_no' => $batch_no,
           'record_cnt' => $recordsTobeInserted,
-          'created_at' => $endDate,
+          'start_date' => $startDate,
+          'fact_payment_start_vn'=>$this->paymentFactEndVoucherNumber?$this->paymentFactStartVoucherNumber:NULL,
+          'fact_payment_end_vn'=>$this->paymentFactEndVoucherNumber,
+          'fact_journal_start_vn'=>$this->journalFactEndVoucherNumber?$this->journalFactStartVoucherNumber:NULL,
+          'fact_journal_end_vn'=>$this->journalFactEndVoucherNumber,
+          'end_date' => $endDate,
+          'created_at' => now(),
         ];
         $tally_inst_data = FinanceModel::dataLogger($batchData, 'tally');
+        if($tally_inst_data){
+          $tallyfactVoucher = [
+            'tally_id'=>$tally_inst_data,
+            'fact_year1'=>$lastFactVoucher['year1'],
+            'fact_year2'=>$lastFactVoucher['year2'],
+            'fact_month'=>$lastFactVoucher['month'],
+            'fact_srp_seq_number'=>$this->paymentFactVoucherSeq,
+            'fact_sjv_seq_number'=>$this->journalFactVoucherSeq,
+          ];
+          TallyFactVoucher::create($tallyfactVoucher);
+        }
         $response['message'] =  ($recordsTobeInserted > 1 ? $recordsTobeInserted .' Records inserted successfully' : '1 Record inserted.');
       }
     }else{
@@ -1212,6 +1304,7 @@ class ApiController
     return view('change_financial_yr');
   }
 }
+
 
 
  ?>

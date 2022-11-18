@@ -437,6 +437,23 @@ class CamController extends Controller
         $supplyOfferData[$key]['subProgramData'] = $this->appRepo->getSelectedProgramData(['prgm_id' => $val->prgm_id, 'is_null_parent_prgm_id' => true], ['*'], ['programDoc', 'programCharges'])->first();
       }
 
+      $is_shown = $this->appRepo->getOfferStatus([['app_id', $appId], ['is_approve', 1], ['status', 1],['is_active', 1]]);
+      $borrowerLimitData['single_limit'] = config('common.DEFAULT_BORROWER_LIMIT.Single_limit');
+      $borrowerLimitData['multiple_limit'] = config('common.DEFAULT_BORROWER_LIMIT.multiple_limit');
+      if($is_shown){
+       $Limitdata =  $this->appRepo->getAppBorrowerLimit($appId);
+       if($Limitdata){
+        $borrowerLimitData['single_limit'] = $Limitdata['single_limit'];
+        $borrowerLimitData['multiple_limit'] = $Limitdata['multiple_limit'];
+       }
+      }else{
+        $Limitdata = $this->mstRepo->getCurrentBorrowerLimitData();
+        if($Limitdata){
+        $borrowerLimitData['single_limit'] = $Limitdata['single_limit'];
+        $borrowerLimitData['multiple_limit'] = $Limitdata['multiple_limit'];
+        }
+      }
+      
       $roleData =  Helpers::getUserRole()->first();
       $is_editable = ($roleData->id == config('common.user_role.APPROVER'))?0:1;
       $securityDocumentList = $this->mstRepo->getAllSecurityDocument()->where('is_active', 1)->get();
@@ -467,7 +484,8 @@ class CamController extends Controller
         'positiveRiskCmntArr' => $positiveRiskCmntArr,
         'negativeRiskCmntArr' => $negativeRiskCmntArr,
         'securityDocumentListJson' => $securityDocumentListJson,
-        'arrAppSecurityDoc' => $arrAppSecurityDoc
+        'arrAppSecurityDoc' => $arrAppSecurityDoc,
+        'borrowerLimitData'  => $borrowerLimitData
       ]);
     }
 

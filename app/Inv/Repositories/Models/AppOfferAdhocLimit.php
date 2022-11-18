@@ -81,7 +81,14 @@ class AppOfferAdhocLimit extends BaseModel {
     {
         $mytime = Carbon::now();
         $dateTime  =  $mytime->toDateTimeString();
-        return self::where(['user_id' => $attr['user_id'],'prgm_offer_id' => $attr['prgm_offer_id'],'status' => 1])->whereRaw('CAST("'.$dateTime.'" AS DATE) between `start_date` and `end_date`')->sum('limit_amt');
+        $data = self::where(['user_id' => $attr['user_id'],'prgm_offer_id' => $attr['prgm_offer_id'],'status' => 1])->whereRaw('CAST("'.$dateTime.'" AS DATE) between `start_date` and `end_date`')->get();
+        return ['amount' => $data->sum('limit_amt'), 'ids' => $data->pluck('app_offer_adhoc_limit_id')->unique()->toArray()];
+    }
+
+    public static function checkUserAdhocLimit($attr)
+    {
+        $dateTime  =  Carbon::now()->toDateTimeString();
+        return self::where(['user_id' => $attr['user_id'],'prgm_offer_id' => $attr['prgm_offer_id'],'status' => 1])->whereRaw('CAST("'.$dateTime.'" AS DATE) between `start_date` and `end_date`')->first();
     }
 
     public function file(){

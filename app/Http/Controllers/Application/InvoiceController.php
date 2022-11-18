@@ -11,6 +11,7 @@ use App\Inv\Repositories\Contracts\InvoiceInterface as InvoiceInterface;
 use App\Inv\Repositories\Contracts\DocumentInterface as InvDocumentRepoInterface;
 use App\Inv\Repositories\Contracts\ApplicationInterface as InvAppRepoInterface;
 use App\Inv\Repositories\Models\BizApi;
+use App\Inv\Repositories\Models\AppOfferAdhocLimit;
 use Session;
 use Helpers;
 use DB;
@@ -211,7 +212,13 @@ class InvoiceController extends Controller {
             'created_at' => $date,
             'invoice_margin_amount' => $marginAmt
         );
-            $result = $this->invRepo->save($arr);
+
+        if ($is_adhoc) {
+            $currUserActiveAdhocLimit = AppOfferAdhocLimit::checkUserAdhocLimit($attributes);
+            $arr['app_offer_adhoc_limit_id'] = $currUserActiveAdhocLimit->app_offer_adhoc_limit_id;
+        }
+        
+        $result = $this->invRepo->save($arr);
 
         if ($result) {
              if($is_adhoc==1 && $statusId==8) 

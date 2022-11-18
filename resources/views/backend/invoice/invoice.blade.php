@@ -32,18 +32,19 @@
                         <div class="tab-content">
 
                             <div id="menu1" class=" active tab-pane "><br>
-                             <span id="moveCase" class="text-success"></span>
+                             <span id="moveCase" class="text-success" style="margin: 34px;"></span>
+                             <span id="errormoveCase" class="text-danger" style="margin: 34px;"></span>
                                <div class="card">
                                     <div class="card-body">
                                         <div class="row">
-                                            <div class="col-md-2">
+                                            {{-- <div class="col-md-2"> --}}
                                                  <input type="hidden" name="route" value="{{Route::currentRouteName()}}">                                
-                                            </div>
-                                              <div class="col-md-5">
-                                                  <input class="form-control form-control-sm"  name="search_biz"  placeholder="Search by Anchor / business name, Invoice number ">
+                                            {{-- </div> --}}
+                                              <div class="col-md-4" style="margin-left: 10px;">
+                                                  <input class="form-control form-control-sm" style="width: 456px;" name="search_biz"  placeholder="Search by CustId, Anchor, Business Name and Invoice Number ">
                                               </div> 
-                                             <div class="col-md-1">
-                                             <button  type="button" id="search_biz" class="btn  btn-success btn-sm float-right">Search</button>
+                                             <div class="col-md-1" style="padding-left: 150px;">
+                                             <button  type="button" id="search_biz" class="btn  btn-primary btn-sm float-right">Search</button>
                                              </div>  
                                            <!-- <div class="col-md-3">				 
                                                
@@ -72,22 +73,25 @@
 
                                                 </select>
                                             </div>  -->   
-                                            <div class="col-md-2">
+                                            <div class="col-md-2" style="padding-left: 420px;">
                                              @can('backend_bulk_invoice')
-                                                <a href="{{Route('backend_bulk_invoice')}}"type="button" class="btn btn-success btn-sm ml-2"> Bulk Invoice Upload</a>
+                                                <a href="{{Route('backend_bulk_invoice')}}"type="button" class="btn btn-primary btn-sm float-right"> Bulk Invoice Upload</a>
                                              @endcan
                                        
                                             </div>
-                                            <div class="col-md-1">
+                                            <div class="col-md-1" style="margin-left: -20px;">
                                             @can('update_bulk_invoice')
                                                 <button type="button" id="bulkApprove" data-status="8" class="btn btn-primary btn-sm ml-2 btn-app">Approve</button>
                                             @endcan
-                                               
-                                            
+                                            </div>
+                                            <div class="col-md-1" style="margin-left: -20px;">
+                                            @can('update_invoice_pending_tab')
+                                                <button type="button" id="rejectPending" data-status="14" class="btn btn-primary btn-sm ml-2 btn-app">Reject</button>
+                                            @endcan
                                             </div>
                                         </div>
                                         <div class="row">
-                                            <div class="col-12 dataTables_wrapper mt-4">
+                                            <div class="col-12 dataTables_wrapper mt-1">
                                                 <div class="overflow">
                                                     <div id="supplier-listing_wrapper" class="dataTables_wrapper dt-bootstrap4 no-footer">
                                                         <div class="row">
@@ -95,7 +99,7 @@
                                                                 <table id="invoiceList" class="text-capitalize table white-space table-striped cell-border dataTable no-footer overview-table" cellspacing="0" width="100%" role="grid" aria-describedby="supplier-listing_info" style="width: 100%;">
                                                                     <thead>
                                                                         <tr role="row">
-                                                                            <th><input type="checkbox" id="chkAll"></th> 
+                                                                            <th width="25"><input type="checkbox" id="chkAll"></th> 
                                                                             <th>Inv. No.</th>
                                                                             <th>Anchor Detail</th>
                                                                             <th>Customer Detail</th>
@@ -256,5 +260,20 @@
 </script>
 <script src="{{ asset('backend/js/ajax-js/invoice_list.js') }}"></script>
 <script src="{{ asset('backend/js/manage_invoice.js') }}"></script>
+<script>
+    $(document).ready(function(){
+        // setInterval(function(){  localStorage.setItem('Msg',''); }, 2000);
+    if(window.localStorage.getItem('Msg') != ""){
+        var x = JSON.parse(window.localStorage.getItem('Msg'));
+        setInterval(function(){  localStorage.setItem('Msg',''); }, 2000);
+        if(x.type === "success"){
+            $("#moveCase").html(x.text);
+            window.localStorage.clear();
+        }else{
+            $("#errormoveCase").html(x.text);
+        }
+    }
+});
+</script>
 
 @endsection

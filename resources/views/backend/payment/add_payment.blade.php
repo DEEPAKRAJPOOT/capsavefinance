@@ -166,8 +166,21 @@
                                                 </select>
                                             </div>
                                         </div>
+                                        
                                         <div class="col-md-8 payment-methods" style="display: none;" >
                                             <div class="row" id="appendInput"></div>
+                                        </div>
+                                        <div class="col-md-4 bank-list">
+                                            <div class="form-group">
+                                                <label for="txtCreditPeriod">Active Bank List <span class="error_message_label">*</span></label>
+
+                                                <select class="form-control bank_id" name="bank_id" id="bank_id">
+                                                    <option value=""> Select Bank </option>
+                                                    @foreach($comp_bank_list as $key=>$val)
+                                                    <option value="{{$val->bank_account_id}}"> {{$val->bank_name}} - {{$val->acc_no}}</option>
+                                                    @endforeach
+                                                </select>
+                                            </div>
                                         </div>
                                         <div class="col-md-4 tds_certificate">
                                             <div class="form-group">
@@ -227,7 +240,6 @@
         </div>
     </div>
 </div>
-<input type="text" id="checkAlertValue" value="0">
 @endsection
 @section('jscript')
 <style>
@@ -324,9 +336,11 @@ cursor: pointer;
             get_all_unsettled_trans_type(userData);
             $(".payment-methods").hide();
             $(".tds_certificate").hide();
-            
+            $(".bank-list").hide();
+            console.log($(this).val());
             switch ($(this).val()) {
                 case "1":
+                    $(".bank-list").show();
                     $(".payment-methods").show();
                     break;
                 case "3":
@@ -605,6 +619,9 @@ cursor: pointer;
                     required: true,
                     },
                     action_type:{
+                        required:true,
+                    },
+                    bank_id:{
                         required:true,
                     },
                     trans_type: {

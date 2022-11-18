@@ -225,11 +225,7 @@ class ApportionmentController extends Controller
             $transId = $request->get('trans_id');
             $payment_id = $request->get('payment_id');
             $TransDetail = $this->lmsRepo->getTransDetail(['trans_id' => $transId]);
-            if($TransDetail->transType->chrg_master_id){
-                $gst = $TransDetail->transType->charge->gst_percentage;
-            }else{
-                $gst = 0;
-            }
+            $gst = $TransDetail->gst_per;
             return view('lms.apportionment.waiveOffTransaction', ['TransDetail' => $TransDetail,'payment_id' => $payment_id, 'sanctionPageView'=>$sanctionPageView, 'gst'=>$gst]); 
         } catch (Exception $ex) {
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
@@ -269,6 +265,9 @@ class ApportionmentController extends Controller
             }
             $transId = $request->get('trans_id');
             $paymentId = $request->get('payment_id');
+            $base_amt = $request->get('waiveoff_amount');
+            $gst_amt = $request->get('waiveoff_gst');
+            $gst_per = $request->get('waiveOff_gst_per');
             $amount = (float)$request->get('amount');
             $comment = $request->get('comment');
             $TransDetail = $this->lmsRepo->getTransDetail(['trans_id' => $transId]);
@@ -297,6 +296,10 @@ class ApportionmentController extends Controller
                     'invoice_disbursed_id' => $TransDetail->disburse->invoice_disbursed_id ?? NULL,
                     'user_id' => $TransDetail->user_id,
                     'trans_date' => Helpers::getSysStartDate(),
+                    'base_amt' => $base_amt,
+                    'gst_amt' => $gst_amt,
+                    'gst' => ($gst_amt > 0)?1:0,
+                    'gst_per'  => $gst_per,
                     'amount' => $amount,
                     'settled_outstanding' => $amount,
                     'entry_type' => 1,
