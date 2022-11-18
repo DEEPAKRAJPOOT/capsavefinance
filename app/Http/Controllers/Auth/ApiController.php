@@ -296,6 +296,7 @@ class ApiController
         }
         $this->selectedTxnData[] = $rvrsl->trans_id;
         $this->selectedPaymentData[] = $rvrsl->payment_id;
+        $factvoucherNumber = 'SRP'.$this->voucherFormat.sprintf('%06d',$this->paymentFactVoucherSeq); 
         $reversalRow = [
             'batch_no' =>  $batch_no,
             'transactions_id' =>  $rvrsl->trans_id,
