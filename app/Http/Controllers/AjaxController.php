@@ -2875,7 +2875,8 @@ if ($err) {
     } 
       //////////////////// use for Invoice Disbursed Que list/////////////////
      public function getBackendInvoiceListDisbursedQue(DataProviderInterface $dataProvider) {
-      //  ini_set('memory_limit',-1);
+        ini_set('memory_limit',-1);
+        ini_set('max_execution_time', 10000);
         $invoice_data = $this->invRepo->getAllManageInvoice($this->request,9);
         $invoiceDetail = clone $invoice_data;
         $anchorIds = $invoiceDetail->distinct('anchor_id')->pluck('anchor_id')->toArray();
@@ -2916,7 +2917,7 @@ if ($err) {
             }
         }
 
-        $invoice = $dataProvider->getBackendInvoiceListDisbursedQue($this->request, $invoice_data->with('supplier.apps.disbursed_invoices.invoice_disbursed'),$IsOverdueArray, $isLimitExpiredArray,$isLimitExceedArray, $isAnchorLimitExceededArray);        
+        $invoice = $dataProvider->getBackendInvoiceListDisbursedQue($this->request, $invoice_data,$IsOverdueArray, $isLimitExpiredArray,$isLimitExceedArray, $isAnchorLimitExceededArray);        
         return $invoice;
     } 
     
