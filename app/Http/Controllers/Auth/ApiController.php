@@ -296,11 +296,12 @@ class ApiController
         }
         $this->selectedTxnData[] = $rvrsl->trans_id;
         $this->selectedPaymentData[] = $rvrsl->payment_id;
+        $factvoucherNumber = 'SRP'.$this->voucherFormat.sprintf('%06d',$this->paymentFactVoucherSeq); 
         $reversalRow = [
             'batch_no' =>  $batch_no,
             'transactions_id' =>  $rvrsl->trans_id,
             'voucher_no' => $this->voucherNo,
-            'fact_voucher_number'=>$factvoucherNumber,
+            'fact_voucher_number'=>$factvoucherNumber??NULL,
             'voucher_type' => 'Journal',
             'voucher_date' => $rvrsl->trans_date,
             'transaction_date'=>$rvrsl->created_at,
@@ -371,6 +372,7 @@ class ApiController
             $inst_date = $parentRecord->refundReq->actual_refund_date ?? NULL;
         }
       }
+      $utr_no = $rfnd->refundTrans->refundReq->tran_no??NULL; //code by new add old NULL
       $this->selectedTxnData[] = $rfnd->trans_id;
       $CustomerRow = [
           'batch_no' =>  $batch_no,
@@ -397,7 +399,7 @@ class ApiController
           'company_bank_name'=>'',
           'company_bank_acc'=>'',
           'inst_no' =>  NULL,
-          'utr_no'  => NULL,
+          'utr_no'  => $utr_no, //code by new add
           'inst_date' =>  NULL,
           'favoring_name' =>  '',
           'remarks' => '',
@@ -411,7 +413,7 @@ class ApiController
           'voucher_no' => $this->voucherNo,
           'fact_voucher_number'=>$factvoucherNumber,
           'voucher_type' => 'Payment',
-          'voucher_date' => NULL,
+          'voucher_date' => $rfnd->trans_date, //code by new add old NULL
           'transaction_date'=>$rfnd->created_at,
           'is_debit_credit' =>  'Credit',
           'trans_type' =>  '',
@@ -430,7 +432,7 @@ class ApiController
           'company_bank_acc'=>'',
           'mode_of_pay' => 'e-Fund-Transfer',
           'inst_no' =>  $inst_no,
-          'utr_no'  => NULL,
+          'utr_no'  => $utr_no, //code by new add
           'inst_date' =>  $inst_date,
           'favoring_name' =>  $userName,
           'remarks' => '',
@@ -489,7 +491,7 @@ class ApiController
               'cross_using' => '',
               'mode_of_pay' => '',
               'inst_no' =>  NULL,
-              'utr_no'  => NULL,
+              'utr_no'  => $dsbrsl->invoiceDisbursed->disbursal->tran_id ?? NULL, //new code add old NULL
               'inst_date' =>  NULL,
               'favoring_name' =>  '',
               'company_bank_name'=>'',
@@ -505,9 +507,10 @@ class ApiController
               'voucher_no' => $this->voucherNo,
               'fact_voucher_number'=>$factvoucherNumber,
               'voucher_type' => 'Payment',
-              'voucher_date' => NULL,
+              'voucher_date' => $dsbrsl->trans_date, //code by new add old NULL
               'transaction_date'=>$dsbrsl->created_at,
               'is_debit_credit' =>  'Credit',
+              //'trans_type' =>  $accountDetails->bank->bank_name ?? '',//BY DJ
               'trans_type' =>  $dsbrsl->getTransNameAttribute(),
               'invoice_no' =>   $invoice_no,
               'invoice_date' =>  $invoice_date,
@@ -522,7 +525,7 @@ class ApiController
               'cross_using' => '',
               'mode_of_pay' => 'e-Fund-Transfer',
               'inst_no' =>  $dsbrsl->invoiceDisbursed->disbursal->tran_id ?? NULL,
-              'utr_no'  => NULL,
+              'utr_no'  => $dsbrsl->invoiceDisbursed->disbursal->tran_id ?? NULL, //New Code add old NULL
               'inst_date' =>  $dsbrsl->invoiceDisbursed->disbursal->funded_date ?? NULL,
               'favoring_name' =>  $userName,
               'remarks' => '',
@@ -562,7 +565,7 @@ class ApiController
                 'cross_using' => '',
                 'mode_of_pay' => '',
                 'inst_no' =>  NULL,
-                'utr_no'  => NULL,
+                'utr_no'  => $dsbrsl->invoiceDisbursed->disbursal->tran_id ?? NULL, //New Code add old NULL
                 'inst_date' =>  NULL,
                 'favoring_name' =>  '',
                 'company_bank_name'=>'',
@@ -593,16 +596,17 @@ class ApiController
      if (empty($accountDetails)) {
         continue;
      }
-     $utr_no=NULL;
-     if($rcpt->payment_type === '1'){
-       $utr_no = $rcpt->utr_no ?? NULL;
-     }else if($rcpt->payment_type === '2'){
-      $utr_no = $rcpt->cheque_no ?? NULL;
-     }else if($rcpt->payment_type === '3'){
-      $utr_no = $rcpt->unr_no ?? NULL;
-     }else if($rcpt->payment_type === '4'){
-      $utr_no = $rcpt->unr_no ?? NULL;
-     }
+    $utr_no = $rcpt->getTransactionNoAttribute(); //new code for utr no
+    //  $utr_no = NULL; //new code for utr no
+    //  if($rcpt->payment_type === '1'){ //old code for utr no
+    //    $utr_no = $rcpt->utr_no ?? NULL;
+    //  }else if($rcpt->payment_type === '2'){
+    //   $utr_no = $rcpt->cheque_no ?? NULL;
+    //  }else if($rcpt->payment_type === '3'){
+    //   $utr_no = $rcpt->unr_no ?? NULL;
+    //  }else if($rcpt->payment_type === '4'){
+    //   $utr_no = $rcpt->unr_no ?? NULL;
+    //  }
 
      $inst_no = $rcpt->refundReq->tran_no ?? NULL;
      $inst_date = $rcpt->refundReq->actual_refund_date ?? NULL;

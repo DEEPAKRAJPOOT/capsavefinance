@@ -100,7 +100,7 @@ class FinanceController extends Controller {
                         "batch_no" => $fetchedArr['batch_no'],
                         "voucher_no" => sprintf('%04d',$fetchedArr['voucher_no']),
                         "fact_voucher_number"=>$fetchedArr['fact_voucher_number'],
-                        "trans_type" => $fetchedArr['trans_type'],
+                        //"trans_type" => $fetchedArr['trans_type'],
                         "voucher_type" => $fetchedArr['voucher_type'],
                         "voucher_date" => $voucherDate,
                         'transaction_date'=>$transaction_date,
@@ -114,6 +114,7 @@ class FinanceController extends Controller {
                         "cr_ref_no" => $fetchedArr['ref_no'],
                         "cr_ref_amount" => $fetchedArr['amount'],
                         "narration" => $fetchedArr['narration'],
+                        "trans_type" => $fetchedArr['trans_type'],
                     ];
                     if (!$is_first_n_old) {
                         if (!empty($journal[0])) {
@@ -154,6 +155,7 @@ class FinanceController extends Controller {
                         "narration" => $fetchedArr['narration'],
                         "company_bank_name"=> $fetchedArr['company_bank_name']?$fetchedArr['company_bank_name']:'',
                         "company_bank_acc"=> $fetchedArr['company_bank_acc']?$fetchedArr['company_bank_acc']:'',
+                        "trans_type" => $fetchedArr['trans_type']??'',
                     ];
                     $records['PAYMENT'][] = $paymentRow;
                 }
@@ -200,6 +202,7 @@ class FinanceController extends Controller {
                 "narration" => '',
                 "company_bank_name"=> '',
                 "company_bank_acc"=> '',
+                "trans_type" => '',
             ];
         }
 
@@ -218,11 +221,12 @@ class FinanceController extends Controller {
                 "cr_amount" => '',
                 "cr_ref_no" => '',
                 "cr_ref_amount" => '',
-                "narration" => '' 
+                "narration" => '',
+                "trans_type" => '',
             ];
         }
         foreach ($records['JOURNAL'] as $key => $value) {
-          unset($records['JOURNAL'][$key]['trans_type']);
+          //unset($records['JOURNAL'][$key]['trans_type']); //by d
           unset($records['JOURNAL'][$key]['batch_no']);
         }
         $toExportData = $records;
