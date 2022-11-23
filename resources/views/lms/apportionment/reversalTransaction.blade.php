@@ -36,21 +36,21 @@
     <div class="form-inline">
         <div class="col">
             <label for="chrg_name">Margin</label>
-            <input type="text" readonly="readonly"  class="form-control" value="{{ number_format(isset($TransDetail->invoiceDisbursed->margin),2) ?? 0}}">
+            <input type="text" readonly="readonly"  class="form-control" value="{{ isset($TransDetail->invoiceDisbursed->margin) ? number_format($TransDetail->invoiceDisbursed->margin,2) : 0}}">
         </div>
         <div class="col">
             <label for="chrg_name">Interest Rate</label>
-            <input type="text" readonly="readonly"  class="form-control" value="{{ number_format(isset($TransDetail->invoiceDisbursed->interest_rate),2) ?? 0}}">
+            <input type="text" readonly="readonly"  class="form-control" value="{{ isset($TransDetail->invoiceDisbursed->interest_rate) ? number_format($TransDetail->invoiceDisbursed->interest_rate,2) : 0}}">
         </div>
     </div>
     <div class="form-inline">    
         <div class="col">
             <label for="chrg_name">OverDue Intrest Rate</label>
-            <input type="text" readonly="readonly"  class="form-control" value="{{ number_format(isset($TransDetail->invoiceDisbursed->overdue_interest_rate),2) ?? 0}}">
+            <input type="text" readonly="readonly"  class="form-control" value="{{ isset($TransDetail->invoiceDisbursed->overdue_interest_rate) ? number_format($TransDetail->invoiceDisbursed->overdue_interest_rate,2) : 0}}">
         </div>
         <div class="col">
             <label for="chrg_name">Total Interest</label>
-            <input type="text" readonly="readonly"  class="form-control" value="{{ number_format(isset($TransDetail->invoiceDisbursed->total_interest),2) ?? 0}}">
+            <input type="text" readonly="readonly"  class="form-control" value="{{ isset($TransDetail->invoiceDisbursed->total_interest) ? number_format($TransDetail->invoiceDisbursed->total_interest,2) : 0}}">
         </div>
     </div>
     @endif
