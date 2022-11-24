@@ -733,4 +733,8 @@ class AppProgramOffer extends BaseModel {
         return !$result->isEmpty() ? $result : [];
     }
 
+    public static function getPrgmOfferData($app_id ){
+        return self::where(['is_approve' => 1,'status' => 1,'is_active' => 1,'app_id' => $app_id])->count();
+
+    }
 }

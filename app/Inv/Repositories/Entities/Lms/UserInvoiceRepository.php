@@ -171,4 +171,12 @@ class UserInvoiceRepository extends BaseRepositories implements UserInvoiceInter
 		return UserInvoice::getLastInvoiceSerialNo($inv_type);
 	}
 
+	public function getCustAndCapsLocApp($user_id) {
+		return UserInvoiceRelation::getCustAndCapsLocApp($user_id);
+	}
+
+	public function unPublishAddrApp($user_id) {
+		return UserInvoiceRelation::unPublishAddrApp($user_id);
+	}
+
 }

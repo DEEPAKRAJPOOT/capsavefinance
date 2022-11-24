@@ -43,6 +43,10 @@ class FiRcuController extends Controller
     public function listFI(Request $request)
     {
         $biz_id = $request->get('biz_id');
+        $app_id = $request->get('app_id');
+        $user_id = $request->get('user_id');
+        $appData 	 = $this->appRepo->getAppData($app_id);
+		$user_id = $appData->user_id;
         if(Auth::user()->agency_id != null)
             $fiLists = $this->appRepo->getAddressforAgencyFI($biz_id);
         else
@@ -52,7 +56,7 @@ class FiRcuController extends Controller
 
         $addrType = ['Company (GST Address)', 'Company (Communication Address)', 'Company ()', 'Company (Warehouse Address)', 'Company (Factory Address)', 'Management Address', 'Additional Address'];
         //dd($fiLists[0]->fiAddress);
-        return view('backend.fircu.fi')->with(['fiLists'=> $fiLists, 'addrType'=> $addrType, 'status_lists'=> $status_lists]);   
+        return view('backend.fircu.fi')->with(['fiLists'=> $fiLists, 'addrType'=> $addrType, 'status_lists'=> $status_lists,'biz_id' => $biz_id,'app_id' => $app_id,'user_id' => $user_id]);   
     }
 
     /**
@@ -99,6 +103,7 @@ class FiRcuController extends Controller
      */
     public function saveAssignFi(Request $request)
     {
+        // dd($request->all());
         $roleData = \Auth::user()->user_id;
         $userId = $request->all('to_id');
         $app_id = $request->all('app_id');
@@ -222,7 +227,11 @@ class FiRcuController extends Controller
      */
     public function listRCU(Request $request)
     {
+        // dd($request->all());
         $appId = $request->get('app_id');
+        // $user_id = \Auth::user()->user_id;
+        $appData 	 = $this->appRepo->getAppData($appId);
+		$user_id = $appData->user_id;
         if(Auth::user()->agency_id != null)
             $rcuResult = $this->appRepo->getRcuActiveLists($appId);
         else
@@ -242,7 +251,8 @@ class FiRcuController extends Controller
         }
         // dd($rcuResult);
         return view('backend.fircu.rcu', [
-                    'data' => $rcuResult
+                    'data' => $rcuResult,
+                    'user_id' => $user_id
                 ]);   
     }
     

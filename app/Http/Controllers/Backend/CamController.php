@@ -93,6 +93,8 @@ class CamController extends Controller
         try{
             $arrRequest['biz_id'] = $request->get('biz_id');
             $arrRequest['app_id'] = $request->get('app_id');
+            $appData 	 = $this->appRepo->getAppData($request->get('app_id'));
+		        $user_id = $appData->user_id;
             $arrBizData = Business::getApplicationById($arrRequest['biz_id']);
             $arrOwnerData = BizOwner::getCompanyOwnerByBizId($arrRequest['biz_id']);
             foreach ($arrOwnerData as $key => $arr) {
@@ -174,7 +176,8 @@ class CamController extends Controller
                 'checkDisburseBtn'=>$checkDisburseBtn,
                 'arrGroupCompany'=>$arrGroupCompany,
                 'activeGroup' => $activeGroup,
-                'productType' => $productType
+                'productType' => $productType,
+                'user_id' => $user_id
                 ]);
         } catch (Exception $ex) {
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
@@ -282,6 +285,8 @@ class CamController extends Controller
         try{
             $arrRequest['biz_id'] = $biz_id = $request->get('biz_id');
             $arrRequest['app_id'] = $app_id = $request->get('app_id');
+            $appData 	 = $this->appRepo->getAppData($app_id);
+		        $user_id = $appData->user_id;
             $arrHygieneData = CamHygiene::where('biz_id','=',$arrRequest['biz_id'])->where('app_id','=',$arrRequest['app_id'])->first();
             if(!empty($arrHygieneData)){
                   $arrHygieneData['remarks'] = json_decode($arrHygieneData['remarks'], true);
@@ -300,7 +305,7 @@ class CamController extends Controller
               'individual' => $individualOwnerId,
             ];
             $crifData = _encrypt(json_encode($crifDataforcompanyandpromoter));
-            return view('backend.cam.cibil', compact('arrCompanyDetail', 'arrCompanyOwnersData', 'arrRequest', 'arrHygieneData', 'crifData'));
+            return view('backend.cam.cibil', compact('arrCompanyDetail', 'arrCompanyOwnersData', 'arrRequest', 'arrHygieneData', 'crifData','user_id'));
         } catch (Exception $ex) {
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
         }
@@ -398,6 +403,8 @@ class CamController extends Controller
       $negativeRiskCmntArr = [];
       $appId = $request->get('app_id');
       $bizId = $request->get('biz_id');
+      $appData 	 = $this->appRepo->getAppData($appId);
+		  $user_id = $appData->user_id;
       $leaseOfferData = $facilityTypeList = array();
       $leaseOfferData = AppProgramOffer::getAllOffers($appId, '3');
       $termLoanOfferData = AppProgramOffer::getAllOffers($appId, '2');
@@ -485,7 +492,8 @@ class CamController extends Controller
         'negativeRiskCmntArr' => $negativeRiskCmntArr,
         'securityDocumentListJson' => $securityDocumentListJson,
         'arrAppSecurityDoc' => $arrAppSecurityDoc,
-        'borrowerLimitData'  => $borrowerLimitData
+        'borrowerLimitData'  => $borrowerLimitData,
+        'user_id' => $user_id
       ]);
     }
 
@@ -733,6 +741,8 @@ class CamController extends Controller
 
    public function finance(Request $request, FinanceModel $fin){
         $appId = $request->get('app_id');
+        $appData 	 = $this->appRepo->getAppData($appId);
+		    $user_id = $appData->user_id;
         $xlsx_arr = $this->_getXLSXTable($appId,'finance');
         $xlsx_html = $xlsx_arr[0];
         $xlsx_pagination = $xlsx_arr[1];
@@ -808,6 +818,7 @@ class CamController extends Controller
           'active_json_filename'=> $active_json_filename,
           'xlsx_html'=> $xlsx_html,
           'xlsx_pagination'=> $xlsx_pagination,
+          'user_id'=> $user_id
         ]);
 
     }
@@ -815,6 +826,8 @@ class CamController extends Controller
     public function banking(Request $request, FinanceModel $fin){
         $appId = $request->get('app_id');
         $biz_id = $request->get('biz_id');
+        $appData 	 = $this->appRepo->getAppData($appId);
+		    $user_id = $appData->user_id;
         $xlsx_arr = $this->_getXLSXTable($appId,'banking');
         $xlsx_html = $xlsx_arr[0];
         $xlsx_pagination = $xlsx_arr[1];
@@ -870,7 +883,8 @@ class CamController extends Controller
           'debtPosition'=> $debtPosition,
           'dataWcf'=> $dataWcf,
           'dataTlbl'=> $dataTlbl,
-          'dataBankAna'=> $dataBankAna
+          'dataBankAna'=> $dataBankAna,
+          'user_id'=> $user_id
           ]);
     }
 
@@ -1644,7 +1658,8 @@ class CamController extends Controller
     {
         $appId = (int)$request->get('app_id');
         $bizId = $request->get('biz_id');
-
+        $appData 	 = $this->appRepo->getAppData($appId);
+		    $user_id = $appData->user_id;
         $supplyPrgmLimitData = $this->appRepo->getProgramLimitData($appId, 1);
         $termPrgmLimitData = $this->appRepo->getProgramLimitData($appId, 2);
         $leasingPrgmLimitData = $this->appRepo->getProgramLimitData($appId, 3);
@@ -1678,7 +1693,8 @@ class CamController extends Controller
                 ->with('offerStatus', $offerStatus)
                 ->with('userRole', $userRole)
                 ->with('product_types', $product_types)
-                ->with('appType', $appType);
+                ->with('appType', $appType)
+                ->with('user_id', $user_id);
     }
 
     /**
@@ -2306,6 +2322,7 @@ class CamController extends Controller
         'previoustop3Cus'=>$previoustop3Cus,
         'previoustop3Sup'=>$previoustop3Sup,
         'gstResponsShow'=>$gstRes,
+        'user_id'=>$user_id
         ]);
     }
 
@@ -2315,12 +2332,15 @@ class CamController extends Controller
     public function showPromoter(Request $request){
         $attribute['biz_id'] = $request->get('biz_id');
         $attribute['app_id'] = $request->get('app_id');
+        $appData 	 = $this->appRepo->getAppData($request->get('app_id'));
+		    $user_id = $appData->user_id;
         $arrPromoterData = $this->userRepo->getOwnerApiDetail($attribute);
         $arrCamData = Cam::where('biz_id','=',$attribute['biz_id'])->where('app_id','=',$attribute['app_id'])->first();
         return view('backend.cam.promoter')->with([
             'arrPromoterData' => $arrPromoterData,
             'attribute' => $attribute,
-            'arrCamData' => $arrCamData
+            'arrCamData' => $arrCamData,
+            'user_id' => $user_id
             ]);;
     }
 
@@ -2351,6 +2371,8 @@ class CamController extends Controller
         try {
             $biz_id = $request->get('biz_id');
             $app_id = $request->get('app_id');
+            $appData 	 = $this->appRepo->getAppData($app_id);
+		        $user_id = $appData->user_id;
             $liftingData = $this->appRepo->getLiftingDetail($app_id);
             $anchorRelationData = $this->appRepo->getAnchorRelationDetails($app_id);
             $data = [];
@@ -2369,7 +2391,8 @@ class CamController extends Controller
             return view('backend.cam.cam_anchor_view',['data'=> $data])
                 ->with('biz_id',$biz_id)
                 ->with('anchorRelationData', $anchorRelationData)
-                ->with('app_id',$app_id);
+                ->with('app_id',$app_id)
+                ->with('user_id',$user_id);
 
         } catch (Exception $ex) {
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
@@ -2593,7 +2616,10 @@ class CamController extends Controller
     public function viewCamReport(Request $request){
       try{
         $viewData = $this->getCamReportData($request);
-        return view('backend.cam.viewCamReport')->with($viewData);
+        $app_id = $request->get('app_id');
+        $biz_id = $request->get('biz_id');
+		    $user_id = $viewData['arrBizData']['user_id'];
+        return view('backend.cam.viewCamReport')->with($viewData,$app_id,$biz_id)->with('user_id',$user_id);
       } catch (Exception $ex) {
           return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
       }
@@ -2878,6 +2904,8 @@ class CamController extends Controller
       $userId = Auth::user()->user_id;
       $arrRequest['biz_id'] = $request->get('biz_id');
       $arrRequest['app_id'] = $request->get('app_id');
+      $appData 	 = $this->appRepo->getAppData($request->get('app_id'));
+		  $user_id = $appData->user_id;
       $reviewerSummaryData = CamReviewerSummary::where('biz_id', '=', $arrRequest['biz_id'])->where('app_id', '=', $arrRequest['app_id'])->first();
       $securityDocumentList = $this->mstRepo->getAllSecurityDocument()->where('is_active', 1)->get();
       $securityDocumentListJson = json_encode($securityDocumentList);
@@ -2907,7 +2935,8 @@ class CamController extends Controller
         'appData' => $appData,
         'securityListingDataApproved' => $securityListingDataApproved,
         'securityListingDataSanctioned' => $securityListingDataSanctioned,
-        'offerListJson' => $offerListJson
+        'offerListJson' => $offerListJson,
+        'user_id' => $user_id
       ]);
     } catch (Exception $ex) {
       return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));

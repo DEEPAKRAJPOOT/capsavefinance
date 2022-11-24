@@ -114,4 +114,19 @@ class UserInvoiceRelation extends BaseModel {
        return $this->belongsTo('App\Inv\Repositories\Models\UserBankAccount', 'company_id', 'comp_addr_id');
    }
 
+   public static function getCustAndCapsLocApp($user_id, $appId = null) {
+    $result = self::where(['user_id' => $user_id])->orderBy('user_invoice_rel_id' , 'DESC');
+    return $result ? : false;
+  }
+
+  public static function unPublishAddrApp(int $userId) {
+    $data = self::where('user_id', $userId)
+        ->update(['is_active' => 2, 'updated_at' => \carbon\Carbon::now(), 'updated_by' => Auth::user()->user_id]);
+    return $data;
+ }
+
+ public static function getUserInvoiceRelData($user_id) {
+    return self::where(['user_id' => $$user_id,'is_active' => 1]);
+ }
+
 }

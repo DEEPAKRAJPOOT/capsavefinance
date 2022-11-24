@@ -1,7 +1,6 @@
 @extends('layouts.backend.admin-layout')
 
 @section('content')
-
 @include('layouts.backend.partials.admin-subnav')
 <style>
 .overview-table >thead> tr > th {

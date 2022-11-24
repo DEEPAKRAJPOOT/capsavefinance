@@ -7,17 +7,17 @@
     <ul class="sub-menu-main pl-0 m-0">
         @can('company_details')
 		<li>
-			<a href="{{ route('company_details', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')]) }}" class="active">Business Information</a>
+			<a href="{{ route('company_details', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id'),'user_id' => $user_id]) }}" class="active">Business Information</a>
 		</li>
         @endcan 
         @can('promoter_details')
 		<li>
-			<a href="{{ route('promoter_details', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')]) }}">Management Information</a>
+			<a href="{{ route('promoter_details', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id'),'user_id' => $user_id]) }}">Management Information</a>
 		</li>
         @endcan 
         @can('documents')
 		<li>
-			<a href="{{ route('documents', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')]) }}">Documents</a>
+			<a href="{{ route('documents', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id'),'user_id' => $user_id]) }}">Documents</a>
 		</li>
         @endcan        
 	</ul>

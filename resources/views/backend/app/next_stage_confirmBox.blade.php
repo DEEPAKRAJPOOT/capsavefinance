@@ -62,7 +62,7 @@
                    <label class='error'>{{ trans('backend_messages.validate_limit_expired_found') }}</label><br>                   
                    @endif
                    
-                   @if ($assign_case)
+                   {{-- @if ($assign_case)
                         <label for="txtCreditPeriod">Please select Assignee <span class="mandatory">*</span> </label>
                         <br>
                         @if ($roles)
@@ -82,7 +82,7 @@
                     $confirmBtn = 'Yes';
                     $closeBtn = 'No';
                     @endphp                    
-                   @endif
+                   @endif --}}
 
                    @if (Session::has('error_code') && Session::get('error_code') == 'validate_fi_status')
                    <label class='error'>You cannot move this application to the next stage as the fi verification is pending for this customer.</label><br>                   
@@ -91,7 +91,9 @@
                    @if (Session::has('error_code') && Session::get('error_code') == 'validate_offer_approved')
                    <label class='error'>You cannot pull back this application as the offer has been approved by all the approvers.</label><br>                   
                    @endif
-                   
+                   @if (Session::has('error_code') && Session::get('error_code') == 'no_relation_found')
+                   <label id="click" class='error'>You can not move this application to the next stage as address mapping is pending.<a target='blank_' href="{{ route('user_invoice_location_app',['user_id' => $appData->user_id,'app_id' => $appData->app_id,'biz_id' => $appData->biz_id]) }}">Click here</a></label><br>                   
+                   @endif
                     @if(!$isAppPullBack)
                        @if ($assign_case)
                             <label for="txtCreditPeriod">Please select Assignee <span class="mandatory">*</span> </label>
@@ -152,7 +154,11 @@
                     {!! Form::hidden('is_app_pull_back', $isAppPullBack) !!}
                 <!-- <button type="submit" class="btn btn-success">{{ $confirmBtn }}</button>
                 <button id="close_btn" type="button" class="btn btn-secondary">{{ $closeBtn }}</button>               -->
+                @if (Session::has('error_code') && Session::get('error_code') == 'no_relation_found')
+                <button type="submit" @php if($nextStage && $nextStage->stage_code=='approver') { @endphp id="submit" @php } @endphp class="btn btn-success btn-sm btn-move-next-stage" disabled>{{ $confirmBtn }}</button> &nbsp;
+                @else
                 <button type="submit" @php if($nextStage && $nextStage->stage_code=='approver') { @endphp id="submit" @php } @endphp class="btn btn-success btn-sm btn-move-next-stage">{{ $confirmBtn }}</button> &nbsp;
+                @endif
                 <button id="close_btn" type="button" class="btn btn-secondary btn-sm">{{ $closeBtn }}</button>   
             </div>
             </div>

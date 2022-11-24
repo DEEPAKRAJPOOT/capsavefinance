@@ -12,6 +12,7 @@ use App\Inv\Repositories\Contracts\UserInterface as InvUserRepoInterface;
 use App\Inv\Repositories\Contracts\ApplicationInterface as InvAppRepoInterface;
 use App\Inv\Repositories\Contracts\DocumentInterface as InvDocumentRepoInterface;
 use App\Inv\Repositories\Contracts\MasterInterface as InvMasterRepoInterface;
+// use App\Inv\Repositories\Contracts\UcicUserInterface as InvUcicUserRepoInterface;
 use App\Inv\Repositories\Models\Master\State;
 use App\Inv\Repositories\Models\BizApiLog;
 use App\Inv\Repositories\Models\AppProgramOffer;
@@ -34,9 +35,15 @@ use App\Inv\Repositories\Contracts\Traits\ActivityLogTrait;
 use App\Inv\Repositories\Models\Master\LocationType;
 use App\Inv\Repositories\Models\AppSanctionLetter;
 use PDF as NewPDF;
+use App\Inv\Repositories\Models\AppProgramLimit;
+use App\Inv\Repositories\Models\BizOwner;
 use App\Inv\Repositories\Contracts\Traits\CamTrait;
 use App\Inv\Repositories\Models\AppSecurityDoc;
-use App\Inv\Repositories\Models\AppProgramLimit;
+use App\Inv\Repositories\Models\AppGroupDetail;
+use App\Inv\Repositories\Contracts\UserInvoiceInterface as InvUserInvRepoInterface;
+use App\Inv\Repositories\Models\Application;
+use App\Inv\Repositories\Models\AppLimit;
+use App\Inv\Repositories\Models\BusinessAddress;
 
 
 class ApplicationController extends Controller
@@ -44,12 +51,13 @@ class ApplicationController extends Controller
 	use ApplicationTrait;
 	use LmsTrait;
 	use CamTrait;
-
 	protected $appRepo;
 	protected $userRepo;
 	protected $docRepo;
 	protected $masterRepo;
 	protected $lmsRepo;
+	// protected $ucicuser_repo;
+	protected $UserInvRepo;
 
 	use ActivityLogTrait;
 
@@ -60,13 +68,15 @@ class ApplicationController extends Controller
 	 */
 	protected $pdf;
 
-	public function __construct(InvAppRepoInterface $app_repo, InvUserRepoInterface $user_repo, InvDocumentRepoInterface $doc_repo, InvLmsRepoInterface $lms_repo, InvMasterRepoInterface $master_repo, Pdf $pdf){
+	public function __construct(InvAppRepoInterface $app_repo, InvUserRepoInterface $user_repo, InvDocumentRepoInterface $doc_repo, InvLmsRepoInterface $lms_repo, InvMasterRepoInterface $master_repo, Pdf $pdf,InvUserInvRepoInterface $UserInvRepo){
 		$this->appRepo = $app_repo;
 		$this->userRepo = $user_repo;
 		$this->docRepo = $doc_repo;
 		$this->masterRepo = $master_repo;
 		$this->pdf = $pdf;
 		$this->lmsRepo = $lms_repo;
+		// $this->ucicuser_repo = $ucicuser_repo;
+		$this->UserInvRepo = $UserInvRepo;
 		$this->middleware('checkBackendLeadAccess');
 	}
 
@@ -113,10 +123,12 @@ class ApplicationController extends Controller
 	 */
 	public function showCompanyDetails(Request $request){
 		try {
+			// dd($request->all());
 			$arrFileData = $request->all();
 			$appId = $request->get('app_id');
 			$bizId = $request->get('biz_id');
 			$userId = $request->get('user_id');
+
 			$product_ids = [];
 
 			$business_info = $this->appRepo->getApplicationById($request->biz_id);
@@ -205,8 +217,7 @@ class ApplicationController extends Controller
 	 public function showPromoterDetails(Request $request){
 		try
 		{
-
-		$id = Auth::user()->user_id;
+		// $id = Auth::user()->user_id;
 		$appId = $request->get('app_id');
 		$bizId = $request->get('biz_id');
 		$editFlag = $request->get('edit');
@@ -223,6 +234,7 @@ class ApplicationController extends Controller
 			$cin =    "";
 		}
 		$appData 	 = $this->appRepo->getAppData($appId);
+		$user_id = $appData->user_id;
 		$OwnerPanApi = $this->userRepo->getOwnerApiDetail($attribute);
 		return view('backend.app.promoter-details')->with([
 			'ownerDetails' => $OwnerPanApi,
@@ -231,7 +243,8 @@ class ApplicationController extends Controller
 			'bizId' => $bizId,
 			'edit' => $editFlag,
 			'is_lease' => $getProductType,
-			'appData' => $appData
+			'appData' => $appData,
+			'user_id' => $user_id
 		]);
 			 
 		} catch (Exception $ex) {
@@ -1017,7 +1030,13 @@ class ApplicationController extends Controller
 			} else {
 				$roleDropDown = $this->userRepo->getAllRole()->toArray();
 			}
-			$appData = $this->appRepo->getAppData($app_id);
+			$appData = Application::getAppDatas($app_id);
+
+			if($appData->curr_status_id == config('common.mst_status_id.OFFER_ACCEPTED')){
+				if(isset($appData->user_invoice_rel_id) == null || $appData->is_active != 1){
+						Session::flash('error_code','no_relation_found');
+				}
+			}
 			$isAppPullBack = false;
 			if ($request->has('app_pull_back') && $request->app_pull_back) {
 				$isAppPullBack = true;
@@ -1040,6 +1059,7 @@ class ApplicationController extends Controller
 				->with('biz_id', $appData->biz_id)
 				->with('approvers',$approvers)
 				->with('nextStage', $nextStage)
+				->with('appData', $appData)
 				->with('isAppPullBack', $isAppPullBack);
 		} catch (Exception $ex) {
 			return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
@@ -1093,7 +1113,17 @@ class ApplicationController extends Controller
 					if ($appData && in_array($appData->curr_status_id, [config('common.mst_status_id.OFFER_LIMIT_REJECTED')]) ) {
 						Session::flash('error_code', 'limit_rejected');
 						return redirect()->back();
-					}                                        
+					}  
+					$fiWhere = [];
+					$fiWhere['app.app_id'] = $app_id;
+					$fiWhere['fi_addr.is_active'] = 1;
+					$fiWhere['fi_addr.cm_fi_status_id'] = 3;
+					$fiWhere['fi_addr.fi_status_id'] = 3;
+					$fiAddr = $this->appRepo->getFiAddressData($fiWhere);
+					if (count($fiAddr) == 0)  {
+						Session::flash('error_code', 'validate_fi_status');
+						return redirect()->back();
+					}                                      
 				} else if ($currStage->stage_code == 'approver') {
 
 					if ($request->has('is_app_pull_back') && $request->is_app_pull_back) {
@@ -1135,6 +1165,14 @@ class ApplicationController extends Controller
 						Session::flash('error_code', 'no_offer_accepted');
 						return redirect()->back();
 					}
+					$appData = Application::getAppDatas($app_id);
+
+					if($appData->curr_status_id == config('common.mst_status_id.OFFER_ACCEPTED')){
+						if(isset($appData->user_invoice_rel_id) == null || $appData->is_active != 1){
+							Session::flash('error_code','no_relation_found');
+							return redirect()->back();
+						}
+					}
 				} else if ($currStage->stage_code == 'upload_post_sanction_doc') {
 
 					$requiredDocs = $this->getProgramDocs(['app_id'=> $app_id, 'stage_code' => 'upload_post_sanction_doc']);
@@ -1160,16 +1198,16 @@ class ApplicationController extends Controller
 						return redirect()->back();
 					}
 				} else if ($currStage->stage_code == 'verify_uploaded_exe_doc') {
-					$fiWhere = [];
-					$fiWhere['app.app_id'] = $app_id;
-					$fiWhere['fi_addr.is_active'] = 1;
-					$fiWhere['fi_addr.cm_fi_status_id'] = 3;
-					$fiWhere['fi_addr.fi_status_id'] = 3;
-					$fiAddr = $this->appRepo->getFiAddressData($fiWhere);
-					if (count($fiAddr) == 0)  {
-						Session::flash('error_code', 'validate_fi_status');
-						return redirect()->back();
-					}
+					// $fiWhere = [];
+					// $fiWhere['app.app_id'] = $app_id;
+					// $fiWhere['fi_addr.is_active'] = 1;
+					// $fiWhere['fi_addr.cm_fi_status_id'] = 3;
+					// $fiWhere['fi_addr.fi_status_id'] = 3;
+					// $fiAddr = $this->appRepo->getFiAddressData($fiWhere);
+					// if (count($fiAddr) == 0)  {
+					// 	Session::flash('error_code', 'validate_fi_status');
+					// 	return redirect()->back();
+					// }
 				} else if ($currStage->stage_code == 'opps_checker') {
 				  $capId = sprintf('%09d', $user_id);
 				  $customerId = 'CAP'.$capId;
@@ -1517,6 +1555,7 @@ class ApplicationController extends Controller
 	{
 		$appId = $request->get('app_id');
 		$bizId = $request->get('biz_id');
+		$user_id  = Auth::user()->user_id;
 		//$appData = $this->appRepo->getAppDataByAppId($appId);
 		//$loanAmount = $appData ? $appData->loan_amt : 0;
 
@@ -1563,7 +1602,8 @@ class ApplicationController extends Controller
 				->with('is_shown', $is_shown)
 				->with('isSalesManager', $isSalesManager)
 				->with('currentStage', $currentStage)
-				->with('viewGenSancLettertBtn', $viewGenSancLettertBtn);
+				->with('viewGenSancLettertBtn', $viewGenSancLettertBtn)
+				->with('user_id', $user_id);
 	}
 
 	/**
@@ -1688,6 +1728,7 @@ class ApplicationController extends Controller
 	{
 		$appId = $request->get('app_id');
 		$bizId = $request->get('biz_id');
+		$user_id  = Auth::user()->user_id;
 		$sanctionId = $request->get('sanction_id');
 		$offerId = null;
 		if ($request->has('offer_id') && !empty($request->get('offer_id'))) {
@@ -1702,7 +1743,7 @@ class ApplicationController extends Controller
 		$data = $this->getSanctionLetterData((int)$appId, (int)$bizId, (int)$offerId, (int)$sanctionId);
 		$supplyChaindata = $this->getSanctionLetterSupplyChainData($appId, $bizId, $offerId, $sanctionId);
 		$appLimit = $this->appRepo->getAppLimit((int)$appId);
-		return view('backend.app.sanction_letter')->with($data)->with(['supplyChaindata'=>$supplyChaindata, 'supplyChainFormData'=>$supplyChainFormData, 'appLimit' => $appLimit]);
+		return view('backend.app.sanction_letter')->with($data)->with(['supplyChaindata'=>$supplyChaindata, 'supplyChainFormData'=>$supplyChainFormData, 'appLimit' => $appLimit,'user_id' => $user_id]);
 	}
 
    /* For Promoter pan verify iframe model    */
@@ -2586,6 +2627,7 @@ class ApplicationController extends Controller
 		//dd($request->all());
 		$appId = $request->get('app_id');
 		$bizId = $request->get('biz_id');
+		$user_id  = Auth::user()->user_id;
 		$sanctionId = $request->get('sanction_id');
 		$offerId = null;
 		if ($request->has('offer_id') && !empty($request->get('offer_id'))) {
@@ -2602,7 +2644,7 @@ class ApplicationController extends Controller
 		$whereCondition['app_id'] = $appId;
 		$sanctionFirstData =$this->appRepo->getOfferNewSanctionLetterData($whereCondition,'sanction_letter_id','yes');
 		//dd($sanctionFirstData);
-		return view('backend.app.new_sanction_letter_list')->with(['supplyChaindata'=>$supplyChaindata,'sanctionFirstData'=>$sanctionFirstData,'appData'=>$appData]);  
+		return view('backend.app.new_sanction_letter_list')->with(['supplyChaindata'=>$supplyChaindata,'sanctionFirstData'=>$sanctionFirstData,'appData'=>$appData,'user_id' => $user_id]);  
 	}
 
 	/**
@@ -2613,9 +2655,11 @@ class ApplicationController extends Controller
 	 */
 	public function createNewSanctionLetter(Request $request)
 	{   
-		//dd($request->all());
+		// dd($request->all());
 		$appId = $request->get('app_id');
 		$bizId = $request->get('biz_id');
+		$appData 	 = $this->appRepo->getAppData($appId);
+		$user_id = $appData->user_id;
 		$action_type = $request->get('action_type');
 		$offerId = $sanctionId = null;
 		if ($request->has('offer_id') && !empty($request->get('offer_id'))) {
@@ -2651,7 +2695,7 @@ class ApplicationController extends Controller
 		$supplyChaindata = $this->getNewSanctionLetterSupplyChainData($appId, $bizId, $offerId, $sanctionId);
 		//dd($supplyChaindata,$data);
 		$appLimit = $this->appRepo->getAppLimit((int)$appId);
-		return view('backend.app.create_new_sanction_letter')->with($data)->with(['supplyChaindata'=>$supplyChaindata, 'supplyChainFormData'=>$supplyChainFormData, 'appLimit' => $appLimit, 'actionType' => $action_type,'arrayOfferData'=>$arrayOfferData]);  
+		return view('backend.app.create_new_sanction_letter')->with($data)->with(['supplyChaindata'=>$supplyChaindata, 'supplyChainFormData'=>$supplyChainFormData, 'appLimit' => $appLimit, 'actionType' => $action_type,'arrayOfferData'=>$arrayOfferData,'user_id'=>$user_id]);  
 	}
     
 	/**
@@ -2800,9 +2844,10 @@ class ApplicationController extends Controller
 	 */
 	public function viewNewSanctionLetterSupplyChain(Request $request)
 	{   
-		//dd($request->all());
 		$appId = $request->get('app_id');
 		$bizId = $request->get('biz_id');
+		$appData 	 = $this->appRepo->getAppData($appId);
+		$user_id = $appData->user_id;
 		$sanctionId = $request->get('sanction_letter_id');
 		$action_type = $request->get('action_type');
 		$offerId = null;
@@ -2837,7 +2882,7 @@ class ApplicationController extends Controller
 			];
 			return $this->downloadNewSanctionLetterAsPDF($dataA, false);
 		}
-		return view('backend.app.view_new_sanction_letter')->with($data)->with(['supplyChaindata'=>$supplyChaindata, 'supplyChainFormData'=>$supplyChainFormData, 'appLimit' => $appLimit, 'action_type'=>$action_type,'arrayOfferData'=>$arrayOfferData]);  
+		return view('backend.app.view_new_sanction_letter')->with($data)->with(['supplyChaindata'=>$supplyChaindata, 'supplyChainFormData'=>$supplyChainFormData, 'appLimit' => $appLimit, 'action_type'=>$action_type,'arrayOfferData'=>$arrayOfferData, 'user_id' => $user_id]);  
 	}
 	
 	public function downloadNewSanctionLetterSupplyChain(Request $request){
@@ -2971,4 +3016,111 @@ class ApplicationController extends Controller
 			return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
 		}
 	}
+
+	public  function  getUserLimitDetais($user_id) 
+	{
+			 try {
+				 $totalLimit = 0;
+				 $totalCunsumeLimit = 0;
+				 $consumeLimit = 0;
+				 $transactions = 0;
+				 $userInfo = $this->userRepo->getCustomerDetail($user_id);
+				 $application = $this->appRepo->getCustomerApplications($user_id);
+				 $anchors = $this->appRepo->getCustomerPrgmAnchors($user_id);
+ 
+				 foreach ($application as $key => $app) {
+					 if (isset($app->prgmLimits)) {
+						 foreach ($app->prgmLimits as $value) {
+							 $totalLimit += $value->limit_amt;
+						 }
+					 }
+					 if (isset($app->acceptedOffers)) {
+						 foreach ($app->acceptedOffers as $value) {
+							 $totalCunsumeLimit += $value->prgm_limit_amt;
+						 }
+					 }
+				 }
+				 $userInfo->total_limit = number_format($totalLimit);
+				 $userInfo->consume_limit = number_format($totalCunsumeLimit);
+				 $userInfo->utilize_limit = number_format($totalLimit - $totalCunsumeLimit);
+				 
+				 $data['userInfo'] = $userInfo;
+				 $data['application'] = $application;
+				 $data['anchors'] = $anchors;
+				 return $data;
+			 } catch (Exception $ex) {
+				 dd($ex);
+			 }
+	 }
+
+	public function userInvoiceLocationApp(Request $request) {
+        try {
+            $user_id = $request->get('user_id');
+			$biz_id = $request->get('biz_id');
+			$app_id = $request->get('app_id');
+			// dd($user_id,$biz_id,$app_id);
+            $where = ['user_id' => $user_id];
+            $allApps = $this->UserInvRepo->getAllAppData($where);
+					$userAddresswithbiz = BusinessAddress::getAddressforCustomerApp($biz_id);
+					// dd($userAddresswithbiz[0]->activeFiAddressApp);
+					$capsave_addr = $this->UserInvRepo->getCapsavAddr();
+					$appOffer = AppProgramOffer::getPrgmOfferData($app_id);
+					$result = $this->getUserLimitDetais($user_id);
+			return view('backend.app.user_invoice_location_app')->with(['user_id'=> $user_id,'capsave_addr' => $capsave_addr, 'user_addr' => $userAddresswithbiz,'userInfo' =>  $result['userInfo'], 'application' => $result['application'], 'anchors' =>  $result['anchors'],'allApps' => $allApps,'biz_id'=> $biz_id,'app_id'=>$app_id,'appOffer' => $appOffer]);
+        } catch (Exception $ex) {
+             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
+        }
+    }
+
+	public function saveUserInvoiceLocationApp(Request $request) {
+        try {
+            $arrUserData = $request->all();
+            $user_id = $request->get('user_id');
+            $biz_id = $request->get('biz_id');
+			// dd($biz_id);
+            $app_id = $request->get('app_id');
+            $arrUserData['created_at'] = \carbon\Carbon::now();
+            $arrUserData['created_by'] = Auth::user()->user_id;
+            if(empty($arrUserData['capsave_state'])) {
+                return redirect()->route('user_invoice_location_app', ['user_id' => $user_id,'biz_id' => $biz_id,'app_id' => $app_id])->with('error', 'State are not present in "Capsave Location"');
+            }
+            if(empty($arrUserData['user_state'])) {
+                return redirect()->route('user_invoice_location_app', ['user_id' => $user_id,'biz_id' => $biz_id,'app_id' => $app_id])->with('error', 'State are not present in "Customer Primary Location"');
+            }
+            $userInvoiceData = [
+                'user_id' => $arrUserData['user_id'],
+                'biz_addr_id' => $arrUserData['customer_pri_loc'],
+                'company_id' => $arrUserData['capsav_location'],
+                'company_state_id' => $arrUserData['capsave_state'] ?? 0,
+                'biz_addr_state_id' => $arrUserData['user_state'] ?? 0,
+                'is_active' => 1,
+                'created_at' => $arrUserData['created_at'],
+                'created_by' => $arrUserData['created_by'],
+            ];
+            $userInvData = [
+                'user_id' => $arrUserData['user_id'],
+                'biz_addr_id' => $arrUserData['customer_pri_loc'],
+                'company_id' => $arrUserData['capsav_location'],
+                'is_active' => 1,
+            ];
+            $checkData = $this->UserInvRepo->checkUserInvoiceLocation($userInvData);
+            if($checkData) {
+                return redirect()->route('user_invoice_location_app', ['user_id' => $user_id,'biz_id' => $biz_id,'app_id' => $app_id])->with('error', 'Same address and company are already mapped and active');
+            }
+            $this->UserInvRepo->unPublishAddr($user_id);
+            $arrUserData['updated_at'] = \carbon\Carbon::now();
+            $arrUserData['updated_by'] = Auth::user()->user_id;
+            $status = $this->UserInvRepo->saveUserInvoiceLocation($userInvoiceData);
+			$bizAddrId = $arrUserData['customer_pri_loc'];
+			$data = BusinessAddress::unsetDefaultAddressApp($biz_id);
+			$default = BusinessAddress::setDefaultAddressApp($bizAddrId);
+            if($status) {
+                return redirect()->route('user_invoice_location_app', ['user_id' => $user_id,'biz_id' => $biz_id,'app_id' => $app_id])->with('message', 'Address save Successfully');
+            } else {
+                return redirect()->route('user_invoice_location_app', ['user_id' => $user_id,'biz_id' => $biz_id,'app_id' => $app_id])->with('error', 'Some error occured while saving');
+            }
+        } catch (Exception $ex) {
+             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
+        }
+    }
 }

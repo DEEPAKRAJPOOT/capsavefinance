@@ -1046,4 +1046,31 @@ class Application extends BaseModel
     public static function getAppByParentAppId($appId) {
         return self::where('parent_app_id', $appId)->first();
     }
+
+    public static function getAppDatas($app_id)
+    {
+        /**
+         * Check id is not blank
+         */
+        if (empty($app_id)) {
+            throw new BlankDataExceptions(trans('error_message.no_data_found'));
+        }
+
+        /**
+         * Check id is not an integer
+         */
+        if (!is_int($app_id)) {
+            throw new InvalidDataTypeExceptions(trans('error_message.invalid_data_type'));
+        }
+               
+        $appData = self::select('app.*','app_limit.status','user_invoice_rel.user_invoice_rel_id','biz_addr.address_type','app_limit.biz_id','user_invoice_rel.is_active')
+                ->leftJoin('app_limit', 'app.app_id', '=', 'app_limit.app_id')
+                ->leftJoin('user_invoice_rel', 'app_limit.user_id', '=', 'user_invoice_rel.user_id')
+                ->leftjoin('biz_addr', 'app_limit.biz_id', '=', 'biz_addr.biz_id')
+                ->where('app.app_id', $app_id)
+                ->orderBy('user_invoice_rel.user_invoice_rel_id', 'desc')
+                ->first();
+                       
+        return ($appData ? $appData : null);        
+    }
 }

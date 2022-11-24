@@ -242,6 +242,7 @@ class CoLenderControllers extends Controller {
     {
         $appId = $request->get('app_id');
         $bizId = $request->get('biz_id');
+        $user_id  = Auth::user()->user_id;
         //$appData = $this->appRepo->getAppDataByAppId($appId);        
         //$loanAmount = $appData ? $appData->loan_amt : 0;
         
@@ -255,7 +256,8 @@ class CoLenderControllers extends Controller {
             ->with('bizId', $bizId)                
             ->with('supplyOfferData', $supplyOfferData)
             ->with('offerStatus', $offerStatus)
-            ->with('colenderShare', $colenderShare);
+            ->with('colenderShare', $colenderShare)
+            ->with('user_id', $user_id);
     }
 
     /**
