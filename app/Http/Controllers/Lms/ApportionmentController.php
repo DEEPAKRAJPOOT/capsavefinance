@@ -352,6 +352,7 @@ class ApportionmentController extends Controller
             $paymentId = $request->get('payment_id')??null;
             $amount = (float)$request->get('amount');
             $comment = $request->get('comment');
+            $paymentData = null;
             $TransDetail = $this->lmsRepo->getTransDetail(['trans_id' => $transId]);
             
             if (empty($TransDetail)) {
