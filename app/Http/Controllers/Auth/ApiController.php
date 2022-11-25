@@ -548,7 +548,7 @@ class ApiController
                 'voucher_no' => $this->voucherNo,
                 'fact_voucher_number'=>$factvoucherNumber,
                 'voucher_type' => 'Payment',
-                'voucher_date' => NULL,
+                'voucher_date' => $dsbrsl->trans_date,
                 'transaction_date'=>$dsbrsl->created_at,
                 'is_debit_credit' =>  'Credit',
                 'trans_type' =>  'Interest',
