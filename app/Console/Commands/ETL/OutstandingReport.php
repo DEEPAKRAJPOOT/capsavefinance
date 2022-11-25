@@ -42,8 +42,9 @@ class OutstandingReport extends Command
      */
     public function handle()
     {
-        $reportDate = Carbon::now()->setTimezone(config('common.timezone'))->format('Y-m-d');
-        ini_set('memory_limit', '-1'); //
+        $currentDate = Carbon::now()->setTimezone(config('common.timezone'))->format('Y-m-d');
+        $reportDate = Carbon::now()->subDays(1)->setTimezone(config('common.timezone'))->format('Y-m-d');
+        // ini_set('memory_limit', '-1'); 
         $outstandingReportLog = OutstandingReportLog::whereNull('user_id')->whereDate('to_date',$reportDate)->where('created_by','0')->orderBy('id','desc')->limit(1)->first();
         $filePath = $outstandingReportLog->file_path;
         $reportLogId = $outstandingReportLog->id;
