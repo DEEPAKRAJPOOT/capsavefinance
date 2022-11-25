@@ -1158,11 +1158,11 @@ class ApportionmentController extends Controller
            $transOut = Transactions::where('invoice_disbursed_id',$invd->invoice_disbursed_id)->where('entry_type','0')->whereIn('trans_type',[9,16,33])->whereNull('parent_trans_id')->sum('outstanding');
            $transAmt = Transactions::where('invoice_disbursed_id',$invd->invoice_disbursed_id)->where('entry_type','0')->whereIn('trans_type',[9,16,33])->whereNull('parent_trans_id')->sum('amount');
            $transOut = round($transOut,2);
-           $transRunningOut = round($transRunningOut,2);
            $is_settled = false;
            
            if($transOut <= 0){
                 $transRunningOut = TransactionsRunning::where('invoice_disbursed_id',$invd->invoice_disbursed_id)->get()->sum('outstanding');
+                $transRunningOut = round($transRunningOut,2);
                 if($transRunningOut <= 0){
                     $is_settled = true;
                 }
