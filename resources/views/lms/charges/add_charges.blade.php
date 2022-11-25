@@ -175,7 +175,8 @@ $(document).ready(function () {
         // alert($(this).val());
         if ($(this).val() == '2') {
             $('#program_div').hide();
-            $("#program_div").load(" #program_div");
+            $('#program_id').val('');
+            // $("#program_div").load(" #program_div");
 
             var basedOn  = $(this).val();
              if(basedOn=='')
