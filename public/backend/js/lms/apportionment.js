@@ -120,7 +120,7 @@ class Apportionment {
 
     setTransactionAmt(){
         var oldData = this.data.old_data;
-        var paymentAmt = parseFloat(this.data.payment_amt);
+        var paymentAmt = parseFloat(this.data.payment_amt).toFixed(2);
         if($.isEmptyObject(oldData.payment) && $.isEmptyObject(oldData.check)) {
             $(".pay").each(function (index, element) {
                 let id = $(this).attr('id');
@@ -158,7 +158,7 @@ class Apportionment {
     }
 
     calculateUnAppliedAmt(){
-        var payment_amt = parseFloat(this.data.payment_amt);
+        var payment_amt = parseFloat(this.data.payment_amt).toFixed(2);
         var settled_amt = 0;
         $(".pay").each(function (index, element) {
             var payamt = parseFloat($(this).val());
@@ -191,7 +191,7 @@ class Apportionment {
         var check = $('.check');
         var status = true;
         var message = '';
-        var paymentAmt = parseFloat(this.data.payment_amt);
+        var paymentAmt = parseFloat(this.data.payment_amt).toFixed(2);
         var totalSettledAmt = 0;
         if(check.length == 0 ||  check.filter(':checked').length == 0){
             message = "Please Select at least one ";
@@ -206,7 +206,7 @@ class Apportionment {
                     if($(this). is(":checked")){
                         var name = $(this).attr('name');
                         name =  name.replace('check','');
-                        var value = parseFloat($("input[name='payment"+name+"']").val());
+                        var value = parseFloat($("input[name='payment"+name+"']").val()).toFixed(2);;
                         if(isNaN(value)){
                             message = "Please enter valid value in Pay at row no - "+(index+1);
                             status = false;
@@ -241,7 +241,7 @@ class Apportionment {
                     if($(this). is(":checked")){
                         var name = $(this).attr('name');
                         name =  name.replace('check','');
-                        var value = parseFloat($("input[name='refund"+name+"']").val());
+                        var value = parseFloat($("input[name='refund"+name+"']").val()).toFixed(2);
                         if(isNaN(value)){
                             message = "Please enter valid value in field at row no - "+(index+1);
                             status = false;
@@ -284,7 +284,7 @@ class Apportionment {
                     if($(this). is(":checked")){
                         var name = $(this).attr('name');
                         name =  name.replace('check','');
-                        var value = parseFloat($("input[name='payment"+name+"']").val());
+                        var value = parseFloat($("input[name='payment"+name+"']").val()).toFixed(2);
                         if(isNaN(value)){
                             message = "Please enter valid value in Pay at row no - "+(index+1);
                             status = false;
@@ -320,14 +320,14 @@ class Apportionment {
         var check = $('.check');
         var status = true;
         var message = '';
-        var paymentAmt = parseFloat(this.data.payment_amt);
+        var paymentAmt = parseFloat(this.data.payment_amt).toFixed(2);
         var selectAmt = 0;
         if(check.filter(':checked').length == 0){
             message = "Please Select at least one ";
             status = false;
         } 
         check.filter(':checked').each(function (index, element) {
-            selectAmt += parseFloat($(element).val());
+            selectAmt += parseFloat($(element).val()).toFixed(2);
         });
 
         if(selectAmt>paymentAmt){
