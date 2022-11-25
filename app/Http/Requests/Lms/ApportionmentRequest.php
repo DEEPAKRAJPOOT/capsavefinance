@@ -70,6 +70,9 @@ class ApportionmentRequest extends FormRequest
                         if (empty($selectedPayment)) {
                             $validator->errors()->add("payment.{$key}", 'Pay is required against selected transaction');
                         }
+                        if (round($selectedPayment,2) > 0) {
+                            $validator->errors()->add("payment.{$key}", 'Pay filed must be greater than 0');
+                        }
                         if (round($outstandingAmount,2) < round($selectedPayment,2)) {
                             $validator->errors()->add("payment.{$key}", 'Pay filed must be less than and equal to the outsanding amount');
                         }
@@ -99,6 +102,9 @@ class ApportionmentRequest extends FormRequest
                         }
                         if (!is_numeric($selectedPayment)){
                             $validator->errors()->add("payment.{$key}", 'Payment value must be numeric.');
+                        }
+                        if (round($selectedPayment,2) > 0) {
+                            $validator->errors()->add("payment.{$key}", 'Pay filed must be greater than 0');
                         }
                         if (is_numeric($selectedPayment)){
                             if ($outstandingAmount < $selectedPayment) {

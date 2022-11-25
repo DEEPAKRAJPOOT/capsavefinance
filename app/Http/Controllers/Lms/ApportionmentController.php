@@ -265,10 +265,10 @@ class ApportionmentController extends Controller
             }
             $transId = $request->get('trans_id');
             $paymentId = $request->get('payment_id');
-            $base_amt = $request->get('waiveoff_amount');
-            $gst_amt = $request->get('waiveoff_gst');
-            $gst_per = $request->get('waiveOff_gst_per');
-            $amount = (float)$request->get('amount');
+            $base_amt = round($request->get('waiveoff_amount'),2);
+            $gst_amt = round($request->get('waiveoff_gst'),2);
+            $gst_per = round($request->get('waiveOff_gst_per'),2);
+            $amount = round($request->get('amount'),2);
             $comment = $request->get('comment');
             $TransDetail = $this->lmsRepo->getTransDetail(['trans_id' => $transId]);
             if (empty($TransDetail)) {
@@ -353,7 +353,7 @@ class ApportionmentController extends Controller
             }
             $transId = $request->get('trans_id');
             $paymentId = $request->get('payment_id')??null;
-            $amount = (float)$request->get('amount');
+            $amount = round($request->get('amount'),2);
             $comment = $request->get('comment');
             $TransDetail = $this->lmsRepo->getTransDetail(['trans_id' => $transId]);
             
@@ -364,7 +364,7 @@ class ApportionmentController extends Controller
                     return redirect()->route('apport_settled_view', [ 'payment_id' => $paymentId, 'user_id' =>$TransDetail->user_id, 'sanctionPageView'=>$sanctionPageView])->with(['error' => 'Error: Transactions can only be reversed within a day.']);
                 }
             }
-            $outstandingAmount = $TransDetail->amount;
+            $outstandingAmount = round($TransDetail->amount,2);
             
             if ($amount > $outstandingAmount)  {
                 return redirect()->route('apport_settled_view', [ 'payment_id' => $paymentId, 'user_id' =>$TransDetail->user_id, 'sanctionPageView'=>$sanctionPageView])->with(['error' => 'Amount to be reversed must be less than or equal to '. $outstandingAmount]);
@@ -702,7 +702,7 @@ class ApportionmentController extends Controller
             $repaymentAmt = $paymentDetails['amount']; 
             
             foreach ($checks as $Ckey => $Cval) {
-                if($Cval === 'on' && $payments[$Ckey] > 0){
+                if($Cval === 'on' && round($payments[$Ckey],2) > 0){
                     array_push($transIds, $Ckey);
                 }
             }
@@ -734,7 +734,7 @@ class ApportionmentController extends Controller
                     'invoice_disbursed_id'=>$trans->invoice_disbursed_id,
                     'date_of_payment'=>$paymentDetails['date_of_payment']
                 ];     
-                $isValid = ((float)$payments[$trans->trans_id] <= (float)$trans->outstanding) && $bill_date_check;
+                $isValid = (round($payments[$trans->trans_id],2) <= round($trans->outstanding,2)) && $bill_date_check;
                 $transactionList[] = [
                     'trans_id' => $trans->trans_id,
                     'trans_date' => $trans->trans_date,
@@ -858,7 +858,7 @@ class ApportionmentController extends Controller
                 $transactionList = [];
 
                 foreach ($checks as $Ckey => $Cval) {
-                    if($Cval === 'on' && $payments[$Ckey] > 0){
+                    if($Cval === 'on' && round($payments[$Ckey],2) > 0){
                         array_push($transIds, $Ckey);
                     }
                 }
@@ -914,7 +914,7 @@ class ApportionmentController extends Controller
                         ];             
                     }
 
-                    $isValid = ((float)$payments[$trans->trans_id] <= (float)$trans->outstanding) && $bill_date_check;
+                    $isValid = (round($payments[$trans->trans_id],2) <= round($trans->outstanding,2)) && $bill_date_check;
                     if($isValid){
                         $transactionList[] = [
                             'payment_id' => $paymentId,
@@ -1157,7 +1157,8 @@ class ApportionmentController extends Controller
            $prinRepayAmt = Transactions::where('invoice_disbursed_id',$invd->invoice_disbursed_id)->where('entry_type','1')->whereIn('trans_type',[16])->sum('settled_outstanding');
            $transOut = Transactions::where('invoice_disbursed_id',$invd->invoice_disbursed_id)->where('entry_type','0')->whereIn('trans_type',[9,16,33])->whereNull('parent_trans_id')->sum('outstanding');
            $transAmt = Transactions::where('invoice_disbursed_id',$invd->invoice_disbursed_id)->where('entry_type','0')->whereIn('trans_type',[9,16,33])->whereNull('parent_trans_id')->sum('amount');
-           
+           $transOut = round($transOut,2);
+           $transRunningOut = round($transRunningOut,2);
            $is_settled = false;
            
            if($transOut <= 0){
@@ -1351,7 +1352,7 @@ class ApportionmentController extends Controller
            
             
             foreach ($checks as $Ckey => $Cval) {
-                if($Cval === 'on' && $refunds[$Ckey] > 0){
+                if($Cval === 'on' && round($refunds[$Ckey],2) > 0){
                     array_push($transIds, $Ckey);
                 }
             }
@@ -1377,7 +1378,7 @@ class ApportionmentController extends Controller
                     'total_repay_amt' => (float)$trans->amount,
                     'outstanding_amt' => (float)$trans->refundoutstanding,
                     'refund' => ($refunds[$trans->trans_id])?(float)$refunds[$trans->trans_id]:null,
-                    'is_valid' => ((float)$refunds[$trans->trans_id] <= (float)$trans->refundoutstanding)?1:0
+                    'is_valid' => (round($refunds[$trans->trans_id],2) <= round($trans->refundoutstanding,2))?1:0
                 ];
                 $amtToSettle += $refunds[$trans->trans_id];
             }
@@ -1420,7 +1421,7 @@ class ApportionmentController extends Controller
                 $transactionList = [];
 
                 foreach ($checks as $Ckey => $Cval) {
-                    if($Cval === 'on' && $refunds[$Ckey] > 0){
+                    if($Cval === 'on' && round($refunds[$Ckey],2) > 0){
                         array_push($transIds, $Ckey);
                     }
                 }
@@ -1726,7 +1727,7 @@ class ApportionmentController extends Controller
             $repaymentAmt = (float) round($paymentDetails['amount'],2); 
             
             foreach ($checks as $Ckey => $Cval) {
-                if($Cval === 'on' && $payments[$Ckey] > 0){
+                if($Cval === 'on' && round($payments[$Ckey],2) > 0){
                     array_push($transIds, $Ckey);
                 }
             }
@@ -1758,7 +1759,7 @@ class ApportionmentController extends Controller
                     'outstanding_amt' => (float)$trans->TDSAmount,
                     'payment_date' =>  $paymentDetails['date_of_payment'],
                     'pay' => ($payments[$trans->trans_id])?(float)$payments[$trans->trans_id]:null,
-                    'is_valid' => ((float)$payments[$trans->trans_id] <= (float)$trans->TDSAmount)?1:0
+                    'is_valid' => (round($payments[$trans->trans_id],2) <= round($trans->TDSAmount,2))?1:0
                 ];
                 $amtToSettle += $payments[$trans->trans_id];
             }
@@ -1855,7 +1856,7 @@ class ApportionmentController extends Controller
                 $transactionList = [];
 
                 foreach ($checks as $Ckey => $Cval) {
-                    if($Cval === 'on' && $payments[$Ckey] > 0){
+                    if($Cval === 'on' && round($payments[$Ckey],2) > 0){
                         array_push($transIds, $Ckey);
                     }
                 }
@@ -2123,7 +2124,7 @@ class ApportionmentController extends Controller
                                     Session::flash('untrans_error', $fileHelper->validationMessage(10));
                                     return redirect()->back();
                                 }
-                                $selectedPayment = str_replace(",","",$value['Payment']);
+                                $selectedPayment = round(str_replace(",","",$value['Payment']),2);
                                 $is_negative = $selectedPayment < 0 ? true : false;
                                 if (!empty($selectedPayment)) {
                                     $checkV = 1;
