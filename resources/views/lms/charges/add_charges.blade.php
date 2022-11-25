@@ -74,7 +74,8 @@
         <div class="row">
             <div class="form-group col-md-6">
                 <label for="chrg_name" id="amount_label">Amount/Percent</label>
-                <input type="text"  class="form-control" readonly="readonly" id="amount" name="amount" placeholder="Charge Calculation Amount" maxlength="50">
+                <input type="text"  class="form-control" readonly="readonly" id="amount" name="amount" placeholder="Charge Calculation Amount" maxlength="50" min="0.01" 
+                value="0.00" onblur="return validate(this);">
 
             </div>
             <div class="form-group col-md-6 chargeTypeCal" id="approved_limit_div"  style="display: none">
@@ -174,6 +175,7 @@ $(document).ready(function () {
         // alert($(this).val());
         if ($(this).val() == '2') {
             $('#program_div').hide();
+            $("#program_div").load(" #program_div");
 
             var basedOn  = $(this).val();
              if(basedOn=='')
@@ -192,11 +194,10 @@ $(document).ready(function () {
                     alert(errorThrown);
                     },
                     success: function (data) {
-                    
                         if(data.status==1 && basedOn== 2)
                         {  $("#limit_amount_new").val(data.amount); 
                             $("#programamount").val(data.amount);
-                            $(".chrg_name").append('<option value="">Please select</option>'); 
+                            $(".chrg_name").append('<option value="">Please select</option>');
                             $(data.res).each(function(i,v){
                                 $(".chrg_name").append('<option value="'+v.id+'">'+v.chrg_name+'</option>'); 
                             });
@@ -215,4 +216,13 @@ $(document).ready(function () {
 });
 
 </script>
+<script type="text/javascript">
+    function validate(amount){
+        if(parseFloat(amount.value)<=0){
+            amount.value = "";
+            return false;
+        }
+        return true;
+    }
+    </script>
 @endsection

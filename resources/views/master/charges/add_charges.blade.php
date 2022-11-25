@@ -245,7 +245,7 @@
                 'sac_code': {
                     required: true,
                     digits: true,
-                    maxlength: 4,
+                    maxlength: 6,
                 },
                 'chrg_applicable_id': {
                     required: true,
@@ -305,7 +305,7 @@
         var chrg_name = document.getElementById('chrg_name').value;
         if(isNaN(sac_code)) {
             document.getElementById('sac_code').value = ""
-        } else if(sac_code.length > 4) {
+        } else if(sac_code.length > 6) {
             document.getElementById('sac_code').value = ""
         }
 

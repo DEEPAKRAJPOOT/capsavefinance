@@ -288,7 +288,7 @@
                 'sac_code': {
                     required: true,
                     digits: true,
-                    maxlength: 4,
+                    maxlength: 6,
                 },
                 'is_active': {
                     required: true,
@@ -339,7 +339,7 @@
         var val = document.getElementById('sac_code').value;
         if(isNaN(val)) {
             document.getElementById('sac_code').value = ""
-        } else if(val.length > 4) {
+        } else if(val.length > 6) {
             document.getElementById('sac_code').value = ""
         }
     }
