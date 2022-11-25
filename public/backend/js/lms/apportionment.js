@@ -161,12 +161,12 @@ class Apportionment {
         var payment_amt = parseFloat(this.data.payment_amt).toFixed(2);
         var settled_amt = 0;
         $(".pay").each(function (index, element) {
-            var payamt = parseFloat($(this).val());
+            var payamt = parseFloat($(this).val()).toFixed(2);
             if($.isNumeric(payamt)){
                 settled_amt += payamt;
             }
         });
-        var unapplied_amt = payment_amt.toFixed(2)-settled_amt.toFixed(2);
+        var unapplied_amt = payment_amt-settled_amt;
         if(parseFloat(unapplied_amt.toFixed(2)) < 0 ){
             replaceAlert("Sum of your total entries is Greater than Re-payment amount", 'error');
         } 
