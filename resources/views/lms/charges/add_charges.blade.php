@@ -74,7 +74,7 @@
         <div class="row">
             <div class="form-group col-md-6">
                 <label for="chrg_name" id="amount_label">Amount/Percent</label>
-                <input type="text"  class="form-control" readonly="readonly" id="amount" name="amount" placeholder="Charge Calculation Amount" maxlength="50" min="0.01" 
+                <input type="text"  class="form-control" readonly="readonly" id="amount" name="amount" placeholder="Charge Calculation Amount" maxlength="50" min="1" 
                 value="0.00" onblur="return validate(this);">
 
             </div>
