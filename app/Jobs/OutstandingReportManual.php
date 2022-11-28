@@ -74,6 +74,7 @@ class OutstandingReportManual implements ShouldQueue
                 $this->createOutstandingReportLog($this->toDate, $this->userId, $filePath, $this->logId);
             }
             DB::commit();
+            return true;
         } catch (Exception $ex) {
             DB::rollback();
         } 
