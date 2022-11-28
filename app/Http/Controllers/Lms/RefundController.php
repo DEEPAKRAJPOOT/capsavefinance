@@ -664,7 +664,6 @@ class RefundController extends Controller
             $apiLogData['comment'] = $remarks;
             $apiLogData['actual_refund_date'] = $actual_refund_date;
             $apiLogData['status'] = 8;
-            
             $this->lmsRepo->updateAprvlRqst($apiLogData,$refund_req_id);
             $this->finalRefundTransactions($refund_req_id, $actual_refund_date);
             $whereActivi['activity_code'] = 'updateDisburseRefund';
