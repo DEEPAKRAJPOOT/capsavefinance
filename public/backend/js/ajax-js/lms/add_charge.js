@@ -217,14 +217,13 @@
                              $("#is_gst_applicable1").prop('checked',false);
                               $("#is_gst_applicable1").attr('disabled','disabled');
                             } 
-                         
                          if($('#based_on').val() == 2) {
                             $("#chrg_calculation_type1").prop('disabled',false);
                             $("#amount").attr("readonly", false);
                             $("#chrg_calculation_type1").attr('checked', true);
                             $(".chargeTypeCal").css({"display":"none"});
                             $("#cust_hide_div").css({"display":"none"});
-                            $("#amount_label").text("Amount");;
+                            $("#amount_label").text("Amount");
                          } else {
                             $("#amount_label").text("Amount/Percent");;
                             $("#amount").attr("readonly", true);
@@ -256,7 +255,6 @@
         }); 
     });      
         
-        
     $(document).ready(function () {
        $("#chrg_name").html('<option value="">No data found</option>'); 
       //// document.getElementById('amount').addEventListener('input', event =>
@@ -277,12 +275,23 @@
         required: "Please select user",
         }
         });
-        $("#amount" ).rules( "add", {
-        required: true,
-        messages: {
-        required: "Please enter amount",
+        if($('#based_on').val() == 2) {
+          $("#amount" ).rules( "add", {
+            min: 1,
+            messages: {
+            required: "Please enter amount greater than zero",
+            }
+            });
+        }else{
+          $('#amount').rules('remove', 'min');
         }
-        });
+        $("#amount" ).rules( "add", {
+          required: true,
+          messages: {
+          required: "Please enter amount",
+          }
+          });
+        
         $("#charge_date" ).rules( "add", {
         required: true,
         messages: {
