@@ -416,7 +416,7 @@ class ApiController
           'voucher_date' => $rfnd->trans_date, //code by new add old NULL
           'transaction_date'=>$rfnd->created_at,
           'is_debit_credit' =>  'Credit',
-          'trans_type' =>  $userName,
+          'trans_type' =>  $accountDetails->bank->bank_name,
           'invoice_no' =>   '',
           'invoice_date' =>  NULL,
           'ledger_name' =>  $accountDetails->bank->bank_name,
@@ -477,7 +477,7 @@ class ApiController
               'voucher_date' => $dsbrsl->trans_date,
               'transaction_date'=>$dsbrsl->created_at,
               'is_debit_credit' =>  'Debit',
-              'trans_type' =>  $userName,
+              'trans_type' =>  $dsbrsl->getTransNameAttribute(),
               'invoice_no' =>   $invoice_no,
               'invoice_date' =>  $invoice_date,
               'ledger_name' =>  $userName,
@@ -510,8 +510,7 @@ class ApiController
               'voucher_date' => $dsbrsl->trans_date, //code by new add old NULL
               'transaction_date'=>$dsbrsl->created_at,
               'is_debit_credit' =>  'Credit',
-              //'trans_type' =>  $accountDetails->bank->bank_name ?? '',//BY DJ
-              'trans_type' =>  $dsbrsl->getTransNameAttribute(),
+              'trans_type' =>  $accountDetails->bank->bank_name ?? '',//BY DJ
               'invoice_no' =>   $invoice_no,
               'invoice_date' =>  $invoice_date,
               'ledger_name' =>  $accountDetails->bank->bank_name ?? '',
@@ -637,7 +636,7 @@ class ApiController
               'voucher_date' => $rcpt->date_of_payment,
               'transaction_date'=>$refrenceTxns->created_at?:NULL,
               'is_debit_credit' =>  'Debit',
-              'trans_type' =>  'Re-Payment',
+              'trans_type' =>  $accountDetails->bank->bank_name,
               'invoice_no' =>   '',
               'invoice_date' =>  NULL,
               'ledger_name' =>  $accountDetails->bank->bank_name,
