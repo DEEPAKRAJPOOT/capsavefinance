@@ -5,6 +5,7 @@ namespace App\Console;
 require_once base_path('common/functions.php');
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
+use Carbon\Carbon;
 
 class Kernel extends ConsoleKernel
 {
