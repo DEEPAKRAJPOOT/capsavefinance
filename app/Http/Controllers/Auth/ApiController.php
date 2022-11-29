@@ -416,7 +416,7 @@ class ApiController
           'voucher_date' => $rfnd->trans_date, //code by new add old NULL
           'transaction_date'=>$rfnd->created_at,
           'is_debit_credit' =>  'Credit',
-          'trans_type' =>  '',
+          'trans_type' =>  $userName,
           'invoice_no' =>   '',
           'invoice_date' =>  NULL,
           'ledger_name' =>  $accountDetails->bank->bank_name,
@@ -477,7 +477,7 @@ class ApiController
               'voucher_date' => $dsbrsl->trans_date,
               'transaction_date'=>$dsbrsl->created_at,
               'is_debit_credit' =>  'Debit',
-              'trans_type' =>  $dsbrsl->getTransNameAttribute(),
+              'trans_type' =>  $userName,
               'invoice_no' =>   $invoice_no,
               'invoice_date' =>  $invoice_date,
               'ledger_name' =>  $userName,
