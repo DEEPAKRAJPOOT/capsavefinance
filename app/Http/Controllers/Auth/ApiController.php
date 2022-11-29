@@ -636,7 +636,7 @@ class ApiController
               'voucher_date' => $rcpt->date_of_payment,
               'transaction_date'=>$refrenceTxns->created_at?:NULL,
               'is_debit_credit' =>  'Debit',
-              'trans_type' =>  ($accountDetails->bank->bank_name ?? '').' - Repayment',
+              'trans_type' =>  ($accountDetails->bank->bank_name ?? '').' - Receipt',
               'invoice_no' =>   '',
               'invoice_date' =>  NULL,
               'ledger_name' =>  $accountDetails->bank->bank_name ?? '',
