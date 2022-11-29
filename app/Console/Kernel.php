@@ -91,7 +91,7 @@ class Kernel extends ConsoleKernel
         $schedule->command('etl:report_account_disbursal')->timezone(config('common.timezone'))->dailyAt('01:35');
         $schedule->command('report:outstandingManual')
         ->timezone(config('common.timezone'))
-        ->dailyAt('16:00')
+        ->dailyAt('16:35')
         ->onSuccess(function() use($schedule){
             $this->call('etl:report_outstanding');
             if(Carbon::now()->timezone(config('common.timezone'))->format('d') == '01'){
