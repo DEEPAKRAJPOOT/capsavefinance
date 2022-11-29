@@ -480,10 +480,12 @@ class RefundController extends Controller
                 if($createBatch) {
                     foreach ($refundIds as $key => $value) {
                         $refundData = $this->lmsRepo->lmsGetCustomerRefundById($value);
-                        $updateDisbursal = $this->lmsRepo->updateAprvlRqst([
-                                'refund_req_batch_id' => $createBatch->refund_req_batch_id,
-                                'tran_no' => $exportData[$refundData->payment->user_id]['RefNo']
-                            ], $value);
+                        if($exportData[$refundData->payment->user_id]['RefNo']!=NULL) {
+                                $updateDisbursal = $this->lmsRepo->updateAprvlRqst([
+                                        'refund_req_batch_id' => $createBatch->refund_req_batch_id,
+                                        'tran_no' => $exportData[$refundData->payment->user_id]['RefNo']
+                                    ], $value);
+                                }
                     }
                 }
             }
@@ -664,7 +666,6 @@ class RefundController extends Controller
             $apiLogData['comment'] = $remarks;
             $apiLogData['actual_refund_date'] = $actual_refund_date;
             $apiLogData['status'] = 8;
-            
             $this->lmsRepo->updateAprvlRqst($apiLogData,$refund_req_id);
             $this->finalRefundTransactions($refund_req_id, $actual_refund_date);
             $whereActivi['activity_code'] = 'updateDisburseRefund';
