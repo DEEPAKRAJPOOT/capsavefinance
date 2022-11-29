@@ -416,10 +416,10 @@ class ApiController
           'voucher_date' => $rfnd->trans_date, //code by new add old NULL
           'transaction_date'=>$rfnd->created_at,
           'is_debit_credit' =>  'Credit',
-          'trans_type' =>  $accountDetails->bank->bank_name,
+          'trans_type' =>  ($accountDetails->bank->bank_name ?? '') . ' - Refund',
           'invoice_no' =>   '',
           'invoice_date' =>  NULL,
-          'ledger_name' =>  $accountDetails->bank->bank_name,
+          'ledger_name' =>  $accountDetails->bank->bank_name ?? '',
           'amount' =>  $rfnd->amount,
           'ref_no' =>  $invoice_no,
           'ref_amount' =>  $rfnd->amount,
@@ -510,7 +510,7 @@ class ApiController
               'voucher_date' => $dsbrsl->trans_date, //code by new add old NULL
               'transaction_date'=>$dsbrsl->created_at,
               'is_debit_credit' =>  'Credit',
-              'trans_type' =>  $accountDetails->bank->bank_name ?? '',//BY DJ
+              'trans_type' =>  ($accountDetails->bank->bank_name ?? ''). ' - Disbursement',//BY DJ
               'invoice_no' =>   $invoice_no,
               'invoice_date' =>  $invoice_date,
               'ledger_name' =>  $accountDetails->bank->bank_name ?? '',
@@ -636,10 +636,10 @@ class ApiController
               'voucher_date' => $rcpt->date_of_payment,
               'transaction_date'=>$refrenceTxns->created_at?:NULL,
               'is_debit_credit' =>  'Debit',
-              'trans_type' =>  $accountDetails->bank->bank_name,
+              'trans_type' =>  ($accountDetails->bank->bank_name ?? '').' - Repayment',
               'invoice_no' =>   '',
               'invoice_date' =>  NULL,
-              'ledger_name' =>  $accountDetails->bank->bank_name,
+              'ledger_name' =>  $accountDetails->bank->bank_name ?? '',
               'amount' =>  $rcpt->amount,
               'ref_no' =>  '',
               'ref_amount' =>  $rcpt->amount,
