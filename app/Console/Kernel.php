@@ -88,12 +88,6 @@ class Kernel extends ConsoleKernel
         $schedule->command('etl:report_utilization')->timezone(config('common.timezone'))->dailyAt('01:25');
         $schedule->command('etl:report_disbursal')->timezone(config('common.timezone'))->dailyAt('01:30');
         $schedule->command('etl:report_account_disbursal')->timezone(config('common.timezone'))->dailyAt('01:35');
-        // $schedule->command('report:outstandingManual')
-        // ->timezone(config('common.timezone'))->dailyAt('23:54')
-        //  ->onSuccess(function() use ($schedule) {
-        //     $schedule->call('etl:report_outstanding');
-        //     $schedule->call('etl:report_outstanding_monthly')->monthly();
-        // });
         $schedule->command('report:outstandingManual')
         ->timezone(config('common.timezone'))
         ->dailyAt('23:52')
