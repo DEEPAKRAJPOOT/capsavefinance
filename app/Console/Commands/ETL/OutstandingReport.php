@@ -42,7 +42,7 @@ class OutstandingReport extends Command
      */
     public function handle()
     {
-        // ini_set('memory_limit', '-1'); 
+        ini_set('memory_limit', '-1'); 
         $outstandingReportLog = OutstandingReportLog::whereNull('user_id')->where('created_by','0')->orderBy('id','desc')->limit(1)->first();
         $filePath = $outstandingReportLog->file_path;
         $reportLogId = $outstandingReportLog->id;
