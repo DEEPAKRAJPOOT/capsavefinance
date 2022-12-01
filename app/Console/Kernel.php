@@ -5,6 +5,7 @@ namespace App\Console;
 require_once base_path('common/functions.php');
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
+use Carbon\Carbon;
 
 class Kernel extends ConsoleKernel
 {
@@ -88,11 +89,18 @@ class Kernel extends ConsoleKernel
         $schedule->command('etl:report_utilization')->timezone(config('common.timezone'))->dailyAt('01:25');
         $schedule->command('etl:report_disbursal')->timezone(config('common.timezone'))->dailyAt('01:30');
         $schedule->command('etl:report_account_disbursal')->timezone(config('common.timezone'))->dailyAt('01:35');
-        $schedule->command('etl:report_outstanding')->timezone(config('common.timezone'))->dailyAt('01:40');
+        $schedule->command('report:outstandingManual')
+        ->timezone(config('common.timezone'))
+        ->dailyAt('23:52')
+        ->onSuccess(function() use($schedule){
+            $this->call('etl:report_outstanding');
+            if(Carbon::now()->timezone(config('common.timezone'))->format('d') == '01'){
+                $this->call('etl:report_outstanding_monthly');
+            }    
+        });
         $schedule->command('lms:disbursalBatchRequest')->timezone(config('common.timezone'))->between('10:00','23:59')->hourlyAt('1');
         $schedule->command('lms:disbursalBatchRequest')->timezone(config('common.timezone'))->dailyAt('23:50');
         $schedule->command('alert:approvalMailForPendingCases')->timezone(config('common.timezone'))->tuesdays()->dailyAt('20:45');
-        $schedule->command('etl:report_outstanding_monthly')->timezone(config('common.timezone'))->monthlyOn(1, '01:45');
         $schedule->command('alert:app_security_document_renewal')->timezone(config('common.timezone'))->dailyAt('23:00');
            
     }

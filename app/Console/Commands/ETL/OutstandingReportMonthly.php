@@ -42,8 +42,8 @@ class OutstandingReportMonthly extends Command
      */
     public function handle()
     {
-        $reportDate = Carbon::now()->setTimezone(config('common.timezone'))->endOfMonth()->format('Y-m-d');
-        $outstandingReportLog = OutstandingReportLog::whereNull('user_id')->whereDate('to_date',$reportDate)->where('created_by','0')->orderBy('id','desc')->limit(1)->first();
+        // ini_set('memory_limit', '-1');
+        $outstandingReportLog = OutstandingReportLog::whereNull('user_id')->where('created_by','0')->orderBy('id','desc')->limit(1)->first();
         $filePath = $outstandingReportLog->file_path ?? NULL;
         $reportLogId = $outstandingReportLog->id ?? NULL;
         if(file_exists($filePath)) {
