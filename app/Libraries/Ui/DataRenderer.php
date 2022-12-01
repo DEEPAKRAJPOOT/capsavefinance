@@ -1763,7 +1763,8 @@ class DataRenderer implements DataProviderInterface
                         $this->isAnchorLimitExceeded  = $isAnchorLimitExceeded[$invoice->anchor_id];
                         
                        // return  "<input type='checkbox' class='invoice_id' name='checkinvoiceid' value=".$invoice->invoice_id.">";
-                        return ($this->IsOverdue || $chkUser->id == 11  || $this->isLimitExpired || $this->isLimitExceed || $this->isAnchorLimitExceeded) ? '-' : "<input type='checkbox' class='invoice_id' name='checkinvoiceid' value=".$invoice->invoice_id.">";
+                        // return ($this->IsOverdue || $chkUser->id == 11  || $this->isLimitExpired || $this->isLimitExceed || $this->isAnchorLimitExceeded) ? '-' : "<input type='checkbox' class='invoice_id' name='checkinvoiceid' value=".$invoice->invoice_id.">";
+                        return ($chkUser->id == 11  || $this->isLimitExpired || $this->isLimitExceed || $this->isAnchorLimitExceeded) ? '-' : "<input type='checkbox' class='invoice_id' name='checkinvoiceid' value=".$invoice->invoice_id.">";
                      })
                 ->addColumn(
                     'anchor_id',
