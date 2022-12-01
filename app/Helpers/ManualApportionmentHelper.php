@@ -604,6 +604,7 @@ class ManualApportionmentHelper{
 
     public function intAccrual(int $invDisbId, $startDate = null){
         try{
+            $invdisbInN = [205,3458,3930,3931,3932,5410,5451,5452,5453,5454,5455,5456,5841,5845,6085,6086,8390,8391,8837,8838,8839,8841,8842,8843,9127,9325,9327,9768,10127,10585,10587,11098,11129,15149,15150,22460,22461,22462,22463,22464,22465,22466,19156,18507,18504,18501,18495,18492,17824,23775,23774,23773,23772,23771,22282,22124,22003,21821];
             $curdate =  Helpers::getSysStartDate();
             $curdate = Carbon::parse($curdate)->format('Y-m-d');
             
@@ -708,7 +709,9 @@ class ManualApportionmentHelper{
                 $this->overDuePosting($invDisbId, $userId, $loopStratDate);
                 
                 $loopStratDate = $this->addDays($loopStratDate,1);
-                $this->runningToTransPosting($invDisbId, $loopStratDate, $payFreq, $payDueDate, $odStartDate);
+                if(!in_array($invDisbId, $invdisbInN)){
+                    $this->runningToTransPosting($invDisbId, $loopStratDate, $payFreq, $payDueDate, $odStartDate);
+                }
                 
                 if($balancePrincipal > 0){
                     $endOfMonthDate = Carbon::createFromFormat('Y-m-d', $loopStratDate)->endOfMonth()->format('Y-m-d');
@@ -725,7 +728,6 @@ class ManualApportionmentHelper{
     }
     
     public function dailyIntAccrual(){
-        $invdisbInN = [205,3458,3930,3931,3932,5410,5451,5452,5453,5454,5455,5456,5841,5845,6085,6086,8390,8391,8837,8838,8839,8841,8842,8843,9127,9325,9327,9768,10127,10585,10587,11098,11129,15149,15150,22460,22461,22462,22463,22464,22465,22466,19156,18507,18504,18501,18495,18492,17824,23775,23774,23773,23772,23771,22282,22124,22003,21821];
         
         ini_set("memory_limit", "-1");
         $cLogDetails = Helper::cronLogBegin(1);
@@ -739,7 +741,6 @@ class ManualApportionmentHelper{
         ->whereHas('invoice',function($query){ 
             $query->where('is_repayment','0'); 
         })
-        ->whereNotIn('invoice_disbursed_id',$invdisbInN)
         ->pluck('invoice_disbursed_id','invoice_disbursed_id');
 
         foreach ($invoiceList as $invId => $trans) {
