@@ -141,7 +141,7 @@
 
             <div class="form-group col-md-6 float-md-right">
                 <label for="sac_code">SAC Code</label>
-                <input type="text" class="form-control" id="sac_code" name="sac_code" placeholder="Enter SAC Code" maxlength="10">
+                <input type="text" class="form-control" id="sac_code" name="sac_code" placeholder="Enter SAC Code" maxlength="6">
             </div>
         </div>
 
@@ -305,9 +305,10 @@
         var chrg_name = document.getElementById('chrg_name').value;
         if(isNaN(sac_code)) {
             document.getElementById('sac_code').value = ""
-        } else if(sac_code.length > 6) {
-            document.getElementById('sac_code').value = ""
-        }
+        } 
+        // else if(sac_code.length > 6) {
+        //     document.getElementById('sac_code').value = ""
+        // }
 
         if(!isNaN(chrg_name)) {
             document.getElementById('chrg_name').value = ""
