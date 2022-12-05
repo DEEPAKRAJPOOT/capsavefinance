@@ -132,7 +132,7 @@
             </div>
             <div class="form-group col-md-6 float-md-right">
                 <label for="sac_code">SAC Code</label>
-                <input type="text" class="form-control" id="sac_code" name="sac_code" value="{{$charge_data->sac_code}}" placeholder="Enter SAC Code" maxlength="10" onkeyup="sac_validation()">
+                <input type="text" class="form-control" id="sac_code" name="sac_code" value="{{$charge_data->sac_code}}" placeholder="Enter SAC Code" maxlength="6" onkeyup="sac_validation()">
             </div>
         </div>
         <div class="row">
