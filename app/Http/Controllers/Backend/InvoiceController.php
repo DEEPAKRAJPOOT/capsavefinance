@@ -399,9 +399,9 @@ class InvoiceController extends Controller {
         $selectDate = (!empty($fundedDate)) ? date("Y-m-d h:i:s", strtotime(str_replace('/','-',$fundedDate))) : \Carbon\Carbon::now()->format('Y-m-d h:i:s');
         $curData = \Carbon\Carbon::now()->format('Y-m-d h:i:s');
         $Obj = new ManualApportionmentHelper($this->lmsRepo);
-        $invDisb = [];
+        $invDisbs = [];
         foreach ($invoiceDisbursed as $key => $value) {            
-            $invDisb[$value['disbursal']['user_id']][$value['invoice_disbursed_id']] = $value['invoice_disbursed_id'];           
+            $invDisbs[$value['disbursal']['user_id']][$value['invoice_disbursed_id']] = $value['invoice_disbursed_id'];           
             $tenor = $value['tenor_days'];
             $banchMarkDateFlag = $value['invoice']['program_offer']['benchmark_date'];
 
@@ -524,7 +524,7 @@ class InvoiceController extends Controller {
                 $Obj->intAccrual($value['invoice_disbursed_id']);
             }
         }
-        foreach($invDisb as $userId => $invDisb){
+        foreach($invDisbs as $userId => $invDisb){
             $invDisbIds = array_keys($invDisb);
 
             $intList = Transactions::whereIn('invoice_disbursed_id',$invDisbIds)
