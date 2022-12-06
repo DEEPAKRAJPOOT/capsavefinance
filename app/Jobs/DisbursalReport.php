@@ -85,7 +85,7 @@ class DisbursalReport implements ShouldQueue
             $filePath                = $this->downloadDailyDisbursalReport($data, $reportName);
             $emailData['to']      = $this->emailTo;
             $emailData['attachment'] = $filePath;
-            \Event::dispatch("NOTIFY_DISBURSAL_REPORT", serialize($emailData));
+            // \Event::dispatch("NOTIFY_DISBURSAL_REPORT", serialize($emailData));
         }
     }
 
