@@ -52,14 +52,14 @@ $role = (isset($role)) ? $role :     11;
                                         <div class="col-md-12" id="buttonDiv" style="padding-left: 81px;">
 
                                            @can('disburse_confirm')
-                                            <a data-url="{{ route('disburse_confirm', ['disburse_type' => 2 ]) }}" data-height="330px" data-width="100%" data-placement="top" class="btn btn-primary btn-sm ml-3 disburseClickBtn pull-right" >Send To Bank (Offline)</a>
+                                            <a data-url="{{ route('disburse_confirm', ['disburse_type' => 2 ]) }}" data-height="330px" data-width="100%" data-placement="top" class="btn btn-primary btn-sm ml-3 disburseClickBtn pull-right" style="color: #fff;">Send To Bank (Offline)</a>
                                             @endcan
                                         </div>
                                        </div>
                                         <div class ="row">
                                         <div class="col-md-12" id="buttonDiv">
                                             @can('disburse_confirm')
-                                            <a data-url="{{ route('disburse_confirm', ['disburse_type' => 1,'bank_type'=> 1]) }}" data-height="330px" data-width="100%" data-placement="top" class="btn btn-primary btn-sm ml-3 disburseClickBtn pull-right" >Send To IDFC Bank (Online)</a>
+                                            <a data-url="{{ route('disburse_confirm', ['disburse_type' => 1,'bank_type'=> 1]) }}" data-height="330px" data-width="100%" data-placement="top" class="btn btn-primary btn-sm ml-3 disburseClickBtn pull-right" style="color: #fff;">Send To IDFC Bank (Online)</a>
                                             @endcan
                                         </div>
                                         </div>
@@ -67,7 +67,7 @@ $role = (isset($role)) ? $role :     11;
                                         <div class="col-md-12" id="buttonDiv">
                                             @can('disburse_confirm')
                                               @can('kotak_disburse_online')
-                                                <a data-url="{{ route('disburse_confirm', ['disburse_type' => 1 ,'bank_type'=> 2]) }}" data-height="330px" data-width="100%" data-placement="top" class="btn btn-primary btn-sm ml-3 disburseClickBtn pull-right" data-bankType="2">Send To Kotak Bank (Online)</a>
+                                                <a data-url="{{ route('disburse_confirm', ['disburse_type' => 1 ,'bank_type'=> 2]) }}" data-height="330px" data-width="100%" data-placement="top" class="btn btn-primary btn-sm ml-3 disburseClickBtn pull-right" data-bankType="2" style="color: #fff;">Send To Kotak Bank (Online)</a>
                                               @endcan
                                             @endcan
                                         </div>
