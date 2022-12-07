@@ -104,13 +104,16 @@
                         <td> {{$userInfo->biz->biz_entity_name}}	</td> 
                         <td class="text-left" width="30%"><b>Full Name</b></td>
                         <td>{{$userInfo->f_name}} {{$userInfo->m_name}}	{{$userInfo->l_name}}</td> 
-
                     </tr>
                     <tr>
                         <td class="text-left" width="30%"><b>Email</b></td>
                         <td>{{$userInfo->email}}	</td> 
                         <td class="text-left" width="30%"><b>Mobile</b></td>
                         <td>{{$userInfo->mobile_no}} </td> 
+                    </tr>
+                    <tr>
+                        <td class="text-left" width="30%"><b>Customer Id</b></td>
+                        <td> {{$soaRecord[0][0]['customer_id']}}	</td> 
                     </tr>
                     @if($fromdate && $todate)
                     <tr>
