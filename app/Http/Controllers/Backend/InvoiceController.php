@@ -514,7 +514,7 @@ class InvoiceController extends Controller {
                     $createTransaction = $this->lmsRepo->saveTransaction($intrstCdtTrnsData);
                 }
 
-                // Margin transaction $tranType = 10
+                /// Margin transaction $tranType = 10
                 $marginAmt = round($margin, config('lms.DECIMAL_TYPE')['AMOUNT_TWO_DECIMAL']);
                 if ($marginAmt > 0.00) {
                     $marginTrnsData = $this->createTransactionData($value['disbursal']['user_id'], ['amount' => $marginAmt, 'trans_date' => $fundedDate, 'invoice_disbursed_id' => $value['invoice_disbursed_id']], config('lms.TRANS_TYPE.MARGIN'), 0);
