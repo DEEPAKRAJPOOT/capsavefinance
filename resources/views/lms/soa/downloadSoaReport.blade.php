@@ -142,7 +142,7 @@
                         <td style="border: 1px solid #ddd;padding: 5px;" bgcolor="#f2f2f2">
                             <span style="font-size: small;"><strong>Tran Type</strong></span>
                         </td>
-                        <td style="border: 1px solid #ddd;padding: 2px;" bgcolor="#f2f2f2">
+                        <td style="border: 1px solid #ddd;padding: 5px;" bgcolor="#f2f2f2" >
                             <span style="font-size: small;"><strong>UTR No</strong></span>
                         </td>
                         <td style="border: 1px solid #ddd;padding: 5px;" bgcolor="#f2f2f2">
@@ -151,7 +151,7 @@
                         <td style="border: 1px solid #ddd;padding: 5px;" bgcolor="#f2f2f2">
                             <span style="font-size: small;"><strong>Invoice No</strong></span>
                         </td>
-                        <td style="border: 1px solid #ddd;padding: 5px;" bgcolor="#f2f2f2">
+                        <td style="border: 1px solid #ddd;padding: 3px;" bgcolor="#f2f2f2">
                             <span style="font-size: small;"><strong>Capsave Invoice No</strong></span>
                         </td>
                         <td style="border: 1px solid #ddd;padding: 2px;" bgcolor="#f2f2f2">
@@ -160,13 +160,13 @@
                         {{-- <td style="border: 1px solid #ddd;padding: 5px;" bgcolor="#f2f2f2">
                             <span style="font-size: small;"><strong>Currency</strong></span>
                         </td> --}}
-                        <td style="border: 1px solid #ddd;padding: 5px;" bgcolor="#f2f2f2">
+                        <td style="border: 1px solid #ddd;padding: 4px;" bgcolor="#f2f2f2">
                             <span style="font-size: small;"><strong>Debit</strong></span>
                         </td>
-                        <td style="border: 1px solid #ddd;padding: 5px;" bgcolor="#f2f2f2">
+                        <td style="border: 1px solid #ddd;padding: 4px;" bgcolor="#f2f2f2">
                             <span style="font-size: small;"><strong>Credit</strong></span>
                         </td>
-                        <td style="border: 1px solid #ddd;padding: 5px;" bgcolor="#f2f2f2">
+                        <td style="border: 1px solid #ddd;padding: 2px;" bgcolor="#f2f2f2">
                             <span style="font-size: small;"><strong>Balance</strong></span>
                         </td>
                     </tr>
@@ -184,7 +184,7 @@
                         <td style="border: 1px solid #ddd;padding: 5px;">
                             <span style="font-size: small;">{{$record['trans_type']}}</span>
                         </td>
-                        <td style="border: 1px solid #ddd;padding: 2px;">
+                        <td style="border: 1px solid #ddd;padding: 5px;">
                             <span style="font-size: small;">{{$record['utr']}}</span>
                         </td>
                         <td style="border: 1px solid #ddd;padding: 5px;">
@@ -193,22 +193,22 @@
                         <td style="border: 1px solid #ddd;padding: 5px;">
                             <span style="font-size: small;">{{$record['invoice_no']}}</span>
                         </td>
-                        <td style="border: 1px solid #ddd;padding: 5px;">
+                        <td style="border: 1px solid #ddd;padding: 3px;">
                             <span style="font-size: small;">{{$record['capsave_invoice_no']}}</span>
                         </td>
-                        <td style="border: 1px solid #ddd;padding: 2px;">
+                        <td style="border: 1px solid #ddd;padding: 2px; word-wrap:break-word;">
                             <span style="font-size: small;">{{$record['narration']}}</span>
                         </td>
                         {{-- <td style="border: 1px solid #ddd;padding: 5px;">
                             <span style="font-size: small;">{{$record['currency']}}</span>
                         </td> --}}
-                        <td style="border: 1px solid #ddd;padding: 5px;">
+                        <td style="border: 1px solid #ddd;padding: 4px;">
                             <span style="font-size: small;">{{$record['debit']}}</span>
                         </td>
-                        <td style="border: 1px solid #ddd;padding: 5px;">
+                        <td style="border: 1px solid #ddd;padding: 4px;">
                             <span style="font-size: small;">{{$record['credit']}}</span>
                         </td>
-                        <td style="border: 1px solid #ddd;padding: 5px;">
+                        <td style="border: 1px solid #ddd;padding: 2px;">
                             <span style="font-size: small;">{{$record['balance']}}</span>
                         </td>
                     </tr>
