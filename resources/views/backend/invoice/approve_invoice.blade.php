@@ -97,7 +97,7 @@
                                                             <table id="invoiceListApprove" class="text-capitalize table white-space table-striped cell-border dataTable no-footer overview-table" cellspacing="0" width="100%" role="grid" aria-describedby="supplier-listing_info" style="width: 100%;">
                                                                 <thead>
                                                                     <tr role="row">
-                                                                        <th><input type="checkbox" id="chkAll"></th> 
+                                                                        <th width="25"><input type="checkbox" id="chkAll"></th> 
                                                                         <th>Inv. No.</th>
                                                                         <th>Anchor Detail</th>
                                                                         <th>Customer Detail</th>
