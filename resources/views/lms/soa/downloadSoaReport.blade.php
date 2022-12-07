@@ -127,9 +127,9 @@
             <div class="breakNow">
                 <table border="1px" style="width: 100%;clear: both; margin-top: 10px;" align="center" cellspacing="0" cellpadding="1">
                     <tr>
-                        <td style="border: 1px solid #ddd;padding: 5px;" bgcolor="#f2f2f2">
+                        {{-- <td style="border: 1px solid #ddd;padding: 5px;" bgcolor="#f2f2f2">
                             <span style="font-size: small;"><strong>Customer ID</strong></span>
-                        </td>
+                        </td> --}}
                         <td style="border: 1px solid #ddd;padding: 5px;" bgcolor="#f2f2f2">
                             <span style="font-size: small;"><strong>Trans Date</strong></span>
                         </td>
@@ -154,9 +154,9 @@
                         <td style="border: 1px solid #ddd;padding: 5px;" bgcolor="#f2f2f2">
                             <span style="font-size: small;"><strong>Narration</strong></span>
                         </td>
-                        <td style="border: 1px solid #ddd;padding: 5px;" bgcolor="#f2f2f2">
+                        {{-- <td style="border: 1px solid #ddd;padding: 5px;" bgcolor="#f2f2f2">
                             <span style="font-size: small;"><strong>Currency</strong></span>
-                        </td>
+                        </td> --}}
                         <td style="border: 1px solid #ddd;padding: 5px;" bgcolor="#f2f2f2">
                             <span style="font-size: small;"><strong>Debit</strong></span>
                         </td>
@@ -169,9 +169,9 @@
                     </tr>
                     @foreach($soaRec as $key => $record)
                     <tr style="background: {{$record['soabackgroundcolor']}};">
-                        <td style="border: 1px solid #ddd;padding: 5px;">
+                        {{-- <td style="border: 1px solid #ddd;padding: 5px;">
                             <span style="font-size: small;">{{$record['customer_id']}}</span>
-                        </td>
+                        </td> --}}
                         <td style="border: 1px solid #ddd;padding: 5px;">
                             <span style="font-size: small;">{{$record['trans_date']}}</span>
                         </td>
@@ -196,9 +196,9 @@
                         <td style="border: 1px solid #ddd;padding: 5px;">
                             <span style="font-size: small;">{{$record['narration']}}</span>
                         </td>
-                        <td style="border: 1px solid #ddd;padding: 5px;">
+                        {{-- <td style="border: 1px solid #ddd;padding: 5px;">
                             <span style="font-size: small;">{{$record['currency']}}</span>
-                        </td>
+                        </td> --}}
                         <td style="border: 1px solid #ddd;padding: 5px;">
                             <span style="font-size: small;">{{$record['debit']}}</span>
                         </td>
