@@ -36,7 +36,8 @@ try {
                  {data: 'action'},
                
             ],
-            aoColumnDefs: [{'bSortable': false, 'aTargets': [0,1,3]}]
+            aoColumnDefs: [{'bSortable': false, 'aTargets': [0,1,3]}],
+            aaSorting: [[1, 'asc']] // start to sort data in second column
         });
 
         //Search
