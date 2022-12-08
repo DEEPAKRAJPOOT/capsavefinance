@@ -111,10 +111,6 @@
                         <td class="text-left" width="30%"><b>Mobile</b></td>
                         <td>{{$userInfo->mobile_no}} </td> 
                     </tr>
-                    <tr>
-                        <td class="text-left" width="30%"><b>Customer Id</b></td>
-                        <td> {{$soaRecord[0][0]['customer_id']}}	</td> 
-                    </tr>
                     @if($fromdate && $todate)
                     <tr>
                         <td class="text-left" width="30%"><b>From Date</b></td>

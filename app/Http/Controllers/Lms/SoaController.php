@@ -290,7 +290,7 @@ class SoaController extends Controller
             DPDF::setOptions(['isHtml5ParserEnabled'=> true]);
             $pdf = DPDF::setOptions(['dpi' => 150, 'defaultFont' => 'sans-serif', 'defaultPaperSize' => 'a4'])
                     ->loadView('lms.soa.downloadSoaReport', ['userInfo' => $userInfo, 'soaRecord' => $soaRecord, 'fromdate' => $request->get('from_date'), 'todate' => $request->get('to_date'),'customerId' => $customerId],[],'UTF-8');
-            return $pdf->download('SoaReport.pdf');          
+            return $pdf->download('SoaReport/'.$request->get('customer_id').'.pdf');
         }catch (Exception $ex) {
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
         } 
@@ -448,7 +448,7 @@ class SoaController extends Controller
         
         // Redirect output to a client’s web browser (Excel2007)
         header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-        header('Content-Disposition: attachment;filename="Soa_Excel.xlsx"');
+        header('Content-Disposition: attachment;filename="Soa_Excel/'.$request->get('customer_id').'.xlsx"');
         header('Cache-Control: max-age=0');
         // If you're serving to IE 9, then the following may be needed
         header('Cache-Control: max-age=1');
