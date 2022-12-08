@@ -66,7 +66,7 @@
                          </div>
                          <div class="clearfix"></div>
                          <br />
-                          <form method="post" action="{{ route('save_finance_detail') }}">
+                          <form method="post" action="{{ route('save_finance_detail') }}" class="fin-new-height">
                             <div id="accordion" role="tablist" aria-multiselectable="true" class="accordion">
                                <div class="card">
                                   <div class="card-header" data-toggle="collapse" data-parent="#accordion" href="#collapseZero" aria-expanded="true" aria-controls="collapseZero" role="tab" id="headingZero">
@@ -988,6 +988,12 @@
 </div> 
 {!!Helpers::makeIframePopup('uploadXLSXdoc','Upload XLSX Document', 'modal-md')!!}  
 @endsection
+
+@section('additional_css')
+<style>
+    .form-control-new-height{height: calc(1.0em + .75rem + 2px);}
+    </style>
+    @endsection
 @section('jscript')
 <script type="text/javascript">
    appId = '{{$appId}}';
