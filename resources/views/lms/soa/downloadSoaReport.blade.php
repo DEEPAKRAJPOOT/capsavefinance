@@ -71,10 +71,10 @@
                 padding:15px;
                 clear: both;
             }
-            .pagenum:before {
+            /* .pagenum:before {
                 content: counter(page);
             }
-            div.breakNow { page-break-inside:avoid; page-break-after:always; }
+            div.breakNow { page-break-inside:avoid; page-break-after:always; } */
         </style>
 
     </head>
@@ -100,26 +100,27 @@
             <table class="table  table-td-right">
                 <tbody>
                     <tr>
-                        <td class="text-left" width="30%"><b>Business Name</b></td>
-                        <td> {{$userInfo->biz->biz_entity_name}}	</td> 
-                        <td class="text-left" width="30%"><b>Full Name</b></td>
-                        <td>{{$userInfo->f_name}} {{$userInfo->m_name}}	{{$userInfo->l_name}}</td> 
+                        <td class="text-left" width="15%"><b>Business Name:</b></td>
+                        <td class="text-left"> {{$userInfo->biz->biz_entity_name}}	</td> 
+                        <td class="text-left" width="15%"><b>Full Name:</b></td>
+                        <td class="text-left">{{$userInfo->f_name}} {{$userInfo->m_name}}	{{$userInfo->l_name}}</td> 
                     </tr>
                     <tr>
-                        <td class="text-left" width="30%"><b>Email</b></td>
-                        <td>{{$userInfo->email}}	</td> 
-                        <td class="text-left" width="30%"><b>Mobile</b></td>
-                        <td>{{$userInfo->mobile_no}} </td> 
+                        <td class="text-left" width="15%"><b>Email ID:</b></td>
+                        <td class="text-left">{{$userInfo->email}}	</td> 
+                        <td class="text-left" width="15%"><b>Mobile:</b></td>
+                        <td class="text-left">{{$userInfo->mobile_no}} </td> 
                     </tr>
                     @if($fromdate && $todate)
                     <tr>
-                        <td class="text-left" width="30%"><b>From Date</b></td>
+                        <td class="text-left" width="20%"><b>From Date:</b></td>
                         <td>{{$fromdate}}</td> 
-                        <td class="text-left" width="30%"><b>To Date</b></td>
+                        <td class="text-left" width="20%"><b>To Date:</b></td>
                         <td>{{$todate}}</td> 
                     </tr>
                     @endif
                 </tbody>
+                <br>
             </table>
             @endif
             @foreach($soaRecord as $soak => $soaRec)
