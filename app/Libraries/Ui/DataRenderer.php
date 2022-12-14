@@ -7371,7 +7371,7 @@ class DataRenderer implements DataProviderInterface
                         $class = '';
                     }
                 }
-                
+                $type = '';
                 if($trans->transType->chrg_master_id != 0){
                     $type = 'charges';
                 }elseif(in_array($trans->transType->id,[config('lms.TRANS_TYPE.INTEREST'),config('lms.TRANS_TYPE.INTEREST_OVERDUE')])){
