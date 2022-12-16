@@ -2826,6 +2826,20 @@ class Helper extends PaypalHelper
         return $arrFileData;
     }
 
+    public static function checkInvoiceLimitExceed($sum, $limit, $po_inv_amount)
+    {
+        $finalsum = $sum - $po_inv_amount;
+        if ($limit  >= $finalsum) {
+            $remain_amount = $limit - $finalsum;
+            if ($remain_amount < $po_inv_amount) {
+                return true;
+            }
+        } else {
+            return false;
+        }
+        return false;
+    }
+
     public static function getfactVoucherNumber($startDate){
         $startDate = Helper::utcToIst($startDate,'Y-m-d H:i:s', 'Y-m-d H:i:s');
         

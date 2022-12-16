@@ -1232,10 +1232,11 @@ trait InvoiceTrait
     return $marginApprAmt-$marginReypayAmt;
   }
 
-  public static function invoiceOverdueCheck($invoiceId = false) {
-        $lmsRepo = \App::make('App\Inv\Repositories\Contracts\LmsInterface');
-        $invoice = $lmsRepo->getInvoice($invoiceId);
-        $apps = $invoice->supplier->apps;
+  public static function invoiceOverdueCheck($supplier = false) {
+        // $lmsRepo = \App::make('App\Inv\Repositories\Contracts\LmsInterface');
+        // $invoice = $lmsRepo->getInvoice($invoiceId);
+        // $apps = $invoice->supplier->apps;
+        $apps = $supplier->apps;
         foreach ($apps as $app) {
             foreach ($app->disbursed_invoices as $inv) {
                 $invc = $inv->toArray();
