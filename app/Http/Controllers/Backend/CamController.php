@@ -2058,8 +2058,8 @@ class CamController extends Controller
  
           if ($prgm_data && $prgm_data->product_id == 1) {
             $offerIsExist = \Helpers::checkAnchorPrgmOfferDuplicate($prgm_data->anchor_id, $program_id, $appId);
-          if ((!$prgmOfferId && $offerIsExist) || ($prgmOfferId && $offerIsExist && $prgmOfferId != $offerIsExist->prgm_offer_id)) {
-            Session::flash('error', 'Anchor Offer is already generated for this program.');
+          if ((!$prgmOfferId && $offerIsExist) || (!$prgmOfferId && !$offerIsExist) || ($prgmOfferId && $offerIsExist && $prgmOfferId != $offerIsExist->prgm_offer_id)) {
+            Session::flash('error', 'Application offer already generated for this Program & Anchor.');
             return redirect()->route('limit_assessment',['app_id' =>  $appId, 'biz_id' => $bizId]);
           }
 
