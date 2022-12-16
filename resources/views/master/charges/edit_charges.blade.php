@@ -132,7 +132,7 @@
             </div>
             <div class="form-group col-md-6 float-md-right">
                 <label for="sac_code">SAC Code</label>
-                <input type="text" class="form-control" id="sac_code" name="sac_code" value="{{$charge_data->sac_code}}" placeholder="Enter SAC Code" maxlength="10" onkeyup="sac_validation()">
+                <input type="text" class="form-control" id="sac_code" name="sac_code" value="{{$charge_data->sac_code}}" placeholder="Enter SAC Code" maxlength="6" onkeyup="sac_validation()">
             </div>
         </div>
         <div class="row">
@@ -288,7 +288,7 @@
                 'sac_code': {
                     required: true,
                     digits: true,
-                    maxlength: 4,
+                    maxlength: 6,
                 },
                 'is_active': {
                     required: true,
@@ -339,7 +339,7 @@
         var val = document.getElementById('sac_code').value;
         if(isNaN(val)) {
             document.getElementById('sac_code').value = ""
-        } else if(val.length > 4) {
+        } else if(val.length > 6) {
             document.getElementById('sac_code').value = ""
         }
     }

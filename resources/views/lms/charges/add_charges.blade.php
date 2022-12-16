@@ -174,6 +174,8 @@ $(document).ready(function () {
         // alert($(this).val());
         if ($(this).val() == '2') {
             $('#program_div').hide();
+            $('#program_id').val('');
+            // $("#program_div").load(" #program_div");
 
             var basedOn  = $(this).val();
              if(basedOn=='')
@@ -192,11 +194,10 @@ $(document).ready(function () {
                     alert(errorThrown);
                     },
                     success: function (data) {
-                    
                         if(data.status==1 && basedOn== 2)
                         {  $("#limit_amount_new").val(data.amount); 
                             $("#programamount").val(data.amount);
-                            $(".chrg_name").append('<option value="">Please select</option>'); 
+                            $(".chrg_name").append('<option value="">Please select</option>');
                             $(data.res).each(function(i,v){
                                 $(".chrg_name").append('<option value="'+v.id+'">'+v.chrg_name+'</option>'); 
                             });
