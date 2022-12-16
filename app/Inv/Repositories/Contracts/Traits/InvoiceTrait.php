@@ -1233,9 +1233,6 @@ trait InvoiceTrait
   }
 
   public static function invoiceOverdueCheck($supplier = false) {
-        // $lmsRepo = \App::make('App\Inv\Repositories\Contracts\LmsInterface');
-        // $invoice = $lmsRepo->getInvoice($invoiceId);
-        // $apps = $invoice->supplier->apps;
         $apps = $supplier->apps;
         foreach ($apps as $app) {
             foreach ($app->disbursed_invoices as $inv) {

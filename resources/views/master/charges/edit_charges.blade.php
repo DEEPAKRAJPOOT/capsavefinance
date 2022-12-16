@@ -339,8 +339,6 @@
         var val = document.getElementById('sac_code').value;
         if(isNaN(val)) {
             document.getElementById('sac_code').value = ""
-        } else if(val.length > 6) {
-            document.getElementById('sac_code').value = ""
         }
     }
 </script>

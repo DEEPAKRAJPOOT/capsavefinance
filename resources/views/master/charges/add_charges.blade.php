@@ -305,10 +305,7 @@
         var chrg_name = document.getElementById('chrg_name').value;
         if(isNaN(sac_code)) {
             document.getElementById('sac_code').value = ""
-        } 
-        // else if(sac_code.length > 6) {
-        //     document.getElementById('sac_code').value = ""
-        // }
+        }
 
         if(!isNaN(chrg_name)) {
             document.getElementById('chrg_name').value = ""
