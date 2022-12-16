@@ -10,6 +10,7 @@ try {
             pageLength: 10,
             searching: false,
             bSort: true,
+            "ordering": false,
             ajax: {
                 "url": messages.backend_get_invoice_list_approve, // json datasource
                 "method": 'POST',
@@ -38,8 +39,7 @@ try {
                 {data: 'updated_at'},
                 {data: 'action'}
             ],
-            aoColumnDefs: [{'bSortable': false, 'aTargets': [0,2]}],
-            aaSorting: [[1, 'asc']] // start to sort data in second column 
+            aoColumnDefs: [{'bSortable': false, 'aTargets': [0,2]}], 
         });
 
         //Search
