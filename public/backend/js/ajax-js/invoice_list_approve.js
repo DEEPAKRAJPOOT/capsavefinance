@@ -10,7 +10,7 @@ try {
             pageLength: 10,
             searching: false,
             bSort: true,
-            "ordering": false,
+            ordering: false,
             ajax: {
                 "url": messages.backend_get_invoice_list_approve, // json datasource
                 "method": 'POST',

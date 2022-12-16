@@ -8,7 +8,7 @@ try {
             pageLength: 10,
             searching: false,
             bSort: true,
-            "ordering": false,
+            ordering: false,
             ajax: {
                 "url": messages.backend_get_invoice_list_disbursed_que, // json datasource
                 "method": 'POST',
