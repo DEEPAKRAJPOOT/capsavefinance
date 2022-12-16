@@ -7377,7 +7377,15 @@ class DataRenderer implements DataProviderInterface
                         $class = '';
                     }
                 }
-                $type = $trans->transType->chrg_master_id != 0  ? 'charges' : (in_array($trans->transType->id, [config('lms.TRANS_TYPE.INTEREST'),config('lms.TRANS_TYPE.INTEREST_OVERDUE')]) ? 'interest' : '');
+                $type = '';
+                if($trans->transType->chrg_master_id != 0){
+                    $type = 'charges';
+                }elseif(in_array($trans->transType->id,[config('lms.TRANS_TYPE.INTEREST'),config('lms.TRANS_TYPE.INTEREST_OVERDUE')])){
+                    $type = 'interest';
+                }elseif(in_array($trans->transType->id,[config('lms.TRANS_TYPE.PAYMENT_DISBURSED')])){
+                    $type = 'principal';
+                }
+
                 $result = "<input class='$class' id='check_".$trans->trans_id."' $transDisabled payenabled='$payEnable' pay='$paymentDate' userInv='$userInvoiceDate' transtype='$type' type='checkbox' name='check[".$trans->trans_id."]' onchange='apport.onCheckChange(".$trans->trans_id.")'>";
                 return $result;
             })

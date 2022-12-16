@@ -258,6 +258,7 @@ class ApportionmentController extends Controller
      * @return array
      */
     public function saveWaiveOffDetail(Request $request){
+        DB::beginTransaction();
         try {
             $sanctionPageView = false;
             if($request->has('sanctionPageView')){
@@ -272,21 +273,26 @@ class ApportionmentController extends Controller
             $comment = $request->get('comment');
             $TransDetail = $this->lmsRepo->getTransDetail(['trans_id' => $transId]);
             if (empty($TransDetail)) {
+                DB::rollback();
                 return redirect()->route('apport_unsettled_view', [ 'payment_id' => $paymentId, 'user_id' =>$TransDetail->user_id, 'sanctionPageView'=>$sanctionPageView])->with(['error' => 'Selected Transaction to be waived off is not valid']);
             }
-            $is_interest_charges = ($TransDetail->transType->chrg_master_id > 0 || in_array($TransDetail->trans_type, [config('lms.TRANS_TYPE.INTEREST'),config('lms.TRANS_TYPE.INTEREST_OVERDUE')]));
+            $is_interest_charges = ($TransDetail->transType->chrg_master_id > 0 || in_array($TransDetail->trans_type, [config('lms.TRANS_TYPE.INTEREST'),config('lms.TRANS_TYPE.INTEREST_OVERDUE'),config('lms.TRANS_TYPE.PAYMENT_DISBURSED')]));
             if(!$is_interest_charges){
-                return redirect()->route('apport_unsettled_view', [ 'payment_id' => $paymentId, 'user_id' =>$TransDetail->user_id, 'sanctionPageView'=>$sanctionPageView])->with(['error' => 'Waived off is possible only Interest and Charges.']);
+                DB::rollback();
+                return redirect()->route('apport_unsettled_view', [ 'payment_id' => $paymentId, 'user_id' =>$TransDetail->user_id, 'sanctionPageView'=>$sanctionPageView])->with(['error' => 'Waived off is possible only Interest, Charges and Principal.']);
             }
             $outstandingAmount = $TransDetail->outstanding;
             if ($amount > $outstandingAmount)  {
+                DB::rollback();
                 return redirect()->route('apport_unsettled_view', [ 'payment_id' => $paymentId, 'user_id' =>$TransDetail->user_id, 'sanctionPageView'=>$sanctionPageView])->with(['error' => 'Amount to be Waived Off must be less than or equal to '. $outstandingAmount]);
             }
             if ($amount <= 0)  {
+                DB::rollback();
                 return redirect()->route('apport_unsettled_view', [ 'payment_id' => $paymentId, 'user_id' =>$TransDetail->user_id, 'sanctionPageView'=>$sanctionPageView])->with(['error' => 'Amount to be Waived Off must have some values ']);
             }
 
             if (empty($comment))  {
+                DB::rollback();
                 return redirect()->route('apport_unsettled_view', [ 'payment_id' => $paymentId, 'user_id' =>$TransDetail->user_id, 'sanctionPageView'=>$sanctionPageView])->with(['error' => 'Comment / Remarks is required to Waived off the amount.']);
             }
             $txnInsertData = [
@@ -321,6 +327,7 @@ class ApportionmentController extends Controller
                     $this->updateInvoiceRepaymentFlag([$TransDetail->disburse->invoice_disbursed_id]);
                     $Obj->refundProcess($TransDetail->disburse->invoice_disbursed_id);
                 }
+                DB::commit();
                 $comment = $this->lmsRepo->saveTxnComment($commentData);
 
                 $whereActivi['activity_code'] = 'apport_waiveoff_save';
@@ -335,7 +342,8 @@ class ApportionmentController extends Controller
                 return redirect()->route('apport_unsettled_view', [ 'payment_id' => $paymentId, 'user_id' =>$TransDetail->user_id, 'sanctionPageView'=>$sanctionPageView])->with(['message' => 'Amount successfully waived off']);
             }
         } catch (Exception $ex) {
-             return redirect()->route('apport_unsettled_view', [ 'payment_id' => $paymentId, 'user_id' =>$TransDetail->user_id, 'sanctionPageView'=>$sanctionPageView])->withErrors(Helpers::getExceptionMessage($ex));
+            DB::rollback();
+            return redirect()->route('apport_unsettled_view', [ 'payment_id' => $paymentId, 'user_id' =>$TransDetail->user_id, 'sanctionPageView'=>$sanctionPageView])->withErrors(Helpers::getExceptionMessage($ex));
         } 
     }
 
@@ -1155,7 +1163,8 @@ class ApportionmentController extends Controller
             // InvoiceDisbursedDetail::updateDailyInterestAccruedDetails($invd->invoice_disbursed_id);
             // $flag = $this->lmsRepo->getInvoiceSettleStatus($invd->invoice_id);
             
-           $prinRepayAmt = Transactions::where('invoice_disbursed_id',$invd->invoice_disbursed_id)->where('entry_type','1')->whereIn('trans_type',[16])->sum('settled_outstanding');
+           $prinTrans = Transactions::where('invoice_disbursed_id',$invd->invoice_disbursed_id)->where('entry_type','0')->whereIn('trans_type',[16])->get();
+           $prinRepayAmt = round($prinTrans->sum('amount') - $prinTrans->sum('outstanding'),2);
            $transOut = Transactions::where('invoice_disbursed_id',$invd->invoice_disbursed_id)->where('entry_type','0')->whereIn('trans_type',[9,16,33])->whereNull('parent_trans_id')->sum('outstanding');
            $transAmt = Transactions::where('invoice_disbursed_id',$invd->invoice_disbursed_id)->where('entry_type','0')->whereIn('trans_type',[9,16,33])->whereNull('parent_trans_id')->sum('amount');
            $transOut = round($transOut,2);

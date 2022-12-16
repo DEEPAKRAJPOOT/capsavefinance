@@ -52,6 +52,12 @@ return [
         'INVOICE_PARTIALLY_KNOCKED_OFF'=>'34',
         */
     ],
+    'TRANS_TYPE_NAME' => [
+        '16D36C' => 'Principal Waived Off',
+        '16D36C2D' => 'Principal Waived Off Reversed',
+        '16D37C' => 'Principal Write Off',
+        '16D37C2D' => 'Principal Write Off Reversed',
+    ],
     'STATUS_ID' => [
         'DISBURSED'=>'12',
         'PARTIALLY_PAYMENT_SETTLED' => '13',
