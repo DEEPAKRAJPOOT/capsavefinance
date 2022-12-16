@@ -822,7 +822,7 @@ ul.form-row-inline .li-row {
 	font-size: 16px;
 }
 
-.form-control::placeholder,input.form-control[type=date]{ color:#c5c5c5; font-size:14px;font-family: 'source-sans-pro-regular', sans-serif; letter-spacing:1px;}
+.form-control::placeholder,input.form-control[type=date]{ color:#c5c5c5; font-size:12px;font-family: 'source-sans-pro-regular', sans-serif; letter-spacing:1px;}
 
 select.form-control {
 	color: #495057;
@@ -1483,6 +1483,7 @@ ul.custom-check-label #frequency-error {
     display: block;
     width: 100%;
     height: calc(1.5em + .75rem + 2px);
+    /*height: 100%;*/
     padding: .375rem .75rem;
     font-size: 1rem;
     font-weight: 400;
@@ -1493,6 +1494,11 @@ ul.custom-check-label #frequency-error {
     border: 1px solid #ced4da;
     border-radius: .25rem;
     transition: border-color .15s ease-in-out,box-shadow .15s ease-in-out;
+}
+
+
+.fin-new-height .form-control{
+	height: calc(1.0em + .75rem + 2px);
 }
 
 /*14-08-2020*/
