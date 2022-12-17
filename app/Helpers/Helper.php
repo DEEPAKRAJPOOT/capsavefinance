@@ -2502,12 +2502,14 @@ class Helper extends PaypalHelper
 
     public static function checkAnchorPrgmOfferDuplicate($anchorId, $prgmId, $appId)
     {
-        return AppProgramOffer::where('anchor_id', $anchorId)
-                                    ->where('prgm_id', $prgmId)
-                                    ->where('app_id', $appId)
-                                    ->where('is_active', 1)
-                                    ->whereNotIn('status', [2])
-                                    ->first();
+        // return AppProgramOffer::where('anchor_id', $anchorId)
+        //                             ->where('prgm_id', $prgmId)
+        //                             ->where('app_id', $appId)
+        //                             ->where('is_active', 1)
+        //                             ->whereNotIn('status', [2])
+        //                             ->first();
+        $prgmOfferData = AppProgramOffer::getData($appId,$prgmId,$anchorId)->where('status','!=',2)->first();
+        return $prgmOfferData;
     }
 
     public static function getAppTypeName($appType)

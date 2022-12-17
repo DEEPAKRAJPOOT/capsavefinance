@@ -737,4 +737,8 @@ class AppProgramOffer extends BaseModel {
         return self::where(['is_approve' => 1,'status' => 1,'is_active' => 1,'app_id' => $app_id])->count();
 
     }
+
+    public static function getData($appId,$prgmId,$anchorId){
+        return self::where(['is_active' => 1,'app_id' => $appId,'anchor_id'=>$anchorId,'prgm_id'=>$prgmId])->get();
+    }
 }
