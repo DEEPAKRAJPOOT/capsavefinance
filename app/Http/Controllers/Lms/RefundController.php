@@ -24,6 +24,7 @@ use Carbon\Carbon;
 use App\Helpers\RefundHelper;
 use App\Inv\Repositories\Contracts\MasterInterface;
 use App\Inv\Repositories\Contracts\Traits\ActivityLogTrait;
+use DB;
 
 class RefundController extends Controller
 {
@@ -658,6 +659,7 @@ class RefundController extends Controller
                 Session::flash('error', trans('backend_messages.lms_eod_batch_process_msg'));
                 return back();
             }
+            DB::beginTransaction();
             $transNo = $request->trans_no;
             $remarks = $request->remarks;
             $refund_req_id = $request->refund_req_id;
@@ -678,10 +680,12 @@ class RefundController extends Controller
                 $activity_desc = 'Update Disbursal Refund, Send TO Bank (Manage Refund) '. null;
                 $arrActivity['app_id'] = null;
                 $this->activityLogByTrait($activity_type_id, $activity_desc, response()->json(['apiLogData'=>$apiLogData, 'Request'=>$request->all()]), $arrActivity);
-            }     
+            }
+            DB::commit();     
             Session::flash('message',trans('backend_messages.refundedMarked'));
             return redirect()->route('lms_refund_refunded');
         }catch(Exception $exception){
+            DB::rollback();
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex))->withInput();
         }
     }
