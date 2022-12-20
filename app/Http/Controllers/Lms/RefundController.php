@@ -141,6 +141,7 @@ class RefundController extends Controller
                 Session::flash('error', trans('backend_messages.lms_eod_batch_process_msg'));
                 return back();
             }
+            DB::beginTransaction();
             $refundRequests = $request->refundRequest;
             $status = $request->status;
             $newStatus  = $request->newStatus;
@@ -191,10 +192,11 @@ class RefundController extends Controller
                 $arrActivity['app_id'] = null;
                 $this->activityLogByTrait($activity_type_id, $activity_desc, response()->json($request->all()), $arrActivity);
             }             
-            
+            DB::commit();
             Session::flash('message',$message);
             return redirect()->route($redirectRoute);
         }catch(Exception $exception){
+            DB::rollback();
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex))->withInput();
         }
     }
