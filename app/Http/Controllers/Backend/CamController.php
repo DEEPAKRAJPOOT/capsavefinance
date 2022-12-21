@@ -2164,7 +2164,18 @@ class CamController extends Controller
            $dsaData['payout']   = (int)$requestData['payout'];
            $dsaData['payout_event'] = $requestData['payout_event'];
            $dsaData['xirr'] = (int)$requestData['xirr'];
-           $dsaData['prgm_offer_id'] = $offerData->prgm_offer_id;
+           if($requestData['offer_dsa_id'] != null){
+            $prgmOfferDsa = AppProgramOfferDsa::where(['prgm_offer_id'=>$offerData->prgm_offer_id])->first();
+            if($prgmOfferDsa){
+               $dsa_updated = AppProgramOfferDsa::where(['offer_dsa_id'=>$requestData['offer_dsa_id']])->update($dsaData);
+             }else{
+               $dsaData['prgm_offer_id'] = $offerData->prgm_offer_id;
+               $dsa_added = AppProgramOfferDsa::create($dsaData);
+             }
+           }else{
+             $dsaData['prgm_offer_id'] = $offerData->prgm_offer_id;
+             $dsa_added = AppProgramOfferDsa::create($dsaData);
+           }
          }   
         $whereActivi['activity_code'] = 'update_limit_offer';
         $activity = $this->mstRepo->getActivity($whereActivi);

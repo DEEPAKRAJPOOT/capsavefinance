@@ -258,46 +258,48 @@
           </div>
         </div>
         <!-----------------PROGRAM OFFER DSA--------------------->
-        <div class="col-md-12">
-            <div class="form-group row">
-                <label for="txtPassword" class="col-md-12" style="background-color: #F2F2F2;padding: 5px 0px 5px 20px;">Apply DSA</label>
-                <div class="col-md-6">
-                    <select name="dsa_applicable" class="form-control show-hide" data-block_id="#dsa-applicable-block">
-                        <option value="">Select DSA Applicable</option>
-                        <option value="1" >Yes</option>
-                        <option value="2" >No</option>
-                    </select>
+    <div class="col-md-12">
+          <div class="form-group row">
+            <label for="txtPassword" class="col-md-12" style="background-color: #F2F2F2;padding: 5px 0px 5px 20px;">Apply DSA</label>
+            <div class="col-md-6">
+                <select name="dsa_applicable" id="dsa_applicable" class="form-control show-hide" >
+                    <option value="">Select DSA Applicable</option>
+                    <option value="1" {{ (isset($offerData->dsa_applicable) && $offerData->dsa_applicable == 1)  ? 'selected' : '' }}>Yes</option>
+                    <option value="0" {{ (isset($offerData->dsa_applicable) && $offerData->dsa_applicable == 0)  ? 'selected' : '' }}>No</option>
+                </select>
+            </div>
+            <input type="hidden" name="offer_dsa_id" value="{{ (isset($offerData->programOfferDsa))  ? $offerData->programOfferDsa->offer_dsa_id : '' }}">
+            
+            <div class="col-md-12" id="dsa-applicable-block" style="display: {{(isset($offerData->dsa_applicable) && $offerData->dsa_applicable == 1) ? 'block' : 'none' }};">
+             <div class="row mt10">
+                <div class="col-md-3">
+                    <label for="txtPassword" >DSA Name <span style="color: red;"> *</span></label>
+                    <input type="text" name="dsa_name" id="dsa_name" class="form-control" value="{{ (isset($offerData->programOfferDsa) && !empty($offerData->programOfferDsa->dsa_name))  ? $offerData->programOfferDsa->dsa_name : '' }}" placeholder="DSA Name">
                 </div>
-                <div class="col-md-12" id="dsa-applicable-block" >
-                <div class="row mt10">
-                    <div class="col-md-2">
-                        <label for="txtPassword" >DSA Name <span style="color: red;"> *</span></label>
-                        <input name="dsa_name" class="form-control" value="" placeholder="DSA Name">
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label for="txtPassword">Payout (%) <span style="color: red;"> *</span></label> 
+                        <input type="text" name="payout" id="payout" class="form-control" value="{{ (isset($offerData->programOfferDsa) && !empty($offerData->programOfferDsa->payout))  ? $offerData->programOfferDsa->payout : '' }}" placeholder="Payout" maxlength="3" >
                     </div>
-                    <div class="col-md-2">
-                        <div class="form-group">
-                            <label for="txtPassword">Payout (%) <span style="color: red;"> *</span></label> 
-                            <input type="text" name="payout" class="form-control" value="" placeholder="Payout" maxlength="3">
-                        </div>
+                 </div>
+                 <div class="col-md-3">
+                    <div class="form-group">
+                        <label for="txtPassword">Payout Event <span style="color: red;"> *</span></label> 
+                        <input type="text" name="payout_event" id="payout_event" class="form-control" value="{{ (isset($offerData->programOfferDsa) && !empty($offerData->programOfferDsa->payout_event))  ? $offerData->programOfferDsa->payout_event : '' }}" placeholder="Payout Event">
                     </div>
-                    <div class="col-md-2">
-                        <div class="form-group">
-                            <label for="txtPassword">Payout Event <span style="color: red;"> *</span></label> 
-                            <input type="text" name="payout_event" class="form-control" value="" placeholder="Payout Event">
-                        </div>
+                 </div>
+                 <div class="col-md-3">
+                    <div class="form-group">
+                        <label for="txtPassword">XIRR (%)<span style="color: red;"> *</span></label> 
+                        <input type="text" name="xirr" id="xirr" class="form-control" value="{{ (isset($offerData->programOfferDsa) && !empty($offerData->programOfferDsa->xirr))  ? $offerData->programOfferDsa->xirr : '' }}" placeholder="xirr" maxlength="3">
                     </div>
-                    <div class="col-md-2">
-                        <div class="form-group">
-                            <label for="txtPassword">XIRR (%)<span style="color: red;"> *</span></label> 
-                            <input type="text" name="xirr" class="form-control" value="" placeholder="xirr" maxlength="3">
-                        </div>
-                    </div>
-                </div>
-                </div>
-            </div> 
-            </div>  
+                 </div>
+               </div>
+            </div>
+          </div> 
+        </div>  
 
-        <!-----------------END PROGRAM OFFER DSA--------------------->
+    <!-----------------END PROGRAM OFFER DSA--------------------->
     </div>
     <div class="row">
     @can('update_limit_offer')
@@ -343,6 +345,10 @@
     unsetError('textarea[name=comment]');
     unsetError('#check_block');
     unsetError('#radio_block');
+    unsetError('input[name=dsa_name]');
+    unsetError('input[name=payout]');
+    unsetError('input[name=payout_event]');
+    unsetError('input[name=xirr]');
 
 
     let flag = true;
@@ -369,6 +375,12 @@
     let is_invoice_processingfee = $('select[name=is_invoice_processingfee]').find(':selected').val();
     let invoice_processingfee_type = $('select[name=invoice_processingfee_type]').find(':selected').val();
     let invoice_processingfee_value = $('input[name=invoice_processingfee_value]').val();
+
+    let payout = $('input[name=payout]').val().trim();
+    let xirr = $('input[name=xirr]').val().trim();
+    let dsa_name = $('input[name=dsa_name]').val();
+    let payout_event = $('input[name=payout_event]').val();
+    let dsa_applicable = $('select[name=dsa_applicable]').val();
 
     /*if(prgm_limit_amt.length == 0 || parseInt(prgm_limit_amt.replace(/,/g, '')) == 0){
         setError('input[name=prgm_limit_amt]', 'Please fill loan offer amount');
@@ -413,7 +425,35 @@
         setError('select[name=rental_frequency_type]', 'Please select frequency type');
         flag = false;
     }
+    
+    if(dsa_applicable == 1){
+        if(dsa_name == ''){
+            setError('input[name=dsa_name]', 'Please fill dsa name');
+            flag = false;
+        }
 
+        if(payout == '' || isNaN(payout)){
+            setError('input[name=payout]', 'Please fill payout');
+            flag = false;
+        }else if(parseFloat(payout) > 100){
+            setError('input[name=payout]', 'Please fill correct payout percentage');
+            flag = false;
+        }
+
+        if(payout_event == ''){
+            setError('input[name=payout_event]', 'Please fill payout event');
+            flag = false;
+        }
+
+        if(xirr == '' || isNaN(xirr)){
+            setError('input[name=xirr]', 'Please fill xirr');
+            flag = false;
+        }else if(parseFloat(xirr) > 100){
+            setError('input[name=xirr]', 'Please fill correct xirr percentage');
+            flag = false;
+        }
+
+    }
 
     if(is_invoice_processingfee == 1){
         if (invoice_processingfee_type == '') {
@@ -654,6 +694,28 @@
         $(selector2).hide();
     }
   })
+  
+
+  $(document).on('change', '#dsa_applicable', function(){
+    let selected_val = $(this).find('option:selected').val();
+    let selector1 = $('#dsa-applicable-block');
+
+    if(selected_val == 1){
+        $(selector1).show();
+    }else{
+        $(selector1).hide();
+        $('#dsa_name').val('');
+        $('#payout').val('');
+        $('#payout_event').val('');
+        $('#xirr').val('');
+        unsetError('input[name=dsa_name]');
+        unsetError('input[name=payout]');
+        unsetError('input[name=payout_event]');
+        unsetError('input[name=xirr]');
+
+    }
+  })
+
   
   $(document).on('change', '#invoice_processingfee_type', function(){
     $('#invoice_processingfee_value').val('');

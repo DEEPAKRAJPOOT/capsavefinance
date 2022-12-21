@@ -804,10 +804,6 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                     'as' => 'save_security_deposit',
                     'uses' => 'Backend\CamController@saveSecurityDeposit'
                 ]);
-                Route::get('get-app-dsa', [
-                    'as'=>'get_app_dsa',
-                    'uses'=> 'Backend\CamController@getAppDsa'
-                ]);
             }); //end of cam   
                         
             Route::get('copy-app-confirmBox', [

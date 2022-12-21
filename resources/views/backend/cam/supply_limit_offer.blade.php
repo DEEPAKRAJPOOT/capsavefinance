@@ -206,32 +206,34 @@
             <div class="col-md-6">
                 <select name="dsa_applicable" id="dsa_applicable" class="form-control show-hide" >
                     <option value="">Select DSA Applicable</option>
-                    <option value="1" >Yes</option>
-                    <option value="2" >No</option>
+                    <option value="1" {{ (isset($offerData->dsa_applicable) && $offerData->dsa_applicable == 1)  ? 'selected' : '' }}>Yes</option>
+                    <option value="0" {{ (isset($offerData->dsa_applicable) && $offerData->dsa_applicable == 0)  ? 'selected' : '' }}>No</option>
                 </select>
             </div>
-            <div class="col-md-12" id="dsa-applicable-block" style="display:none">
+            <input type="hidden" name="offer_dsa_id" value="{{ (isset($offerData->programOfferDsa))  ? $offerData->programOfferDsa->offer_dsa_id : '' }}">
+            
+            <div class="col-md-12" id="dsa-applicable-block" style="display: {{(isset($offerData->dsa_applicable) && $offerData->dsa_applicable == 1) ? 'block' : 'none' }};">
              <div class="row mt10">
                 <div class="col-md-3">
                     <label for="txtPassword" >DSA Name <span style="color: red;"> *</span></label>
-                    <input type="text" name="dsa_name" id="dsa_name" class="form-control" value="" placeholder="DSA Name">
+                    <input type="text" name="dsa_name" id="dsa_name" class="form-control" value="{{ (isset($offerData->programOfferDsa) && !empty($offerData->programOfferDsa->dsa_name))  ? $offerData->programOfferDsa->dsa_name : '' }}" placeholder="DSA Name">
                 </div>
                 <div class="col-md-3">
                     <div class="form-group">
                         <label for="txtPassword">Payout (%) <span style="color: red;"> *</span></label> 
-                        <input type="text" name="payout" id="payout" class="form-control" value="" placeholder="Payout" maxlength="3" >
+                        <input type="text" name="payout" id="payout" class="form-control" value="{{ (isset($offerData->programOfferDsa) && !empty($offerData->programOfferDsa->payout))  ? $offerData->programOfferDsa->payout : '' }}" placeholder="Payout" maxlength="3" >
                     </div>
                  </div>
                  <div class="col-md-3">
                     <div class="form-group">
                         <label for="txtPassword">Payout Event <span style="color: red;"> *</span></label> 
-                        <input type="text" name="payout_event" id="payout_event" class="form-control" value="" placeholder="Payout Event">
+                        <input type="text" name="payout_event" id="payout_event" class="form-control" value="{{ (isset($offerData->programOfferDsa) && !empty($offerData->programOfferDsa->payout_event))  ? $offerData->programOfferDsa->payout_event : '' }}" placeholder="Payout Event">
                     </div>
                  </div>
                  <div class="col-md-3">
                     <div class="form-group">
                         <label for="txtPassword">XIRR (%)<span style="color: red;"> *</span></label> 
-                        <input type="text" name="xirr" id="xirr" class="form-control" value="" placeholder="xirr" maxlength="3">
+                        <input type="text" name="xirr" id="xirr" class="form-control" value="{{ (isset($offerData->programOfferDsa) && !empty($offerData->programOfferDsa->xirr))  ? $offerData->programOfferDsa->xirr : '' }}" placeholder="xirr" maxlength="3">
                     </div>
                  </div>
                </div>
@@ -1232,8 +1234,8 @@
         }else{
             //TAKE REST
         }
-    } 
-    console.log(dsa_applicable);
+    }
+    
     if(dsa_applicable == 1){
         if(dsa_name == ''){
             setError('input[name=dsa_name]', 'Please fill dsa name');

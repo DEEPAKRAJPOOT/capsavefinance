@@ -64,4 +64,7 @@ class AppProgramOfferDsa extends BaseModel {
         'updated_by'
     ];
 
+    public function programOfferDsa(){
+        return $this->hasOne('App\Inv\Repositories\Models\AppProgramOffer', 'prgm_offer_id', 'prgm_offer_id');
+    }
 }

@@ -355,6 +355,10 @@ class AppProgramOffer extends BaseModel {
         return $this->belongsTo('App\Inv\Repositories\Models\AppProgramLimit', 'app_prgm_limit_id', 'app_prgm_limit_id');
     }
 
+    public function programOfferDsa(){
+        return $this->belongsTo('App\Inv\Repositories\Models\AppProgramOfferDsa', 'prgm_offer_id', 'prgm_offer_id');
+    }
+
     public function invPL(){
         return $this->belongsTo('App\Inv\Repositories\Models\AppProgramLimit', 'app_prgm_limit_id', 'app_prgm_limit_id')->where('product_id', 1);
     }
