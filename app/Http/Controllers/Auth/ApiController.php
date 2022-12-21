@@ -18,6 +18,7 @@ use Session;
 use Carbon\Carbon;
 use DB;
 use App\Inv\Repositories\Models\TallyFactVoucher;
+use App\Inv\Repositories\Models\TransFactVoucher;
 
 /**
  * 
@@ -37,6 +38,10 @@ class ApiController
   protected $journalFactEndVoucherNumber = null;
   protected $selectedTxnData = [];
   protected $selectedPaymentData = [];
+  protected $journalTransFactVoucher = [];
+  protected $disbursalTransFactVoucher = [];
+  protected $receiptTransFactVoucher = [];
+  protected $refundTransFactVoucher = [];
 	function __construct(){
 		
 	}
@@ -122,8 +127,20 @@ class ApiController
               $inst_date = $parentRecord->refundReq->actual_refund_date ?? NULL;
         }
       }
-      $this->journalFactVoucherSeq++;     
-      $factvoucherNumber = 'SJV'.$this->voucherFormat.sprintf('%06d',$this->journalFactVoucherSeq);
+      $getTransfactVoucherNumber = Helper::getTransfactVoucherNumber($jrnls->trans_id);
+      if($getTransfactVoucherNumber){
+        $factvoucherNumber = $getTransfactVoucherNumber->fact_voucher_no;
+      }else{
+        $this->journalFactVoucherSeq++;  
+        $factvoucherNumber = 'SJV'.$this->voucherFormat.sprintf('%06d',$this->journalFactVoucherSeq);
+        $transfactvoucherData = [
+          'trans_id'=>$jrnls->trans_id,
+          'fact_voucher_no'=>$factvoucherNumber,
+          'created_at'=>\Carbon\Carbon::now()->setTimezone(config('app.timezone'))->format('Y-m-d H:i:s')
+        ];
+        
+        $this->journalTransFactVoucher[] = $transfactvoucherData;
+      }
       $this->journalFactEndVoucherNumber = $factvoucherNumber;
       $this->voucherNo = $this->voucherNo + 1;
       $entry_type = $jrnls->entry_type == 1 ? 'Credit' : 'Debit';
@@ -297,7 +314,18 @@ class ApiController
         }
         $this->selectedTxnData[] = $rvrsl->trans_id;
         $this->selectedPaymentData[] = $rvrsl->payment_id;
-        $factvoucherNumber = 'SRP'.$this->voucherFormat.sprintf('%06d',$this->paymentFactVoucherSeq); 
+        $getTransfactVoucherNumber = Helper::getTransfactVoucherNumber($rvrsl->trans_id);
+        if($getTransfactVoucherNumber){
+          $factvoucherNumber = $getTransfactVoucherNumber->fact_voucher_no;
+        }else{
+          $factvoucherNumber = 'SRP'.$this->voucherFormat.sprintf('%06d',$this->paymentFactVoucherSeq);
+          $transfactvoucherData = [
+            'trans_id'=>$rvrsl->trans_id,
+            'fact_voucher_no'=>$factvoucherNumber,
+            'created_at'=>\Carbon\Carbon::now()->setTimezone(config('app.timezone'))->format('Y-m-d H:i:s')
+          ];
+          $this->journalTransFactVoucher[] = $transfactvoucherData;
+        }
         $reversalRow = [
             'batch_no' =>  $batch_no,
             'transactions_id' =>  $rvrsl->trans_id,
@@ -340,7 +368,18 @@ class ApiController
     $refundPayment = [];
     foreach($refundData as $rfnd){
       $this->paymentFactVoucherSeq++;
-      $factvoucherNumber = 'SRP'.$this->voucherFormat.sprintf('%06d',$this->paymentFactVoucherSeq); 
+      $getTransfactVoucherNumber = Helper::getTransfactVoucherNumber($rfnd->trans_id);
+      if($getTransfactVoucherNumber){
+        $factvoucherNumber = $getTransfactVoucherNumber->fact_voucher_no;
+      }else{
+        $factvoucherNumber = 'SRP'.$this->voucherFormat.sprintf('%06d',$this->paymentFactVoucherSeq);
+        $transfactvoucherData = [
+          'trans_id'=>$rfnd->trans_id,
+          'fact_voucher_no'=>$factvoucherNumber,
+          'created_at'=>\Carbon\Carbon::now()->setTimezone(config('app.timezone'))->format('Y-m-d H:i:s')
+        ];
+        $this->refundTransFactVoucher[] = $transfactvoucherData;
+      }
       $this->paymentFactEndVoucherNumber = $factvoucherNumber;
       $this->voucherNo = $this->voucherNo + 1;
       $accountDetails = $rfnd->userRelation->companyBankDetails ?? NULL;
@@ -449,7 +488,19 @@ class ApiController
     $disbursalPayment = [];
     foreach($disbursalData as $dsbrsl){
       $this->paymentFactVoucherSeq++;  
-      $factvoucherNumber = 'SRP'.$this->voucherFormat.sprintf('%06d',$this->paymentFactVoucherSeq);
+      $getTransfactVoucherNumber = Helper::getTransfactVoucherNumber($dsbrsl->trans_id);
+      if($getTransfactVoucherNumber){
+        $factvoucherNumber = $getTransfactVoucherNumber->fact_voucher_no;
+      }else{
+        $factvoucherNumber = 'SRP'.$this->voucherFormat.sprintf('%06d',$this->paymentFactVoucherSeq);
+        $transfactvoucherData = [
+          'trans_id'=>$dsbrsl->trans_id,
+          'fact_voucher_no'=>$factvoucherNumber,
+          'created_at'=>\Carbon\Carbon::now()->setTimezone(config('app.timezone'))->format('Y-m-d H:i:s')
+        ];
+        $this->disbursalTransFactVoucher[] = $transfactvoucherData;
+      } 
+      
       $this->paymentFactEndVoucherNumber = $factvoucherNumber;
       $this->voucherNo = $this->voucherNo + 1;
       $accountDetails = $dsbrsl->userRelation->companyBankDetails ?? NULL;
@@ -541,6 +592,17 @@ class ApiController
       $interestBooked = $dsbrsl->getInterestForDisbursal($where);
       if(isset($interestBooked)){
         $interestTransId = $interestBooked->trans_id;
+        $getTransfactVoucherNumber = Helper::getTransfactVoucherNumber($interestTransId);
+        if($getTransfactVoucherNumber){
+          $factvoucherNumber = $getTransfactVoucherNumber->fact_voucher_no;
+        }else{
+          $transfactvoucherData = [
+            'trans_id'=>$interestBooked->trans_id,
+            'fact_voucher_no'=>$factvoucherNumber,
+            'created_at'=>\Carbon\Carbon::now()->setTimezone(config('app.timezone'))->format('Y-m-d H:i:s')
+          ];
+          $this->disbursalTransFactVoucher[] = $transfactvoucherData;
+        }
         $this->selectedTxnData[] = $interestBooked->trans_id;
         $InterestRow = [
                 'batch_no' =>  $batch_no,
@@ -675,6 +737,17 @@ class ApiController
               $invoice_date = $parentRecord->invoiceDisbursed->invoice->invoice_date ?? NULL;
             }
           }
+          $getTransfactVoucherNumber = Helper::getTransfactVoucherNumber($stldTxn->trans_id);
+          if($getTransfactVoucherNumber){
+            $factvoucherNumber = $getTransfactVoucherNumber->fact_voucher_no;
+          }else{
+            $transfactvoucherData = [
+              'trans_id'=>$stldTxn->trans_id,
+              'fact_voucher_no'=>$factvoucherNumber,
+              'created_at'=>\Carbon\Carbon::now()->setTimezone(config('app.timezone'))->format('Y-m-d H:i:s')
+            ];
+            $this->receiptTransFactVoucher[] = $transfactvoucherData;
+          }
           $this->selectedTxnData[] = $stldTxn->trans_id;
           $settledRow = [
               'batch_no' =>  $batch_no,
@@ -804,7 +877,7 @@ class ApiController
     $disbursalArray = $this->createDisbursalData($disbursalData, $batch_no);
     $receiptArray = $this->createReceiptData($receiptData, $batch_no);
     $refundArray = $this->createRefundData($refundData, $batch_no);
-    
+    $allTransFactVoucher = array_merge($this->journalTransFactVoucher,$this->disbursalTransFactVoucher,$this->receiptTransFactVoucher,$this->refundTransFactVoucher);
     $tally_data = array_merge($disbursalArray, $journalArray , $receiptArray, $refundArray);
     try {
         if (empty($tally_data)) {
@@ -812,6 +885,7 @@ class ApiController
            return $response;
         }
         $res = \DB::table('tally_entry')->insert($tally_data);
+        $transfactres = \DB::table('trans_fact_voucher')->insert($allTransFactVoucher);
     } catch (\Exception $e) {
         $errorInfo  = $e->errorInfo;
         $res = $errorInfo;
