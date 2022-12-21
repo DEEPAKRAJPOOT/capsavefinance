@@ -2155,9 +2155,16 @@ class CamController extends Controller
           }
           //if (empty($prgmOfferId)) {
             Helpers::updateAppCurrentStatus($appId, config('common.mst_status_id.OFFER_GENERATED'));
-            //}
+            //} 
+        $requestData =  $request->all(); 
         $offerData= $this->appRepo->addProgramOffer($request->all(), $aplid, $prgmOfferId);
-            
+         if($requestData['dsa_applicable'] == '1'){
+           $dsaData['dsa_name'] = $requestData['dsa_name'];
+           $dsaData['payout']   = (int)$requestData['payout'];
+           $dsaData['payout_event'] = $requestData['payout_event'];
+           $dsaData['xirr'] = (int)$requestData['xirr'];
+           $dsaData['prgm_offer_id'] = $offerData->prgm_offer_id;
+         }   
         $whereActivi['activity_code'] = 'update_limit_offer';
         $activity = $this->mstRepo->getActivity($whereActivi);
         if(!empty($activity)) {
@@ -3054,5 +3061,20 @@ class CamController extends Controller
         \DB::rollBack();
         return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
       }
+  }
+
+  public function getAppDsa(Request $request){
+
+    try{
+        $biz_id = $request->get('biz_id');
+        $app_id = $request->get('app_id');
+        $appData 	 = $this->appRepo->getAppData($request->get('app_id'));
+        $user_id = $appData->user_id;
+        return view('backend.cam.app_dsa')->with('biz_id',$biz_id)
+        ->with('app_id',$app_id)
+        ->with('user_id',$user_id);
+    } catch (Exception $ex) {
+      return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
+    }
   }
 }

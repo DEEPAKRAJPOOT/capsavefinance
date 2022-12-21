@@ -82,6 +82,7 @@ class AppProgramOffer extends BaseModel {
         'security_deposit_of',
         'rental_frequency',
         'rental_frequency_type',
+        'dsa_applicable',
         //'ptpq_from',
         //'ptpq_to',
         //'ptpq_rate',

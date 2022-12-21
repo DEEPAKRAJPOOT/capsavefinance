@@ -199,7 +199,47 @@
         <input type="text" name="document_fee" class="form-control" value="{{isset($offerData->document_fee)? $offerData->document_fee : ''}}" placeholder="Documentation Fee" maxlength="6">
       </div>
     </div>--}}
-    
+    <!-----------------PROGRAM OFFER DSA--------------------->
+    <div class="col-md-12">
+          <div class="form-group row">
+            <label for="txtPassword" class="col-md-12" style="background-color: #F2F2F2;padding: 5px 0px 5px 20px;">Apply DSA</label>
+            <div class="col-md-6">
+                <select name="dsa_applicable" id="dsa_applicable" class="form-control show-hide" >
+                    <option value="">Select DSA Applicable</option>
+                    <option value="1" >Yes</option>
+                    <option value="2" >No</option>
+                </select>
+            </div>
+            <div class="col-md-12" id="dsa-applicable-block" style="display:none">
+             <div class="row mt10">
+                <div class="col-md-3">
+                    <label for="txtPassword" >DSA Name <span style="color: red;"> *</span></label>
+                    <input type="text" name="dsa_name" id="dsa_name" class="form-control" value="" placeholder="DSA Name">
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label for="txtPassword">Payout (%) <span style="color: red;"> *</span></label> 
+                        <input type="text" name="payout" id="payout" class="form-control" value="" placeholder="Payout" maxlength="3" >
+                    </div>
+                 </div>
+                 <div class="col-md-3">
+                    <div class="form-group">
+                        <label for="txtPassword">Payout Event <span style="color: red;"> *</span></label> 
+                        <input type="text" name="payout_event" id="payout_event" class="form-control" value="" placeholder="Payout Event">
+                    </div>
+                 </div>
+                 <div class="col-md-3">
+                    <div class="form-group">
+                        <label for="txtPassword">XIRR (%)<span style="color: red;"> *</span></label> 
+                        <input type="text" name="xirr" id="xirr" class="form-control" value="" placeholder="xirr" maxlength="3">
+                    </div>
+                 </div>
+               </div>
+            </div>
+          </div> 
+        </div>  
+
+    <!-----------------END PROGRAM OFFER DSA--------------------->
     <!-- -------------- PRIMARY SECURITY BLOCK ------------ -->
     <div class="col-md-12">
           <div class="form-group row">
@@ -1111,6 +1151,10 @@
     unsetError('select[name=is_invoice_processingfee]');
     unsetError('select[name=invoice_processingfee_type]');
     unsetError('input[name=invoice_processingfee_value]');
+    unsetError('input[name=dsa_name]');
+    unsetError('input[name=payout]');
+    unsetError('input[name=payout_event]');
+    unsetError('input[name=xirr]');
 
     let flag = true;
     let anchor_id = $('select[name=anchor_id]').val();
@@ -1129,6 +1173,11 @@
     let invoice_processingfee_value = $('input[name=invoice_processingfee_value]').val();
     let benchmark_date = $('select[name=benchmark_date]').val();
     let payment_frequency = $('select[name=payment_frequency]').val();
+    let payout = $('input[name=payout]').val().trim();
+    let xirr = $('input[name=xirr]').val().trim();
+    let dsa_name = $('input[name=dsa_name]').val();
+    let payout_event = $('input[name=payout_event]').val();
+    let dsa_applicable = $('select[name=dsa_applicable]').val();
     //let processing_fee = $('input[name=processing_fee]').val().trim();
     //let document_fee = $('input[name=document_fee]').val().trim();
 
@@ -1184,6 +1233,35 @@
             //TAKE REST
         }
     } 
+    console.log(dsa_applicable);
+    if(dsa_applicable == 1){
+        if(dsa_name == ''){
+            setError('input[name=dsa_name]', 'Please fill dsa name');
+            flag = false;
+        }
+
+        if(payout == '' || isNaN(payout)){
+            setError('input[name=payout]', 'Please fill payout');
+            flag = false;
+        }else if(parseFloat(payout) > 100){
+            setError('input[name=payout]', 'Please fill correct payout percentage');
+            flag = false;
+        }
+
+        if(payout_event == ''){
+            setError('input[name=payout_event]', 'Please fill payout event');
+            flag = false;
+        }
+
+        if(xirr == '' || isNaN(xirr)){
+            setError('input[name=xirr]', 'Please fill xirr');
+            flag = false;
+        }else if(parseFloat(xirr) > 100){
+            setError('input[name=xirr]', 'Please fill correct xirr percentage');
+            flag = false;
+        }
+
+    }
 
     if(benchmark_date == ''){
         setError('select[name=benchmark_date]', 'Please select benchmark date');
@@ -1638,6 +1716,27 @@
         $(selector2).hide();
     }
   })
+
+  $(document).on('change', '#dsa_applicable', function(){
+    let selected_val = $(this).find('option:selected').val();
+    let selector1 = $('#dsa-applicable-block');
+
+    if(selected_val == 1){
+        $(selector1).show();
+    }else{
+        $(selector1).hide();
+        $('#dsa_name').val('');
+        $('#payout').val('');
+        $('#payout_event').val('');
+        $('#xirr').val('');
+        unsetError('input[name=dsa_name]');
+        unsetError('input[name=payout]');
+        unsetError('input[name=payout_event]');
+        unsetError('input[name=xirr]');
+
+    }
+  })
+
   $(document).on('change', '#invoice_processingfee_type', function(){
     $('#invoice_processingfee_value').val('');
   })

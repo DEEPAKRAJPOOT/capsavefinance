@@ -257,6 +257,47 @@
             </div>
           </div>
         </div>
+        <!-----------------PROGRAM OFFER DSA--------------------->
+        <div class="col-md-12">
+            <div class="form-group row">
+                <label for="txtPassword" class="col-md-12" style="background-color: #F2F2F2;padding: 5px 0px 5px 20px;">Apply DSA</label>
+                <div class="col-md-6">
+                    <select name="dsa_applicable" class="form-control show-hide" data-block_id="#dsa-applicable-block">
+                        <option value="">Select DSA Applicable</option>
+                        <option value="1" >Yes</option>
+                        <option value="2" >No</option>
+                    </select>
+                </div>
+                <div class="col-md-12" id="dsa-applicable-block" >
+                <div class="row mt10">
+                    <div class="col-md-2">
+                        <label for="txtPassword" >DSA Name <span style="color: red;"> *</span></label>
+                        <input name="dsa_name" class="form-control" value="" placeholder="DSA Name">
+                    </div>
+                    <div class="col-md-2">
+                        <div class="form-group">
+                            <label for="txtPassword">Payout (%) <span style="color: red;"> *</span></label> 
+                            <input type="text" name="payout" class="form-control" value="" placeholder="Payout" maxlength="3">
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <div class="form-group">
+                            <label for="txtPassword">Payout Event <span style="color: red;"> *</span></label> 
+                            <input type="text" name="payout_event" class="form-control" value="" placeholder="Payout Event">
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <div class="form-group">
+                            <label for="txtPassword">XIRR (%)<span style="color: red;"> *</span></label> 
+                            <input type="text" name="xirr" class="form-control" value="" placeholder="xirr" maxlength="3">
+                        </div>
+                    </div>
+                </div>
+                </div>
+            </div> 
+            </div>  
+
+        <!-----------------END PROGRAM OFFER DSA--------------------->
     </div>
     <div class="row">
     @can('update_limit_offer')

@@ -66,6 +66,11 @@
         <a href="{{route('security_deposit', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')])}}" class="{{ $route_name == 'security_deposit' ? 'active' : ''}}">Pre/Post Disbursement</a>
     </li>
     @endcan
+    @can('app_dsa')
+      <li>
+        <a href="{{route('get_app_dsa', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')])}}" class="{{ $route_name == 'get_app_dsa' ? 'active' : ''}}">DSA</a>
+    </li>
+    @endcan
        <!--  <li>
             <a href="#" class="{{$route_name == 'cam_gst' ? 'active' : '' }}">Limit Management</a>
         </li> -->
