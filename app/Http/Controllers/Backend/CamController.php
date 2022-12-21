@@ -55,6 +55,7 @@ use Validator;
 use App\Inv\Repositories\Contracts\Traits\ActivityLogTrait;
 use App\Inv\Repositories\Contracts\Traits\ApplicationTrait;
 use App\Inv\Repositories\Models\Anchor;
+use App\Inv\Repositories\Models\AppProgramOfferDsa;
 use App\Inv\Repositories\Models\AppSecurityDoc;
 use App\Inv\Repositories\Models\DocumentMaster;
 use App\Inv\Repositories\Models\Application;
