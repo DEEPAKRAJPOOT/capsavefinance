@@ -72,6 +72,7 @@ class AclController extends Controller {
                 'display_name' => 'User',
                 'is_active' => $arrRoleVal['is_active'],
                 'redirect_path' => 'dashboard',
+                'role_type' => 2,
             ];
             $updateRoelInfo = $this->userRepo->addRole($arrRoleData, $roleId);           
             if ($updateRoelInfo) {

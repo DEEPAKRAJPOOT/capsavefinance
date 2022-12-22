@@ -46,10 +46,13 @@ class Role extends BaseModel
      * @var array
      */
     protected $fillable = [
+        'parent_role_id',
+        'role_type',
         'name',
         'display_name',
         'description',
         'is_editable',
+        'is_superadmin',
         'is_active',
         'redirect_path',
         'is_front_login_allowed',
