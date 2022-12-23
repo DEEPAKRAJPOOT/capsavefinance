@@ -12,6 +12,8 @@ use App\Inv\Repositories\Contracts\UserInterface as InvUserRepoInterface;
 use App\Inv\Repositories\Contracts\AclInterface as AclRepoInterface;
 use App\Inv\Repositories\Contracts\MasterInterface as InvMasterRepoInterface;
 use Event;
+use App\Inv\Repositories\Models\Master\RoleUser;
+use App\Inv\Repositories\Models\User;
 
 class AclController extends Controller {
 
@@ -75,6 +77,16 @@ class AclController extends Controller {
                 'role_type' => 2,
             ];
             $updateRoelInfo = $this->userRepo->addRole($arrRoleData, $roleId);           
+            $roles = RoleUser::getAllUsersByRoleIds($roleId)->pluck('f_name','user_id');
+            if($updateRoelInfo->is_active == 0){
+                foreach($roles as $key => $data){
+                    $UserStatus = $userInactive = User::where('user_id',$key)->update(['is_active'=> 0]);
+                }
+            }elseif($updateRoelInfo->is_active == 1){
+                foreach($roles as $key => $data){
+                    $UserStatus = $userInactive = User::where('user_id',$key)->update(['is_active'=> 1]);
+                }
+            }
             if ($updateRoelInfo) {
                 Session::flash('message', 'Role has been updated/Created');
                 return redirect()->route('get_role');

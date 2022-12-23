@@ -18,7 +18,7 @@
     <div class="row">
         <div class="col-6">
             <div class="form-group">
-                <label for="role">Role Name
+                <label for="role">Admin Role Name
                     <span class="mandatory">*</span>
                 </label>
                 <input type="text" name="role" id="role" value="@if($roleInfo){{$roleInfo->name}}@endif" class="form-control employee" tabindex="1" placeholder="Role Name" >

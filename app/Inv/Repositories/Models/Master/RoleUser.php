@@ -213,4 +213,14 @@ class RoleUser extends BaseModel
                  ->get();
         return $users;         
     }
+
+    public static function getAllUsersByRoleIds($role_id)
+    {
+         $arr = self::select('users.*')
+                 ->join('users', 'role_user.user_id', '=', 'users.user_id')
+                 ->join('roles', 'role_user.role_id', '=', 'roles.id')
+                 ->where('role_user.role_id',$role_id)
+                 ->get();  //DB::raw("CONCAT_WS(' ', rta_users.f_name, rta_users.l_name) AS f_name")
+                return $arr;
+    }
 }
