@@ -128,7 +128,7 @@ class Role extends BaseModel
      */
     public static function getRoleLists()
     {
-        $arrRoles = Role::where('is_editable', 1)->where('role_type',2)->where('name','!=','Accounts');
+        $arrRoles = Role::where('is_editable', 1)->where('role_type',2);
         return ($arrRoles ? : false);
     }
     
@@ -210,7 +210,7 @@ class Role extends BaseModel
      */
     public static function getAllRole()
     {
-        $arrRoles = Role::where('is_active', 1)
+        $arrRoles = Role::where(['is_active' => 1, 'role_type' => 2])
                         ->pluck('name','id');
         return ($arrRoles ? $arrRoles: []);
     }
