@@ -283,13 +283,17 @@ cursor: pointer;
     $(document).ready(function() {
         // document.getElementById('amount').addEventListener('input', event =>
         // event.target.value = (parseInt(event.target.value.replace(/[^\d]+/gi, '')) || 0).toLocaleString('en-US'));
+        var date = new Date();
+        var date3 = new Date(date.getFullYear(),date.getMonth() -1, 1);
 
         $("#date_of_payment").datetimepicker({
                 format: 'dd/mm/yyyy',
                 autoclose: true,
                 minView : 2,
+                startDate: date3,
                 endDate: new Date(messages.sysDate),
         });
+        
 
         var sample_data = new Bloodhound({
             datumTokenizer: Bloodhound.tokenizers.obj.whitespace('value'),

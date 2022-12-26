@@ -1578,4 +1578,9 @@ Route::group(
         'uses' => 'AjaxController@getCustAndCapsLocApp'
         ]
     );
+
+    Route::post('check-disburse-date', [
+        'as' => 'check_disburse_date',
+        'uses' => 'AjaxController@checkDisburseDate'
+    ]);
 });

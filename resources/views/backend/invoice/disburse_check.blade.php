@@ -297,11 +297,51 @@ foreach ($apps as $app) {
 	    parent.$('.modal-dialog').addClass('viewCiblReportModal .modal-lg').removeClass('modal-dialog modal-lg');
 	});
 	$(document).ready(function () {
+		var date = new Date();
+		date.setDate(date.getDate());
+		var date3 = new Date(date.getFullYear(),date.getMonth(), 1);
+	    $('#disburse_date').datetimepicker('setStartDate',  date3);
+		var date2 = new Date();
+		// date2.setDate(date2.getDate() + 7);
+	    $('#disburse_date').datetimepicker('setEndDate',  date2);
+
+	    parent.$('.modal-dialog').addClass('viewCiblReportModal .modal-lg').removeClass('modal-dialog modal-lg');
+	});
+	jQuery.validator.addMethod("checkDate", function (value, element) {
+        // return this.optional(element) || /^[a-zA-Z\s]+$/i.test(value);
+		var today = new Date();
+		// var x = date3.split();
+		const firstDateMonth = new Date(today.getFullYear(),today.getMonth(), 1);
+		const yyyy = firstDateMonth.getFullYear();
+		let mm = firstDateMonth.getMonth() + 1; // Months start at 0!
+		let dd = firstDateMonth.getDate();
+		if (dd < 10) dd = '0' + dd;
+		if (mm < 10) mm = '0' + mm;
+		var date3 = yyyy+'-'+mm+'-'+dd;
+
+		const yyyyC = today.getFullYear();
+		let mmC = today.getMonth() + 1; // Months start at 0!
+		let ddC = today.getDate();
+		if (ddC < 10) ddC = '0' + ddC;
+		if (mmC < 10) mmC = '0' + mmC;
+		var date1 = yyyyC+'-'+mmC+'-'+ddC;
+		var Inputdate = $('#disburse_date').val();
+		var disburseDate = Inputdate.split('/');
+		var disburseDate = disburseDate[2]+'-'+disburseDate[1]+'-'+disburseDate[0];
+		if(disburseDate < date3 || disburseDate > date1){
+			return false;
+		}else{
+			return true;
+		}
+		return false;
+    }, "Selected date should be between current date and first day of the month.");
+	$(document).ready(function () {
         $('#manualDisburse').validate({ // initialize the plugin
             
             rules: {
                 'disburse_date' : {
                     required : true,
+                    checkDate : true,
                 }
             },
             messages: {
@@ -310,7 +350,6 @@ foreach ($apps as $app) {
                 }
             }
         });
-
         $('#manualDisburse').validate();
 
         $("#submitManualDisburse").click(function(){
@@ -318,8 +357,7 @@ foreach ($apps as $app) {
                 $('form#manualDisburse').submit();
                 $("#submitManualDisburse").attr("disabled","disabled");
             }  
-        });            
-
+        });  
     });
     $(document).ready(function () {
         $('#onlineDisburse').validate({ // initialize the plugin
@@ -346,6 +384,5 @@ foreach ($apps as $app) {
         });            
 
     });
-
 </script>
 @endsection
