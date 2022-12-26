@@ -1729,43 +1729,80 @@ class UserEventsListener extends BaseEvent
     public function onEODChecksAlert($attributes) {
         $data = unserialize($attributes); 
         $this->func_name = __FUNCTION__;
-        $eodCheckData = view('reports.eod_checks')->with(['disbursals' => $data['disbursals'], 'payments' => $data['payments'], 'tally_data' => $data['tally_data'], 'tally_error_data' => $data['tally_error_data']])->render();
-        
-        
+        $eodCheckData = view('reports.eod_checks')->with(['tally_data' => $data['tally_data'], 'tally_error_data' => $data['tally_error_data']])->render();
+                
         $email_content = EmailTemplate::getEmailTemplate("EOD_CHECKS_ALERT");
         if ($email_content) {
             Mail::send('email', ['baseUrl'=> env('HTTP_APPURL',''), 'varContent' => $eodCheckData],
-            function ($message) use ($data, $email_content, $eodCheckData) {                    
-                //$email = $data["to"];
-                $email = env('EOD_CHECK_MAIL_TO');
-                $cc = array_filter(explode(',', $email_content->cc));
-                $bcc = array_filter(explode(',', $email_content->bcc));
-                if (!empty($bcc)) {
-                    $message->bcc($bcc);
-                }
-                if (!empty($cc)) {
-                    $message->cc($cc);
-                }
-            $mail_subject = $email_content->subject;
-            $message->from(config('common.FRONTEND_FROM_EMAIL'), config('common.FRONTEND_FROM_EMAIL_NAME'));
-            $message->to($email);
-            $message->subject($mail_subject);
-            $mailContent = [
-                'email_from' => config('common.FRONTEND_FROM_EMAIL'),
-                'email_to' => $email,
-                'email_cc' => $cc ?? NULL,
-                'email_bcc' => $bcc ?? NULL,
-                'email_type' => $this->func_name,
-                'subject' => $mail_subject,
-                'body' => $eodCheckData,
-            ];
-            FinanceModel::logEmail($mailContent);
-        }); 
+                function ($message) use ($data, $email_content, $eodCheckData) {                    
+                    $email = env('EOD_CHECK_MAIL_TO');
+                    $cc = array_filter(explode(',', $email_content->cc));
+                    $bcc = array_filter(explode(',', $email_content->bcc));
+                    if (!empty($bcc)) {
+                        $message->bcc($bcc);
+                    }
+                    if (!empty($cc)) {
+                        $message->cc($cc);
+                    }
 
+                    $mail_subject = $email_content->subject;
+                    $message->from(config('common.FRONTEND_FROM_EMAIL'), config('common.FRONTEND_FROM_EMAIL_NAME'));
+                    $message->to($email);
+                    $message->subject($mail_subject);
+                    $mailContent = [
+                        'email_from' => config('common.FRONTEND_FROM_EMAIL'),
+                        'email_to' => $email,
+                        'email_cc' => $cc ?? NULL,
+                        'email_bcc' => $bcc ?? NULL,
+                        'email_type' => $this->func_name,
+                        'subject' => $mail_subject,
+                        'body' => $eodCheckData,
+                    ];
+                    FinanceModel::logEmail($mailContent);
+            });
+        }                
+    }
 
-        }        
-        
-        
+    /**
+     * EOD Checks Alert
+     * 
+     * @param Array $attributes
+    */
+    public function onDisbPayChecksAlert($attributes) {
+        $data = unserialize($attributes); 
+        $this->func_name = __FUNCTION__;
+        $eodCheckData = view('reports.disb_pay_checks')->with(['disbursals' => $data['disbursals'], 'payments' => $data['payments']])->render();
+                
+        $email_content = EmailTemplate::getEmailTemplate("EOD_CHECKS_ALERT");
+        if ($email_content) {
+            Mail::send('email', ['baseUrl'=> env('HTTP_APPURL',''), 'varContent' => $eodCheckData],
+                function ($message) use ($data, $email_content, $eodCheckData) {                 
+                    $email = env('EOD_CHECK_MAIL_TO');
+                    $cc = array_filter(explode(',', $email_content->cc));
+                    $bcc = array_filter(explode(',', $email_content->bcc));
+                    if (!empty($bcc)) {
+                        $message->bcc($bcc);
+                    }
+                    if (!empty($cc)) {
+                        $message->cc($cc);
+                    }
+
+                    $mail_subject = $email_content->subject;
+                    $message->from(config('common.FRONTEND_FROM_EMAIL'), config('common.FRONTEND_FROM_EMAIL_NAME'));
+                    $message->to($email);
+                    $message->subject($mail_subject);
+                    $mailContent = [
+                        'email_from' => config('common.FRONTEND_FROM_EMAIL'),
+                        'email_to' => $email,
+                        'email_cc' => $cc ?? NULL,
+                        'email_bcc' => $bcc ?? NULL,
+                        'email_type' => $this->func_name,
+                        'subject' => $mail_subject,
+                        'body' => $eodCheckData,
+                    ];
+                    FinanceModel::logEmail($mailContent);
+            }); 
+        }
     }
     
     /**
@@ -1986,6 +2023,11 @@ class UserEventsListener extends BaseEvent
         $events->listen(
             'NOTIFY_EOD_CHECKS', 
             'App\Inv\Repositories\Events\UserEventsListener@onEODChecksAlert'
+        );
+
+        $events->listen(
+            'NOTIFY_DISB_PAY_CHECKS', 
+            'App\Inv\Repositories\Events\UserEventsListener@onDisbPayChecksAlert'
         );
     }
 }

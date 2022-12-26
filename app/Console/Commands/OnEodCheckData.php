@@ -3,8 +3,6 @@
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
-use App\Inv\Repositories\Models\Payment;
-use App\Inv\Repositories\Models\Lms\Disbursal;
 use App\Inv\Repositories\Models\Lms\Transactions;
 use App\Inv\Repositories\Models\Master\TallyEntry;
 use DB;
@@ -25,7 +23,6 @@ class OnEodCheckData extends Command
      */
     protected $description = 'To check eod data for mismatch records';
 
-    protected $eodDate = '';
     protected $tallyData = [];
     protected $tallyErrorData = [];
 
@@ -36,7 +33,6 @@ class OnEodCheckData extends Command
      */
     public function __construct()
     {
-        $this->eodDate = now()->toDateString();
         parent::__construct();
 
     }
@@ -47,33 +43,9 @@ class OnEodCheckData extends Command
      * @return mixed
      */
     public function handle()
-    {
-        // $dupPayments = $this->checkDuplicatePaymentRecords();
-        // $dupDisbursals = $this->checkDuplicateDisbursalRecords(); 
+    {        
         $this->checkEODTallyRecords();
-    }
-
-    private function checkDuplicatePaymentRecords()
-    {
-        $dupPayments = Payment::withTrashed()->select(DB::raw('GROUP_CONCAT(payment_id) as payment_ids, user_id as customer_id, amount, CONCAT_WS("", utr_no, unr_no, cheque_no) AS com_utr_no, count(*) AS paymentCount'))
-                            ->whereDate('created_at', $this->eodDate)
-                            ->where('trans_type', config('lms.TRANS_TYPE.REPAYMENT'))
-                            ->where('action_type', 1)
-                            ->groupBy(['user_id', 'amount', 'utr_no', 'unr_no', 'cheque_no'])
-                            ->havingRaw('paymentCount > 1')
-                            ->get();
-        return $dupPayments;
-    }
-
-    private function checkDuplicateDisbursalRecords()
-    {
-        $dupDisbursals = Disbursal::select(DB::raw('GROUP_CONCAT(disbursal_id) as disbursal_ids, user_id as customer_id, disburse_amount as amount, count(*) AS disbCount'))
-                            ->whereDate('created_at', $this->eodDate)
-                            ->groupBy(['user_id', 'disburse_amount', 'disbursal_batch_id'])
-                            ->havingRaw('disbCount > 1')
-                            ->get();
-        return $dupDisbursals;
-    }
+    }    
 
     private function checkEODTallyRecords()
     {
@@ -93,8 +65,6 @@ class OnEodCheckData extends Command
             }
             
             if (count($this->tallyData) && count($this->tallyErrorData)) {
-                $emailData['disbursals'] = $dupDisbursals ?? [];
-                $emailData['payments']   = $dupPayments ?? [];
                 $emailData['tally_data'] = $this->tallyData;
                 $emailData['tally_error_data'] = $this->tallyErrorData;
                 \Event::dispatch("NOTIFY_EOD_CHECKS", serialize($emailData));
