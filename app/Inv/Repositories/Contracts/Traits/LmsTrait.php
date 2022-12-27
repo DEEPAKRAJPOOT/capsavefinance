@@ -629,7 +629,7 @@ trait LmsTrait
         $transactions = $transactions->merge($transactionsTds); 
         
         foreach ($transactions as $key => $trans) {
-            if($trans->req_amount>0){
+            if($trans->req_amount>0 && $trans->transaction->refundoutstanding > 0){
                 $refundData = $this->createTransactionData($trans->transaction->user_id, [
                     'amount' => $trans->transaction->refundoutstanding,
                     'trans_date'=>$actualRefundDate,
