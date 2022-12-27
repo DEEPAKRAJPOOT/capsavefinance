@@ -6594,7 +6594,8 @@ class DataRenderer implements DataProviderInterface
                     $result = '<a  data-toggle="modal" data-target="#invoiceDisbursalTxnUpdate" data-url ="' . route('refund_udpate_disbursal', [
                     'payment_id' => $data->payment_id,
                     'refund_req_batch_id' => $data->refund_req_batch_id,
-                    'refund_req_id'=>$data->refund_req_id
+                    'refund_req_id'=>$data->refund_req_id,
+                    'process_status'=>$data->process_status
                     ]) . '" data-height="350px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm" title="View Invoices"><i class="fa fa-plus-square"></i></a>';
                 }
                 return $result;

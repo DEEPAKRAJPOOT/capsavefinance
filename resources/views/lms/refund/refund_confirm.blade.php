@@ -44,9 +44,11 @@
 					@endif
 				</div>
 			</div>
+			@if($data[0]['process_status'] == 0 && $data[0]['status'] == 6)
 			<div class="col-6">
 				<input type="submit" id="submitManualDisburse" value="Refund Offline" class="btn btn-success btn-sm ml-2">
 			</div>
+			@endif
 		</form>
 	</div>
 	<div class="col-6 right">
@@ -63,9 +65,11 @@
 					@endif
 				</div> -->
 			</div>
+			@if($data[0]['process_status'] == 0 && $data[0]['status'] == 6)
 			<div class="col-6">
 				<input type="submit" id="submitOnlineDisburse" value="Disburse Online" class="btn btn-success btn-sm ml-2">
 			</div>
+			@endif
 		</form>
 	</div>
 </div>

@@ -22,7 +22,9 @@
 			</div>
 		</div>
 	</div>
+	@if($process_status == 2)
 	<input type="submit" id="submitManualDisburse" value="Mark Refunded" class="btn btn-success btn-sm ml-2">
+	@endif
 </form>
  
 @endsection

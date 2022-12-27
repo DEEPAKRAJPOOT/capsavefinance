@@ -427,6 +427,7 @@ class RefundController extends Controller
     {
         $exportData = [];
         $aprvlRfd = [];
+        $aprvlRfdProcess = [];
         $batchNo = _getRand(12);
 
         foreach ($supplierIds as $userId) {
@@ -446,9 +447,14 @@ class RefundController extends Controller
                     $aprvlRfd['ifsc_code'] = ($aprvl['payment']['user']['is_buyer'] == 2) ? $aprvl['payment']['user']['anchor_bank_details']['ifsc_code'] : $aprvl['payment']['lms_user']['bank_details']['ifsc_code'];
                     $aprvlRfd['acc_no'] = ($aprvl['payment']['user']['is_buyer'] == 2) ? $aprvl['payment']['user']['anchor_bank_details']['acc_no'] : $aprvl['payment']['lms_user']['bank_details']['acc_no'];           
                     $aprvlRfd['status'] = 7;
+                    $aprvlRfd['process_status'] = 1;
                     
                     if (isset($aprvlRfd)) {
                         $refundDisbursed = $this->lmsRepo->updateAprvlRqst($aprvlRfd, $aprvl['refund_req_id']);
+                    }
+                    if (isset($refundDisbursed)) {
+                        $aprvlRfdProcess['process_status'] = 2;
+                        $this->lmsRepo->updateAprvlRqst($aprvlRfdProcess, $aprvl['refund_req_id']);
                     }
 
                 }
@@ -644,11 +650,13 @@ class RefundController extends Controller
             $payment_id = $request->get('payment_id');
             $refund_req_batch_id = $request->get('refund_req_batch_id');
             $refund_req_id = $request->get('refund_req_id');
+            $process_status = $request->get('process_status');
             return view('lms.refund.update_refund_disbursal')
                 ->with([
                     'payment_id' => $payment_id, 
                     'refund_req_batch_id' => $refund_req_batch_id,
-                    'refund_req_id' => $refund_req_id
+                    'refund_req_id' => $refund_req_id,
+                    'process_status' => $process_status
                 ]);
         }catch(Exception $exception){
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex))->withInput();
@@ -661,6 +669,12 @@ class RefundController extends Controller
                 Session::flash('error', trans('backend_messages.lms_eod_batch_process_msg'));
                 return back();
             }
+            $allrecords[] =  $request->refund_req_id;
+            $data = $this->lmsRepo->lmsGetCustomerRefund($allrecords);
+            if(in_array($data[0]['process_status'], [3,4])) {
+                Session::flash('error', 'Transaction already under Process');
+                return back(); 
+            }
             DB::beginTransaction();
             $transNo = $request->trans_no;
             $remarks = $request->remarks;
@@ -669,10 +683,12 @@ class RefundController extends Controller
             $actual_refund_date = (!empty($disburse_date)) ? date("Y-m-d", strtotime(str_replace('/','-',$disburse_date))) : \Carbon\Carbon::parse($this->sod_date)->format('Y-m-d h:i:s');
 
             $apiLogData = [];
+            $apiProcesData = [];
             $apiLogData['tran_no'] = $transNo;
             $apiLogData['comment'] = $remarks;
             $apiLogData['actual_refund_date'] = $actual_refund_date;
             $apiLogData['status'] = 8;
+            $apiLogData['process_status'] = 3;
             $this->lmsRepo->updateAprvlRqst($apiLogData,$refund_req_id);
             $this->finalRefundTransactions($refund_req_id, $actual_refund_date);
             $whereActivi['activity_code'] = 'updateDisburseRefund';
@@ -683,6 +699,8 @@ class RefundController extends Controller
                 $arrActivity['app_id'] = null;
                 $this->activityLogByTrait($activity_type_id, $activity_desc, response()->json(['apiLogData'=>$apiLogData, 'Request'=>$request->all()]), $arrActivity);
             }
+            $apiProcesData['process_status'] = 4;
+            $this->lmsRepo->updateAprvlRqst($apiProcesData,$refund_req_id);
             DB::commit();     
             Session::flash('message',trans('backend_messages.refundedMarked'));
             return redirect()->route('lms_refund_refunded');
