@@ -290,10 +290,9 @@ cursor: pointer;
                 format: 'dd/mm/yyyy',
                 autoclose: true,
                 minView : 2,
-                startDate: date3,
+                // startDate: date3,
                 endDate: new Date(messages.sysDate),
         });
-        
 
         var sample_data = new Bloodhound({
             datumTokenizer: Bloodhound.tokenizers.obj.whitespace('value'),
@@ -613,11 +612,12 @@ cursor: pointer;
                 return result;                
             },'This UTR number is already used by this customer.'
         );
+
         $('#savePayFrm').validate( {
             onkeyup: false,
             onclick: false,
             onfocusout: false,
-            // onsubmit: false,
+            onsubmit: false,
                 rules: {
                 search_bus: {
                     required: true,
@@ -639,6 +639,7 @@ cursor: pointer;
                     },
                     date_of_payment:{
                         required:true,
+                        checkPaymentDate:true,
                     },
                     amount:{
                         required:true,
