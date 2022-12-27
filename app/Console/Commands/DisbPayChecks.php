@@ -5,6 +5,7 @@ namespace App\Console\Commands;
 use Illuminate\Console\Command;
 use App\Inv\Repositories\Models\Lms\Disbursal;
 use App\Inv\Repositories\Models\Payment;
+use DB;
 
 class DisbPayChecks extends Command
 {
@@ -30,7 +31,7 @@ class DisbPayChecks extends Command
      */
     public function __construct()
     {
-        $this->eodDate = now()->toDateString();
+        $this->eodDate = now()->parse('2022-12-12')->toDateString();
         parent::__construct();
     }
 
@@ -45,9 +46,9 @@ class DisbPayChecks extends Command
         ini_set('max_execution_time', 10000);
 
         try {
+            //dd($this->eodDate);
             $dupPayments = $this->checkDuplicatePaymentRecords();
             $dupDisbursals = $this->checkDuplicateDisbursalRecords();
-
             if ($dupPayments || $dupDisbursals) {
                 $emailData['disbursals'] = $dupDisbursals ?? [];
                 $emailData['payments']   = $dupPayments ?? [];
@@ -64,6 +65,7 @@ class DisbPayChecks extends Command
 
     private function checkDuplicatePaymentRecords()
     {
+        DB::enableQueryLog();
         $dupPayments = Payment::withTrashed()->select(DB::raw('GROUP_CONCAT(payment_id) as payment_ids, user_id as customer_id, amount, CONCAT_WS("", utr_no, unr_no, cheque_no) AS com_utr_no, count(*) AS paymentCount'))
                             ->whereDate('created_at', $this->eodDate)
                             ->where('trans_type', config('lms.TRANS_TYPE.REPAYMENT'))
@@ -71,16 +73,19 @@ class DisbPayChecks extends Command
                             ->groupBy(['user_id', 'amount', 'utr_no', 'unr_no', 'cheque_no'])
                             ->havingRaw('paymentCount > 1')
                             ->get();
+        //dd(DB::getQueryLog());                    
         return $dupPayments;
     }
 
     private function checkDuplicateDisbursalRecords()
     {
+        DB::enableQueryLog();
         $dupDisbursals = Disbursal::select(DB::raw('GROUP_CONCAT(disbursal_id) as disbursal_ids, user_id as customer_id, disburse_amount as amount, count(*) AS disbCount'))
                             ->whereDate('created_at', $this->eodDate)
                             ->groupBy(['user_id', 'disburse_amount', 'disbursal_batch_id'])
                             ->havingRaw('disbCount > 1')
                             ->get();
+            //dd(DB::getQueryLog());  
         return $dupDisbursals;
     }
 }
