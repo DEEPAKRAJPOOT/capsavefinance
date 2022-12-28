@@ -290,7 +290,7 @@ cursor: pointer;
                 format: 'dd/mm/yyyy',
                 autoclose: true,
                 minView : 2,
-                // startDate: date3,
+                startDate: date3,
                 endDate: new Date(messages.sysDate),
         });
 

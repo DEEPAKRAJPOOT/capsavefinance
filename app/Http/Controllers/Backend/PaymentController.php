@@ -124,17 +124,6 @@ class PaymentController extends Controller {
 	/* save payment details   */
 	public function  savePayment(Request $request)
 	{
-			$date = $request->get('date_of_payment');
-			// $paymentDate = Carbon::parse($date)->format('Y-m-d');
-			$paymentDate = Carbon::createFromFormat('d/m/Y', $date)->format('Y-m-d');
-			$curdate = Carbon::parse(Helpers::getSysStartDate())->format('Y-m-d');
-			$curdateMesg = Carbon::parse(Helpers::getSysStartDate())->format('Y-m-d');
-			$firstDayofPreviousMonth = Carbon::now()->startOfMonth()->subMonth()->format('Y-m-d');
-			// dd($paymentDate,$curdateMesg,$firstDayofPreviousMonth);
-			if ($paymentDate > $curdateMesg || $paymentDate < $firstDayofPreviousMonth) {
-				Session::flash('error', 'Selected Payment Date is Incorrect');
-				return back();
-			}
 		try {
 			$transaction = null;
 			$request['amount'] = str_replace(',', '', $request->amount);
@@ -144,7 +133,7 @@ class PaymentController extends Controller {
 				return back();
 			}
 			$date = $request->get('date_of_payment');
-			$paymentDate = Carbon::parse($date)->format('Y-m-d');
+			$paymentDate = Carbon::createFromFormat('d/m/Y', $date)->format('Y-m-d');
 			$curdate = Carbon::parse(Helpers::getSysStartDate())->format('Y-m-d');
 			$curdateMesg = Carbon::parse(Helpers::getSysStartDate())->format('Y-m-d');
 			$firstDayofPreviousMonth = Carbon::now()->startOfMonth()->subMonth()->format('Y-m-d');
