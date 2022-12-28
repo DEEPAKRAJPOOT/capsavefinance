@@ -2056,7 +2056,7 @@ class CamController extends Controller
         $program_id = (int)$request->prgm_id;
         $anchorId = (int)$request->anchor_id;
         $prgm_data =  $this->appRepo->getProgram(['prgm_id' => $program_id]);
- 
+        
         if ($prgm_data && $prgm_data->product_id == 1) {
           $offerIsExist = \Helpers::checkAnchorPrgmOfferDuplicate($prgm_data->anchor_id, $program_id, $appId);
           if ((!$prgmOfferId && $offerIsExist) ||  ($prgmOfferId && $offerIsExist && $prgmOfferId != $offerIsExist->prgm_offer_id)) {
@@ -2157,13 +2157,17 @@ class CamController extends Controller
           //if (empty($prgmOfferId)) {
             Helpers::updateAppCurrentStatus($appId, config('common.mst_status_id.OFFER_GENERATED'));
             //} 
-        $requestData =  $request->all(); 
-        $offerData= $this->appRepo->addProgramOffer($request->all(), $aplid, $prgmOfferId);
-         if($requestData['dsa_applicable'] == '1'){
-           $dsaData['dsa_name'] = $requestData['dsa_name'];
-           $dsaData['payout']   = (int)$requestData['payout'];
-           $dsaData['payout_event'] = $requestData['payout_event'];
-           $dsaData['xirr'] = (int)$requestData['xirr'];
+        $requestData =  $request->all();
+        if($requestData['dsa_applicable'] == '1'){
+          $dsaData['dsa_name'] = $requestData['dsa_name'];
+          $dsaData['payout']   = (int)$requestData['payout'];
+          $dsaData['payout_event'] = $requestData['payout_event'];
+          $dsaData['xirr'] = (int)$requestData['xirr'];
+        }else{
+          $requestData['dsa_applicable'] = 0;
+        }
+
+           $offerData= $this->appRepo->addProgramOffer($requestData, $aplid, $prgmOfferId);
            if($requestData['offer_dsa_id'] != null){
             $prgmOfferDsa = AppProgramOfferDsa::where(['prgm_offer_id'=>$offerData->prgm_offer_id])->first();
             if($prgmOfferDsa){
@@ -2176,7 +2180,8 @@ class CamController extends Controller
              $dsaData['prgm_offer_id'] = $offerData->prgm_offer_id;
              $dsa_added = AppProgramOfferDsa::create($dsaData);
            }
-         }   
+          
+          
         $whereActivi['activity_code'] = 'update_limit_offer';
         $activity = $this->mstRepo->getActivity($whereActivi);
         if(!empty($activity)) {
