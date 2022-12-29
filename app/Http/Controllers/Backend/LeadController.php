@@ -732,15 +732,15 @@ class LeadController extends Controller {
             }
             // dd($anchorVal);
              $states = State::getStateList()->get();
-            //  $stateId = $anchorVal->comp_state;
-            //  $cities = City::getCity($stateId);
+             $stateId = $anchorVal->comp_state;
+             $cities = City::getCity($stateId);
             return view('backend.anchor.edit_anchor_reg')
                             ->with('anchor_id', $anchorId)
                             ->with('anchorUserData',$anchorUserInfo)
                             ->with(['states'=>$states])
                             ->with('anchorData', $anchorVal)
-                            ->with('file', $file);
-                            // ->with('cities', $cities);
+                            ->with('file', $file)
+                            ->with('cities', $cities);
         } catch (Exception $ex) {
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
         }
