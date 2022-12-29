@@ -29,6 +29,8 @@ use App\Inv\Repositories\Models\User;
 use DB;
 use App\Inv\Repositories\Contracts\Traits\ActivityLogTrait;
 use App\Inv\Repositories\Contracts\MasterInterface as InvMasterRepoInterface;
+use App\Inv\Repositories\Models\UserFile;
+use App\Inv\Repositories\Models\Master\City;
 
 class LeadController extends Controller {
 
@@ -723,15 +725,22 @@ class LeadController extends Controller {
             $anchorId = $request->get('anchor_id');
             if ($anchorId) {
                 $anchorUserInfo = $this->userRepo->getUserByAnchorId($anchorId);
+                $fileId = $anchorUserInfo->file_id;
+                $fileName = UserFile::where(['file_id' => $fileId, 'is_active' => 1])->pluck('file_name');
+                $file = $fileName[0];
                 $anchorVal = $this->userRepo->getAnchorById($anchorId);
             }
             // dd($anchorVal);
              $states = State::getStateList()->get();
+            //  $stateId = $anchorVal->comp_state;
+            //  $cities = City::getCity($stateId);
             return view('backend.anchor.edit_anchor_reg')
                             ->with('anchor_id', $anchorId)
                             ->with('anchorUserData',$anchorUserInfo)
                             ->with(['states'=>$states])
-                            ->with('anchorData', $anchorVal);
+                            ->with('anchorData', $anchorVal)
+                            ->with('file', $file);
+                            // ->with('cities', $cities);
         } catch (Exception $ex) {
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
         }

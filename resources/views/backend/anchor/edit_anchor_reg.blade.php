@@ -90,8 +90,13 @@
                                     <label for="txtMobile">City
                                     <span class="mandatory">*</span>
                                     </label>
-
-                                    <input class="form-control city" name="city" id="city" value="@if($anchorData){{$anchorData->comp_city}}@else{}@endif" tabindex="6" type="text" maxlength="10" placeholder="City" required="">
+                                    {{-- <select class="form-control city" name="city" id="city" tabindex="6">
+                                       <option value=""> Select City</option>
+                                       @foreach($cities as $key => $city)
+                                       <option value="{{$city->id}}"@if($anchorData->comp_city==$city->id)selected @endif > {{$city->name}} </option>
+                                       @endforeach
+                                       </select> --}}
+                                    <input class="form-control city" name="city" id="city" value="@if($anchorData){{$anchorData->comp_city}}@else{}@endif" tabindex="6" type="text" maxlength="100" placeholder="City" required="">
                                     <div class="failed">
                                        <div style="color:#FF0000">
                                           <small class="erro-sms" id="erro-sms">
@@ -155,6 +160,8 @@
                                  <label for="txtCreditPeriod">Upload CAM <small>(Allowed Formats: JPG,PNG,PDF)</small><span class="error_message_label">*</span></label>
                                  <div class="custom-file">
                                     <input type="file" class="custom-file-input" id="doc_file" name="doc_file" >
+                                    <input type="hidden" id="doc_file_id" value="{{ $file }}">
+                                    <span>{{ $file }}</span>
                                     <label class="custom-file-label" for="customFile">Choose file</label>
                                  </div>
                              </div>
@@ -353,7 +360,13 @@
                         email:true,
                      },
                      doc_file: {
-                        required: true,
+                        required: function(element) {
+                           if ($("#doc_file_id").val() != '') {
+                                 return false;
+                           } else {
+                                 return true;
+                           }
+                        }
                         extension: "jpg,jpeg,png,pdf",
                      },
                      assigned_sale_mgr: {
