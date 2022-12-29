@@ -6,7 +6,7 @@ return [
     'add_note' => 'Note saved successfully.',
     'anchor_registration_success' => 'Anchor was created successfully',
     'anchor_lead_created' => 'Anchor Lead Created Successfully',
-    'anchor_registration_updated' => 'Anchor information saved successfully.',
+    'anchor_registration_updated' => 'Anchor information updated successfully.',
     'limit_assessment_success' => 'Limit assigned successfully.',
     'limit_assessment_fail' => 'Something went wrong, try again later.',
     'upload_sanction_letter_success' => 'Upload successfully.',
