@@ -49,6 +49,8 @@ class DisbPayChecks extends Command
             //dd($this->eodDate);
             $dupPayments = $this->checkDuplicatePaymentRecords();
             $dupDisbursals = $this->checkDuplicateDisbursalRecords();
+            $actualDisbursals = $this->checkActualDisbursalAmount();
+            dd($actualDisbursals);
             if ($dupPayments || $dupDisbursals) {
                 $emailData['disbursals'] = $dupDisbursals ?? [];
                 $emailData['payments']   = $dupPayments ?? [];
@@ -88,4 +90,23 @@ class DisbPayChecks extends Command
             //dd(DB::getQueryLog());  
         return $dupDisbursals;
     }
+
+    private function checkActualDisbursalAmount(){
+
+        DB::enableQueryLog();
+
+       $actualDisbursals =  Disbursal::select(DB::raw("rta_disbursal.disbursal_id,rta_disbursal.user_id as customer_id, rta_disbursal.disburse_amount as amount,count(*) AS disbCount,(rta_inv.invoice_amount - rta_inv_disb.total_interest - (rta_inv.invoice_amount*rta_inv_disb.margin/100)) AS actual_disbursed_amount,rta_inv_disb.*,rta_trans.*,rta_offer.*"))
+        ->join('invoice_disbursed as inv_disb', 'disbursal.disbursal_id', '=', 'inv_disb.disbursal_id')
+        ->leftJoin('transactions as trans', 'inv_disb.invoice_disbursed_id', '=', 'trans.invoice_disbursed_id')
+        ->leftJoin('invoice as inv', 'inv_disb.invoice_id', '=', 'inv.invoice_id')
+        ->leftJoin('app_prgm_offer as offer', 'inv.prgm_offer_id', '=', 'offer.prgm_offer_id')
+        ->whereDate('disbursal.created_at', $this->eodDate)
+        ->where('trans.trans_type' ,'=', 16)
+        ->where('trans.entry_type', '=', 0)
+        ->where('disbursal.disburse_amount','!=',DB::raw('(rta_inv.invoice_amount - rta_inv_disb.total_interest - (rta_inv.invoice_amount*rta_inv_disb.margin/100))'))->groupBy(['disbursal.user_id', 'disbursal.disburse_amount', 'disbursal.disbursal_batch_id'])
+        ->get();
+       // dd(DB::getQueryLog());
+       return $actualDisbursals;
+    }
+
 }
