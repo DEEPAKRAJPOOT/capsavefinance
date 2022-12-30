@@ -48,15 +48,19 @@ class UserInvoice extends BaseModel {
      */
     protected $fillable = [
         'user_id',
+        'parent_user_invoice_id',
         'user_invoice_rel_id',
         'user_gst_state_id',
         'comp_gst_state_id',
         'pan_no',
         'biz_gst_no',
+        'biz_gst_state_code',
         'gst_addr',
         'biz_entity_name',
         'reference_no',
         'invoice_type',
+        'invoice_cat',
+        'invoice_type_name',
         'invoice_no',
         'inv_serial_no',
         'invoice_date',
@@ -71,6 +75,8 @@ class UserInvoice extends BaseModel {
         'tot_paid_amt',
         'tot_no_of_trans',
         'is_active',
+        'file_id',
+        'job_id',
         'created_by',
         'created_at',
         'updated_at',
@@ -145,7 +151,9 @@ class UserInvoice extends BaseModel {
      * GET AJAX result list
      */
     public static function getUserInvoiceList($user_id, $appId = null) {
-        $result = self::where('user_id' , $user_id)->orderBy('user_invoice_id','desc');
+        $result = self::where('user_id' , $user_id)
+        ->where('invoice_cat', '!=', 3)
+        ->orderBy('user_invoice_id','desc');
         return $result ? : false;
     }
 
@@ -154,8 +162,21 @@ class UserInvoice extends BaseModel {
         return $result ?? false;
     }
 
-    public static function getLastInvoiceSerialNo($inv_type){
-        return self::where('invoice_type', $inv_type)->orderBy('user_invoice_id','desc')->first();
+    public static function getLastInvoiceSerialNo($inv_type, $inv_cat = null){
+        $invoiceDetails = self::where('invoice_type',$inv_type);
+
+        switch (strtoupper($inv_cat)) {
+            case 'CN':
+                $invoiceDetails->where('invoice_cat','2');
+                break;
+            case 'DN':
+                $invoiceDetails->where('invoice_cat','3');
+                break;
+            default:
+                $invoiceDetails->where('invoice_cat','1');
+                break;
+        }
+        return $invoiceDetails->orderBy('inv_serial_no','desc')->first();
     }
 
     public function lmsUser(){

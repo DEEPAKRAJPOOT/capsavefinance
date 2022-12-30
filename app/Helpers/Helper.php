@@ -45,6 +45,7 @@ use App\Inv\Repositories\Models\AppProgramOffer;
 use App\Inv\Repositories\Models\Lms\InvoiceDisbursedDetail;
 use App\Inv\Repositories\Models\AppSecurityDoc;
 use App\Inv\Repositories\Models\TallyFactVoucher;
+use App\Inv\Repositories\Models\Lms\Transactions;
 
 class Helper extends PaypalHelper
 {
@@ -2873,5 +2874,22 @@ class Helper extends PaypalHelper
             );
         }
         return $factResult;
+    }
+
+    public static function validateInvoiceTypes($transIds, $specificMsg = false, $noteType = 'debit')
+    {
+        $invTypes = Transactions::whereIn('trans_id', $transIds)
+                                            ->distinct()
+                                            ->pluck('gst')
+                                            ->toArray();
+        if (count($invTypes) > 1) {
+            $msg = "Please select same type of charges (Either GST Or NON GST applicable)";
+            if ($specificMsg) {
+                $msg .= " for generating $noteType note";
+            }
+            $msg .= ".";
+            return ['status' => false, 'message' => $msg];
+        }
+        return ['status' => true];
     }
 }

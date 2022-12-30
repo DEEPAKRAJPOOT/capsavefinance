@@ -1,7 +1,7 @@
 @extends('layouts.backend.admin-layout')
 
 @section('content')
-@include('layouts.backend.partials.admin_reports_links',['active'=>'outstandingreportmanual'])
+@include('layouts.backend.partials.admin_reports_links',['active'=>'reconReport'])
 <div class="content-wrapper">
     <section class="content-header">
         <div class="header-icon">
@@ -9,14 +9,14 @@
         </div>
         <div class="header-title">
             <h3>Reports</h3>
-            <small>Outstanding Report</small>
+            <small>Recon Report</small>
         </div>
     </section>
     <div class="card">
         <div class="card-body">
             <div class="row">  
                
-                @can('lms_send_invoice_outstanding_due')
+                @can('lms_send_recon_report')
                 <div class="row col-md-12">                
                  <div class="col-md-4">
                     {!!
@@ -46,10 +46,8 @@
                 </div>
 
                <div class="col-md-2">
-                @can('lms_set_invoice_outstanding_date')
                    <button id="sendMailBtn" type="button" class="btn  btn-success btn-sm float-right">Generate Report</button>
-                @endcan
-                </div>
+               </div>
             </div>
             @endcan
                 {!! Form::hidden('user_id', 
@@ -71,7 +69,7 @@
                             <div class="row">
                                 <div class="col-sm-12">
                                     <div class="table-responsive ps ps--theme_default" data-ps-id="0b57d57f-c517-e65f-5cf6-304e01f86376">
-	                              		<table id="lmsOutstandingLogsList"  class="table table-striped cell-border dataTable no-footer overview-table" cellspacing="0" width="100%" role="grid" aria-describedby="supplier-listing_info" style="width: 100%;">
+	                              		<table id="lmsReconReportList"  class="table table-striped cell-border dataTable no-footer overview-table" cellspacing="0" width="100%" role="grid" aria-describedby="supplier-listing_info" style="width: 100%;">
 	                                        <thead>
                                                      <tr role="row">
                                                     <th>Customer Id</th>
@@ -86,7 +84,7 @@
 	                                        </tbody>
                                     	</table>
 							  		</div>
-                            		<div id="lmsOutstandingLogsList_processing" class="dataTables_processing card" style="display: none;">Processing...</div>
+                            		<div id="lmsReconReportList_processing" class="dataTables_processing card" style="display: none;">Processing...</div>
                                 </div>
                             </div>
                         </div>
@@ -111,8 +109,7 @@
 <script>
  var messages = {
         get_customer: "{{ route('get_customer') }}",
-        lms_get_invoice_outstanding_list: "{{ URL::route('lms_send_invoice_outstanding_due') }}",
-        lms_set_invoice_outstanding_date: "{{ URL::route('lms_set_invoice_outstanding_date') }}",
+        lms_get_recon_report: "{{ URL::route('lms_send_recon_report') }}",
         token: "{{ csrf_token() }}",
     };
 
@@ -158,5 +155,5 @@ function setClientDetails(data){
     $("#customer_id").val(data.customer_id);
 }
 </script>
-<script src="{{ asset('backend/js/lms/send_mail_outstanding.js?v=1') }}" type="text/javascript"></script>
+<script src="{{ asset('backend/js/lms/recon_report.js?v=1') }}" type="text/javascript"></script>
 @endsection

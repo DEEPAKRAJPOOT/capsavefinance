@@ -120,7 +120,7 @@ Route::domain(config('proin.backend_uri'))->group(function () {
 
             Route::post('/save_user_invoice', [
                 'as' => 'save_user_invoice',
-                'uses' => 'Lms\userInvoiceController@saveUserInvoice',
+                'uses' => 'Lms\userInvoiceController@generateManualDebitNote',
             ]);
 
             Route::post('get-user-state-code', [
@@ -998,6 +998,11 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                     Route::get('/test', [
                         'as' => 'test',
                         'uses' => 'Backend\ReportController@maturityReport',
+                    ]);
+
+                    Route::get('/reconReport/download', [
+                        'as' => 'recon_report_download',
+                        'uses' => 'Backend\ReportController@downloadReconReportFromLogs',
                     ]);
                 }
             });

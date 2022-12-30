@@ -92,7 +92,7 @@ $(document).on('click', '#bulkReqForChrgDelete', function () {
         return false;
     }
 
-    if (confirm('Are you sure, You want to request for deletion.'))
+    if (confirm('Are you sure, you want to add request for cancellation of the charge.'))
     {  
         $(".isloader").show(); 
         var userId = $("input[name='user_id']").val();
@@ -118,6 +118,7 @@ $(document).on('click', '#bulkReqForChrgDelete', function () {
                     oTable.draw();
                 } else {
                     replaceAlert(data.msg, 'error');
+                    oTable.draw();
                 }
            }
         });
@@ -139,7 +140,7 @@ $(document).on('click', '#bulkApprovalForChrgDeletion', function () {
         return false;
     }
 
-    if (confirm('Are you sure, You want to approve for deletion.'))
+    if (confirm('Are you sure, you want to approve the charge cancellation request.'))
     {  
         $(".isloader").show(); 
         var postData = ({'chrg_id': arr, '_token': messages.token});
@@ -164,6 +165,7 @@ $(document).on('click', '#bulkApprovalForChrgDeletion', function () {
                     oTable.draw();
                 } else {
                     replaceAlert(data.msg, 'error');
+                    oTable.draw();
                 }
            }
         });

@@ -80,11 +80,13 @@
                                                     <th>Cust. Addr</th>
                                                     <th>Cust. GSTN</th>
                                                     <th>SAC Code</th>
-                                                    <th>Interest Period</th>
+                                                    <th>Narration</th>
                                                     <th>Capsave Invoice No</th>
                                                     <th>Invoice No</th>
+                                                    <th>Invoice Type</th>
                                                     <th>Invoice Date</th>
                                                     <th>Base Amount</th>
+                                                    <th>GST Applicable</th>
                                                     <th>SGST Rate</th>
                                                     <th>SGST Amount</th>
                                                     <th>CGST Rate</th>
@@ -96,6 +98,7 @@
                                                     <th>Total Tax</th>
                                                     <th>CashFlow Type</th>
                                                     <th>Considered In</th>
+                                                    <th>Status</th>
                                                 </tr>
                                             </thead>
                                             <tbody></tbody>

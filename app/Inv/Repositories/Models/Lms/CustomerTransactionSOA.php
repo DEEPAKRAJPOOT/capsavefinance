@@ -142,7 +142,7 @@ class CustomerTransactionSOA extends BaseModel
             ->where('soa_flag', 1);
         })
         ->orderBy('user_id', 'asc')
-        ->orderBy('value_date', 'asc')
+        #->orderBy('value_date', 'asc')
         ->orderBy('trans_id', 'asc');
     }
 
@@ -156,6 +156,36 @@ class CustomerTransactionSOA extends BaseModel
     }
     
     public function getSoaBackgroundColorAttribute(){
+        $color = '';
+        $trans = $this->transaction;
+        switch ($trans->apportionment->apportionment_type ?? null) {
+            case '1':
+                if($trans->payment_id){
+                    if($trans->trans_type == config('lms.TRANS_TYPE.REPAYMENT'))
+                    $color = '#f3c714';
+                    elseif(!in_array($trans->trans_type, [config('lms.TRANS_TYPE.TDS')]))
+                    $color = '#ffe787';
+                }else{
+                    $color = '#fdeeb3';
+                }
+                break;
+            case '2':
+                if($trans->payment_id){
+                    if($trans->linkTransactions->trans_type == config('lms.TRANS_TYPE.REPAYMENT'))
+                    $color = '#ff6767';
+                    elseif(!in_array($trans->linkTransactions->trans_type, [config('lms.TRANS_TYPE.TDS')]))
+                    $color = '#ffcccc';
+                }else{
+                    $color = '#ffdede';
+                }
+                break;
+            
+            default:
+                    $color = '';
+                break;
+        }
+        return $color;
+
         $color = '';
         if($this->transaction->payment_id){
             if($this->trans_type == config('lms.TRANS_TYPE.REPAYMENT'))

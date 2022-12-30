@@ -40,11 +40,11 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-        
+             
         //$schedule->command('PaypalRefund:refund')->twiceDaily(1, 13);
         //$schedule->command('ScoutPayoutDetail:BatchDetail')->twiceDaily(2, 14);
         //$schedule->command('PaypalScoutRefund:ScoutRefund')->twiceDaily(3, 12);
-       
+         
         if(config('lms.LMS_STATUS')){
             $schedule->command('lms:interestaccrual')->timezone(config('common.timezone'))->dailyAt('00:01');
             $schedule->command('lms:interestaccrual')->dailyAt('00:01');
@@ -77,6 +77,7 @@ class Kernel extends ConsoleKernel
             $schedule->command('report:receipt')->timezone(config('common.timezone'))->dailyAt('23:52');
             // To Generate Outstanding Report Manual
             $schedule->command('report:outstandingManual')->timezone(config('common.timezone'))->dailyAt('23:54');
+            $schedule->command('report:reconReport')->timezone(config('common.timezone'))->dailyAt('13:59');
         }
         $schedule->command('command:lenovoNewUser')->timezone(config('common.timezone'))->dailyAt('23:00');
         $schedule->command('lms:maturityinvoicedueAlert')->timezone(config('common.timezone'))->dailyAt('21:30');
@@ -102,7 +103,7 @@ class Kernel extends ConsoleKernel
         $schedule->command('lms:disbursalBatchRequest')->timezone(config('common.timezone'))->dailyAt('23:50');
         $schedule->command('alert:approvalMailForPendingCases')->timezone(config('common.timezone'))->tuesdays()->dailyAt('20:45');
         $schedule->command('alert:app_security_document_renewal')->timezone(config('common.timezone'))->dailyAt('23:00');
-           
+    
     }
     
     /**

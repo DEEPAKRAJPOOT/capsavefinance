@@ -76,6 +76,7 @@ use App\Inv\Repositories\Models\InvoiceStatusLog;
 use App\Inv\Repositories\Models\Lms\ChargeTransactionDeleteLog;
 use App\Inv\Repositories\Models\AppApprover;
 use App\Inv\Repositories\Models\OfferAdhocDocument;
+use App\Inv\Repositories\Models\Lms\Apportionment;
 
 /**
  * Lms Repository class
@@ -161,6 +162,19 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
 	public static function saveTransaction($transactions,$whereCondition=[])
 	{
 		return Transactions::saveTransaction($transactions,$whereCondition);
+	}
+
+	
+	/**
+	 * Save Apportionment
+	 *
+	 * @param array $apportionment
+	 * @return mixed
+	 * @throws InvalidDataTypeExceptions
+	 */
+	public static function saveApportionment($apportionment,$whereCondition=[])
+	{
+		return Apportionment::saveApportionment($apportionment,$whereCondition);
 	}
 
 	/**
@@ -1844,9 +1858,9 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
         return $transaction->sum('TDSAmount');
     }
 
-	public static function getUnsettledSettledTDSTrans($data)
+	public static function getUnsettledSettledTDSTrans($data, $paymentDate = NULL)
 	{
-		return Transactions::getUnsettledSettledTDSTrans($data);
+		return Transactions::getUnsettledSettledTDSTrans($data,['due_date'=>$paymentDate]);
 	}
 
 	public static function getOverdueData()

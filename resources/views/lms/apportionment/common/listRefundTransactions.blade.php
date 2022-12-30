@@ -8,6 +8,7 @@
                             <thead>
                                 <tr role="row">                                                   
                                     <th>Trans Date</th>       
+                                    <th>Payment Due Date</th>       
                                     <th>Invoice No</th>       
                                     <th>Trans Type</th>		
                                     <th>Total Refundable Amt</th>

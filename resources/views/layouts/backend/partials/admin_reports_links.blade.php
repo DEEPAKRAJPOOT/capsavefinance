@@ -59,4 +59,9 @@
         <a class=" {{ ($active=='tds_breakup')? 'active': null }} " href="{{ route('tds_breakup') }}">TDS Breakup</a>
     </li>
     @endcan
+    @can('recon_report')
+    <li>
+        <a class=" {{( $active=='reconReport') ? 'active': null }} " href="{{route('recon_report')}}">Recon Report</a>
+    </li>
+    @endcan
 </ul>

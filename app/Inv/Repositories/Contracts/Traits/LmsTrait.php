@@ -280,6 +280,9 @@ trait LmsTrait
         $transactionData['trans_date'] = (!empty($data['trans_date'])) ? date("Y-m-d h:i:s", strtotime(str_replace('/','-',$data['trans_date']))) : \Carbon\Carbon::now()->format('Y-m-d h:i:s');
         $transactionData['trans_type'] = $transType ?? 0;
         $transactionData['amount'] = $data['amount'] ?? 0;
+        $transactionData['from_date'] = $data['from_date'] ?? null;
+        $transactionData['to_date'] = $data['to_date'] ?? null;
+        $transactionData['due_date'] = $data['due_date'] ?? null;
         $transactionData['entry_type'] =  $entryType ?? 0;
         $transactionData['gst'] = $data['gst'] ?? 0;
         $transactionData['tds_per'] = null;

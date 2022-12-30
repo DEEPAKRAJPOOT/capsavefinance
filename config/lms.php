@@ -238,6 +238,10 @@ return [
         'I' => 'ZR',
         'C' => 'NZ'
     ],
+    'INVOICE_TYPE_NAME' => [
+        1 => 'Charge',
+        2 => 'Interest'
+    ],
     'IDFC_DEBIT_BANK' => [    
        'DEBIT_ACC_NO' => env('DEBIT_ACC_NO', ''),
        // 'DEBIT_ACC_NAME' => env('DEBIT_ACC_NAME', 'testing name'),
