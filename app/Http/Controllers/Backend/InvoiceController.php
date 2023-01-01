@@ -554,7 +554,7 @@ class InvoiceController extends Controller {
                     $marginTrnsData = $this->createTransactionData($value['disbursal']['user_id'], ['amount' => $marginAmt, 'trans_date' => $fundedDate, 'invoice_disbursed_id' => $value['invoice_disbursed_id']], config('lms.TRANS_TYPE.MARGIN'), 0);
                     $createTransaction = $this->lmsRepo->saveTransaction($marginTrnsData);
                 }
-                $Obj->intAccrual($value['invoice_disbursed_id'], NULL);
+                $Obj->intAccrual($value['invoice_disbursed_id'], NULL,NULL,1);
                 $Obj->transactionPostingAdjustment($value['invoice_disbursed_id'], NULL); 
                 $Obj->generateCreditNote($value['disbursal']['user_id']);           
                      

@@ -734,7 +734,13 @@ class ManualApportionmentHelper{
         }
     }
 
-    public function intAccrual(int $invDisbId, $startDate = null, $apportionmentId = NULL){
+    /**
+     * Event 
+     * Null = Default but Not for Disbursement
+     * 1=>Disbursement 
+     * 
+     */
+    public function intAccrual(int $invDisbId, $startDate = null, $apportionmentId = NULL, $event = NULL){
         try{   
             $invdisbInN = [];
             $curdate =  Helpers::getSysStartDate();
@@ -842,7 +848,24 @@ class ManualApportionmentHelper{
                 
                 $loopStratDate = $this->addDays($loopStratDate,1);
                 if(!in_array($invDisbId, $invdisbInN)){
-                    $this->runningToTransPosting($invDisbId, $loopStratDate, $payFreq, $payDueDate, $odStartDate);
+                    if(is_null($event)){
+                        $eomdate = Carbon::createFromFormat('Y-m-d', $curdate)->endOfMonth()->format('Y-m-d');
+                        if($payFreq == 1){
+                            if(strtotime($curdate) > strTotime($gStartDate) && strtotime($eomdate) == strtotime($curdate)){
+                                $this->runningToTransPosting($invDisbId, $loopStratDate, $payFreq, $payDueDate, $odStartDate);
+                            }
+                        }elseif($payFreq == 2){
+                            if(strtotime($eomdate) == strtotime($curdate)){
+                                $this->runningToTransPosting($invDisbId, $loopStratDate, $payFreq, $payDueDate, $odStartDate);
+                            }
+                        }elseif($payFreq == 3){
+                            if(strTotime($gStartDate) == strtotime($curdate) || (strtotime($curdate) > strtotime($gStartDate) && strtotime($eomdate) == strtotime($curdate))){
+                                $this->runningToTransPosting($invDisbId, $loopStratDate, $payFreq, $payDueDate, $odStartDate);
+                            }
+                        }
+                    }elseif($event == 1){
+                        $this->runningToTransPosting($invDisbId, $loopStratDate, $payFreq, $payDueDate, $odStartDate);
+                    }
                 }
                 
                 if($balancePrincipal > 0){
