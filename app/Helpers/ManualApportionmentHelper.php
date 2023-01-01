@@ -936,7 +936,6 @@ class ManualApportionmentHelper{
         $cancelTransList = Transactions::whereNotNull('parent_trans_id')
         ->whereIn('trans_type',[config('lms.TRANS_TYPE.CANCEL'),config('lms.TRANS_TYPE.WAVED_OFF')])
         ->whereHas('userInvParentTrans.getUserInvoice')
-        ->whereDate('created_at','>=','2022-04-01')
         ->whereDate('created_at','<=',$cDate)
         ->where('entry_type','1')
         ->where('is_invoice_generated','0')
