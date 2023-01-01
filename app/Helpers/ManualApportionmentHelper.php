@@ -977,11 +977,11 @@ class ManualApportionmentHelper{
         }
     }
 
-    public function generateCreditNoteReversal($userId = NULL, $apportionmentId){
+    public function generateCreditNoteReversal($userId = NULL, $apportionmentId = NULL){
         $controller = app()->make('App\Http\Controllers\Lms\userInvoiceController');
         $curdate = Helpers::getSysStartDate();
         $cDate = Carbon::parse($curdate)->format('Y-m-d');
-        $cancelTransList = Transactions::whereNotNull('link_trans_id')->whereIn('trans_type',[config('lms.TRANS_TYPE.REVERSE')])->whereHas('userInvLinkTrans.getUserInvoice')->whereDate('created_at','>=','2022-04-01')->where('entry_type','0')->whereDate('created_at','<=',$cDate)->where('is_invoice_generated','0');
+        $cancelTransList = Transactions::whereNotNull('link_trans_id')->whereIn('trans_type',[config('lms.TRANS_TYPE.REVERSE')])->whereHas('userInvLinkTrans.getUserInvoice')->where('entry_type','0')->whereDate('created_at','<=',$cDate)->where('is_invoice_generated','0');
 
         if($userId){
             $cancelTransList->where('user_id',$userId);
