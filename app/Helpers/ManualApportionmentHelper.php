@@ -31,7 +31,7 @@ class ManualApportionmentHelper{
         return $tenorDays * $interest;         
     }  
     
-    private function addDays($currentDate, $noOfDays){
+    public function addDays($currentDate, $noOfDays){
         $calDate = date('Y-m-d', strtotime($currentDate . "+ $noOfDays days"));
         return $calDate;
     }
@@ -579,7 +579,7 @@ class ManualApportionmentHelper{
         return $Dr-$Cr;
     }
     
-    private function overDuePosting($invDisbId, $userId, $transDate){
+    public function overDuePosting($invDisbId, $userId, $transDate){
         $overdues = InterestAccrual::select(\DB::raw("
         sum(accrued_interest) as totalInt, 
         max(interest_date) as interestDate, 
@@ -629,7 +629,7 @@ class ManualApportionmentHelper{
         }
     }
 
-    private function interestPosting($invDisbId, $userId, $payFreq, $transDate, $gStartDate, $gEndDate){
+    public function interestPosting($invDisbId, $userId, $payFreq, $transDate, $gStartDate, $gEndDate){
         $interests = new Collection();
     
         $interestData = InterestAccrual::select(\DB::raw("
