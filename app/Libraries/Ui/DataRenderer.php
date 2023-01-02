@@ -6217,15 +6217,15 @@ class DataRenderer implements DataProviderInterface
                             $is_superadmin = isset($roleData[0]) ? $roleData[0]->is_superadmin : 0;
                             $paymentAppor = PaymentApportionment::checkApportionmentHold($dataRecords->user_id);
                             if ($dataRecords->is_settled == Payment::PAYMENT_SETTLED) {
-                                if(Helpers::checkPermission('undo_apportionment')){
-                                    if($dataRecords->is_settled == Payment::PAYMENT_SETTLED && (($dataRecords->action_type == '1' && $dataRecords->trans_type == '17') || ($dataRecords->action_type == '3' && $dataRecords->trans_type == '7') || ($dataRecords->action_type == '5' && $dataRecords->trans_type == '31') ) && $dataRecords->validRevertPayment){
-                                        if (!$paymentAppor) {  
-                                        $btn .= '<button class="btn btn-action-btn btn-sm"  title="Revert Apportionment" onclick="delete_payment(\''. route('undo_apportionment', ['payment_id' => $dataRecords->payment_id, '_token'=> csrf_token()] ) .'\',this)" ><i class="fa fa-undo"></i></button>';
-                                        }else{
-                                            $btn .= '<button class="btn btn-action-btn btn-sm"  title="Revert Apportionment" onclick="javascript:alert(\'You cannot perform this action as you have not uploaded  the unsettled payment apportionment CSV file.\');" ><i class="fa fa-undo"></i></button>';                                            
-                                        }
-                                    }
-                                }
+                                // if(Helpers::checkPermission('undo_apportionment')){
+                                //     if($dataRecords->is_settled == Payment::PAYMENT_SETTLED && (($dataRecords->action_type == '1' && $dataRecords->trans_type == '17') || ($dataRecords->action_type == '3' && $dataRecords->trans_type == '7') || ($dataRecords->action_type == '5' && $dataRecords->trans_type == '31') ) && $dataRecords->validRevertPayment){
+                                //         if (!$paymentAppor) {  
+                                //         $btn .= '<button class="btn btn-action-btn btn-sm"  title="Revert Apportionment" onclick="delete_payment(\''. route('undo_apportionment', ['payment_id' => $dataRecords->payment_id, '_token'=> csrf_token()] ) .'\',this)" ><i class="fa fa-undo"></i></button>';
+                                //         }else{
+                                //             $btn .= '<button class="btn btn-action-btn btn-sm"  title="Revert Apportionment" onclick="javascript:alert(\'You cannot perform this action as you have not uploaded  the unsettled payment apportionment CSV file.\');" ><i class="fa fa-undo"></i></button>';                                            
+                                //         }
+                                //     }
+                                // }
 
                                 if(Helpers::checkPermission('lms_refund_payment_advise')){
                                         if(!$dataRecords->refundReq && in_array($dataRecords->is_settled, [Payment::PAYMENT_SETTLED])){
