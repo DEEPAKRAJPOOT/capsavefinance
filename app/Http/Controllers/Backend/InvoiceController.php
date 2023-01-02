@@ -340,6 +340,7 @@ class InvoiceController extends Controller {
     }
 
     public function updateDisburseInvoice(Request $request) {
+        \DB::beginTransaction();
         try {
             if ($request->get('eod_process')) {
                 Session::flash('error', trans('backend_messages.lms_eod_batch_process_msg'));
@@ -384,11 +385,12 @@ class InvoiceController extends Controller {
                 $arrActivity['app_id'] = null;
                 $this->activityLogByTrait($activity_type_id, $activity_desc, response()->json($request->all()), $arrActivity);
             }            
-            
+            \DB::commit();
             Session::flash('message',trans('backend_messages.disburseMarked'));
             return redirect()->route('backend_get_sent_to_bank');
 
         } catch (Exception $ex) {
+            \DB::rollback();
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
         }
     }
@@ -814,6 +816,7 @@ class InvoiceController extends Controller {
      */
     public function disburseOnline(Request $request)
     {
+        \DB::beginTransaction();
         try {
             date_default_timezone_set("Asia/Kolkata");
             $currentTimeHour = \Carbon\Carbon::now()->format('H');
@@ -1038,11 +1041,12 @@ class InvoiceController extends Controller {
                 $activity_desc = 'Disburse Online, Disbursement Queue (Manage Invoice)';
                 $arrActivity['app_id'] = null;
                 $this->activityLogByTrait($activity_type_id, $activity_desc, response()->json(['supplierIds'=>$supplierIds, 'request'=>$request->all()]), $arrActivity);
-            }             
-                    
+            }  
+            \DB::commit();           
             Session::flash('message',trans('backend_messages.disbursed'));
             return redirect()->route('backend_get_disbursed_invoice')->withErrors('message',trans('backend_messages.disbursed'));
         } catch (Exception $ex) {
+            \DB::rollback();
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
         }             
     }
@@ -1165,9 +1169,11 @@ public function disburseTableInsert($exportData = [], $supplierIds = [], $allinv
      */
     public function disburseOffline(Request $request)
     {
+        \DB::beginTransaction();
         try {
 
             if ($request->get('eod_process')) {
+                \DB::commit();
                 Session::flash('error', trans('backend_messages.lms_eod_batch_process_msg'));
                 return back();
             }
@@ -1189,6 +1195,7 @@ public function disburseTableInsert($exportData = [], $supplierIds = [], $allinv
                     'disburse_date' => 'required|date_format:d/m/Y|before:'.$minDate,
                 ]);
                 if ($validator->fails()) {
+                    \DB::commit();
                     Session::flash('error', $validator->messages()->first());
                     return redirect()->back()->withInput();
                 }
@@ -1199,6 +1206,7 @@ public function disburseTableInsert($exportData = [], $supplierIds = [], $allinv
 
             $disburseType = config('lms.DISBURSE_TYPE')['OFFLINE']; // Online by Bank Api i.e 2
             if(empty($invoiceIds)){
+                \DB::commit();
                 return redirect()->route('backend_get_disbursed_invoice')->withErrors(trans('backend_messages.noSelectedInvoice'));
             }
 
@@ -1206,11 +1214,14 @@ public function disburseTableInsert($exportData = [], $supplierIds = [], $allinv
                 $disbursedInvoiceId = $this->lmsRepo->findInvoiceDisbursedInvoiceIdByInvoiceId($inv['invoice_id']);
 
                 if($disbursedInvoiceId->count() > 0) {
+                    \DB::commit();
                     return redirect()->route('backend_get_disbursed_invoice')->withErrors('Invoice '.$inv['invoice_no'].' already under process of disbursment');
                 }
                 else if($inv['supplier']['is_buyer'] == 2 && empty($inv['supplier']['anchor_bank_details'])){
+                    \DB::commit();
                     return redirect()->route('backend_get_disbursed_invoice')->withErrors(trans('backend_messages.noBankAccount'));
                 } elseif ($inv['supplier']['is_buyer'] == 1 && empty($inv['supplier_bank_detail'])) {
+                    \DB::commit();
                     return redirect()->route('backend_get_disbursed_invoice')->withErrors(trans('backend_messages.noBankAccount'));
                 }
             }
@@ -1270,7 +1281,6 @@ public function disburseTableInsert($exportData = [], $supplierIds = [], $allinv
                         $totalMargin += $margin;
                         $amount = round($fundedAmount - $interest - $processingFee, config('lms.DECIMAL_TYPE')['AMOUNT_TWO_DECIMAL']);
                         $disburseAmount += $amount;
-
 
                         $disbursalData['invoice'] = $invoice;
 
@@ -1415,9 +1425,11 @@ public function disburseTableInsert($exportData = [], $supplierIds = [], $allinv
                 $arrActivity['app_id'] = null;
                 $this->activityLogByTrait($activity_type_id, $activity_desc, response()->json(['supplierIds'=>$supplierIds, 'request'=>$request->all()]), $arrActivity);
             } 
+            \DB::commit();
             Session::flash('message',trans('backend_messages.disbursed'));
             return redirect()->route('backend_get_disbursed_invoice');
         } catch (Exception $ex) {
+            \DB::rollback();
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
         } 
     }
@@ -1670,6 +1682,8 @@ public function disburseTableInsert($exportData = [], $supplierIds = [], $allinv
     
     public function uploadBulkCsvInvoice(Request $request)
     {  
+        \DB::beginTransaction();
+        try {
         $date = Carbon::now();
         $id = Auth::user()->user_id; 
         $attributes = $request->all();
@@ -1678,6 +1692,7 @@ public function disburseTableInsert($exportData = [], $supplierIds = [], $allinv
         
         if(($getAnchor->is_phy_blk_inv_req === '1') && (empty($attributes['file_image_id']))) {
             Session::flash('error', 'For this Anchor please Upload Invoice Copy');
+            \DB::commit();
             return back(); 
         }
         
@@ -1687,6 +1702,7 @@ public function disburseTableInsert($exportData = [], $supplierIds = [], $allinv
         $uploadData = Helpers::uploadInvoiceFile($attributes, $batch_id); 
         if($uploadData['status']==0)
         {
+            \DB::commit();
              Session::flash('error', $uploadData['message']);
              return back(); 
         }
@@ -1700,6 +1716,7 @@ public function disburseTableInsert($exportData = [], $supplierIds = [], $allinv
               $uploadData = Helpers::uploadZipInvoiceFile($attributes, $batch_id); ///Upload zip file
               if(!empty($uploadData) && $uploadData['status']==0)
              {
+                \DB::commit();
                Session::flash('error', $uploadData['message']);
                return back(); 
              }
@@ -1718,6 +1735,7 @@ public function disburseTableInsert($exportData = [], $supplierIds = [], $allinv
                     $data = fgetcsv($handle, 1000, ",");
                     if(count($data) < 5 || count($data) > 6)
                     {
+                        \DB::commit();
                           Session::flash('error', 'Please check Csv file format.');
                           return back(); 
                     }
@@ -1732,7 +1750,7 @@ public function disburseTableInsert($exportData = [], $supplierIds = [], $allinv
                
                 if($multiValiChk['status']==0)
                 {
-
+                    \DB::commit();
                     Session::flash('multiVali', $multiValiChk);
                     return back();   
                 }
@@ -1755,6 +1773,7 @@ public function disburseTableInsert($exportData = [], $supplierIds = [], $allinv
                         $getPrgm  = $this->application->getProgram($prgm_id);
                         if($chlLmsCusto['status']==0)
                         {
+                            \DB::commit();
                            Session::flash('error', $chlLmsCusto['message']);
                            return back(); 
                         }
@@ -1785,6 +1804,7 @@ public function disburseTableInsert($exportData = [], $supplierIds = [], $allinv
 
                         if($getInvDueDate['status']==0)
                         {
+                            \DB::commit();
                            Session::flash('error', $getInvDueDate['message']);
                            return back(); 
                         }
@@ -1793,6 +1813,7 @@ public function disburseTableInsert($exportData = [], $supplierIds = [], $allinv
                        
                         if($error['status']==0)
                         {
+                            \DB::commit();
                            Session::flash('error', $error['message']);
                            return back(); 
                         }
@@ -1850,7 +1871,7 @@ public function disburseTableInsert($exportData = [], $supplierIds = [], $allinv
                             $arrActivity['app_id'] = null;
                             $this->activityLogByTrait($activity_type_id, $activity_desc, response()->json(['data'=>$data, 'request'=>$request->all()]), $arrActivity);
                         } 
-            
+                        \DB::commit();
                          Session::flash('message', 'Invoice data successfully sent to under reviewer process');
                          return back();  
                      
@@ -1858,6 +1879,10 @@ public function disburseTableInsert($exportData = [], $supplierIds = [], $allinv
             //   }
            }
        }
+    } catch (Exception $ex) {
+        \DB::rollback();
+        return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
+    } 
       
     }
     
