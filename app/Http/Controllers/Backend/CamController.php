@@ -2160,9 +2160,9 @@ class CamController extends Controller
         $requestData =  $request->all();
         if($requestData['dsa_applicable'] == '1'){
           $dsaData['dsa_name'] = $requestData['dsa_name'];
-          $dsaData['payout']   = (int)$requestData['payout'];
+          $dsaData['payout']   = number_format($requestData['payout'],2);
           $dsaData['payout_event'] = $requestData['payout_event'];
-          $dsaData['xirr'] = (int)$requestData['xirr'];
+          $dsaData['xirr'] = number_format($requestData['xirr'],2);
         }else{
           $requestData['dsa_applicable'] = 0;
         }

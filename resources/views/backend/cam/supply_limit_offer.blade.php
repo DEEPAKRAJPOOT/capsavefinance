@@ -221,7 +221,7 @@
                 <div class="col-md-3">
                     <div class="form-group">
                         <label for="txtPassword">Payout (%) <span style="color: red;"> *</span></label> 
-                        <input type="text" name="payout" id="payout" class="form-control" value="{{ (isset($offerData->programOfferDsa) && !empty($offerData->programOfferDsa->payout))  ? $offerData->programOfferDsa->payout : '' }}" placeholder="Payout" maxlength="3" >
+                        <input type="text" name="payout" id="payout" class="form-control" value="{{ (isset($offerData->programOfferDsa) && !empty($offerData->programOfferDsa->payout))  ? number_format($offerData->programOfferDsa->payout,2) : '' }}" placeholder="Payout"  >
                     </div>
                  </div>
                  <div class="col-md-3">
@@ -233,7 +233,7 @@
                  <div class="col-md-3">
                     <div class="form-group">
                         <label for="txtPassword">XIRR (%)<span style="color: red;"> *</span></label> 
-                        <input type="text" name="xirr" id="xirr" class="form-control" value="{{ (isset($offerData->programOfferDsa) && !empty($offerData->programOfferDsa->xirr))  ? $offerData->programOfferDsa->xirr : '' }}" placeholder="xirr" maxlength="3">
+                        <input type="text" name="xirr" id="xirr" class="form-control" value="{{ (isset($offerData->programOfferDsa) && !empty($offerData->programOfferDsa->xirr))  ? number_format($offerData->programOfferDsa->xirr,2) : '' }}" placeholder="XIRR" >
                     </div>
                  </div>
                </div>
@@ -1246,7 +1246,7 @@
             setError('input[name=payout]', 'Please fill payout');
             flag = false;
         }else if(parseFloat(payout) > 100){
-            setError('input[name=payout]', 'Please fill correct payout percentage');
+            setError('input[name=payout]', 'Please fill correct payout 1-100% range');
             flag = false;
         }
 
@@ -1259,7 +1259,7 @@
             setError('input[name=xirr]', 'Please fill xirr');
             flag = false;
         }else if(parseFloat(xirr) > 100){
-            setError('input[name=xirr]', 'Please fill correct xirr percentage');
+            setError('input[name=xirr]', 'Please fill correct xirr 1-100% range');
             flag = false;
         }
 

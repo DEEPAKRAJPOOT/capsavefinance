@@ -106,13 +106,13 @@
                     <td><b>DSA Name: </b></td>
                     <td>{{$leaseOffer->programOfferDsa->dsa_name}}</td>
                     <td><b>Payout % </b></td>
-                    <td>{{$leaseOffer->programOfferDsa->payout}}</td>
+                    <td>{{number_format($leaseOffer->programOfferDsa->payout,2)}}%</td>
                 </tr>
                 <tr>
                     <td><b>Payout Event: </b></td>
                     <td>{{$leaseOffer->programOfferDsa->payout_event}}</td>
                     <td><b>XIRR % </b></td>
-                    <td>{{$leaseOffer->programOfferDsa->xirr}}</td>
+                    <td>{{number_format($leaseOffer->programOfferDsa->xirr,2)}}%</td>
                 </tr>
               @endif
             </tbody>
@@ -243,13 +243,13 @@
                     <td><b>DSA Name: </b></td>
                     <td>{{$supplyOffer->programOfferDsa->dsa_name}}</td>
                     <td><b>Payout % </b></td>
-                    <td>{{$supplyOffer->programOfferDsa->payout}}</td>
+                    <td>{{number_format($supplyOffer->programOfferDsa->payout,2)}}%</td>
                 </tr>
                 <tr>
                     <td><b>Payout Event: </b></td>
                     <td>{{$supplyOffer->programOfferDsa->payout_event}}</td>
                     <td><b>XIRR % </b></td>
-                    <td>{{$supplyOffer->programOfferDsa->xirr}}</td>
+                    <td>{{number_format($supplyOffer->programOfferDsa->xirr,2)}}%</td>
                 </tr>
               @endif
               @if($supplyOffer->offerPs->count() > 0)
@@ -458,13 +458,13 @@
                     <td><b>DSA Name: </b></td>
                     <td>{{$termLoanOffer->programOfferDsa->dsa_name}}</td>
                     <td><b>Payout % </b></td>
-                    <td>{{$termLoanOffer->programOfferDsa->payout}}</td>
+                    <td>{{number_format($termLoanOffer->programOfferDsa->payout,2)}}%</td>
                 </tr>
                 <tr>
                     <td><b>Payout Event: </b></td>
                     <td>{{$termLoanOffer->programOfferDsa->payout_event}}</td>
                     <td><b>XIRR % </b></td>
-                    <td>{{$termLoanOffer->programOfferDsa->xirr}}</td>
+                    <td>{{number_format($termLoanOffer->programOfferDsa->xirr,2)}}%</td>
                 </tr>
               @endif
                @if(isset($termLoanOffer->asset_insurance) && $termLoanOffer->asset_insurance == 1)
