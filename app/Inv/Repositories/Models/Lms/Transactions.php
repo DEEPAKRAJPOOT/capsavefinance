@@ -593,9 +593,6 @@ class Transactions extends BaseModel {
 
     public function getTransNameAttribute(){
         $name = ''; 
-        if(!($this->customerTransactionSOA->trans_name == '') && $this->customerTransactionSOA){
-            return $this->customerTransactionSOA->trans_name;
-        }
 
         if($this->trans_type == config('lms.TRANS_TYPE.REPAYMENT')) 
         return $this->payment->paymentname??'';
