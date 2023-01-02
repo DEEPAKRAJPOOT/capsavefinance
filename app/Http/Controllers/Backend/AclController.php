@@ -184,7 +184,7 @@ class AclController extends Controller {
 
     public function addUserRole(Request $request) {
         try {             
-            $roles = $this->userRepo->getRolesByType(2);
+            $roles = $this->userRepo->getActiveRolesByType(2);
             $rolesDataArray = [];
             foreach($roles as $role) {
                 $rolesDataArray[$role->id] = $role->name;

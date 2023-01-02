@@ -233,4 +233,10 @@ class Role extends BaseModel
                         ->get('id');
         return $arrRoles;               
     }
+
+    public static function getActiveRolesByType($role_type)
+    {
+        $arrRoles = self::where(['role_type'=> $role_type, 'is_active' => 1])->get();
+        return $arrRoles ? $arrRoles : [];
+    }
 }
