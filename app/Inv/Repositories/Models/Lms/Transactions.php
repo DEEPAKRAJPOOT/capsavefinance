@@ -593,7 +593,7 @@ class Transactions extends BaseModel {
 
     public function getTransNameAttribute(){
         $name = ''; 
-        if(!($this->customerTransactionSOA->trans_name == '')){
+        if(!($this->customerTransactionSOA->trans_name == '') && $this->customerTransactionSOA){
             return $this->customerTransactionSOA->trans_name;
         }
 
