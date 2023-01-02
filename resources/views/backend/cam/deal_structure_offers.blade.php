@@ -447,7 +447,9 @@
                </tr>
                <tr role="row" class="odd">
                   <td class=""><b>IRR</b></td>
-                  <td class="">{{isset($termLoanOffer->irr) ? $termLoanOffer->irr : ''}}</td>                                   
+                  <td class="">{{isset($termLoanOffer->irr) ? $termLoanOffer->irr : ''}}</td>  
+                  <td></td>
+                  <td></td>                                 
                </tr>
                @if($termLoanOffer->dsa_applicable == '1')
               <tr>
@@ -455,7 +457,7 @@
                     <td colspan="3">{{($termLoanOffer->dsa_applicable == '1')?'Yes':'No'}}</td>
                 </tr>
                 <tr>
-                    <td><b>DSA Name: </b></td>
+                    <td><b>DSA Namessss: </b></td>
                     <td>{{$termLoanOffer->programOfferDsa->dsa_name}}</td>
                     <td><b>Payout % </b></td>
                     <td>{{number_format($termLoanOffer->programOfferDsa->payout,2)}}%</td>
@@ -530,6 +532,8 @@
                         @endphp 
                         {!! trim($add_sec_arr,', ') !!}
                     </td>
+                    <td></td>
+                    <td></td>
                </tr>
             </tbody>
          </table>

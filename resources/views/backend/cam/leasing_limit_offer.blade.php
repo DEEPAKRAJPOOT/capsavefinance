@@ -22,9 +22,9 @@
         </div>
 
         <div class="col-md-6">
-          <div class="form-group INR">
+          <div class="form-group INR" >
             <label for="txtPassword" ><b>Limit</b></label> 
-            <a href="javascript:void(0);" class="verify-owner-no" ><i class="fa fa-inr" aria-hidden="true"></i></a>
+            <a href="javascript:void(0);" style="margin-top: 29px;margin-left: 20px;" class="verify-owner-no" ><i class="fa fa-inr" aria-hidden="true"></i></a>
             <input type="text" name="prgm_limit_amt" class="form-control number_format" value="{{isset($limitData->limit_amt)? number_format($limitData->limit_amt): ''}}" placeholder="Limit" maxlength="15" readonly>
           </div>
         </div>
@@ -45,7 +45,7 @@
           <div class="form-group INR">
             <label for="txtPassword" ><b>Limit of the Equipment</b> <span style="color: red;"> *</span></label>
             <span class="float-right text-success">Balance: <i class="fa fa-inr"></i>{{(int)$limitData->limit_amt - (int)$subTotalAmount + (int)$currentOfferAmount}}</span>
-            <a href="javascript:void(0);" class="verify-owner-no" ><i class="fa fa-inr" aria-hidden="true"></i></a> 
+            <a href="javascript:void(0);" class="verify-owner-no" style="margin-top: 28px;margin-left: 15px;"><i class="fa fa-inr" aria-hidden="true"></i></a> 
             <input type="text" name="sub_limit" class="form-control number_format" value="{{isset($offerData->prgm_limit_amt)? number_format($offerData->prgm_limit_amt): ''}}" placeholder="Limit of the Equipment" maxlength="15">
           </div>
         </div>
@@ -153,9 +153,9 @@
                     </div>
                     <div class="col-md-4 INR">
                         @if($loop->first)
-                            <label for="txtPassword"><b>Rate</b> <span style="color: red;"> *</span></label>
+                            <label for="txtPassword" ><b>Rate</b> <span style="color: red;"> *</span></label>
                         @endif
-                        <a href="javascript:void(0);" class="verify-owner-no" style="top: {{($loop->first)? '29px': 0}};"><i class="fa fa-inr" aria-hidden="true"></i></a>
+                        <a href="javascript:void(0);" style="margin-top: 28px;margin-left: 15px;" class="verify-owner-no" style="top: {{($loop->first)? '29px': 0}};"><i class="fa fa-inr" aria-hidden="true"></i></a>
                         <input type="text" name="ptpq_rate[]" class="form-control" value="{{$ptpq->ptpq_rate}}" placeholder="Rate" maxlength="6">
                     </div>
                     <div class="col-md-2 center">
@@ -179,7 +179,7 @@
                     </div>
                     <div class="col-md-4 INR">
                     <label for="txtPassword"><b>Rate</b>  <span style="color: red;"> *</span></label>
-                        <a href="javascript:void(0);" class="verify-owner-no"><i class="fa fa-inr" aria-hidden="true"></i></a>
+                        <a href="javascript:void(0);" class="verify-owner-no" style="margin-top: 28px;margin-left: 15px;"><i class="fa fa-inr" aria-hidden="true"></i></a>
                         <input type="text" name="ptpq_rate[]" class="form-control" value="" placeholder="Rate" maxlength="5">
                     </div>
                     <div class="col-md-2 ">
@@ -637,7 +637,7 @@
                 '<input type="text" name="ptpq_to[]" class="form-control" value="" placeholder="To Period" maxlength="3" onkeyup="this.value=this.value.replace(/[^\\d]/,\'\')">'+
             '</div>'+
             '<div class="col-md-4 INR">'+
-                '<a href="javascript:void(0);" class="verify-owner-no" style="top: 0;"><i class="fa fa-inr" aria-hidden="true"></i></a>'+
+                '<a href="javascript:void(0);" class="verify-owner-no" style="margin-top: 0px;margin-left: 15px;"><i class="fa fa-inr" aria-hidden="true"></i></a>'+
                 '<input type="text" name="ptpq_rate[]" class="form-control" value="" placeholder="PTPQ Rate" maxlength="6">'+
             '</div>'+
             '<div class="col-md-2 center">'+

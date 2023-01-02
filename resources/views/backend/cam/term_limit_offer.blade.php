@@ -18,7 +18,7 @@
         <div class="col-md-6 d-none">
           <div class="form-group INR">
             <label for="txtPassword" ><b>Limit</b></label> 
-            <a href="javascript:void(0);" class="verify-owner-no" ><i class="fa fa-inr" aria-hidden="true"></i></a>
+            <a href="javascript:void(0);"  class="verify-owner-no" style="margin-top: 29px;margin-left: 20px;"><i class="fa fa-inr" aria-hidden="true" ></i></a>
             <input type="text" name="prgm_limit_amt" class="form-control number_format" value="{{isset($limitData->limit_amt)? number_format($limitData->limit_amt): ''}}" placeholder="Limit" maxlength="15" readonly>
           </div>
         </div>
@@ -40,7 +40,7 @@
           <div class="form-group INR">
             <label for="txtPassword" ><b>Limit</b> <span style="color: red;"> *</span></label>
             <span class="float-right text-success">Balance: <i class="fa fa-inr"></i>{{(int)$limitData->limit_amt - (int)$subTotalAmount + (int)$currentOfferAmount}}</span>
-            <a href="javascript:void(0);" class="verify-owner-no" ><i class="fa fa-inr" aria-hidden="true"></i></a> 
+            <a href="javascript:void(0);" class="verify-owner-no" style="margin-top: 29px;margin-left: 20px;"><i class="fa fa-inr" aria-hidden="true"></i></a> 
             <input type="text" name="sub_limit" class="form-control number_format" value="{{isset($offerData->prgm_limit_amt)? number_format($offerData->prgm_limit_amt): ''}}" placeholder="Limit" maxlength="15">
           </div>
         </div>
@@ -108,14 +108,7 @@
                 <label for="txtPassword"><b>Security Deposit (%)</b> <span style="color: red;"> *</span></label>
                 <input type="text" name="security_deposit" class="form-control" value="{{ isset($offerData->security_deposit) ? $offerData->security_deposit : '' }}" placeholder="Security Deposit" maxlength="15">
             </div>
-        </div>
-
-        <div class="col-md-6">
-            <div class="form-group INR">
-                <label for="txtPassword"><b>Margin Money (%)</b> <span style="color: red;"> *</span></label>
-                <input type="text" name="margin" class="form-control" value="{{ isset($offerData->margin) ? $offerData->margin : '' }}" placeholder="Margin Money" maxlength="15">
-            </div>
-          <div class="form-group">
+            <div class="form-group">
             <label for="txtPassword"><b>Processing Fee (%) @Sanction level</b> <span style="color: red;"> *</span></label>
             <small><span class="float-right text-success processinFeeAmount"></span></small>
             <input type="text" name="processing_fee" class="form-control" value="{{isset($offerData->processing_fee)? $offerData->processing_fee: ''}}" placeholder="Processing Fee" maxlength="6">
@@ -123,6 +116,10 @@
         </div>
 
         <div class="col-md-6">
+        <div class="form-group INR">
+                <label for="txtPassword"><b>Margin Money (%)</b> <span style="color: red;"> *</span></label>
+                <input type="text" name="margin" class="form-control" value="{{ isset($offerData->margin) ? $offerData->margin : '' }}" placeholder="Margin Money" maxlength="15">
+            </div>
             <div class="form-group INR">
                 <label for="txtPassword"><b>IRR</b> <span style="color: red;"> *</span></label>
                 <input type="text" name="irr" class="form-control" value="{{ isset($offerData->irr) ? $offerData->irr : '' }}" placeholder="IRR" maxlength="15">
