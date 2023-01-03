@@ -609,10 +609,15 @@ cursor: pointer;
                 return result;                
             },'This UTR number is already used by this customer.'
         );
-        $.validator.addMethod('decimal', function(value, element) {
-        return this.optional(element) || /^((\d+(\\.\d{0,2})?)|((\d*(\.\d{1,2}))))$/.test(value);
-        }, "Please enter only 2 decimal places");
 
+$.validator.addMethod('decimal', function(value, element) {
+        return this.optional(element) || /^((\d+(\\.\d{2})?)|((\d*(\.\d{2}))))$/.test(value);
+        }, "Please enter only 2 decimal places");
+        $("#amount").keyup(function(){
+            $(this).val(function(i, v) {
+    return v.replace(/,/g, '');
+  });
+        });
         $('#savePayFrm').validate( {
             onkeyup: false,
             onclick: false,
