@@ -132,15 +132,9 @@ class PaymentController extends Controller {
 				Session::flash('error', trans('backend_messages.lms_eod_batch_process_msg'));
 				return back();
 			}
-			$date = $request->get('date_of_payment');
-			$paymentDate = Carbon::createFromFormat('d/m/Y', $date)->format('Y-m-d');
 			$curdate = Carbon::parse(Helpers::getSysStartDate())->format('Y-m-d');
 			$curdateMesg = Carbon::parse(Helpers::getSysStartDate())->format('Y-m-d');
 			$firstDayofPreviousMonth = Carbon::now()->startOfMonth()->subMonth()->format('Y-m-d');
-			if ($paymentDate > $curdateMesg || $paymentDate < $firstDayofPreviousMonth) {
-				Session::flash('error', 'Selected Payment Date is Incorrect');
-				return back();
-			}
 			$arrFileData = $request->all();
 			$validatedData = $request->validate([
 				'payment_type' => Rule::requiredIf(function () use ($request) {
@@ -169,7 +163,12 @@ class PaymentController extends Controller {
 				'date_of_payment.before_or_equal' => 'The Transaction Date must be a date before or equal to '.$curdateMesg.'.',
 				'doc_file.checkmime' => 'Invalid file format'
 			]);
-
+			$date = $request->get('date_of_payment');
+			$paymentDate = Carbon::createFromFormat('d/m/Y', $date)->format('Y-m-d');
+			if ($paymentDate > $curdateMesg || $paymentDate < $firstDayofPreviousMonth) {
+				Session::flash('error', 'Selected Payment Date is Incorrect');
+				return back();
+			}
 			$utr ="";
 			$check  ="";
 			$unr  ="";
