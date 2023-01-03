@@ -343,6 +343,7 @@ class InvoiceController extends Controller {
         \DB::beginTransaction();
         try {
             if ($request->get('eod_process')) {
+                \DB::rollback();
                 Session::flash('error', trans('backend_messages.lms_eod_batch_process_msg'));
                 return back();
             }
@@ -356,6 +357,7 @@ class InvoiceController extends Controller {
             $invoiceIds = $this->lmsRepo->findInvoicesByUserAndBatchId(['user_id' => $userId, 'disbursal_batch_id' => $disbursalBatchId])->toArray();
             $disbursalIds = $this->lmsRepo->findDisbursalByUserAndBatchId(['user_id' => $userId, 'disbursal_batch_id' => $disbursalBatchId])->toArray();
             if (!isset($disbursalIds) || empty($disbursalIds)) {
+                    \DB::rollback();
                     return redirect()->route('backend_get_sent_to_bank')->withErrors('Something went wrong please try again.');
             }
 
@@ -829,6 +831,7 @@ class InvoiceController extends Controller {
             $creatorId = Auth::user()->user_id;
 
             if ($request->get('eod_process')) {
+                \DB::rollback();
                 Session::flash('error', trans('backend_messages.lms_eod_batch_process_msg'));
                 return back();
             }
@@ -837,6 +840,7 @@ class InvoiceController extends Controller {
             //     return redirect()->route('backend_get_disbursed_invoice');
             // }
             if(empty($invoiceIds)){
+                \DB::rollback();
                 return redirect()->route('backend_get_disbursed_invoice')->withErrors(trans('backend_messages.noSelectedInvoice'));
             }
 
@@ -850,11 +854,14 @@ class InvoiceController extends Controller {
                 $disbursedInvoiceId = $this->lmsRepo->findInvoiceDisbursedInvoiceIdByInvoiceId($inv['invoice_id']);
 
                 if($disbursedInvoiceId->count() > 0) {
+                    \DB::rollback();
                     return redirect()->route('backend_get_disbursed_invoice')->withErrors('Invoice '.$inv['invoice_no'].' already under process of disbursment');
                 }
                 else if($inv['supplier']['is_buyer'] == 2 && empty($inv['supplier']['anchor_bank_details'])){
+                    \DB::rollback();
                     return redirect()->route('backend_get_disbursed_invoice')->withErrors(trans('backend_messages.noBankAccount'));
                 } elseif ($inv['supplier']['is_buyer'] == 1 && empty($inv['supplier_bank_detail'])) {
+                    \DB::rollback();
                     return redirect()->route('backend_get_disbursed_invoice')->withErrors(trans('backend_messages.noBankAccount'));
                 }
             }
@@ -998,6 +1005,7 @@ class InvoiceController extends Controller {
                     } else{
                         $http_code = $result['code'] ? $result['code']  : $result['http_code']. ', ';
                         $message = $result['message'] ?? $result['message'];
+                        \DB::rollback();
                         Session::flash('message', 'Error : '. $http_code  .  $message);
                         return redirect()->route('backend_get_disbursed_invoice');
                     }
@@ -1029,6 +1037,7 @@ class InvoiceController extends Controller {
                 } else { 
                     $http_code = $result['http_code'] ? $result['http_code'] . ', ' : $result['code'];
                     $message = $result['message'] ?? $result['message'];
+                    \DB::rollback();
                     Session::flash('message', 'Error : '. 'HTTP Code '. $http_code  .  $message);
                     return redirect()->route('backend_get_disbursed_invoice');
                 }
@@ -1173,7 +1182,7 @@ public function disburseTableInsert($exportData = [], $supplierIds = [], $allinv
         try {
 
             if ($request->get('eod_process')) {
-                \DB::commit();
+                \DB::rollback();
                 Session::flash('error', trans('backend_messages.lms_eod_batch_process_msg'));
                 return back();
             }
@@ -1195,7 +1204,7 @@ public function disburseTableInsert($exportData = [], $supplierIds = [], $allinv
                     'disburse_date' => 'required|date_format:d/m/Y|before:'.$minDate,
                 ]);
                 if ($validator->fails()) {
-                    \DB::commit();
+                    \DB::rollback();
                     Session::flash('error', $validator->messages()->first());
                     return redirect()->back()->withInput();
                 }
@@ -1206,7 +1215,7 @@ public function disburseTableInsert($exportData = [], $supplierIds = [], $allinv
 
             $disburseType = config('lms.DISBURSE_TYPE')['OFFLINE']; // Online by Bank Api i.e 2
             if(empty($invoiceIds)){
-                \DB::commit();
+                \DB::rollback();
                 return redirect()->route('backend_get_disbursed_invoice')->withErrors(trans('backend_messages.noSelectedInvoice'));
             }
 
@@ -1214,14 +1223,14 @@ public function disburseTableInsert($exportData = [], $supplierIds = [], $allinv
                 $disbursedInvoiceId = $this->lmsRepo->findInvoiceDisbursedInvoiceIdByInvoiceId($inv['invoice_id']);
 
                 if($disbursedInvoiceId->count() > 0) {
-                    \DB::commit();
+                    \DB::rollback();
                     return redirect()->route('backend_get_disbursed_invoice')->withErrors('Invoice '.$inv['invoice_no'].' already under process of disbursment');
                 }
                 else if($inv['supplier']['is_buyer'] == 2 && empty($inv['supplier']['anchor_bank_details'])){
-                    \DB::commit();
+                    \DB::rollback();
                     return redirect()->route('backend_get_disbursed_invoice')->withErrors(trans('backend_messages.noBankAccount'));
                 } elseif ($inv['supplier']['is_buyer'] == 1 && empty($inv['supplier_bank_detail'])) {
-                    \DB::commit();
+                    \DB::rollback();
                     return redirect()->route('backend_get_disbursed_invoice')->withErrors(trans('backend_messages.noBankAccount'));
                 }
             }
