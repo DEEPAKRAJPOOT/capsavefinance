@@ -46,6 +46,7 @@ use App\Inv\Repositories\Models\Lms\InvoiceDisbursedDetail;
 use App\Inv\Repositories\Models\AppSecurityDoc;
 use App\Inv\Repositories\Models\TallyFactVoucher;
 use App\Inv\Repositories\Models\Lms\Transactions;
+use App\Inv\Repositories\Models\TransFactVoucher;
 
 class Helper extends PaypalHelper
 {
@@ -2891,5 +2892,9 @@ class Helper extends PaypalHelper
             return ['status' => false, 'message' => $msg];
         }
         return ['status' => true];
+    }
+
+    public static function getTransfactVoucherNumber($trans_id){
+        return TransFactVoucher::getTransFactVoucher($trans_id);
     }
 }
