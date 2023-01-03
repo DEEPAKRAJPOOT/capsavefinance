@@ -219,6 +219,7 @@ class RefundController extends Controller
             $allrecords = array_map('intval', $allrecords);
 
             $data = $this->lmsRepo->lmsGetCustomerRefund($allrecords);
+            //dd($data);
             return view('lms.refund.refund_confirm')->with(['data'=>$data, 'transIds'=>$reqIds]); 
         }catch(Exception $exception){
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex))->withInput();
@@ -227,8 +228,10 @@ class RefundController extends Controller
 
     public function refundOffline(Request $request)
     {
+        \DB::beginTransaction();
         try{
             if ($request->get('eod_process')) {
+                \DB::rollback();
                 Session::flash('error', trans('backend_messages.lms_eod_batch_process_msg'));
                 return back();
             }
@@ -243,6 +246,7 @@ class RefundController extends Controller
             ]);
             
             if ($validator->fails()) {
+                \DB::rollback();
                 Session::flash('error', $validator->messages()->first());
                 return redirect()->back()->withInput();
             }
@@ -257,8 +261,10 @@ class RefundController extends Controller
 
             foreach ($allAprvls as $aprvl) {
                 if($aprvl['payment']['user']['is_buyer'] == 2 && empty($aprvl['payment']['user']['anchor_bank_details'])){
+                    \DB::rollback();
                     return redirect()->route('request_list')->withErrors(trans('backend_messages.noBankAccount'));
                 } elseif ($aprvl['payment']['user']['is_buyer'] == 1 && empty($aprvl['payment']['lms_user']['bank_details'])) {
+                    \DB::rollback();
                     return redirect()->route('request_list')->withErrors(trans('backend_messages.noBankAccount'));
                 }
             }
@@ -271,23 +277,28 @@ class RefundController extends Controller
                 $activity_desc = 'Refund Offline, Refund Queue (Manage Refund) '. null;
                 $arrActivity['app_id'] = null;
                 $this->activityLogByTrait($activity_type_id, $activity_desc, response()->json(['allrecords'=>$allrecords, 'supplierIds'=>$supplierIds, 'allAprvls'=>$allAprvls, 'disburseDate'=>$disburseDate, 'refundType'=>$refundType]), $arrActivity);
-            } 
+            }
+            \DB::commit(); 
             Session::flash('message',trans('backend_messages.proccessed'));
             return redirect()->route('lms_refund_sentbank');
         }catch(Exception $exception){
+            \DB::rollback();
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex))->withInput();
         }
     }
 
     public function refundOnline(Request $request)
     {
+        \DB::beginTransaction();
         try{
             if ($request->get('eod_process')) {
+                \DB::rollback();
                 Session::flash('error', trans('backend_messages.lms_eod_batch_process_msg'));
                 return back();
             }
             $validateTimeHour = config('lms.DISBURSAL_TIME_VALIDATE');
             if (date('H') >= $validateTimeHour) { 
+                \DB::rollback();
                 Session::flash('error', 'Disbursment can not be done after '. Carbon::createFromFormat('H', $validateTimeHour)->format('g:i A'));
                 return redirect()->route('request_list');
             }
@@ -299,6 +310,7 @@ class RefundController extends Controller
             $creatorId = Auth::user()->user_id;
 
             if(empty($record)){
+                \DB::rollback();
                 return redirect()->route('request_list');
             }
             $allrecords = array_unique($record);
@@ -308,8 +320,10 @@ class RefundController extends Controller
 
             foreach ($allAprvls as $aprvl) {
                 if($aprvl['payment']['user']['is_buyer'] == 2 && empty($aprvl['payment']['user']['anchor_bank_details'])){
+                    \DB::rollback();
                     return redirect()->route('request_list')->withErrors(trans('backend_messages.noBankAccount'));
                 } elseif ($aprvl['payment']['user']['is_buyer'] == 1 && empty($aprvl['payment']['lms_user']['bank_details'])) {
+                    \DB::rollback();
                     return redirect()->route('request_list')->withErrors(trans('backend_messages.noBankAccount'));
                 }
             }
@@ -404,6 +418,7 @@ class RefundController extends Controller
 
                     $this->refundUpdation($allrecords, $supplierIds, $allAprvls, $disburseDate, $refundType, $disbursalApiLogId);
                 } else {
+                    \DB::rollback();
                     Session::flash('message',trans('backend_messages.disbursed_error'));
                     return redirect()->route('request_list')->withErrors('message',trans('backend_messages.disbursed_error'));
                 }
@@ -415,10 +430,12 @@ class RefundController extends Controller
                 $activity_desc = 'Refund Online, Refund Queue (Manage Refund) '. null;
                 $arrActivity['app_id'] = null;
                 $this->activityLogByTrait($activity_type_id, $activity_desc, response()->json(['allrecords'=>$allrecords, 'supplierIds'=>$supplierIds, 'allAprvls'=>$allAprvls, 'disburseDate'=>$disburseDate, 'refundType'=>$refundType, 'disbursalApiLogId'=>$disbursalApiLogId]), $arrActivity);
-            } 
+            }
+            \DB::commit(); 
             Session::flash('message',trans('backend_messages.proccessed'));
             return redirect()->route('lms_refund_sentbank');
         }catch(Exception $exception){
+            \DB::rollback();
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex))->withInput();
         }
     }
