@@ -27,14 +27,12 @@
 			</div>
 		</div>
 	</div>
-</div>
 
-<div class="row">
-	<div class="col-6">
-		<form id="manualDisburse" method="POST" action="{{ Route('refund_offline') }}" target="_top">
+	<form id="manualDisburse" method="POST" action="{{ Route('refund_offline') }}" target="_top" class="col-12 row">
+	<div class="col-12 row">
 			<input type="hidden" value="{{ $transIds ?? '' }}" name="transaction_ids" id="transaction_ids">
 			@csrf
-			<div class="col-6">
+			<div class="col-4">
 				<div class="form-group">
 					<label for="txtCreditPeriod">Refund Date <span class="error_message_label">*</span> </label>
 					<input type="text" id="disburse_date" name="disburse_date" class="form-control date_of_birth datepicker-dis-fdate" required="">
@@ -45,7 +43,35 @@
 				</div>
 			</div>
 			@if($data[0]['process_status'] == 0 && $data[0]['status'] == 6)
-			<div class="col-6">
+			<div class="col-4">
+				<div class="form-group">
+					
+					<input type="submit" id="submitManualDisburse" value="Refund Offline" class="btn btn-success btn-sm ml-2" style="margin-top:26px;">
+				</div>
+			</div>
+			@endif
+		
+	</div>
+	</form>
+</div>
+
+<!--<div class="row">
+	<div class="col-12 row">
+		<form id="manualDisburse" method="POST" action="{{ Route('refund_offline') }}" target="_top">
+			<input type="hidden" value="{{ $transIds ?? '' }}" name="transaction_ids" id="transaction_ids">
+			@csrf
+			<div class="col-4">
+				<div class="form-group">
+					<label for="txtCreditPeriod">Refund Date <span class="error_message_label">*</span> </label>
+					<input type="text" id="disburse_date" name="disburse_date" class="form-control date_of_birth datepicker-dis-fdate" required="">
+					 @if(Session::has('error'))
+					 <div class="error">{{ Session::get('error') }}</div>
+					  
+					@endif
+				</div>
+			</div>
+			@if($data[0]['process_status'] == 0 && $data[0]['status'] == 6)
+			<div class="col-4">
 				<input type="submit" id="submitManualDisburse" value="Refund Offline" class="btn btn-success btn-sm ml-2">
 			</div>
 			@endif
@@ -56,14 +82,7 @@
 			<input type="hidden" value="{{ $transIds }}" name="transaction_ids">
 			@csrf
 			<div class="col-6">
-				<!-- <div class="form-group">
-					<label for="txtCreditPeriod">Value Date <span class="error_message_label">*</span> </label>
-					<input type="text" id="value_date" name="value_date" readonly="readonly" class="form-control date_of_birth datepicker-dis-fdate" required="">
-					 @if(Session::has('error'))
-					 <div class="error">{{ Session::get('error') }}</div>
-					  
-					@endif
-				</div> -->
+				
 			</div>
 			@if($data[0]['process_status'] == 0 && $data[0]['status'] == 6)
 			<div class="col-6">
@@ -72,7 +91,7 @@
 			@endif
 		</form>
 	</div>
-</div>
+</div>-->
 @endsection
 @section('jscript')
 
