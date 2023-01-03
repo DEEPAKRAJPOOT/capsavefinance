@@ -1700,8 +1700,8 @@ public function disburseTableInsert($exportData = [], $supplierIds = [], $allinv
         $getAnchor = $this->userRepo->getAnchorById((int) $attributes['anchor_name']);
         
         if(($getAnchor->is_phy_blk_inv_req === '1') && (empty($attributes['file_image_id']))) {
+            \DB::rollback();
             Session::flash('error', 'For this Anchor please Upload Invoice Copy');
-            \DB::commit();
             return back(); 
         }
         
@@ -1711,7 +1711,7 @@ public function disburseTableInsert($exportData = [], $supplierIds = [], $allinv
         $uploadData = Helpers::uploadInvoiceFile($attributes, $batch_id); 
         if($uploadData['status']==0)
         {
-            \DB::commit();
+            \DB::rollback();
              Session::flash('error', $uploadData['message']);
              return back(); 
         }
@@ -1725,7 +1725,7 @@ public function disburseTableInsert($exportData = [], $supplierIds = [], $allinv
               $uploadData = Helpers::uploadZipInvoiceFile($attributes, $batch_id); ///Upload zip file
               if(!empty($uploadData) && $uploadData['status']==0)
              {
-                \DB::commit();
+                \DB::rollback();
                Session::flash('error', $uploadData['message']);
                return back(); 
              }
@@ -1744,7 +1744,7 @@ public function disburseTableInsert($exportData = [], $supplierIds = [], $allinv
                     $data = fgetcsv($handle, 1000, ",");
                     if(count($data) < 5 || count($data) > 6)
                     {
-                        \DB::commit();
+                        \DB::rollback();
                           Session::flash('error', 'Please check Csv file format.');
                           return back(); 
                     }
@@ -1759,7 +1759,7 @@ public function disburseTableInsert($exportData = [], $supplierIds = [], $allinv
                
                 if($multiValiChk['status']==0)
                 {
-                    \DB::commit();
+                    \DB::rollback();
                     Session::flash('multiVali', $multiValiChk);
                     return back();   
                 }
@@ -1782,7 +1782,7 @@ public function disburseTableInsert($exportData = [], $supplierIds = [], $allinv
                         $getPrgm  = $this->application->getProgram($prgm_id);
                         if($chlLmsCusto['status']==0)
                         {
-                            \DB::commit();
+                            \DB::rollback();
                            Session::flash('error', $chlLmsCusto['message']);
                            return back(); 
                         }
@@ -1813,7 +1813,7 @@ public function disburseTableInsert($exportData = [], $supplierIds = [], $allinv
 
                         if($getInvDueDate['status']==0)
                         {
-                            \DB::commit();
+                            \DB::rollback();
                            Session::flash('error', $getInvDueDate['message']);
                            return back(); 
                         }
@@ -1822,7 +1822,7 @@ public function disburseTableInsert($exportData = [], $supplierIds = [], $allinv
                        
                         if($error['status']==0)
                         {
-                            \DB::commit();
+                            \DB::rollback();
                            Session::flash('error', $error['message']);
                            return back(); 
                         }
