@@ -358,7 +358,7 @@ class InvoiceController extends Controller {
             $disbursalIds = $this->lmsRepo->findDisbursalByUserAndBatchId(['user_id' => $userId, 'disbursal_batch_id' => $disbursalBatchId])->toArray();
             if (!isset($disbursalIds) || empty($disbursalIds)) {
                     \DB::rollback();
-                    return redirect()->route('backend_get_sent_to_bank')->withErrors('Something went wrong please try again.');
+                    return redirect()->route('backend_get_sent_to_bank')->withErrors('Unable to process transaction as this transaction has been already processed.');
             }
 
             if ($disbursalIds) {
@@ -579,7 +579,7 @@ class InvoiceController extends Controller {
         $userMailArr['anchor_email'] = isset($value['user']['anchor']) && isset($value['user']['anchor']['comp_email']) ? $value['user']['anchor']['comp_email'] : null;
         $userMailArr['sales_email'] = isset($value['user']['anchor']) && isset($value['user']['anchor']['sales_user']) ? $value['user']['anchor']['sales_user']['email'] : null;
         $userMailArr['auth_email'] = \Auth::user() ? \Auth::user()->email : null; 
-        Event::dispatch("LMS_USER_DISBURSAL", serialize($userMailArr));
+        //Event::dispatch("LMS_USER_DISBURSAL", serialize($userMailArr));
 
         // $userMailArr['receiver_user_name'] = $name = $value['user']['anchor']['comp_name'];
         // $userMailArr['amount'] = $value['disburse_amount'];
