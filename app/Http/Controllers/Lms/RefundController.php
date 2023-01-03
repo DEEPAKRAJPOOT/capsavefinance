@@ -689,7 +689,7 @@ class RefundController extends Controller
             $allrecords[] =  $request->refund_req_id;
             $data = $this->lmsRepo->lmsGetCustomerRefund($allrecords);
             if(in_array($data[0]['process_status'], [3,4])) {
-                Session::flash('error', 'Transaction already under Process');
+                Session::flash('error', 'Unable to process transaction as this transaction has been already processed.');
                 return back(); 
             }
             DB::beginTransaction();

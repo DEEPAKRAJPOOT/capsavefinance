@@ -7,9 +7,7 @@
 		foreach($data as $customer){
 			$finalDisburseAmt += round($customer->refund_amount, 2);
 			$cust[$customer->payment->user_id] = 1;
-			$refund_date = $customer->refund_date;
 		}
-		$refund_date_set = \Carbon\Carbon::parse($refund_date)->format('d-m-Y');
 	}
 	$totalCustomer = count($cust);
 @endphp
@@ -39,7 +37,7 @@
 			<div class="col-6">
 				<div class="form-group">
 					<label for="txtCreditPeriod">Refund Date <span class="error_message_label">*</span> </label>
-					<input type="text" id="disburse_date" name="disburse_date" class="form-control date_of_birth datepicker-dis-fdate" required="" value='{{ $refund_date_set }}'>
+					<input type="text" id="disburse_date" name="disburse_date" class="form-control date_of_birth datepicker-dis-fdate" required="">
 					 @if(Session::has('error'))
 					 <div class="error">{{ Session::get('error') }}</div>
 					  
