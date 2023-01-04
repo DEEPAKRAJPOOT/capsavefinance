@@ -436,7 +436,10 @@
             setError('input[name=payout]', 'Please fill payout');
             flag = false;
         }else if(parseFloat(payout) > 100){
-            setError('input[name=payout]', 'Please fill correct payout percentage');
+            setError('input[name=payout]', 'Payout value should be in between 1-100% only');
+            flag = false;
+        }else if(parseFloat(payout) < 1){
+            setError('input[name=payout]', 'Payout value should be in between 1-100% only');
             flag = false;
         }
 
@@ -449,7 +452,10 @@
             setError('input[name=xirr]', 'Please fill xirr');
             flag = false;
         }else if(parseFloat(xirr) > 100){
-            setError('input[name=xirr]', 'Please fill correct xirr percentage');
+            setError('input[name=xirr]', 'XIRR value should be in between 1-100% only');
+            flag = false;
+        }else if(parseFloat(xirr) < 1){
+            setError('input[name=xirr]', 'XIRR value should be in between 1-100% only');
             flag = false;
         }
 
