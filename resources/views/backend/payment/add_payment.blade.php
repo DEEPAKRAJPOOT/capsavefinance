@@ -617,7 +617,7 @@ cursor: pointer;
             onkeyup: false,
             onclick: false,
             onfocusout: false,
-            onsubmit: false,
+            // onsubmit: false,
                 rules: {
                 search_bus: {
                     required: true,
