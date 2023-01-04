@@ -1243,8 +1243,16 @@
     }
     
     if(dsa_applicable == 1){
+
+        var regex = /^[a-zA-Z\s]+$/;
+        var isValid = regex.test(dsa_name)
         if(dsa_name == ''){
             setError('input[name=dsa_name]', 'Please fill dsa name');
+            flag = false;
+        }
+
+        if(!isValid){
+            setError('input[name=dsa_name]', 'please enter valid data only');
             flag = false;
         }
 
@@ -1259,8 +1267,14 @@
             flag = false;
         }
 
+        var eventValid = regex.test(payout_event)
         if(payout_event == ''){
             setError('input[name=payout_event]', 'Please fill payout event');
+            flag = false;
+        }
+
+        if(!eventValid){
+            setError('input[name=payout_event]', 'please enter valid data only');
             flag = false;
         }
 
