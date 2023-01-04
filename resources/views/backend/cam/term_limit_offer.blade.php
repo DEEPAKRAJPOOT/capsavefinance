@@ -128,7 +128,7 @@
          <!-----------------PROGRAM OFFER DSA--------------------->
     <div class="col-md-12">
           <div class="form-group row">
-            <label for="txtPassword" class="col-md-12" style="background-color: #F2F2F2;padding: 5px 0px 5px 20px;">Apply DSA</label>
+            <label for="txtPassword" class="col-md-12" style="background-color: #F2F2F2;padding: 5px 0px 5px 20px;">DSA Applicable</label>
             <div class="col-md-6">
                 <select name="dsa_applicable" id="dsa_applicable" class="form-control show-hide" >
                     <option value="">Select DSA Applicable</option>
@@ -386,6 +386,7 @@
     unsetError('input[name=payout]');
     unsetError('input[name=payout_event]');
     unsetError('input[name=xirr]');
+    unsetError('select[name=dsa_applicable]');
 
     let flag = true;
     let prgm_limit_amt = $('input[name=prgm_limit_amt]').val();
@@ -425,6 +426,10 @@
         flag = false;
     }else if(interest_rate != '' && parseFloat(interest_rate) > 100){
         setError('input[name=interest_rate]', 'Interest rate can not be greater than 100 percent');
+        flag = false;
+    }
+    if(dsa_applicable == ''){
+        setError('select[name=dsa_applicable]', 'Please select DSA');
         flag = false;
     }
 

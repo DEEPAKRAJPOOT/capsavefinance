@@ -202,7 +202,7 @@
     <!-----------------PROGRAM OFFER DSA--------------------->
     <div class="col-md-12">
           <div class="form-group row">
-            <label for="txtPassword" class="col-md-12" style="background-color: #F2F2F2;padding: 5px 0px 5px 20px;">Apply DSA</label>
+            <label for="txtPassword" class="col-md-12" style="background-color: #F2F2F2;padding: 5px 0px 5px 20px;">DSA Applicable</label>
             <div class="col-md-6">
                 <select name="dsa_applicable" id="dsa_applicable" class="form-control show-hide" >
                     <option value="">Select DSA Applicable</option>
@@ -1157,6 +1157,7 @@
     unsetError('input[name=payout]');
     unsetError('input[name=payout_event]');
     unsetError('input[name=xirr]');
+    unsetError('select[name=dsa_applicable]');
 
     let flag = true;
     let anchor_id = $('select[name=anchor_id]').val();
@@ -1190,6 +1191,11 @@
 
     if(prgm_id == ''){
         setError('select[name=prgm_id]', 'Please select Program');
+        flag = false;
+    }
+
+    if(dsa_applicable == ''){
+        setError('select[name=dsa_applicable]', 'Please select DSA');
         flag = false;
     }
 
@@ -1243,7 +1249,7 @@
         }
 
         if(payout == '' || isNaN(payout)){
-            setError('input[name=payout]', 'Please fill payout');
+            setError('input[name=payout]', 'please enter valid data only');
             flag = false;
         }else if(parseFloat(payout) > 100){
             setError('input[name=payout]', 'Payout value should be in between 1-100% only');
@@ -1259,7 +1265,7 @@
         }
 
         if(xirr == '' || isNaN(xirr)){
-            setError('input[name=xirr]', 'Please fill xirr');
+            setError('input[name=xirr]', 'please enter valid data only');
             flag = false;
         }else if(parseFloat(xirr) > 100){
             setError('input[name=xirr]', 'XIRR value should be in between 1-100% only');

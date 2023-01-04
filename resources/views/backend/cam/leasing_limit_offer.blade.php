@@ -260,7 +260,7 @@
         <!-----------------PROGRAM OFFER DSA--------------------->
     <div class="col-md-12">
           <div class="form-group row">
-            <label for="txtPassword" class="col-md-12" style="background-color: #F2F2F2;padding: 5px 0px 5px 20px;">Apply DSA</label>
+            <label for="txtPassword" class="col-md-12" style="background-color: #F2F2F2;padding: 5px 0px 5px 20px;">DSA Applicable</label>
             <div class="col-md-6">
                 <select name="dsa_applicable" id="dsa_applicable" class="form-control show-hide" >
                     <option value="">Select DSA Applicable</option>
@@ -349,6 +349,7 @@
     unsetError('input[name=payout]');
     unsetError('input[name=payout_event]');
     unsetError('input[name=xirr]');
+    unsetError('select[name=dsa_applicable]');
 
 
     let flag = true;
@@ -389,6 +390,11 @@
         setError('input[name=prgm_limit_amt]', 'Limit amount can not exceed from balance amount');
         flag = false;
     }*/
+    
+    if(dsa_applicable == ''){
+        setError('select[name=dsa_applicable]', 'Please select DSA');
+        flag = false;
+    }
 
     if(sub_limit.length == 0 || parseInt(sub_limit.replace(/,/g, '')) == 0){
         setError('input[name=sub_limit]', 'Please fill Limit of the Equipment');
