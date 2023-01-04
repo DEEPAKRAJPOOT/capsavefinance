@@ -5,6 +5,7 @@ namespace App\Console\Commands;
 use Illuminate\Console\Command;
 use App\Inv\Repositories\Models\Lms\Disbursal;
 use App\Inv\Repositories\Models\Payment;
+use Carbon\Carbon;
 use DB;
 
 class DisbPayChecks extends Command
@@ -31,7 +32,7 @@ class DisbPayChecks extends Command
      */
     public function __construct()
     {
-        $this->eodDate = now()->parse('2022-12-12')->toDateString();
+        $this->eodDate = now()->parse('2020-09-11')->toDateString();
         parent::__construct();
     }
 
@@ -50,10 +51,10 @@ class DisbPayChecks extends Command
             $dupPayments = $this->checkDuplicatePaymentRecords();
             $dupDisbursals = $this->checkDuplicateDisbursalRecords();
             $actualDisbursals = $this->checkActualDisbursalAmount();
-            dd($actualDisbursals);
-            if ($dupPayments || $dupDisbursals) {
+            if ($dupPayments || $dupDisbursals || $actualDisbursals) {
                 $emailData['disbursals'] = $dupDisbursals ?? [];
                 $emailData['payments']   = $dupPayments ?? [];
+                $emailData['actualDisbursals'] = $actualDisbursals ?? [];
                 \Event::dispatch("NOTIFY_DISB_PAY_CHECKS", serialize($emailData));
             }
         } catch (\Exception $ex) {
@@ -93,19 +94,25 @@ class DisbPayChecks extends Command
 
     private function checkActualDisbursalAmount(){
 
-        DB::enableQueryLog();
-
-       $actualDisbursals =  Disbursal::select(DB::raw("rta_disbursal.disbursal_id,rta_disbursal.user_id as customer_id, rta_disbursal.disburse_amount as amount,count(*) AS disbCount,(rta_inv.invoice_amount - rta_inv_disb.total_interest - (rta_inv.invoice_amount*rta_inv_disb.margin/100)) AS actual_disbursed_amount,rta_inv_disb.*,rta_trans.*,rta_offer.*"))
-        ->join('invoice_disbursed as inv_disb', 'disbursal.disbursal_id', '=', 'inv_disb.disbursal_id')
-        ->leftJoin('transactions as trans', 'inv_disb.invoice_disbursed_id', '=', 'trans.invoice_disbursed_id')
-        ->leftJoin('invoice as inv', 'inv_disb.invoice_id', '=', 'inv.invoice_id')
-        ->leftJoin('app_prgm_offer as offer', 'inv.prgm_offer_id', '=', 'offer.prgm_offer_id')
-        ->whereDate('disbursal.created_at', $this->eodDate)
-        ->where('trans.trans_type' ,'=', 16)
-        ->where('trans.entry_type', '=', 0)
-        ->where('disbursal.disburse_amount','!=',DB::raw('(rta_inv.invoice_amount - rta_inv_disb.total_interest - (rta_inv.invoice_amount*rta_inv_disb.margin/100))'))->groupBy(['disbursal.user_id', 'disbursal.disburse_amount', 'disbursal.disbursal_batch_id'])
-        ->get();
-       // dd(DB::getQueryLog());
+        $prevDate = Carbon::parse($this->eodDate)->subDays(1)->format('Y-m-d');
+        $actualDisbursals =  DB::select("SELECT 
+                                        a.customer_id,
+                                        a.virtual_acc_id,
+                                        count(a.disbursal_id) as total_invoice,
+                                        SUM(a.invoice_amount) as inv_amount,
+                                        SUM(a.invoice_approve_amount) as inv_approve_amount,
+                                        SUM(a.disbursal_amount) as disbrsl_amnt,
+                                        SUM(a.total_interest) as total_interest, 
+                                        SUM(a.marginAmt) as marginAmnt,
+                                        SUM(a.actual_invoice_disbursed) as actual_invoice_disbursed,
+                                        SUM(a.principal_amount) as principle_amount,
+                                        SUM(a.trans_amount) as trans_amount,
+                                        SUM(ROUND(a.tally_amount,2)) as tally_amount,
+                                        CASE WHEN SUM(a.principal_amount) = SUM(a.trans_amount) AND SUM(a.principal_amount) = SUM(ROUND(a.tally_amount,2)) AND SUM(a.principal_amount) =  SUM(ROUND(a.disbursal_amount,2)) THEN 'Pass' ELSE 'Fail' END AS result
+                                        FROM invdisbtrantallycheck2 AS a 
+                                        WHERE a.created_at >= '".$prevDate." 18:30:00' AND a.created_at <= '".$this->eodDate." 18:29:00'
+                                        GROUP BY a.customer_id;");
+       $actualDisbursals = json_decode(json_encode ( $actualDisbursals ) , true);
        return $actualDisbursals;
     }
 

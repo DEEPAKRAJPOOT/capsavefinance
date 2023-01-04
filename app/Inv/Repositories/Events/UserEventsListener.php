@@ -1769,15 +1769,15 @@ class UserEventsListener extends BaseEvent
      * @param Array $attributes
     */
     public function onDisbPayChecksAlert($attributes) {
-        $data = unserialize($attributes); 
+        $data = unserialize($attributes);
         $this->func_name = __FUNCTION__;
-        $eodCheckData = view('reports.disb_pay_checks')->with(['disbursals' => $data['disbursals'], 'payments' => $data['payments']])->render();
+        $eodCheckData = view('reports.disb_pay_checks')->with(['disbursals' => $data['disbursals'], 'payments' => $data['payments'], 'actualDisbursals' => $data['actualDisbursals']])->render();
                 
         $email_content = EmailTemplate::getEmailTemplate("EOD_CHECKS_ALERT");
         if ($email_content) {
             Mail::send('email', ['baseUrl'=> env('HTTP_APPURL',''), 'varContent' => $eodCheckData],
                 function ($message) use ($data, $email_content, $eodCheckData) {                 
-                    $email = env('EOD_CHECK_MAIL_TO');
+                    $email = env('EOD_CHECK_MAIL_TO','deepak.singh@zuron.in');
                     $cc = array_filter(explode(',', $email_content->cc));
                     $bcc = array_filter(explode(',', $email_content->bcc));
                     if (!empty($bcc)) {
