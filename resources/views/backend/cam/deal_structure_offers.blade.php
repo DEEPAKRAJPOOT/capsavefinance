@@ -101,6 +101,8 @@
               <tr>
                     <td><b>DSA Applicable: </b></td>
                     <td colspan="3">{{($leaseOffer->dsa_applicable == '1')?'Yes':'No'}}</td>
+                    <td></td>
+                    <td></td>
                 </tr>
                 @if($leaseOffer->dsa_applicable == '1')
                 <tr>
@@ -239,6 +241,8 @@
               <tr>
                     <td><b>DSA Applicable: </b></td>
                     <td colspan="3">{{($supplyOffer->dsa_applicable == '1')?'Yes':'No'}}</td>
+                    <td></td>
+                    <td></td>
                 </tr>
                 @if($supplyOffer->dsa_applicable == '1')
                 <tr>
@@ -457,6 +461,8 @@
                 <tr>
                     <td><b>DSA Applicable: </b></td>
                     <td colspan="3">{{($termLoanOffer->dsa_applicable == '1')?'Yes':'No'}}</td>
+                    <td></td>
+                    <td></td>
                 </tr>
                 @if($termLoanOffer->dsa_applicable == '1')
                 <tr>

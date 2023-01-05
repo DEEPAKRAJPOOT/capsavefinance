@@ -438,9 +438,7 @@
         if(dsa_name == ''){
             setError('input[name=dsa_name]', 'Please fill dsa name');
             flag = false;
-        }
-
-        if(!isValid){
+        }else if(!isValid){
             setError('input[name=dsa_name]', 'please enter valid data only');
             flag = false;
         }
@@ -460,9 +458,7 @@
         if(payout_event == ''){
             setError('input[name=payout_event]', 'Please fill payout event');
             flag = false;
-        }
-
-        if(!eventValid){
+        }else if(!eventValid){
             setError('input[name=payout_event]', 'please enter valid data only');
             flag = false;
         }
