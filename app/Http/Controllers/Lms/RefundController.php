@@ -25,6 +25,8 @@ use App\Helpers\RefundHelper;
 use App\Inv\Repositories\Contracts\MasterInterface;
 use App\Inv\Repositories\Contracts\Traits\ActivityLogTrait;
 use DB;
+use App\Inv\Repositories\Models\Lms\Refund\RefundReq;
+
 
 class RefundController extends Controller
 {
@@ -442,6 +444,8 @@ class RefundController extends Controller
 
     public function refundUpdation($refundIds = [], $supplierIds = [], $allAprvls = [], $disburseDate = null, $refundType = null, $disbursalApiLogId = null)
     {
+        \DB::beginTransaction();
+        try{
         $exportData = [];
         $aprvlRfd = [];
         $aprvlRfdProcess = [];
@@ -464,13 +468,13 @@ class RefundController extends Controller
                     $aprvlRfd['ifsc_code'] = ($aprvl['payment']['user']['is_buyer'] == 2) ? $aprvl['payment']['user']['anchor_bank_details']['ifsc_code'] : $aprvl['payment']['lms_user']['bank_details']['ifsc_code'];
                     $aprvlRfd['acc_no'] = ($aprvl['payment']['user']['is_buyer'] == 2) ? $aprvl['payment']['user']['anchor_bank_details']['acc_no'] : $aprvl['payment']['lms_user']['bank_details']['acc_no'];           
                     $aprvlRfd['status'] = 7;
-                    $aprvlRfd['process_status'] = 1;
+                    $aprvlRfd['process_status'] = RefundReq::REDUND_PENDING;
                     
                     if (isset($aprvlRfd)) {
                         $refundDisbursed = $this->lmsRepo->updateAprvlRqst($aprvlRfd, $aprvl['refund_req_id']);
                     }
                     if (isset($refundDisbursed)) {
-                        $aprvlRfdProcess['process_status'] = 2;
+                        $aprvlRfdProcess['process_status'] = RefundReq::REDUND_PROCESSING;
                         $this->lmsRepo->updateAprvlRqst($aprvlRfdProcess, $aprvl['refund_req_id']);
                     }
 
@@ -519,7 +523,14 @@ class RefundController extends Controller
                 }
             }
         }
+        \DB::commit();
         return true;
+    }catch(Exception $exception){
+        \DB::rollback();
+        return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex))->withInput();
+    }
+
+        
     }
 
     public function downloadSentBank()
@@ -688,7 +699,7 @@ class RefundController extends Controller
             }
             $allrecords[] =  $request->refund_req_id;
             $data = $this->lmsRepo->lmsGetCustomerRefund($allrecords);
-            if(in_array($data[0]['process_status'], [3,4])) {
+            if(in_array($data[0]['process_status'], [RefundReq::REDUND_PROCESSED,RefundReq::REDUND_COMPLETED])) {
                 Session::flash('error', 'Unable to process transaction as this transaction has been already processed.');
                 return back(); 
             }
@@ -705,7 +716,7 @@ class RefundController extends Controller
             $apiLogData['comment'] = $remarks;
             $apiLogData['actual_refund_date'] = $actual_refund_date;
             $apiLogData['status'] = 8;
-            $apiLogData['process_status'] = 3;
+            $apiLogData['process_status'] = RefundReq::REDUND_PROCESSED;
             $this->lmsRepo->updateAprvlRqst($apiLogData,$refund_req_id);
             $this->finalRefundTransactions($refund_req_id, $actual_refund_date);
             $whereActivi['activity_code'] = 'updateDisburseRefund';
@@ -716,7 +727,7 @@ class RefundController extends Controller
                 $arrActivity['app_id'] = null;
                 $this->activityLogByTrait($activity_type_id, $activity_desc, response()->json(['apiLogData'=>$apiLogData, 'Request'=>$request->all()]), $arrActivity);
             }
-            $apiProcesData['process_status'] = 4;
+            $apiProcesData['process_status'] = RefundReq::REDUND_COMPLETED;
             $this->lmsRepo->updateAprvlRqst($apiProcesData,$refund_req_id);
             DB::commit();     
             Session::flash('message',trans('backend_messages.refundedMarked'));

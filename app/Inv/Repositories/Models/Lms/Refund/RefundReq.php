@@ -64,6 +64,11 @@ class RefundReq extends BaseModel {
         'updated_by'
     ];
 
+    CONST REDUND_PENDING    = 1;
+    CONST REDUND_PROCESSING = 2;
+    CONST REDUND_PROCESSED  = 3;
+    CONST REDUND_COMPLETED  = 4;
+
     public function payment(){
         return $this->belongsTo('App\Inv\Repositories\Models\Payment','payment_id','payment_id');
     } 
