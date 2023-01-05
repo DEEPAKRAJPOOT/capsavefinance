@@ -354,6 +354,14 @@ class InvoiceController extends Controller {
             $remarks = $request->remarks;
             $createdBy = Auth::user()->user_id;
 
+            $disbursalIds = $this->lmsRepo->getDisbursedData(['user_id' => $userId, 'disbursal_batch_id' => $disbursalBatchId])->toArray();
+            dd($disbursalIds);
+
+            if (!$this->verifyTransInitiator($disbursalIds)) {
+                DB::rollback();
+                return redirect()->route('backend_get_sent_to_bank')->withErrors('Someone is already trying to processed transactions');
+            }
+
             $invoiceIds = $this->lmsRepo->findInvoicesByUserAndBatchId(['user_id' => $userId, 'disbursal_batch_id' => $disbursalBatchId])->toArray();
             $disbursalIds = $this->lmsRepo->findDisbursalByUserAndBatchId(['user_id' => $userId, 'disbursal_batch_id' => $disbursalBatchId])->toArray();
             if (!isset($disbursalIds) || empty($disbursalIds)) {
@@ -3038,6 +3046,25 @@ public function disburseTableInsert($exportData = [], $supplierIds = [], $allinv
         } catch (Exception $ex) {
             // return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
         }
+    }
+
+    private function verifyTransInitiator($disbursal, $settleConfirmation = false)
+    {
+        $disbursalUpdatedBy = $disbursal->updated_by;
+        if ($disbursal && $disbursalUpdatedBy) {
+            if (gettype($disbursalUpdatedBy) === 'string') {
+                $disbursalUpdatedBy = intval($disbursal->updated_by);
+            }
+
+            if ($disbursal->is_settled == Payment::DISBURSAL_PROCESSING && Auth::user()->user_id !== $disbursalUpdatedBy) {
+                return false;
+            }
+
+            if ($settleConfirmation && $disbursal->is_settled == Payment::DISBURSAL_PROCESSED && Auth::user()->user_id !== $disbursalUpdatedBy) {
+                return false;
+            }
+        }
+        return true;
     }
 
 }

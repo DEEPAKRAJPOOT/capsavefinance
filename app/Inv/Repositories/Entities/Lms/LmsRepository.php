@@ -1972,4 +1972,9 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
 						->whereNotIn('user_id',[$userId])->first();
 		return $data;
 	}
+	public function getDisbursedData($data)
+	{
+		return Disbursal::where($data)
+				->pluck('disbursal_id');
+	}
 }
