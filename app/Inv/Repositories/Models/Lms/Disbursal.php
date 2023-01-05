@@ -59,6 +59,7 @@ class Disbursal extends BaseModel {
 		'status_id',
 		'disburse_type',
 		'status_update_time',
+		'is_disbursed',
 		'created_at',
 		'created_by',
 		'updated_at',

@@ -32,6 +32,8 @@ use App\Inv\Repositories\Contracts\Traits\ActivityLogTrait;
 use Illuminate\Support\Facades\App;
 use App\Inv\Repositories\Models\Lms\Transactions;
 use App\Inv\Repositories\Models\AppOfferAdhocLimit;
+use App\Inv\Repositories\Models\Lms\Disbursal;
+
 
 class InvoiceController extends Controller {
 
@@ -354,14 +356,14 @@ class InvoiceController extends Controller {
             $remarks = $request->remarks;
             $createdBy = Auth::user()->user_id;
 
-            $disbursalIds = $this->lmsRepo->getDisbursedData(['user_id' => $userId, 'disbursal_batch_id' => $disbursalBatchId])->toArray();
-            dd($disbursalIds);
+            $disbursalData = $this->lmsRepo->getDisbursedData(['user_id' => $userId, 'disbursal_batch_id' => $disbursalBatchId])->first();
 
-            if (!$this->verifyTransInitiator($disbursalIds)) {
+            if (!$this->verifyDisbursalitiator($disbursalData,$disburseConfirmation = true)) {
                 DB::rollback();
                 return redirect()->route('backend_get_sent_to_bank')->withErrors('Someone is already trying to processed transactions');
             }
-
+            $disbursalData->update(['is_disbursed' => Disbursal::DISBURSAL_PROCESSING]);
+           
             $invoiceIds = $this->lmsRepo->findInvoicesByUserAndBatchId(['user_id' => $userId, 'disbursal_batch_id' => $disbursalBatchId])->toArray();
             $disbursalIds = $this->lmsRepo->findDisbursalByUserAndBatchId(['user_id' => $userId, 'disbursal_batch_id' => $disbursalBatchId])->toArray();
             if (!isset($disbursalIds) || empty($disbursalIds)) {
@@ -394,7 +396,8 @@ class InvoiceController extends Controller {
                 $activity_desc = 'Update Disburse Invoice, Send To Bank (Manage Invoice)';
                 $arrActivity['app_id'] = null;
                 $this->activityLogByTrait($activity_type_id, $activity_desc, response()->json($request->all()), $arrActivity);
-            }            
+            }
+            $disbursalData->update(['is_disbursed' => Disbursal::DISBURSAL_DISBURED]);            
             \DB::commit();
             Session::flash('message',trans('backend_messages.disburseMarked'));
             return redirect()->route('backend_get_sent_to_bank');
@@ -3048,19 +3051,17 @@ public function disburseTableInsert($exportData = [], $supplierIds = [], $allinv
         }
     }
 
-    private function verifyTransInitiator($disbursal, $settleConfirmation = false)
+    private function verifyDisbursalitiator($disbursal, $disburseConfirmation = false)
     {
-        $disbursalUpdatedBy = $disbursal->updated_by;
+        $disbursalUpdatedBy = $disbursal['updated_by'];
         if ($disbursal && $disbursalUpdatedBy) {
             if (gettype($disbursalUpdatedBy) === 'string') {
-                $disbursalUpdatedBy = intval($disbursal->updated_by);
+                $disbursalUpdatedBy = intval($disbursal['updated_by']);
             }
-
-            if ($disbursal->is_settled == Payment::DISBURSAL_PROCESSING && Auth::user()->user_id !== $disbursalUpdatedBy) {
+            if ($disbursal['is_disbursed'] == Disbursal::DISBURSAL_PROCESSING && Auth::user()->user_id !== $disbursalUpdatedBy) {
                 return false;
             }
-
-            if ($settleConfirmation && $disbursal->is_settled == Payment::DISBURSAL_PROCESSED && Auth::user()->user_id !== $disbursalUpdatedBy) {
+            if ($disburseConfirmation && $disbursal['is_disbursed'] == Disbursal::DISBURSAL_PROCESSED && Auth::user()->user_id !== $disbursalUpdatedBy) {
                 return false;
             }
         }
