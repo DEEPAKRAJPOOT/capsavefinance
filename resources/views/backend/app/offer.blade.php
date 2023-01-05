@@ -263,8 +263,39 @@ tr.border_bottom td {
                                                     <td></td>
                                                 </tr>
                                                 @endif
-
+                                                @if($supplyOffer->dsa_applicable == '1')
+                                                <tr>
+                                                <td></td>
+                                                  <td><b>DSA Applicable: </b></td>
+                                                  <td>Yes</td>
+                                                  <td><b>DSA Name: </b></td>
+                                                  <td>{{$supplyOffer->programOfferDsa->dsa_name}}</td>
+                                                  <td></td>
+                                                </tr>
+                                                <tr>
+                                                <td></td>
+                                                <td><b>Payout %:</b></td>
+                                                <td>{{number_format($supplyOffer->programOfferDsa->payout,2)}}%</td>
+                                                <td><b>Payout Event: </b></td>
+                                                <td>{{$supplyOffer->programOfferDsa->payout_event}}</td>
+                                                <td></td>
+                                                </tr>
+                                                <tr>
+                                                <td></td>
+                                                <td><b>XIRR %:</b></td>
+                                                <td>{{number_format($supplyOffer->programOfferDsa->xirr,2)}}%</td>
+                                                <td></td>
+                                                <td></td>
+                                                </tr>
+                                                @else
+                                                <tr>
+                                                    <td></td>
+                                                    <td><b>DSA Applicable: </b></td>
+                                                    <td>No</td>       
+                                                </tr>
+                                                @endif
                                                 @if($loop->last)
+                                                
                                             </tbody>
                                         </table>
                                     </div>
@@ -336,6 +367,8 @@ tr.border_bottom td {
                                                     <td></td>
                                                     <td><b>IRR: </b></td>
                                                     <td>{{ $termOffer->irr }}%</td>
+                                                    <td></td>
+                                                    <td></td>
                                                 </tr>
                                                 <td></td>
                                                     <td><b>Asset Insurance: </b></td>
@@ -401,6 +434,31 @@ tr.border_bottom td {
                                                     <td></td>
                                                     <td></td>
                                                 </tr>
+                                                @if($termOffer->dsa_applicable == '1')
+                                                <tr>
+                                                <td></td>
+                                                  <td><b>DSA Applicable: </b></td>
+                                                  <td>Yes</td>
+                                                  <td><b>DSA Name: </b></td>
+                                                  <td>{{$termOffer->programOfferDsa->dsa_name}}</td>
+                                                  <td></td>
+                                                </tr>
+                                                <tr>
+                                                <td></td>
+                                                <td><b>Payout %:</b></td>
+                                                <td>{{number_format($termOffer->programOfferDsa->payout,2)}}%</td>
+                                                <td><b>Payout Event: </b></td>
+                                                <td>{{$termOffer->programOfferDsa->payout_event}}</td>
+                                                <td></td>
+                                                </tr>
+                                                <tr>
+                                                <td></td>
+                                                <td><b>XIRR %:</b></td>
+                                                <td>{{number_format($termOffer->programOfferDsa->xirr,2)}}%</td>
+                                                <td></td>
+                                                <td></td>
+                                                </tr>
+                                                @endif
                                                 @if($loop->last)
                                             </tbody>
                                         </table>
@@ -490,7 +548,7 @@ tr.border_bottom td {
                                                     <td></td>
                                                 </tr>
                                                 @endif
-                                                <tr class="border_bottom">
+                                                <tr >
                                                 <td></td>
                                                     <td><b>Processing Fee (%):</b></td>
                                                     <td>{{$leaseOffer->processing_fee}} %</td>
@@ -514,6 +572,37 @@ tr.border_bottom td {
                                                     </td>
                                                     <td></td>
                                                 </tr>
+                                                @if($leaseOffer->dsa_applicable == '1')
+                                                <tr>
+                                                <td></td>
+                                                  <td><b>DSA Applicable: </b></td>
+                                                  <td>Yes</td>
+                                                  <td><b>DSA Name: </b></td>
+                                                  <td>{{$leaseOffer->programOfferDsa->dsa_name}}</td>
+                                                  <td></td>
+                                                </tr>
+                                                <tr>
+                                                <td></td>
+                                                <td><b>Payout %:</b></td>
+                                                <td>{{number_format($leaseOffer->programOfferDsa->payout,2)}}%</td>
+                                                <td><b>Payout Event: </b></td>
+                                                <td>{{$leaseOffer->programOfferDsa->payout_event}}</td>
+                                                <td></td>
+                                                </tr>
+                                                <tr>
+                                                <td></td>
+                                                <td><b>XIRR %:</b></td>
+                                                <td>{{number_format($leaseOffer->programOfferDsa->xirr,2)}}%</td>
+                                                <td></td>
+                                                <td></td>
+                                                </tr>
+                                                @else
+                                                <tr>
+                                                    <td></td>
+                                                    <td><b>DSA Applicable: </b></td>
+                                                    <td>No</td>       
+                                                </tr>
+                                                @endif
                                                 @if($loop->last)
                                             </tbody>
                                         </table>

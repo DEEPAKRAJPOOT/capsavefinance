@@ -100,7 +100,7 @@
                
               <tr>
                     <td><b>DSA Applicable: </b></td>
-                    <td colspan="3">{{($leaseOffer->dsa_applicable == '1')?'Yes':'No'}}</td>
+                    <td >{{($leaseOffer->dsa_applicable == '1')?'Yes':'No'}}</td>
                     <td></td>
                     <td></td>
                 </tr>
@@ -240,7 +240,7 @@
               
               <tr>
                     <td><b>DSA Applicable: </b></td>
-                    <td colspan="3">{{($supplyOffer->dsa_applicable == '1')?'Yes':'No'}}</td>
+                    <td >{{($supplyOffer->dsa_applicable == '1')?'Yes':'No'}}</td>
                     <td></td>
                     <td></td>
                 </tr>
@@ -460,13 +460,13 @@
               
                 <tr>
                     <td><b>DSA Applicable: </b></td>
-                    <td colspan="3">{{($termLoanOffer->dsa_applicable == '1')?'Yes':'No'}}</td>
+                    <td >{{($termLoanOffer->dsa_applicable == '1')?'Yes':'No'}}</td>
                     <td></td>
                     <td></td>
                 </tr>
                 @if($termLoanOffer->dsa_applicable == '1')
                 <tr>
-                    <td><b>DSA Namessss: </b></td>
+                    <td><b>DSA Name: </b></td>
                     <td>{{$termLoanOffer->programOfferDsa->dsa_name}}</td>
                     <td><b>Payout %:</b></td>
                     <td>{{number_format($termLoanOffer->programOfferDsa->payout,2)}}%</td>
