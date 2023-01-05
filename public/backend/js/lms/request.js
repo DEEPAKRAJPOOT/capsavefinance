@@ -236,7 +236,7 @@ $(document).on('click','#sentToBankBtn', function(){
                 allInvIds = [];
             }
             $('input:checkbox').attr('checked', 'checked');
-            $("input:checkbox[name=checkinvoiceid]:checked").each(function(){
+            $("input:checkbox[class=refund-request]:checked").each(function(){
                 let current_id = $(this).val();
                 allInvIds.push(current_id);
                 allInvIds.join();
@@ -248,7 +248,7 @@ $(document).on('click','#sentToBankBtn', function(){
             if(!parent_inv_ids.length){
                 allInvIds = [];
             }
-            $("input:checkbox[name=checkinvoiceid]:checked").each(function(){
+            $("input:checkbox[class=refund-request]:checked").each(function(){
                 let current_id = $(this).val();
                 allInvIds = allInvIds.filter(e => e !== current_id);
             });
