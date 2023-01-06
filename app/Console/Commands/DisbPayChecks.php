@@ -15,14 +15,16 @@ class DisbPayChecks extends Command
      *
      * @var string
      */
-    protected $signature = 'disb_pays:checks';
+    protected $signature = 'disb_pays:checks 
+    {type=0 : The type of report}
+    {report_date=2020-09-08 : Date of Overdue Report(YYYY/MM/DD)}';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'To check disbursements and payments of eod';
+    protected $description = 'To check disbursements and payments of eod ';
 
     protected $eodDate = '';
     /**
@@ -32,7 +34,6 @@ class DisbPayChecks extends Command
      */
     public function __construct()
     {
-        $this->eodDate = now()->parse('2020-09-11')->toDateString();
         parent::__construct();
     }
 
@@ -43,14 +44,24 @@ class DisbPayChecks extends Command
      */
     public function handle()
     {
+        $this->eodDate = now()->parse($this->argument('report_date'))->toDateString();
+        $reportType = $this->argument('type');
         ini_set("memory_limit", "-1");
         ini_set('max_execution_time', 10000);
 
         try {
-            //dd($this->eodDate);
-            $dupPayments = $this->checkDuplicatePaymentRecords();
-            $dupDisbursals = $this->checkDuplicateDisbursalRecords();
-            $actualDisbursals = $this->checkActualDisbursalAmount();
+            //dd($reportType);
+            if($reportType == '1'){
+                $dupPayments = $this->checkDuplicatePaymentRecords();
+            }else if($reportType == '2'){
+                $dupDisbursals = $this->checkDuplicateDisbursalRecords();
+            }else if($reportType == '3'){
+                $actualDisbursals = $this->checkActualDisbursalAmount();
+            }else{
+                $dupPayments = $this->checkDuplicatePaymentRecords();
+                $dupDisbursals = $this->checkDuplicateDisbursalRecords();
+                $actualDisbursals = $this->checkActualDisbursalAmount();
+            }
             if ($dupPayments || $dupDisbursals || $actualDisbursals) {
                 $emailData['disbursals'] = $dupDisbursals ?? [];
                 $emailData['payments']   = $dupPayments ?? [];
