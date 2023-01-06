@@ -1249,7 +1249,7 @@ public function disburseTableInsert($exportData = [], $supplierIds = [], $allinv
             }
             if($invoiceNumbers!='') {
                 \DB::rollback();
-                return redirect()->route('backend_get_disbursed_invoice')->withErrors('Invoice '.$invoiceNumbers.' already under process of disbursment');
+                return redirect()->route('backend_get_disbursed_invoice')->withErrors('Unable to process transaction as following Invoice '.$invoiceNumbers.' has been already processed.');
             }
 
             $supplierIds = $this->lmsRepo->getInvoiceSupplier($allrecords)->toArray();
