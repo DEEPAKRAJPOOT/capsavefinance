@@ -6,6 +6,7 @@
     font-weight: bold;
    }
   </style>
+  
   <form method="POST" style="width:100%;" action="{{route('update_limit_offer')}}" target="_top" onsubmit="return checkSupplyValidations(this)">
     @csrf
     <input type="hidden" value="{{request()->get('app_id')}}" name="app_id">

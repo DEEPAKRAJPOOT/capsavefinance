@@ -9,6 +9,7 @@ use Session;
 use Storage;
 use PDF as DPDF;
 use PHPExcel;
+use DB;
 use PHPExcel_IOFactory;
 use Carbon\Carbon;
 use App\Mail\ReviewerSummary;
@@ -2157,36 +2158,38 @@ class CamController extends Controller
           //if (empty($prgmOfferId)) {
             Helpers::updateAppCurrentStatus($appId, config('common.mst_status_id.OFFER_GENERATED'));
             //} 
-        $requestData =  $request->all();
-        if($requestData['dsa_applicable'] == '1'){
-          $dsaData['dsa_name'] = $requestData['dsa_name'];
-          $dsaData['payout']   = number_format($requestData['payout'],2);
-          $dsaData['payout_event'] = $requestData['payout_event'];
-          $dsaData['xirr'] = number_format($requestData['xirr'],2);
-          $offerData= $this->appRepo->addProgramOffer($requestData, $aplid, $prgmOfferId);
-           if($requestData['offer_dsa_id'] != null){
-            $prgmOfferDsa = AppProgramOfferDsa::where(['offer_dsa_id'=>$requestData['offer_dsa_id']])->first();
-            if($prgmOfferDsa){
-               $dsa_updated = AppProgramOfferDsa::where(['offer_dsa_id'=>$requestData['offer_dsa_id']])->update($dsaData);
-             }else{
-               $dsaData['prgm_offer_id'] = $offerData->prgm_offer_id;
-               $dsa_added = AppProgramOfferDsa::create($dsaData);
-             }
-           }else{
-             $dsaData['prgm_offer_id'] = $offerData->prgm_offer_id;
-             $dsa_added = AppProgramOfferDsa::create($dsaData);
-           }
-        }else{
-          $requestData['dsa_applicable'] = 0;
-          if($requestData['offer_dsa_id'] != null){
-            $prgmOfferDsa = AppProgramOfferDsa::where(['offer_dsa_id'=>$requestData['offer_dsa_id']])->first();
-            if($prgmOfferDsa){
-               $dsa_delete = AppProgramOfferDsa::where(['offer_dsa_id'=>$requestData['offer_dsa_id']])->delete();
-             }
-           }
-        }
-          
-          
+            $requestData =  $request->all();
+            if($requestData['dsa_applicable'] == '1'){
+              $dsaData['dsa_name'] = $requestData['dsa_name'];
+              $dsaData['payout']   = number_format($requestData['payout'],2);
+              $dsaData['payout_event'] = $requestData['payout_event'];
+              $dsaData['xirr'] = number_format($requestData['xirr'],2);
+              $offerData= $this->appRepo->addProgramOffer($request->all(), $aplid, $prgmOfferId);
+               if($requestData['offer_dsa_id'] != null){
+                $prgmOfferDsa = AppProgramOfferDsa::where(['offer_dsa_id'=>$requestData['offer_dsa_id'],'prgm_offer_id'=>$offerData->prgm_offer_id])->first();
+                if($prgmOfferDsa){
+                   $dsa_updated = AppProgramOfferDsa::where(['offer_dsa_id'=>$requestData['offer_dsa_id'],'prgm_offer_id'=>$offerData->prgm_offer_id])->update($dsaData);
+                  }else{
+                   $dsaData['prgm_offer_id'] = $offerData->prgm_offer_id;
+                   $dsa_added = AppProgramOfferDsa::create($dsaData);
+                 }
+               }else{
+                 $dsaData['prgm_offer_id'] = $offerData->prgm_offer_id;
+                 $dsa_added = AppProgramOfferDsa::create($dsaData);
+               }
+            }else if($requestData['dsa_applicable'] == '0'){
+              $requestData['dsa_applicable'] = 0;
+              $offerData= $this->appRepo->addProgramOffer($requestData, $aplid, $prgmOfferId);
+              if($requestData['offer_dsa_id'] != null){
+                $prgmOfferDsa = AppProgramOfferDsa::where(['offer_dsa_id'=>$requestData['offer_dsa_id'],'prgm_offer_id'=>$offerData->prgm_offer_id])->first();
+                if($prgmOfferDsa){
+                  DB::table('app_prgm_offer_dsa')
+                    ->where('offer_dsa_id', $requestData['offer_dsa_id'])
+                    ->delete();
+                 }
+               }
+            }  
+      
         $whereActivi['activity_code'] = 'update_limit_offer';
         $activity = $this->mstRepo->getActivity($whereActivi);
         if(!empty($activity)) {
