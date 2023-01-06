@@ -2163,13 +2163,9 @@ class CamController extends Controller
           $dsaData['payout']   = number_format($requestData['payout'],2);
           $dsaData['payout_event'] = $requestData['payout_event'];
           $dsaData['xirr'] = number_format($requestData['xirr'],2);
-        }else{
-          $requestData['dsa_applicable'] = 0;
-        }
-
-           $offerData= $this->appRepo->addProgramOffer($requestData, $aplid, $prgmOfferId);
+          $offerData= $this->appRepo->addProgramOffer($requestData, $aplid, $prgmOfferId);
            if($requestData['offer_dsa_id'] != null){
-            $prgmOfferDsa = AppProgramOfferDsa::where(['prgm_offer_id'=>$offerData->prgm_offer_id])->first();
+            $prgmOfferDsa = AppProgramOfferDsa::where(['offer_dsa_id'=>$requestData['offer_dsa_id']])->first();
             if($prgmOfferDsa){
                $dsa_updated = AppProgramOfferDsa::where(['offer_dsa_id'=>$requestData['offer_dsa_id']])->update($dsaData);
              }else{
@@ -2180,6 +2176,15 @@ class CamController extends Controller
              $dsaData['prgm_offer_id'] = $offerData->prgm_offer_id;
              $dsa_added = AppProgramOfferDsa::create($dsaData);
            }
+        }else{
+          $requestData['dsa_applicable'] = 0;
+          if($requestData['offer_dsa_id'] != null){
+            $prgmOfferDsa = AppProgramOfferDsa::where(['offer_dsa_id'=>$requestData['offer_dsa_id']])->first();
+            if($prgmOfferDsa){
+               $dsa_delete = AppProgramOfferDsa::where(['offer_dsa_id'=>$requestData['offer_dsa_id']])->delete();
+             }
+           }
+        }
           
           
         $whereActivi['activity_code'] = 'update_limit_offer';

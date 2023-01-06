@@ -465,9 +465,9 @@
             setError('input[name=payout_event]', 'please enter valid data only');
             flag = false;
         }
-
+        console.log(decimalregex.test(xirr));
         if(xirr == ''){
-            setError('input[name=payout]', 'please fill xirr');
+            setError('input[name=xirr]', 'please fill xirr');
             flag = false;
         }else if(isNaN(xirr) || !decimalregex.test(xirr)){
             setError('input[name=xirr]', 'please enter valid data only');
