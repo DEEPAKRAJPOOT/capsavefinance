@@ -16,8 +16,8 @@ class DisbPayChecks extends Command
      * @var string
      */
     protected $signature = 'disb_pays:checks 
-    {type=0 : The type of report}
-    {report_date=2020-09-08 : Date of Overdue Report(YYYY/MM/DD)}';
+    {type=0 : The type of report 1 = Duplicate payment Record , 2 = Duplicate Disbursal Report , 3 = Actual Disbursal Report and by default All Reports}
+    {report_date=0 : Date of disbursements Report(YYYY/MM/DD)}';
 
     /**
      * The console command description.
@@ -44,13 +44,35 @@ class DisbPayChecks extends Command
      */
     public function handle()
     {
-        $this->eodDate = now()->parse($this->argument('report_date'))->toDateString();
-        $reportType = $this->argument('type');
+        if($this->argument('type') == '0'){
+            $type = $this->choice(
+                'Which type of record you want to execute?',
+                ['1','2','3','0'],
+                $defaultIndex = '3',
+            );
+        }else{
+            $type = $this->argument('type');
+        }
+        
+        if($this->argument('report_date') == '0'){
+            $report_date = $this->choice(
+                'Which date of record you want to execute?',
+                ['2020-09-08'],
+            );
+        }else{
+            $report_date = $this->argument('report_date');
+        }
+
+        $this->eodDate = now()->parse($report_date)->toDateString();
+        $reportType = $type;
         ini_set("memory_limit", "-1");
         ini_set('max_execution_time', 10000);
 
         try {
             //dd($reportType);
+            $dupPayments=false;
+            $dupDisbursals=false;
+            $actualDisbursals=false;
             if($reportType == '1'){
                 $dupPayments = $this->checkDuplicatePaymentRecords();
             }else if($reportType == '2'){
@@ -63,9 +85,9 @@ class DisbPayChecks extends Command
                 $actualDisbursals = $this->checkActualDisbursalAmount();
             }
             if ($dupPayments || $dupDisbursals || $actualDisbursals) {
-                $emailData['disbursals'] = $dupDisbursals ?? [];
-                $emailData['payments']   = $dupPayments ?? [];
-                $emailData['actualDisbursals'] = $actualDisbursals ?? [];
+                $emailData['disbursals'] = $dupDisbursals?$dupDisbursals: [];
+                $emailData['payments']   = $dupPayments ? $dupPayments : [];
+                $emailData['actualDisbursals'] = $actualDisbursals ? $actualDisbursals : [];
                 \Event::dispatch("NOTIFY_DISB_PAY_CHECKS", serialize($emailData));
             }
         } catch (\Exception $ex) {
