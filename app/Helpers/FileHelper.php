@@ -170,8 +170,8 @@ class FileHelper {
             $start_row = $ExtraRow + 3;
             $row = $start_row;
             $column = 0;
-            $floor = floor($rec_count/28);
-            $reminder = $rec_count % 28;
+            $floor = floor($rec_count/26);
+            $reminder = $rec_count % 26;
             $char = ($floor > 0 ? chr(ord("A") + $floor - 1) : '').chr(ord("A") + $reminder - 1);
             foreach($data as $key => $item) {
               foreach($item as $key1 => $item1) {
@@ -255,8 +255,8 @@ class FileHelper {
             );
             $objPHPExcel->getActiveSheet()->getStyle('A'. $header_row .':' . $char . $header_row)->applyFromArray($styleArray);
             foreach($header_cols as $key => $el) {
-                 $floor = floor(($key)/28);
-                 $reminder = ($key) % 28;
+                 $floor = floor(($key)/26);
+                 $reminder = ($key) % 26;
                  $char = ($floor > 0 ? chr(ord("A") + $floor-1) : '').chr(ord("A") + $reminder);
                  $objPHPExcel->getActiveSheet()->getColumnDimension($char)->setAutoSize(true);
             }
