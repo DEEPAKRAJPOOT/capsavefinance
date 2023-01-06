@@ -275,7 +275,7 @@ class RefundController extends Controller
             }
             if($refundRequestNumbers!='') {
                 \DB::rollback();
-                return redirect()->route('request_list')->withErrors('Refund '.$refundRequestNumbers.' already under process for disbursment');
+                return redirect()->route('request_list')->withErrors('Unable to process transaction as following transactions '.$refundRequestNumbers.' has been already processed.');
             }
             $this->refundUpdation($allrecords, $supplierIds, $allAprvls, $disburseDate, $refundType);
             $whereActivi['activity_code'] = 'refund_offline';
