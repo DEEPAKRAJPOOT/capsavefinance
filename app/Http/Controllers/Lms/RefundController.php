@@ -260,9 +260,12 @@ class RefundController extends Controller
             $allrecords = array_map('intval', $allrecords);
             $allAprvls = $this->lmsRepo->getAprvlRqDataByIds($allrecords)->toArray();
             $supplierIds = $this->lmsRepo->getAprvlRqUserByIds($allrecords)->toArray();
-
+            $refundRequestNumbers = '';
             foreach ($allAprvls as $aprvl) {
-                if($aprvl['payment']['user']['is_buyer'] == 2 && empty($aprvl['payment']['user']['anchor_bank_details'])){
+                $refundReqId = $this->lmsRepo->findRefundByRefundReqId($aprvl['refund_req_id']);
+                if($refundReqId->count() > 0) {
+                    $refundRequestNumbers.= $aprvl['ref_code'].", ";
+               } elseif($aprvl['payment']['user']['is_buyer'] == 2 && empty($aprvl['payment']['user']['anchor_bank_details'])){
                     \DB::rollback();
                     return redirect()->route('request_list')->withErrors(trans('backend_messages.noBankAccount'));
                 } elseif ($aprvl['payment']['user']['is_buyer'] == 1 && empty($aprvl['payment']['lms_user']['bank_details'])) {
@@ -270,7 +273,10 @@ class RefundController extends Controller
                     return redirect()->route('request_list')->withErrors(trans('backend_messages.noBankAccount'));
                 }
             }
-
+            if($refundRequestNumbers!='') {
+                \DB::rollback();
+                return redirect()->route('request_list')->withErrors('Refund '.$refundRequestNumbers.' already under process for disbursment');
+            }
             $this->refundUpdation($allrecords, $supplierIds, $allAprvls, $disburseDate, $refundType);
             $whereActivi['activity_code'] = 'refund_offline';
             $activity = $this->master->getActivity($whereActivi);

@@ -1972,4 +1972,11 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
 						->whereNotIn('user_id',[$userId])->first();
 		return $data;
 	}
+
+	public function findRefundByRefundReqId($RefundReqId)
+	{
+		return RefundReq::where('refund_req_id', $RefundReqId)
+				->whereIn('status', [7,8])
+				->get();
+	}
 }
