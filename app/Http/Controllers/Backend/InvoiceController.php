@@ -859,14 +859,14 @@ class InvoiceController extends Controller {
             $allrecords = array_unique($record);
             $allrecords = array_map('intval', $allrecords);
             $allinvoices = $this->lmsRepo->getInvoices($allrecords)->toArray();
+            $invoiceNumbers = '';
 
 
             foreach ($allinvoices as $inv) {
                 $disbursedInvoiceId = $this->lmsRepo->findInvoiceDisbursedInvoiceIdByInvoiceId($inv['invoice_id']);
 
                 if($disbursedInvoiceId->count() > 0) {
-                    \DB::rollback();
-                    return redirect()->route('backend_get_disbursed_invoice')->withErrors('Invoice '.$inv['invoice_no'].' already under process of disbursment');
+                    $invoiceNumbers.= $inv['invoice_no'].", ";
                 }
                 else if($inv['supplier']['is_buyer'] == 2 && empty($inv['supplier']['anchor_bank_details'])){
                     \DB::rollback();
@@ -875,6 +875,10 @@ class InvoiceController extends Controller {
                     \DB::rollback();
                     return redirect()->route('backend_get_disbursed_invoice')->withErrors(trans('backend_messages.noBankAccount'));
                 }
+            }
+            if($invoiceNumbers!='') {
+                \DB::rollback();
+                return redirect()->route('backend_get_disbursed_invoice')->withErrors('Invoice '.$invoiceNumbers.' already under process of disbursment');
             }
 
             $supplierIds = $this->lmsRepo->getInvoiceSupplier($allrecords)->toArray();
@@ -1232,11 +1236,8 @@ public function disburseTableInsert($exportData = [], $supplierIds = [], $allinv
             $invoiceNumbers = '';
             foreach ($allinvoices as $inv) {
                 $disbursedInvoiceId = $this->lmsRepo->findInvoiceDisbursedInvoiceIdByInvoiceId($inv['invoice_id']);
-
                 if($disbursedInvoiceId->count() > 0) {
-                    $invoiceNumbers.= $inv['invoice_no']."/";
-                    //\DB::rollback();
-                    //return redirect()->route('backend_get_disbursed_invoice')->withErrors('Invoice '.$inv['invoice_no'].' already under process of disbursment');
+                    $invoiceNumbers.= $inv['invoice_no'].", ";
                 }
                 else if($inv['supplier']['is_buyer'] == 2 && empty($inv['supplier']['anchor_bank_details'])){
                     \DB::rollback();
@@ -1248,7 +1249,7 @@ public function disburseTableInsert($exportData = [], $supplierIds = [], $allinv
             }
             if($invoiceNumbers!='') {
                 \DB::rollback();
-                return redirect()->route('backend_get_disbursed_invoice')->withErrors('Invoice '.invoiceNumbers.' already under process of disbursment');
+                return redirect()->route('backend_get_disbursed_invoice')->withErrors('Invoice '.$invoiceNumbers.' already under process of disbursment');
             }
 
             $supplierIds = $this->lmsRepo->getInvoiceSupplier($allrecords)->toArray();
