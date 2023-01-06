@@ -279,7 +279,7 @@ class ApiController
   private function createReversalData($rvrslRow, $batch_no) {
     $reversalPayment = [];
     $where = [['is_posted_in_tally', '=', '0'],['soa_flag', '=', '1'],['is_transaction','=',true]];
-    $settledTransactoionsFromReversal = $rvrslRow->getReversalParent ?? $rvrslRow->getReversalParent->getSettledTxns()->where($where) ?? [];
+    $settledTransactoionsFromReversal = $rvrslRow->getReversalParent ? $rvrslRow->getReversalParent->getSettledTxns()->where($where)?? []:[];
     if (!empty($settledTransactoionsFromReversal)) {
       foreach ($settledTransactoionsFromReversal as  $rvrsl) {
         $accountDetails = $rvrsl->userRelation->companyBankDetails ?? NULL;
