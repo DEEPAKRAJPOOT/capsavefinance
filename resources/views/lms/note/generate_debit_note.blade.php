@@ -33,7 +33,11 @@
        </span>
        <span style="font-family:Book Antiqua;float: right;width: 45%;text-align: right;font-size: 9px;">
           <span><strong>Original for Recipient:</strong></span><br />
+          @if(isset($origin_of_recipient['invoice_no']))
           <span>Invoice No: {{$origin_of_recipient['invoice_no']}}</span><br />
+          @else
+          <span>Invoice No: ----------</span><br />
+          @endif
           @if(!empty($origin_of_recipient['invoice_date']))
           <span>Invoice Date: {{date('d-M-Y', strtotime($origin_of_recipient['invoice_date']))}}</span><br />
           @endif
