@@ -127,7 +127,7 @@ class DisbPayChecks extends Command
 
     private function checkActualDisbursalAmount(){
 
-        $prevDate = Carbon::parse('2020-09-07')->subDays(1)->format('Y-m-d');
+        $prevDate = Carbon::parse($this->eodDate)->subDays(1)->format('Y-m-d');
         $actualDisbursals =  DB::select("SELECT 
                                         a.customer_id,
                                         a.virtual_acc_id,
