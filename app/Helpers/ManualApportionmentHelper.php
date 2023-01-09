@@ -315,7 +315,6 @@ class ManualApportionmentHelper{
         $charges = Transactions::whereHas('transType',function($query){
             $query->where('chrg_master_id','!=','0');
         })->whereNull('parent_trans_id')
-        ->whereNull('invoice_disbursed_id')
         ->where('actual_outstanding', '<', 0)
         ->where('entry_type',0)
         ->whereIn('trans_id',$transIds)
