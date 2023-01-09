@@ -74,6 +74,7 @@ class DisbPayChecks extends Command
             $dupDisbursals=false;
             $actualDisbursals=false;
             $actualPayment=false;
+            $actualRefund=false;
             if($reportType == '1'){
                 $dupPayments = $this->checkDuplicatePaymentRecords();
             }else if($reportType == '2'){
@@ -82,18 +83,22 @@ class DisbPayChecks extends Command
                 $actualDisbursals = $this->checkActualDisbursalAmount();
             }else if($reportType == '4'){
                 $actualPayment = $this->checkActualPaymentStatus();
+            }else if($reportType == '5'){
+                $actualRefund = $this->checkActualRefund();
             }else{
                 $dupPayments = $this->checkDuplicatePaymentRecords();
                 $dupDisbursals = $this->checkDuplicateDisbursalRecords();
                 $actualDisbursals = $this->checkActualDisbursalAmount();
-                $actualPayment = $this->checkActualPaymentStatus();   
+                $actualPayment = $this->checkActualPaymentStatus();
+                $actualRefund = $this->checkActualRefund();   
             }
             
-            if ($dupPayments || $dupDisbursals || $actualDisbursals || $actualPayment) {
+            if ($dupPayments || $dupDisbursals || $actualDisbursals || $actualPayment || $actualRefund) {
                 $emailData['disbursals'] = $dupDisbursals?$dupDisbursals: [];
                 $emailData['payments']   = $dupPayments ? $dupPayments : [];
                 $emailData['actualDisbursals'] = $actualDisbursals ? $actualDisbursals : [];
                 $emailData['actualPayment'] = $actualPayment ? $actualPayment : [];
+                $emailData['actualRefund'] = $actualRefund ? $actualRefund : [];
                 \Event::dispatch("NOTIFY_DISB_PAY_CHECKS", serialize($emailData));
             }
         } catch (\Exception $ex) {
@@ -169,7 +174,7 @@ class DisbPayChecks extends Command
     }
 
     public function checkActualPaymentStatus(){
-        $prevDate = Carbon::parse('2022-09-07')->subDays(1)->format('Y-m-d');
+        $prevDate = Carbon::parse($this->eodDate)->subDays(1)->format('Y-m-d');
         $actualPayment =  DB::select("SELECT a.user_id , b.payment_id,b.action_type,b.trans_type,
          b.date_of_payment,SUM(ROUND(a.amount,2)) as transaction_amount,
                                         GROUP_CONCAT(DISTINCT CONCAT(b.payment_id,'|',b.amount,'|',b.is_settled)) as payment_amount, 
@@ -201,6 +206,42 @@ class DisbPayChecks extends Command
            $totalPaymentData[] = $value;
        }                    
        return $totalPaymentData;                              
+    }
+
+    public function checkActualRefund(){
+        $prevDate = Carbon::parse('2022-11-10')->subDays(1)->format('Y-m-d');
+        $actualtransRefund = DB::select("SELECT SUM(a.amount) as trans_amount , a.user_id as user_id FROM rta_transactions AS a 
+        WHERE a.trans_type = '32'
+        AND a.entry_type = '0'
+        AND  a.created_at >= '".$prevDate." 18:30:00' AND a.created_at <= '".$this->eodDate." 18:29:00' GROUP by a.user_id");
+
+        $actualRefund = DB::select("SELECT SUM(a.refund_amount) as refund_amount, b.user_id as userId FROM `rta_lms_refund_req` AS a LEFT JOIN rta_payments AS b ON a.payment_id = b.payment_id WHERE a.status = '8' AND a.created_at >= '".$prevDate." 18:30:00' AND a.created_at <= '".$this->eodDate." 18:29:00' GROUP by b.user_id");
+        $actualtransRefund = json_decode(json_encode($actualtransRefund),true);
+        $actualRefund = json_decode(json_encode($actualRefund),true);
+        $totalRefunData =[];
+        if(!empty($actualtransRefund) && !empty($actualRefund)){
+            foreach($actualtransRefund as $key=>$value){
+                $user_id = $value['user_id'];
+                $refund_amount = 0.0;
+                foreach($actualRefund as $refundValue){
+                   $data = array_search($user_id,$refundValue,true);
+                   if($data){
+                       $refund_amount = $refundValue['refund_amount'];
+                   }
+                }
+                $value['refund_amount'] = $refund_amount;
+                if((float)$refund_amount == (float)$value['trans_amount']){
+                    $result = 'Pass';
+                }else{
+                    $result = 'Fail';
+                }
+                $value['result'] = $result;
+                $value['user_id'] = Helper::formatIdWithPrefix($value['user_id'], 'CUSTID');
+                $totalRefunData[] = $value;
+            }
+        }
+        return $totalRefunData;
+
     }
 
 }

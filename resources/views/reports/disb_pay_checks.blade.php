@@ -338,6 +338,61 @@
             </td>
           </tr>
           @endif
+          @if(count($actualRefund))
+            <tr>
+              <td style="font-family: Calibri !important; box-sizing: border-box; font-size: 0.917rem !important; text-align: left; padding-top:15px;padding-bottom:15px;font-weight: 500; font-size: 0.917rem !important; font-family: Calibri !important; color: #111; line-height: 11px;">
+                <strong>Total Refunds</strong>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <table border="0" cellpadding="0" cellspacing="0"
+                style="width: 100%;border: 1px solid #ccc; margin-top: 10px; margin-bottom: 10px;">
+                    <tbody>
+                       <tr style="background-color: #eceff1;">
+                           <td style="font-family: Calibri !important; box-sizing: border-box; font-size: 0.917rem !important; font-weight: 600; padding-bottom: 10px;font-size: 0.917rem !important;;white-space: nowrap;padding:2px 5px;border-right:1px solid #ccc;color: #262626;">Customer Id</td>
+                           <td style="font-family: Calibri !important; box-sizing: border-box; font-size: 0.917rem !important; font-weight: 600; padding-bottom: 10px;font-size: 0.917rem !important;;white-space: nowrap;padding:2px 5px;border-right:1px solid #ccc;color: #262626;">Transaction Amount</td>
+                           <td style="font-family: Calibri !important; box-sizing: border-box; font-size: 0.917rem !important; font-weight: 600; padding-bottom: 10px;font-size: 0.917rem !important;;white-space: nowrap;padding:2px 5px;border-right:1px solid #ccc;color: #262626;">Refund Amount</td>
+                           <td style="font-family: Calibri !important; box-sizing: border-box; font-size: 0.917rem !important; font-weight: 600; padding-bottom: 10px;font-size: 0.917rem !important;;white-space: nowrap;padding:2px 5px;border-right:1px solid #ccc;color: #262626;">Result</td>
+                       </tr>
+                       @php 
+                          $total_transrefund_amount = 0;
+                          $total_refund_amount = 0;
+                          $k=0;
+                          $totalRefundData = count($actualRefund);
+                       @endphp
+                       @forelse($actualRefund as $key => $refund)
+                       @php 
+                      $total_transrefund_amount += $refund['trans_amount'];
+                      $total_refund_amount += $refund['refund_amount'];
+                      $totalrefundResult[] = $refund['result'];
+                      @endphp
+                          <tr>
+                             <td style="font-family: Calibri !important; box-sizing: border-box; font-size: 0.917rem !important; text-align: left; padding: 10px 10px 10px 0px; border-top:1px solid #ccc;border-right:1px solid #ccc;padding: 2px 5px;font-size: 0.917rem !important;line-height: 18px;vertical-align: top;" >{{$refund['user_id']}}</td>
+                             <td style="font-family: Calibri !important; box-sizing: border-box; font-size: 0.917rem !important; text-align: left; padding: 10px 10px 10px 0px; border-top:1px solid #ccc;border-right:1px solid #ccc;padding: 2px 5px;font-size: 0.917rem !important;line-height: 18px;vertical-align: top;" >{{$refund['trans_amount']}}</td>
+                             <td style="font-family: Calibri !important; box-sizing: border-box; font-size: 0.917rem !important; text-align: left; padding: 10px 10px 10px 0px; border-top:1px solid #ccc;border-right:1px solid #ccc;padding: 2px 5px;font-size: 0.917rem !important;line-height: 18px;vertical-align: top;" >{{$refund['refund_amount']}}</td>
+                             <td style="font-family: Calibri !important; box-sizing: border-box; font-size: 0.917rem !important; text-align: left; padding: 10px 10px 10px 0px; border-top:1px solid #ccc;border-right:1px solid #ccc;padding: 2px 5px;font-size: 0.917rem !important;line-height: 18px;vertical-align: top;" >{{$refund['result']}}</td>
+                          </tr>
+                          @php 
+                          $k++;
+                          @endphp
+                          @if(in_array('Fail',$totalrefundResult)) @php $result = 'Fail'; @endphp @else  @php $result = 'Pass'; @endphp @endif
+                          @if($totalRefundData == $k)
+                          <td style="font-family: Calibri !important; box-sizing: border-box; font-size: 0.917rem !important; text-align: left; padding: 10px 10px 10px 0px; border-top:1px solid #ccc;border-right:1px solid #ccc;padding: 2px 5px;font-size: 0.917rem !important;line-height: 18px;vertical-align: top;"><b>Total Refund Amount</b></td>
+                          <td style="font-family: Calibri !important; box-sizing: border-box; font-size: 0.917rem !important; text-align: left; padding: 10px 10px 10px 0px; border-top:1px solid #ccc;border-right:1px solid #ccc;padding: 2px 5px;font-size: 0.917rem !important;line-height: 18px;vertical-align: top;"><b>{{number_format($total_transrefund_amount,2)}}</b></td>
+                          <td style="font-family: Calibri !important; box-sizing: border-box; font-size: 0.917rem !important; text-align: left; padding: 10px 10px 10px 0px; border-top:1px solid #ccc;border-right:1px solid #ccc;padding: 2px 5px;font-size: 0.917rem !important;line-height: 18px;vertical-align: top;"><b>{{number_format($total_refund_amount,2)}}</b></td>
+                          <td style="font-family: Calibri !important; box-sizing: border-box; font-size: 0.917rem !important; text-align: left; padding: 10px 10px 10px 0px; border-top:1px solid #ccc;border-right:1px solid #ccc;padding: 2px 5px;font-size: 0.917rem !important;line-height: 18px;vertical-align: top;" ><b>{{$result}}</b></td>
+                          @endif
+                       @empty
+                        <tr>
+                          <td colspan="3" style="text-align:center;">No Payment Found.</td>
+                        </tr>
+                       @endforelse
+                    </tbody>
+                </table>
+              </td>
+            </tr>
+          @endif
           <tr>
             <td
               style="box-sizing: border-box; font-size: 0.917rem !important; text-align: left; padding-top:30px;font-weight: 600; font-size: 0.917rem !important; font-family: Calibri !important; line-height: 21px; padding-bottom:5px;color: #111;">
