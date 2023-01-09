@@ -109,6 +109,9 @@
                     </td>
                   </tr>
                   @forelse($disbursals as $key => $disbursal)
+                  @php  
+                  
+                  @endphp
                     <tr>
                       <td
                         style="font-family: Calibri !important; box-sizing: border-box; font-size: 0.917rem !important; text-align: left; padding: 10px 10px 10px 0px; border-top:1px solid #ccc;border-right:1px solid #ccc;padding: 2px 5px;font-size: 0.917rem !important;line-height: 18px;vertical-align: top;">
@@ -167,7 +170,7 @@
                       $total_tally_amount = 0;
                       $total_principal_amount = 0;
                       $total_actual_invoice_disbursed = 0;
-                      $batch_dibursal_amount = 0;
+                      $total_batch_dibursal_amount = 0;
                       $i=0;
                       $totalData = count($actualDisbursals);
                   @endphp
@@ -177,7 +180,7 @@
                       $total_tally_amount += $disbursaldata['tally_amount'];
                       $total_principal_amount += $disbursaldata['principle_amount'];
                       $total_actual_invoice_disbursed += $disbursaldata['actual_invoice_disbursed'];
-                      $batch_dibursal_amount += $disbursaldata['batch_disburse_amount'];
+                      $total_batch_dibursal_amount += $disbursaldata['batch_disburse_amount'];
                       $totalResult[] = $disbursaldata['result'];
                   @endphp
                   <tr>
@@ -252,7 +255,7 @@
                     <td style="font-family: Calibri !important; box-sizing: border-box; font-size: 0.917rem !important; text-align: left; padding: 10px 10px 10px 0px; border-top:1px solid #ccc;border-right:1px solid #ccc;padding: 2px 5px;font-size: 0.917rem !important;line-height: 18px;vertical-align: top;"></td>
                     <td style="font-family: Calibri !important; box-sizing: border-box; font-size: 0.917rem !important; text-align: left; padding: 10px 10px 10px 0px; border-top:1px solid #ccc;border-right:1px solid #ccc;padding: 2px 5px;font-size: 0.917rem !important;line-height: 18px;vertical-align: top;"><b>Total Disbursal Amount</b></td>
                     <td style="font-family: Calibri !important; box-sizing: border-box; font-size: 0.917rem !important; text-align: left; padding: 10px 10px 10px 0px; border-top:1px solid #ccc;border-right:1px solid #ccc;padding: 2px 5px;font-size: 0.917rem !important;line-height: 18px;vertical-align: top;"><b>{{number_format($total_actual_invoice_disbursed,2)}}</b></td>
-                    <td style="font-family: Calibri !important; box-sizing: border-box; font-size: 0.917rem !important; text-align: left; padding: 10px 10px 10px 0px; border-top:1px solid #ccc;border-right:1px solid #ccc;padding: 2px 5px;font-size: 0.917rem !important;line-height: 18px;vertical-align: top;"><b>{{number_format($batch_dibursal_amount,2)}}</b></td>
+                    <td style="font-family: Calibri !important; box-sizing: border-box; font-size: 0.917rem !important; text-align: left; padding: 10px 10px 10px 0px; border-top:1px solid #ccc;border-right:1px solid #ccc;padding: 2px 5px;font-size: 0.917rem !important;line-height: 18px;vertical-align: top;"><b>{{number_format($total_batch_dibursal_amount,2)}}</b></td>
                     <td style="font-family: Calibri !important; box-sizing: border-box; font-size: 0.917rem !important; text-align: left; padding: 10px 10px 10px 0px; border-top:1px solid #ccc;border-right:1px solid #ccc;padding: 2px 5px;font-size: 0.917rem !important;line-height: 18px;vertical-align: top;"><b>{{number_format($total_principal_amount,2)}}</b></td>
                     <td style="font-family: Calibri !important; box-sizing: border-box; font-size: 0.917rem !important; text-align: left; padding: 10px 10px 10px 0px; border-top:1px solid #ccc;border-right:1px solid #ccc;padding: 2px 5px;font-size: 0.917rem !important;line-height: 18px;vertical-align: top;"><b>{{number_format($total_tally_amount,2)}}</b></td>
                     <td style="font-family: Calibri !important; box-sizing: border-box; font-size: 0.917rem !important; text-align: left; padding: 10px 10px 10px 0px; border-top:1px solid #ccc;border-right:1px solid #ccc;padding: 2px 5px;font-size: 0.917rem !important;line-height: 18px;vertical-align: top;"><b>{{number_format($total_trans_amount,2)}}</b></td>

@@ -127,12 +127,14 @@ class DisbPayChecks extends Command
 
     private function checkActualDisbursalAmount(){
 
-        $prevDate = Carbon::parse($this->eodDate)->subDays(1)->format('Y-m-d');
+        $prevDate = Carbon::parse('2020-09-07')->subDays(1)->format('Y-m-d');
         $actualDisbursals =  DB::select("SELECT 
                                         a.customer_id,
                                         a.virtual_acc_id,
                                         count(a.disbursal_id) as total_invoice,
                                         SUM(a.invoice_amount) as inv_amount,
+                                        GROUP_CONCAT(DISTINCT a.disbursal_id) as disbursal_ids,
+                                        GROUP_CONCAT(DISTINCT CONCAT(a.disbursal_id,'|',a.batch_disburse_amount)) as batch_amount,
                                         SUM(a.invoice_approve_amount) as inv_approve_amount,
                                         SUM(a.disbursal_amount) as disbrsl_amnt,
                                         SUM(a.total_interest) as total_interest, 
@@ -147,7 +149,20 @@ class DisbPayChecks extends Command
                                         WHERE a.created_at >= '".$prevDate." 18:30:00' AND a.created_at <= '".$this->eodDate." 18:29:00'
                                         GROUP BY a.customer_id;");
        $actualDisbursals = json_decode(json_encode ( $actualDisbursals ) , true);
-       return $actualDisbursals;
+
+       $totalDisbData=[];
+       foreach($actualDisbursals as $key=>$value){
+           $explodebatch = explode(",",$value['batch_amount']);
+           $batchAmount=0.0;
+           for($i=0;$i<count($explodebatch);$i++){
+            $explodebatchsign = explode("|",$explodebatch[$i]);
+            $batchAmount += number_format((float)$explodebatchsign[1], 2, '.', '');
+           }
+           $value['batch_disburse_amount'] = number_format((float)$batchAmount, 2, '.', '');
+           $totalDisbData[] = $value;
+       }
+
+       return $totalDisbData;
     }
 
 }
