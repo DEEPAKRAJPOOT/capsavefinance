@@ -187,6 +187,12 @@ class RefundHelper{
         return $refundReq;
     }
 
+    public static function getRefundRqByIds(int $refundReqId){
+        $refundReq = RefundReq::where('refund_req_id','=',$refundReqId)
+                    ->first();
+        return $refundReq;
+    }
+
     
 
 }

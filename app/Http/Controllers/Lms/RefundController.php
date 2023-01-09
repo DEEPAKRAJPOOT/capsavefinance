@@ -155,6 +155,21 @@ class RefundController extends Controller
             $refundRequests = $request->refundRequest;
             $status = $request->status;
             $newStatus  = $request->newStatus;
+            $ref_code ='';
+
+            foreach ($refundRequests as $key => $reqId) {
+                $refunddata = RefundHelper::getRefundRqByIds($reqId)->toArray();
+                if(count($refunddata) > 0) {
+                    if($refunddata['status'] == $newStatus) {
+                        $ref_code.= $refunddata['ref_code'].", ";
+                    }
+                }            
+            }
+            if($ref_code!='') {
+                \DB::rollback();
+                Session::flash('error', 'Refrence Code  '.$ref_code.' has been already status changed');
+                return back();
+            }
 
             foreach ($refundRequests as $key => $reqId) {
                 RefundHelper::updateRequest($reqId, $status, $newStatus);            
