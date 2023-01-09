@@ -18,6 +18,7 @@ use Session;
 use Carbon\Carbon;
 use DB;
 use App\Inv\Repositories\Models\TallyFactVoucher;
+use App\Inv\Repositories\Models\TransFactVoucher;
 
 /**
  * 
@@ -37,6 +38,10 @@ class ApiController
   protected $journalFactEndVoucherNumber = null;
   protected $selectedTxnData = [];
   protected $selectedPaymentData = [];
+  protected $journalTransFactVoucher = [];
+  protected $disbursalTransFactVoucher = [];
+  protected $receiptTransFactVoucher = [];
+  protected $refundTransFactVoucher = [];
 	function __construct(){
 		
 	}
@@ -122,8 +127,20 @@ class ApiController
               $inst_date = $parentRecord->refundReq->actual_refund_date ?? NULL;
         }
       }
-      $this->journalFactVoucherSeq++;     
-      $factvoucherNumber = 'SJV'.$this->voucherFormat.sprintf('%06d',$this->journalFactVoucherSeq);
+      $getTransfactVoucherNumber = Helper::getTransfactVoucherNumber($jrnls->trans_id);
+      if($getTransfactVoucherNumber){
+        $factvoucherNumber = $getTransfactVoucherNumber->fact_voucher_no;
+      }else{
+        $this->journalFactVoucherSeq++;  
+        $factvoucherNumber = 'SJV'.$this->voucherFormat.sprintf('%06d',$this->journalFactVoucherSeq);
+        $transfactvoucherData = [
+          'trans_id'=>$jrnls->trans_id,
+          'fact_voucher_no'=>$factvoucherNumber,
+          'created_at'=>\Carbon\Carbon::now()->setTimezone(config('app.timezone'))->format('Y-m-d H:i:s')
+        ];
+        
+        $this->journalTransFactVoucher[] = $transfactvoucherData;
+      }
       $this->journalFactEndVoucherNumber = $factvoucherNumber;
       $this->voucherNo = $this->voucherNo + 1;
       $entry_type = $jrnls->entry_type == 1 ? 'Credit' : 'Debit';
@@ -262,7 +279,7 @@ class ApiController
   private function createReversalData($rvrslRow, $batch_no) {
     $reversalPayment = [];
     $where = [['is_posted_in_tally', '=', '0'],['soa_flag', '=', '1'],['is_transaction','=',true]];
-    $settledTransactoionsFromReversal = $rvrslRow->getReversalParent->getSettledTxns()->where($where) ?? [];
+    $settledTransactoionsFromReversal = $rvrslRow->getReversalParent ? $rvrslRow->getReversalParent->getSettledTxns()->where($where)?? []:[];
     if (!empty($settledTransactoionsFromReversal)) {
       foreach ($settledTransactoionsFromReversal as  $rvrsl) {
         $accountDetails = $rvrsl->userRelation->companyBankDetails ?? NULL;
@@ -297,7 +314,18 @@ class ApiController
         }
         $this->selectedTxnData[] = $rvrsl->trans_id;
         $this->selectedPaymentData[] = $rvrsl->payment_id;
-        $factvoucherNumber = 'SRP'.$this->voucherFormat.sprintf('%06d',$this->paymentFactVoucherSeq); 
+        $getTransfactVoucherNumber = Helper::getTransfactVoucherNumber($rvrsl->trans_id);
+        if($getTransfactVoucherNumber){
+          $factvoucherNumber = $getTransfactVoucherNumber->fact_voucher_no;
+        }else{
+          $factvoucherNumber = 'SRP'.$this->voucherFormat.sprintf('%06d',$this->paymentFactVoucherSeq);
+          $transfactvoucherData = [
+            'trans_id'=>$rvrsl->trans_id,
+            'fact_voucher_no'=>$factvoucherNumber,
+            'created_at'=>\Carbon\Carbon::now()->setTimezone(config('app.timezone'))->format('Y-m-d H:i:s')
+          ];
+          $this->journalTransFactVoucher[] = $transfactvoucherData;
+        }
         $reversalRow = [
             'batch_no' =>  $batch_no,
             'transactions_id' =>  $rvrsl->trans_id,
@@ -340,7 +368,18 @@ class ApiController
     $refundPayment = [];
     foreach($refundData as $rfnd){
       $this->paymentFactVoucherSeq++;
-      $factvoucherNumber = 'SRP'.$this->voucherFormat.sprintf('%06d',$this->paymentFactVoucherSeq); 
+      $getTransfactVoucherNumber = Helper::getTransfactVoucherNumber($rfnd->trans_id);
+      if($getTransfactVoucherNumber){
+        $factvoucherNumber = $getTransfactVoucherNumber->fact_voucher_no;
+      }else{
+        $factvoucherNumber = 'SRP'.$this->voucherFormat.sprintf('%06d',$this->paymentFactVoucherSeq);
+        $transfactvoucherData = [
+          'trans_id'=>$rfnd->trans_id,
+          'fact_voucher_no'=>$factvoucherNumber,
+          'created_at'=>\Carbon\Carbon::now()->setTimezone(config('app.timezone'))->format('Y-m-d H:i:s')
+        ];
+        $this->refundTransFactVoucher[] = $transfactvoucherData;
+      }
       $this->paymentFactEndVoucherNumber = $factvoucherNumber;
       $this->voucherNo = $this->voucherNo + 1;
       $accountDetails = $rfnd->userRelation->companyBankDetails ?? NULL;
@@ -449,7 +488,19 @@ class ApiController
     $disbursalPayment = [];
     foreach($disbursalData as $dsbrsl){
       $this->paymentFactVoucherSeq++;  
-      $factvoucherNumber = 'SRP'.$this->voucherFormat.sprintf('%06d',$this->paymentFactVoucherSeq);
+      $getTransfactVoucherNumber = Helper::getTransfactVoucherNumber($dsbrsl->trans_id);
+      if($getTransfactVoucherNumber){
+        $factvoucherNumber = $getTransfactVoucherNumber->fact_voucher_no;
+      }else{
+        $factvoucherNumber = 'SRP'.$this->voucherFormat.sprintf('%06d',$this->paymentFactVoucherSeq);
+        $transfactvoucherData = [
+          'trans_id'=>$dsbrsl->trans_id,
+          'fact_voucher_no'=>$factvoucherNumber,
+          'created_at'=>\Carbon\Carbon::now()->setTimezone(config('app.timezone'))->format('Y-m-d H:i:s')
+        ];
+        $this->disbursalTransFactVoucher[] = $transfactvoucherData;
+      } 
+      
       $this->paymentFactEndVoucherNumber = $factvoucherNumber;
       $this->voucherNo = $this->voucherNo + 1;
       $accountDetails = $dsbrsl->userRelation->companyBankDetails ?? NULL;
@@ -541,6 +592,17 @@ class ApiController
       $interestBooked = $dsbrsl->getInterestForDisbursal($where);
       if(isset($interestBooked)){
         $interestTransId = $interestBooked->trans_id;
+        $getTransfactVoucherNumber = Helper::getTransfactVoucherNumber($interestTransId);
+        if($getTransfactVoucherNumber){
+          $factvoucherNumber = $getTransfactVoucherNumber->fact_voucher_no;
+        }else{
+          $transfactvoucherData = [
+            'trans_id'=>$interestBooked->trans_id,
+            'fact_voucher_no'=>$factvoucherNumber,
+            'created_at'=>\Carbon\Carbon::now()->setTimezone(config('app.timezone'))->format('Y-m-d H:i:s')
+          ];
+          $this->disbursalTransFactVoucher[] = $transfactvoucherData;
+        }
         $this->selectedTxnData[] = $interestBooked->trans_id;
         $InterestRow = [
                 'batch_no' =>  $batch_no,
@@ -597,16 +659,6 @@ class ApiController
         continue;
      }
     $utr_no = $rcpt->getTransactionNoAttribute(); //new code for utr no
-    //  $utr_no = NULL; //new code for utr no
-    //  if($rcpt->payment_type === '1'){ //old code for utr no
-    //    $utr_no = $rcpt->utr_no ?? NULL;
-    //  }else if($rcpt->payment_type === '2'){
-    //   $utr_no = $rcpt->cheque_no ?? NULL;
-    //  }else if($rcpt->payment_type === '3'){
-    //   $utr_no = $rcpt->unr_no ?? NULL;
-    //  }else if($rcpt->payment_type === '4'){
-    //   $utr_no = $rcpt->unr_no ?? NULL;
-    //  }
 
      $inst_no = $rcpt->refundReq->tran_no ?? NULL;
      $inst_date = $rcpt->refundReq->actual_refund_date ?? NULL;
@@ -675,6 +727,17 @@ class ApiController
               $invoice_date = $parentRecord->invoiceDisbursed->invoice->invoice_date ?? NULL;
             }
           }
+          $getTransfactVoucherNumber = Helper::getTransfactVoucherNumber($stldTxn->trans_id);
+          if($getTransfactVoucherNumber){
+            $factvoucherNumber = $getTransfactVoucherNumber->fact_voucher_no;
+          }else{
+            $transfactvoucherData = [
+              'trans_id'=>$stldTxn->trans_id,
+              'fact_voucher_no'=>$factvoucherNumber,
+              'created_at'=>\Carbon\Carbon::now()->setTimezone(config('app.timezone'))->format('Y-m-d H:i:s')
+            ];
+            $this->receiptTransFactVoucher[] = $transfactvoucherData;
+          }
           $this->selectedTxnData[] = $stldTxn->trans_id;
           $settledRow = [
               'batch_no' =>  $batch_no,
@@ -685,6 +748,145 @@ class ApiController
               'voucher_date' => $stldTxn->trans_date,
               'transaction_date'=>$stldTxn->created_at?$stldTxn->created_at:NULL,
               'is_debit_credit' =>  'Credit',
+              'trans_type' =>  $trans_type_name,
+              'invoice_no' =>   $invoice_no,
+              'invoice_date' =>  $invoice_date,
+              'ledger_name' =>  $userName,
+              'amount' =>  $stldTxn->amount,
+              'ref_no' =>  $invoice_no,
+              'ref_amount' =>  $stldTxn->amount,
+              'acc_no' =>  '',
+              'ifsc_code' =>  '',
+              'bank_name' =>  '',
+              'cheque_amount' =>  '',
+              'cross_using' => '',
+              'mode_of_pay' => '',
+              'inst_no' =>  NULL,
+              'utr_no'  => $utr_no,
+              'inst_date' =>  NULL,
+              'favoring_name' =>  '',
+              'company_bank_name'=>$rcpt->companyUserAccount?$rcpt->companyUserAccount->bank->bank_name:NULL,
+              'company_bank_acc'=>$rcpt->companyUserAccount?$rcpt->companyUserAccount->acc_no:NULL,
+              'remarks' => '',
+              'generated_by' => '0',
+              'narration' => 'Being '.$trans_type_name.' towards UserId ' . $user_id . ', Invoice No '. $invoice_no .' & Batch no '. $batch_no,
+          ];
+          if (in_array($stldTxn->trans_type, [config('lms.TRANS_TYPE.MARGIN'), config('lms.TRANS_TYPE.NON_FACTORED_AMT')])) {
+            $settledRow['generated_by'] = 1; 
+          }
+          $receiptPayment[] = $settledRow;
+       }
+     }
+    }
+    return $receiptPayment;
+  }
+
+  private function createReceipReversalData($receiptReversalData, $batch_no) {
+    
+    $receiptPayment = [];
+    foreach($receiptReversalData as $rcpt){
+     $this->paymentFactVoucherSeq++;
+     $factvoucherNumber = 'SRP'.$this->voucherFormat.sprintf('%06d',$this->paymentFactVoucherSeq); 
+     $this->paymentFactEndVoucherNumber = $factvoucherNumber;
+     $this->voucherNo = $this->voucherNo + 1;
+     $settledTransactoions =  $rcpt->getSettledTxns;
+     $refrenceTxns = $rcpt->paymentRefrenceTxns->first();
+     $user_id = Helper::formatIdWithPrefix($rcpt->user_id, 'CUSTID');
+     $userName = $rcpt->user->biz_name;
+     $accountDetails = $rcpt->userRelation->companyBankDetails ?? NULL;
+     if (empty($accountDetails)) {
+        continue;
+     }
+     $utr_no = $rcpt->getTransactionNoAttribute(); 
+
+     $inst_no = $rcpt->refundReq->tran_no ?? NULL;
+     $inst_date = $rcpt->refundReq->actual_refund_date ?? NULL;
+     $this->selectedPaymentData[] = $rcpt->payment_id;
+     switch ($rcpt->payment_type) {
+       case '1':
+         $mode_of_pay = 'e-Fund-Transfer';
+         break;
+      case '2':
+         $mode_of_pay = 'Cheque No : ' . $rcpt->cheque_no;
+         break;
+      case '3':
+         $mode_of_pay = 'Nach';
+         break; 
+      case '4':
+         $mode_of_pay = 'Other : ' . $rcpt->unr_no;
+         break; 
+      default:
+         $mode_of_pay = 'e-Fund-Transfer';
+         break;
+     }
+     $BankRow = [
+              'batch_no' =>  $batch_no,
+              'transactions_id' => NULL,
+              'voucher_no' => $this->voucherNo,
+              'fact_voucher_number'=>$factvoucherNumber,
+              'voucher_type' => 'Receipt',
+              'voucher_date' => $rcpt->date_of_payment,
+              'transaction_date'=>$refrenceTxns->created_at?:NULL,
+              'is_debit_credit' =>  'Credit',
+              'trans_type' =>  ($accountDetails->bank->bank_name ?? '').' - Receipt',
+              'invoice_no' =>   '',
+              'invoice_date' =>  NULL,
+              'ledger_name' =>  $accountDetails->bank->bank_name ?? '',
+              'amount' =>  $rcpt->amount,
+              'ref_no' =>  '',
+              'ref_amount' =>  $rcpt->amount,
+              'acc_no' =>  $accountDetails->acc_no ?? '',
+              'ifsc_code' =>  $accountDetails->ifsc_code ?? '',
+              'bank_name' =>  $accountDetails->bank->bank_name ?? '',
+              'cheque_amount' =>  '',
+              'cross_using' => $rcpt->payment_type == 2 ? 'a/c payee' : NULL,
+              'mode_of_pay' => $mode_of_pay,
+              'inst_no' =>  $inst_no,
+              'utr_no'  => $utr_no,
+              'inst_date' =>  $inst_date,
+              'favoring_name' =>  $userName,
+              'company_bank_name'=>$rcpt->companyUserAccount?$rcpt->companyUserAccount->bank->bank_name:NULL,
+              'company_bank_acc'=>$rcpt->companyUserAccount?$rcpt->companyUserAccount->acc_no:NULL,
+              'remarks' => '',
+              'generated_by' => '1',
+              'narration' => 'Being Repayment Reversed towards UserId ' . $user_id . ' & Batch no '. $batch_no,
+     ];
+     $receiptPayment[] = $BankRow;
+     if (!empty($settledTransactoions)) {
+       foreach ($settledTransactoions as $stldTxn) {
+          $trans_type_name = $stldTxn->getTransNameAttribute();
+          $invoice_no = $stldTxn->userinvoicetrans->getUserInvoice->invoice_no ?? NULL;
+          $invoice_date = $stldTxn->userinvoicetrans->getUserInvoice->created_at ?? NULL;
+          if (empty($invoice_no) && !empty($stldTxn->parent_trans_id)) {
+            $parentRecord  = $stldTxn->getParentTxn();
+            $invoice_no = $parentRecord->userinvoicetrans->getUserInvoice->invoice_no ?? NULL;
+            $invoice_date = $parentRecord->userinvoicetrans->getUserInvoice->created_at ?? NULL;
+            if (empty($invoice_no)) {
+              $invoice_no = $parentRecord->invoiceDisbursed->invoice->invoice_no ?? NULL;
+              $invoice_date = $parentRecord->invoiceDisbursed->invoice->invoice_date ?? NULL;
+            }
+          }
+          $getTransfactVoucherNumber = Helper::getTransfactVoucherNumber($stldTxn->trans_id);
+          if($getTransfactVoucherNumber){
+            $factvoucherNumber = $getTransfactVoucherNumber->fact_voucher_no;
+          }else{
+            $transfactvoucherData = [
+              'trans_id'=>$stldTxn->trans_id,
+              'fact_voucher_no'=>$factvoucherNumber,
+              'created_at'=>\Carbon\Carbon::now()->setTimezone(config('app.timezone'))->format('Y-m-d H:i:s')
+            ];
+            $this->receiptTransFactVoucher[] = $transfactvoucherData;
+          }
+          $this->selectedTxnData[] = $stldTxn->trans_id;
+          $settledRow = [
+              'batch_no' =>  $batch_no,
+              'transactions_id' =>  $stldTxn->trans_id,
+              'voucher_no' => $this->voucherNo,
+              'fact_voucher_number'=>$factvoucherNumber,
+              'voucher_type' => 'Receipt',
+              'voucher_date' => $stldTxn->trans_date,
+              'transaction_date'=>$stldTxn->created_at?$stldTxn->created_at:NULL,
+              'is_debit_credit' =>  'Debit',
               'trans_type' =>  $trans_type_name,
               'invoice_no' =>   $invoice_no,
               'invoice_date' =>  $invoice_date,
@@ -798,20 +1000,23 @@ class ApiController
     $journalData = Transactions::getJournalTxnTally($where);
     $disbursalData = Transactions::getDisbursalTxnTally($where);
     $refundData = Transactions::getRefundTxnTally($where);
-    $receiptData = Payment::with('userRelation')->where(['is_settled' => 1, 'trans_type' => config('lms.TRANS_TYPE.REPAYMENT'), 'action_type' => 1])->whereHas('paymentRefrenceTxns',function($query) use($where){ $query->where($where); })->get();
+    $receiptData = Payment::with('userRelation')->where(['is_settled' => 1, 'trans_type' => config('lms.TRANS_TYPE.REPAYMENT'), 'action_type' => 1])->whereHas('paymentRefrenceTxns',function($query) use($where){ $query->whereNotIn('trans_type',[2])->where($where); })->get();
+    $receiptReversalData = Payment::with('userRelation')->where(['is_settled' => 0, 'trans_type' => config('lms.TRANS_TYPE.REPAYMENT'), 'action_type' => 1])->whereHas('paymentRefrenceTxns',function($query) use($where){ $query->whereIn('trans_type',[2])->where($where); })->get();
 
     $journalArray = $this->createJournalData($journalData, $batch_no);
     $disbursalArray = $this->createDisbursalData($disbursalData, $batch_no);
     $receiptArray = $this->createReceiptData($receiptData, $batch_no);
+    $receiptReversalArray = $this->createReceipReversalData($receiptReversalData, $batch_no);
     $refundArray = $this->createRefundData($refundData, $batch_no);
-    
-    $tally_data = array_merge($disbursalArray, $journalArray , $receiptArray, $refundArray);
+    $allTransFactVoucher = array_merge($this->journalTransFactVoucher,$this->disbursalTransFactVoucher,$this->receiptTransFactVoucher,$this->refundTransFactVoucher);
+    $tally_data = array_merge($disbursalArray, $journalArray , $receiptArray, $receiptReversalArray, $refundArray);
     try {
         if (empty($tally_data)) {
            $response['message'] =  'No Records are selected to Post in tally.';
            return $response;
         }
         $res = \DB::table('tally_entry')->insert($tally_data);
+        $transfactres = \DB::table('trans_fact_voucher')->insert($allTransFactVoucher);
     } catch (\Exception $e) {
         $errorInfo  = $e->errorInfo;
         $res = $errorInfo;

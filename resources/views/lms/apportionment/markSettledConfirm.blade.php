@@ -56,7 +56,8 @@
                                             <thead>
                                                 <tr role="row">                                                   
                                                     {{-- <th>Trans Date</th> --}}
-                                                    <th>Value Date</th>       
+                                                    <th>Trans Date</th>       
+                                                    <th>Payment Due Date</th>       
                                                     <th>Invoice No</th>       
                                                     <th>Trans Type</th>		
                                                     <th>Total Repay Amt</th>
@@ -70,6 +71,7 @@
                                                 <tr>
                                                     {{-- <td>{{ Carbon\Carbon::now()->format('d-m-Y') }}</td> --}}
                                                     <td>{{ Carbon\Carbon::parse($trans['value_date'])->format('d-m-Y') }}</td>
+                                                    <td>{{ Carbon\Carbon::parse($trans['payment_due_date'])->format('d-m-Y') }}</td>
                                                     <td>{{ $trans['invoice_no'] }}</td>
                                                     <td>{{ $trans['trans_name'] }}</td>
                                                     <td>₹ {{ number_format($trans['total_repay_amt'],2) }}</td>

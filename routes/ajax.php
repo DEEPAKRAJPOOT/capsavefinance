@@ -1556,6 +1556,10 @@ Route::group(
     ]);
     Route::post('lms_send_invoice_outstanding_due', [
         'as' => 'lms_send_invoice_outstanding_due',
+        'uses' => 'AjaxController@getInvoiceOutstandingReport'
+    ]);
+    Route::post('lms_set_invoice_outstanding_date', [
+        'as' => 'lms_set_invoice_outstanding_date',
         'uses' => 'AjaxController@sendInvoiceOutstandingReportByMail'
     ]);
     Route::post('lms_get_invoice_outstanding_list', [
@@ -1578,4 +1582,14 @@ Route::group(
         'uses' => 'AjaxController@getCustAndCapsLocApp'
         ]
     );
+
+    Route::post('lms_send_recon_report', [
+        'as' => 'lms_send_recon_report',
+        'uses' => 'AjaxController@sendReconReportByMail'
+    ]);
+
+    Route::post('lms_get_recon_report', [
+        'as' => 'lms_get_recon_report',
+        'uses' => 'AjaxController@getReconReportByMail'
+    ]);
 });

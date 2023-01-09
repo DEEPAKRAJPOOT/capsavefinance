@@ -29,6 +29,7 @@ use App\Inv\Repositories\Models\Payment;
 use App\Inv\Repositories\Models\Lms\PaymentApportionment;
 use App\Inv\Repositories\Models\Lms\Transactions;
 use App\Inv\Repositories\Models\Master\MakerChecker;
+use App\Inv\Repositories\Models\Lms\UserInvoice;
 
 class DataRenderer implements DataProviderInterface
 {
@@ -3682,6 +3683,7 @@ class DataRenderer implements DataProviderInterface
                     $statuses = $charges->deleteLogs()->distinct()->pluck('status')->toArray();
                     if ($charges->transaction && $charges->transaction->amount == $charges->transaction->outstanding) {
                         if((Helpers::checkPermission('lms_req_for_chrg_deletion') && (!in_array(1, $statuses) && !in_array(2, $statuses))) || (Helpers::checkPermission('lms_approve_chrg_deletion') && (in_array(1, $statuses) && !in_array(2, $statuses)))){
+                            $this->isCheckBoxEnable[$charges->chrg_trans_id] = true;
                             return '<input type="checkbox" class="single_charge_select" name="chrg_ids[]" onclick="selectSingleCharge(this)" value="'.$charges->chrg_trans_id.'">';
                         }
                     }
@@ -3740,15 +3742,20 @@ class DataRenderer implements DataProviderInterface
                 ->addColumn(
                     'settled_payment_id',
                     function ($charges) {
+                        if (isset($this->isCheckBoxEnable[$charges->chrg_trans_id]) && $this->isCheckBoxEnable[$charges->chrg_trans_id]) {
+                            return '---';
+                        }
+
                         $paymentIds = $charges->transaction->childTransactions()->whereNotNull('payment_id')->distinct('payment_id')->pluck('payment_id')->toArray();
-                        
-                        if (is_array($paymentIds) && count($paymentIds)) {
+                        $statuses = $charges->deleteLogs()->distinct()->pluck('status')->toArray();
+
+                        if (is_array($paymentIds) && count($paymentIds) && (!in_array(2, $statuses))) {
                             $paymentIdsWithPrefix = [];
                             foreach($paymentIds as $paymentId) {
                                 array_push($paymentIdsWithPrefix, \Helpers::formatIdWithPrefix($paymentId, 'PAYMENTID'));
                             }
                             return implode(',', $paymentIdsWithPrefix);
-                        }elseif(!$charges->transaction->payment_id && $charges->transaction->amount != $charges->transaction->outstanding) {
+                        }elseif(!$charges->transaction->payment_id && $charges->transaction->amount != $charges->transaction->outstanding && (!in_array(2, $statuses))) {
                             return 'WriteOff/WaiveOff';
                         }
                     return '---';
@@ -3759,7 +3766,7 @@ class DataRenderer implements DataProviderInterface
                         return 'Sent For Approval';
                     }
                     if (in_array(1, $statuses) && in_array(2, $statuses)) {
-                        return 'Charge Deleted';
+                        return 'Charge Cancelled';
                     }
                     return '---';
                 })
@@ -6210,26 +6217,24 @@ class DataRenderer implements DataProviderInterface
                             $is_superadmin = isset($roleData[0]) ? $roleData[0]->is_superadmin : 0;
                             $paymentAppor = PaymentApportionment::checkApportionmentHold($dataRecords->user_id);
                             if ($dataRecords->is_settled == Payment::PAYMENT_SETTLED) {
-                                if(Helpers::checkPermission('undo_apportionment')){
-                                    if($dataRecords->is_settled == Payment::PAYMENT_SETTLED && (($dataRecords->action_type == '1' && $dataRecords->trans_type == '17') || ($dataRecords->action_type == '3' && $dataRecords->trans_type == '7') || ($dataRecords->action_type == '5' && $dataRecords->trans_type == '31') ) && $dataRecords->validRevertPayment){
-                                        if (!$paymentAppor) {  
-                                        $btn .= '<button class="btn btn-action-btn btn-sm"  title="Revert Apportionment" onclick="delete_payment(\''. route('undo_apportionment', ['payment_id' => $dataRecords->payment_id, '_token'=> csrf_token()] ) .'\',this)" ><i class="fa fa-undo"></i></button>';
-                                        }else{
-                                            $btn .= '<button class="btn btn-action-btn btn-sm"  title="Revert Apportionment" onclick="javascript:alert(\'You cannot perform this action as you have not uploaded  the unsettled payment apportionment CSV file.\');" ><i class="fa fa-undo"></i></button>';                                            
-                                        }
-                                    }
-                                }
+                                // if(Helpers::checkPermission('undo_apportionment')){
+                                //     if($dataRecords->is_settled == Payment::PAYMENT_SETTLED && (($dataRecords->action_type == '1' && $dataRecords->trans_type == '17') || ($dataRecords->action_type == '3' && $dataRecords->trans_type == '7') || ($dataRecords->action_type == '5' && $dataRecords->trans_type == '31') ) && $dataRecords->validRevertPayment){
+                                //         if (!$paymentAppor) {  
+                                //         $btn .= '<button class="btn btn-action-btn btn-sm"  title="Revert Apportionment" onclick="delete_payment(\''. route('undo_apportionment', ['payment_id' => $dataRecords->payment_id, '_token'=> csrf_token()] ) .'\',this)" ><i class="fa fa-undo"></i></button>';
+                                //         }else{
+                                //             $btn .= '<button class="btn btn-action-btn btn-sm"  title="Revert Apportionment" onclick="javascript:alert(\'You cannot perform this action as you have not uploaded  the unsettled payment apportionment CSV file.\');" ><i class="fa fa-undo"></i></button>';                                            
+                                //         }
+                                //     }
+                                // }
 
                                 if(Helpers::checkPermission('lms_refund_payment_advise')){
-                                    if($dataRecords->action_type == '1' && $dataRecords->trans_type == '17'){
-                                        if($dataRecords->is_refundable && !$dataRecords->refundReq && in_array($dataRecords->is_settled, [Payment::PAYMENT_SETTLED])){
-                                        if (!$paymentAppor) { 
-                                            $btn .= '<a class="btn btn-action-btn btn-sm" data-toggle="modal" data-target="#paymentRefundInvoice" title="Payment Refund" data-url ="'.route('lms_refund_payment_advise', ['payment_id' => $dataRecords->payment_id]).'" data-height="350px" data-width="100%" data-placement="top"><i class="fa fa-list-alt"></i></a>';
-                                        }else{
-                                            $btn .= '<button class="btn btn-action-btn btn-sm"  title="Payment Refund" onclick="javascript:alert(\'You cannot perform this action as you have not uploaded  the unsettled payment apportionment CSV file.\');" ><i class="fa fa-list-alt"></i></button>';                                            
+                                        if(!$dataRecords->refundReq && in_array($dataRecords->is_settled, [Payment::PAYMENT_SETTLED])){
+                                            if (!$paymentAppor) { 
+                                                $btn .= '<a class="btn btn-action-btn btn-sm" data-toggle="modal" data-target="#paymentRefundInvoice" title="Payment Refund" data-url ="'.route('lms_refund_payment_advise', ['payment_id' => $dataRecords->payment_id, 'apportionment_id' =>$dataRecords->apportionment_id]).'" data-height="350px" data-width="100%" data-placement="top"><i class="fa fa-list-alt"></i></a>';
+                                            }else{
+                                                $btn .= '<button class="btn btn-action-btn btn-sm"  title="Payment Refund" onclick="javascript:alert(\'You cannot perform this action as you have not uploaded  the unsettled payment apportionment CSV file.\');" ><i class="fa fa-list-alt"></i></button>';                                            
+                                            }
                                         }
-                                        }
-                                    }
                                 }
                             }else{
 
@@ -6974,11 +6979,14 @@ class DataRenderer implements DataProviderInterface
             ->editColumn(
                 'due_date',
                 function ($data) {
-                    return $data->due_date ? date('d/m/Y', strtotime($data->due_date)) : '';
+                    if($data->invoice_cat == '1'){
+                        return $data->due_date ? date('d/m/Y', strtotime($data->due_date)) : '';
+                    }
                 }
             )
             ->editColumn('invoice_type',  function ($data) {
-                    return ($data->invoice_type == 'C' ? 'Charge' : 'Interest');
+                    // return ($data->invoice_type == 'C' ? 'Charge' : 'Interest');
+                    return config('lms.INVOICE_TYPE_NAME')[$data->invoice_type_name];
                 }
             )
             ->editColumn(
@@ -7017,7 +7025,14 @@ class DataRenderer implements DataProviderInterface
                 function ($data) {
                 $link = '';
                     if(Helpers::checkPermission('download_user_invoice') ){
-                        $link = "<a title='Download User Invoice' href='".route('download_user_invoice', ['user_id' => $data->user_id, 'user_invoice_id' => $data->user_invoice_id])."' class='btn btn-success btn-sm'><i style='color:#fff' class='fa fa-download'> Download</a>";
+                        if($data->job_id != null && $data->file_id != null){
+                            $link = "<a title='Download User Invoice' href='".route('download_user_invoice', ['user_id' => $data->user_id, 'user_invoice_id' => $data->user_invoice_id])."' class='btn btn-success btn-sm'><i style='color:#fff' class='fa fa-download'> Download</a>";
+                        }elseif($data->job_id == null && $data->file_id == null){
+                            return ' <button class="btn btn-primary" disabled> <span class="spinner-grow spinner-grow-sm"></span> Loading.. </button>';
+                        }else{
+                            return "<button class='btn btn-primary' disabled> <i style='color:#fff' class='fa fa-download'></i> Download </button>";
+                        }
+                        
                     }
                 return $link;
                 }
@@ -7292,6 +7307,17 @@ class DataRenderer implements DataProviderInterface
                 }
             })
             ->addColumn('pay', function($trans)use($payment,$showSuggestion){
+
+                if ($trans->transType->chrg_master_id != 0 && $trans->ChargesTransactions && $trans->ChargesTransactions->deleteLogs()->count()) {
+                    $statuses = $trans->ChargesTransactions->deleteLogs()->distinct()->pluck('status')->toArray();
+                    $msg = '';
+                    if (in_array(1, $statuses) && !in_array(2, $statuses)) {
+                        $msg .= 'Charge Transaction Cancellation Requested';
+                    }elseif (in_array(1, $statuses) && in_array(2, $statuses)) {
+                        $msg .= 'Charge Transaction Cancelled';
+                    }
+                    return "<span style=\"color:red\">$msg</span>";
+                }
                 $result = '';
                 $encryptedTransId = $trans->trans_id;
                 if($payment){
@@ -7321,6 +7347,10 @@ class DataRenderer implements DataProviderInterface
                 return $result;
             })
             ->addColumn('select', function($trans) use ($payment){
+                if ($trans->transType->chrg_master_id != 0 && $trans->ChargesTransactions && $trans->ChargesTransactions->deleteLogs()->count()) {
+                    return '---';
+                }
+
                 $transDisabled = '';
                 $payEnable = 1;
                 $class = 'check';
@@ -7388,19 +7418,19 @@ class DataRenderer implements DataProviderInterface
                     return Carbon::parse($trans->payment->date_of_payment)->format('d-m-Y');
                 }
             })
-            ->addColumn('select', function($trans){
-                $result = '';
-                $flag = true;
-                if($trans->invoice_disbursed_id ){
-                    if($trans->invoiceDisbursed->invoice->program_offer->payment_frequency == 1 && $trans->outstanding == 0)
-                    $flag = false;
-                }
+            // ->addColumn('select', function($trans){
+            //     $result = '';
+            //     $flag = true;
+            //     if($trans->invoice_disbursed_id ){
+            //         if($trans->invoiceDisbursed->invoice->program_offer->payment_frequency == 1 && $trans->outstanding == 0)
+            //         $flag = false;
+            //     }
                 
-                if(/*$trans->payment && */strtotime(\Helpers::convertDateTimeFormat($trans->sys_created_at, 'Y-m-d H:i:s', 'Y-m-d')) == strtotime(\Helpers::convertDateTimeFormat(Helpers::getSysStartDate(), 'Y-m-d H:i:s', 'Y-m-d')) && $flag && !in_array($trans->trans_type,[config('lms.TRANS_TYPE.FAILED')])){
-                    $result = "<input type='checkbox' name='check[".$trans->trans_id."]'>";
-                }
-                return $result;
-            })
+            //     if(/*$trans->payment && */strtotime(\Helpers::convertDateTimeFormat($trans->sys_created_at, 'Y-m-d H:i:s', 'Y-m-d')) == strtotime(\Helpers::convertDateTimeFormat(Helpers::getSysStartDate(), 'Y-m-d H:i:s', 'Y-m-d')) && $flag && !in_array($trans->trans_type,[config('lms.TRANS_TYPE.FAILED')])){
+            //         $result = "<input type='checkbox' name='check[".$trans->trans_id."]'>";
+            //     }
+            //     return $result;
+            // })
             ->make(true);
     }
 
@@ -7414,6 +7444,9 @@ class DataRenderer implements DataProviderInterface
             ->rawColumns(['select', 'refund'])
             ->addColumn('disb_date', function($trans){
                 return Carbon::parse($trans->trans_date)->format('d-m-Y');
+            })
+            ->addColumn('payment_due_date', function($trans){
+                return Carbon::parse($trans->paymentDueDate)->format('d-m-Y');
             })
             ->addColumn('invoice_no', function($trans){
                 if($trans->invoice_disbursed_id && $trans->invoiceDisbursed->invoice_id){
@@ -7564,34 +7597,63 @@ class DataRenderer implements DataProviderInterface
                return ($invoiceRec->sac_code != 0 ? $invoiceRec->sac_code : '000');
            })   
            ->editColumn('interest_prd',  function ($invoiceRec) {
-             $txn = Transactions::find($invoiceRec->transId);
-             $desc = $txn->transType->trans_name ?? NULL;
-            if ($invoiceRec->transTypeId == config('lms.TRANS_TYPE.INTEREST')) {
-                $desc =  "Interest for period " . date('d-M-Y', strtotime($txn->fromIntDate)) . " To " . date('d-M-Y', strtotime($txn->toIntDate));
-            } 
-
-            if ($invoiceRec->transTypeId == config('lms.TRANS_TYPE.INTEREST_OVERDUE')) {
-                $dueDate = strtotime($txn->toIntDate); // or your date as well
-                $now = strtotime($txn->fromIntDate);
-                $datediff = ($dueDate - $now);
-                //+ $invoiceRec->interestRate
-                $OdandInterestRate = $invoiceRec->odi;
-                $desc = $desc." ".round($datediff / (60 * 60 * 24)) . ' days-From:' . date('d-M-Y', strtotime($txn->fromIntDate)) . " to " . date('d-M-Y', strtotime($txn->toIntDate)) . ' @ ' . $OdandInterestRate . '%';
-            }
-            return $desc;
+                $desc = $invoiceRec->trans_name;
+                if(in_array($invoiceRec->transTypeId, [config('lms.TRANS_TYPE.INTEREST'),config('lms.TRANS_TYPE.INTEREST_OVERDUE')])){
+                    $desc .= " for Period " . date('d-M-Y', strtotime($invoiceRec->from_date)) . " To " . date('d-M-Y', strtotime($invoiceRec->to_date));
+                }
+                elseif(in_array($invoiceRec->transTypeId,[config('lms.TRANS_TYPE.WAVED_OFF')])){
+                    if($invoiceRec->invoice_cat == 2){
+                        $desc .= " against $invoiceRec->parent_invoice_no";
+                    }
+                }  
+                elseif(in_array($invoiceRec->transTypeId,[config('lms.TRANS_TYPE.REVERSE')])){
+                    if($invoiceRec->invoice_cat == 2){
+                        $desc .= " against $invoiceRec->parent_invoice_no";
+                    }elseif($invoiceRec->invoice_cat == 3){
+                        $desc .= " against $invoiceRec->link_invoice_no";
+                    }
+                }
+                elseif(in_array($invoiceRec->transTypeId,[config('lms.TRANS_TYPE.CANCEL')])){
+                    if($invoiceRec->invoice_cat == 2){
+                        $desc .= " against $invoiceRec->parent_invoice_no";
+                    }elseif($invoiceRec->invoice_cat == 3){
+                        $desc .= " against $invoiceRec->link_invoice_no";
+                    }
+                }
+                return $desc;
            })     
            ->editColumn('cap_invoice_no', function ($invoiceRec) {
-               return $invoiceRec->capinvoice;
+            if($invoiceRec->invoice_cat == 3) {
+                return '';
+            }else{
+                return $invoiceRec->capinvoice;
+            }
            })    
            ->editColumn('invoice_no', function ($invoiceRec) {
-               return $invoiceRec->invoice;
+                return $invoiceRec->invoice;
            })    
            ->editColumn('invoice_date', function ($invoiceRec) {
                return date('d-m-Y', strtotime($invoiceRec->invoice_date));
            })
+           ->editColumn('invoice_cat', function ($invoiceRec) {
+                if($invoiceRec->invoice_cat == 1){
+                    return 'Debit Note';       
+                }elseif($invoiceRec->invoice_cat == 2){
+                    return 'Credit Note';
+                }elseif($invoiceRec->invoice_cat == 3){
+                    return 'Credit Note Reversed';
+                }
+            })
            ->editColumn('base_amount',  function ($invoiceRec) {
                return number_format($invoiceRec->base_amount, 2);
            })
+           ->editColumn('gst_applicable',  function ($invoiceRec) {
+                $is_applied = 'No';
+                if($invoiceRec->sgst_rate > 0 || $invoiceRec->cgst_rate > 0 || $invoiceRec->igst_rate > 0){
+                    $is_applied = 'Yes';
+                }  
+                return $is_applied;
+           }) 
            ->editColumn('sgst_rate',  function ($invoiceRec) {
                return ($invoiceRec->sgst_rate != 0 ? $invoiceRec->sgst_rate . '%' : '-');
            })
@@ -7622,10 +7684,26 @@ class DataRenderer implements DataProviderInterface
                return number_format($invoiceRec->base_amount + $invoiceRec->sgst_amount + $invoiceRec->cgst_amount + $invoiceRec->igst_amount, 2);
            })
            ->editColumn('cash_flow',  function ($invoiceRec) {
-               return (!empty($invoiceRec->invoice_type) && $invoiceRec->invoice_type == 'C') ? 'Charge' : 'Interest';
+                if($invoiceRec->invoice_type_name == 1){
+                    return 'Charge';
+                }
+                elseif($invoiceRec->invoice_type_name == 2){
+                    return 'Interest';
+                }
            })
            ->editColumn('considered_in',  function ($invoiceRec) {
                return date('M-Y', strtotime($invoiceRec->invoice_date));
+           })
+           ->editColumn('status', function($invoiceRec){
+                if($invoiceRec->invoice_cat == 1){
+                    return "Processed";
+                }elseif($invoiceRec->transTypeId == config('lms.TRANS_TYPE.REVERSE')){
+                    return "Reversed";
+                }elseif($invoiceRec->transTypeId == config('lms.TRANS_TYPE.CANCEL')){
+                    return "Cancelled";
+                }elseif($invoiceRec->transTypeId == config('lms.TRANS_TYPE.WAVED_OFF')){
+                    return "Waived Off";
+                }
            })
            ->filter(function ($query) use ($request) {
                 if($request->get('from_date')!= '' && $request->get('to_date')!=''){
@@ -7641,9 +7719,7 @@ class DataRenderer implements DataProviderInterface
                         $query->where('user_invoice.user_id', '=',$user_id);
                     });
                 }
-
             })
-
            ->make(true);
     }
 
@@ -9836,6 +9912,39 @@ class DataRenderer implements DataProviderInterface
                     return $status;
             })
             
+            ->make(true);
+    }
+
+    public function getReconReportLogs(Request $request, $data)
+    {
+        return DataTables::of($data)
+            ->rawColumns(['customer_id', 'date', 'action'])
+            ->addColumn('customer_id', function($overdueLog){
+                $data = 'All';
+                if($overdueLog->lmsUser){
+                    $data = $overdueLog->lmsUser->customer_id;
+                }
+                return $data;
+            })
+            ->addColumn('date', function ($overdueLog) {
+                return Carbon::parse($overdueLog->to_date)->format('d/m/Y');
+            })
+            ->addColumn('created_at', function ($overdueLog) {
+                return Helpers::convertDateTimeFormat($overdueLog->created_at, $fromDateFormat='Y-m-d H:i:s', $toDateFormat='d-m-Y h:i A');
+            })
+            ->addColumn('created_by', function ($overdueLog) {
+                return ucwords($overdueLog->createdByUserName);
+            })
+            ->addColumn('action', function ($overdueLog) {
+                if(Helpers::checkPermission('recon_report_download') ){
+                    if($overdueLog->file_path){
+                        return "<a href=\"".route('recon_report_download', ['report_log_id' => $overdueLog->id])."\" class='btn  btn-success btn-sm'>Download Report</a>";
+                    }else{
+                        return ' <button class="btn btn-primary" disabled> <span class="spinner-grow spinner-grow-sm"></span> Loading.. </button>';
+                    }
+                }
+                return '';
+            })
             ->make(true);
     }
 }

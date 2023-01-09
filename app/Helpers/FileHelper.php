@@ -172,7 +172,7 @@ class FileHelper {
             $column = 0;
             $floor = floor($rec_count/26);
             $reminder = $rec_count % 26;
-            $char = ($floor > 0 ? chr(ord("A") + $floor - 1) : '').chr(ord("A") + $reminder - 1);
+            $char = ($floor > 0 ? chr(ord("A") + $floor-1) : '').chr(ord("A") + $reminder);
             foreach($data as $key => $item) {
               foreach($item as $key1 => $item1) {
                 $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($column, $row, $item1);

@@ -4,6 +4,8 @@ namespace App\Inv\Repositories\Models;
 
 use DB;
 use Helpers;
+use Carbon\Carbon;
+use App\Helpers\Helper;
 use App\Inv\Repositories\Models\User;
 use App\Inv\Repositories\Models\Business;
 use App\Inv\Repositories\Factory\Models\BaseModel;
@@ -100,6 +102,10 @@ class Payment extends BaseModel {
     
     public function lmsUser(){
         return $this->belongsTo('App\Inv\Repositories\Models\LmsUser','user_id','user_id');
+    }
+
+    public function apportionment(){
+        return $this->hasMany('App\Inv\Repositories\Models\Lms\Apportionment','payment_id','payment_id');
     }
 
     public function transaction(){
@@ -340,23 +346,33 @@ class Payment extends BaseModel {
         return $query->orWhere('is_settled', self::PAYMENT_SETTLED_PROCESSED);
     }
 
+    public function getApportionmentIdAttribute(){
+        return self::apportionment()->latest('apportionment_id')->value('apportionment_id');
+    }
+
     public function getValidRevertPaymentAttribute() {
-        $returnId = NULL;
-        $payment = Transactions::join('payments', 'payments.payment_id', '=', 'transactions.payment_id')
-                                ->where('transactions.user_id',$this->user_id)
-                                ->whereNotIn('transactions.trans_type',[config('lms.TRANS_TYPE.CANCEL'),config('lms.TRANS_TYPE.REFUND')])
-                                ->whereNotNull('transactions.apportionment_id')
-                                ->whereNotNull('transactions.payment_id')
-                                ->orderBy('payments.date_of_payment','DESC')
-                                ->orderBy('transactions.trans_id','DESC')
-                                ->first();
-        if($payment){
-            $payment_id = $payment->payment_id;
-            $paymentDetails = self::find($payment_id);
-            if(($paymentDetails->trans_type == '17' && $paymentDetails->action_type == '1') || ($paymentDetails->trans_type == '7' && $paymentDetails->action_type == '3') ){
-                $returnId = $payment_id;
+        $result = false;
+        $curDate = Helper::getSysStartDate();
+        $curYearMonth = Carbon::parse($curDate)->format('Ym');
+        $apportDetails = self::apportionment()->latest('apportionment_id')->select('apportionment_id','apportionment_type')->first();
+
+        $payYearMonth = $apportDetails ? Carbon::parse($apportDetails->created_at)->format('Ym') : Carbon::parse($this->date_of_payment)->format('Ym');
+        $lastSettledPaymentId = Payment::where('user_id',$this->user_id)
+        ->where('is_settled',self::PAYMENT_SETTLED)
+        ->orderBy('date_of_payment','DESC')
+        ->orderBy('payment_id','DESC')
+        ->limit(1)
+        ->value('payment_id');
+
+        if($this->is_settled == self::PAYMENT_SETTLED && $lastSettledPaymentId == $this->payment_id){
+            if($curYearMonth == $payYearMonth && $apportDetails->apportionment_type == 1 && !$this->refundReq){
+                $refAdjTransId = Transactions::where('apportionment_id',$apportDetails->apportionment_id)->whereIn('trans_type',[config('lms.TRANS_TYPE.REFUND'),config('lms.TRANS_TYPE.MARGIN'),config('lms.TRANS_TYPE.NON_FACTORED_AMT')])->where('entry_type',1)->whereColumn('amount','<>','settled_outstanding')->pluck('trans_id')->toArray();
+                $refAdjTransCnt = Transactions::where('apportionment_id',$apportDetails->apportionment_id)->whereIn('link_trans_id',$refAdjTransId)->whereIn('trans_type',[config('lms.TRANS_TYPE.REFUND'),config('lms.TRANS_TYPE.ADJUSTMENT')])->where('entry_type',0)->where('outstanding','>',0)->count();
+                if(!$refAdjTransCnt){
+                    $result = true;
+                }
             }
         }
-        return ($returnId == $this->payment_id);
+        return $result;
     }
 }

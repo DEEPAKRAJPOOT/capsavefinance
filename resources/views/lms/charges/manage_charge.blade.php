@@ -37,9 +37,9 @@
                     </div>
         <div class="card-body">
              <div class="row">
-                    <div class="col-md-2">
+                    {{-- <div class="col-md-2"> --}}
                         <input type="hidden" name="user_id" value="{{($user_id)}}">
-                    </div>                                    
+                    {{-- </div>                                     --}}
                     <div class="col-md-2">
                         <label class="float-left">From Date</label> 
                         <input type="text" name="from_date" readonly="readonly" class="form-control form-control-sm date_of_birth datepicker-dis-fdate" value="">
@@ -65,12 +65,17 @@
                     @endcan
                     <div class="col-md-3">
                         <label>&nbsp;</label><br>
+                        <div class="col-md-2" style="margin-left: 112px;">
                         @can('lms_req_for_chrg_deletion')
-                        <button type="button" id="bulkReqForChrgDelete" data-status="9" class="btn btn-primary btn-sm ml-2 btn-app">Req For Deletion</button>
+                        <button type="button" id="bulkReqForChrgDelete" data-status="9" class="btn btn-primary btn-sm ml-2 btn-app">Request for Cancellation</button>
                         @endcan
+                        </div>
+                        <div class="col-md-2" style="margin: -31px; margin-left: 292px; margin-bottom: 15px;">
                         @can('lms_approve_chrg_deletion')
-                        <button type="button" id="bulkApprovalForChrgDeletion" data-status="9" class="btn btn-primary btn-sm ml-2 btn-app">Approve Deletion</button>
+                        <button type="button" id="bulkApprovalForChrgDeletion" data-status="9" class="btn btn-primary btn-sm ml-2 btn-app">Approve Cancellation</button>
                         @endcan
+                        </div>
+
                     </div>
             </div>
            
@@ -92,7 +97,7 @@
                                     <th>Description</th>
                                     <th>Date Time</th>
                                     <th>Settled Payment Id</th>
-                                    <th>Delete Status</th>
+                                    <th>Status</th>
                                 </tr>
                             </thead>
                             <tbody>

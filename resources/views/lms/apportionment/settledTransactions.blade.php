@@ -42,7 +42,7 @@
             <div class="row">
                 @include('lms.apportionment.common.listSettledTransactions')
             </div>
-            <div class="row pull-right action-btn">
+            {{-- <div class="row pull-right action-btn">
                 <div class="col-md-12" >
                     @can('apport_trans_reversal')
                         @if($paymentAppor)
@@ -52,7 +52,7 @@
                         @endif
                     @endcan
                 </div>
-            </div>
+            </div> --}}
         </div>
      <a data-toggle="modal" data-target="#viewDetailFrame" data-url="" data-height="400px" data-width="100%" data-placement="top" class="view_detail_transaction"></a>
 </div>

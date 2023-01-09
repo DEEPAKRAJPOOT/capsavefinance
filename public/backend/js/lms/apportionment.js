@@ -9,6 +9,7 @@ class Apportionment {
             case 'unsettledTransactions':
             columns = [
                 {data: 'disb_date'},
+                {data: 'payment_due_date'},
                 {data: 'invoice_no'},
                 {data: 'trans_type'},
                 {data: 'total_repay_amt'},                    
@@ -30,17 +31,19 @@ class Apportionment {
             case 'settledTransactions':
             columns = [
                 {data: 'disb_date'},
+                {data: 'payment_due_date'},
                 {data: 'invoice_no'},
                 {data: 'trans_type'},
                 {data: 'total_repay_amt'},
                 {data: 'settled_amt'},                    
                 {data: 'payment_date'},
-                {data: 'select'}
+                // {data: 'select'}
             ];
                 break;
             case 'refundTransactions':
             columns =  [
                 {data: 'disb_date'},
+                {data: 'payment_due_date'},
                 {data: 'invoice_no'},
                 {data: 'trans_type'},
                 {data: 'total_repay_amt'},
@@ -133,7 +136,11 @@ class Apportionment {
                         $("input[name='check["+id+"]']").prop("checked", true);
                         paymentAmt = paymentAmt-value.toFixed(2);
                     }else{
-                        $(this).val(paymentAmt.toFixed(2));
+                        if (typeof paymentAmt == 'number' ){
+                            $(this).val(paymentAmt.toFixed(2));
+                        }else{
+                            $(this).val(paymentAmt);
+                        }
                         $(this).attr('disabled',false);
                         $("input[name='check["+id+"]']").prop("checked", true);
                         paymentAmt= 0;
@@ -163,7 +170,7 @@ class Apportionment {
         $(".pay").each(function (index, element) {
             var payamt = parseFloat($(this).val()).toFixed(2);
             if($.isNumeric(payamt)){
-                settled_amt += payamt;
+                settled_amt += +payamt;
             }
         });
         var unapplied_amt = payment_amt-settled_amt;

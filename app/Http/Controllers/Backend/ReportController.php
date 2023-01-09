@@ -25,6 +25,8 @@ use App\Inv\Repositories\Contracts\ReportInterface;
 use App\Inv\Repositories\Models\Lms\OverdueReportLog;
 use App\Inv\Repositories\Contracts\InvoiceInterface as InvoiceInterface;
 use App\Inv\Repositories\Models\Lms\OutstandingReportLog;
+use App\Inv\Repositories\Models\Lms\UserInvoice;
+use App\Inv\Repositories\Models\Lms\ReconReportLog;
 
 class ReportController extends Controller
 {
@@ -286,50 +288,105 @@ class ReportController extends Controller
 		}
 		$leaseRecords = $leaseRegistersList->get();
 		$leaseArr = [];
-		foreach ($leaseRecords as $lease) {
-			$inv_comp_data = json_decode($lease->inv_comp_data, TRUE);
-			$sac_code = ($lease->sac_code != 0 ? $lease->sac_code : '000');   
-			$contract_no = 'HEL/'.($lease->sac_code != 0 ? $lease->sac_code : '000');  
-			$total_rate =  ($lease->sgst_rate + $lease->cgst_rate + $lease->igst_rate);
-			$total_tax =  ($lease->sgst_amount + $lease->cgst_amount + $lease->igst_amount);
-			$total_amount =  ($lease->base_amount + $lease->sgst_amount + $lease->cgst_amount + $lease->igst_amount);
-			$txn = Transactions::find($lease->transId);
-			$desc = $txn->transType->trans_name ?? NULL;
-			if ($lease->transTypeId == config('lms.TRANS_TYPE.INTEREST')) {
-				$desc =  "Interest for period " . date('d-M-Y', strtotime($txn->fromIntDate)) . " To " . date('d-M-Y', strtotime($txn->toIntDate));
-			} 
+		foreach ($leaseRecords as $invoiceRec) {
 
-			if ($lease->transTypeId == config('lms.TRANS_TYPE.INTEREST_OVERDUE')) {
-				$dueDate = strtotime($txn->toIntDate); // or your date as well
-				$now = strtotime($txn->fromIntDate);
-				$datediff = ($dueDate - $now);
-				$OdandInterestRate = $lease->odi;
-				$desc = $desc." ".round($datediff / (60 * 60 * 24)) . ' days-From:' . date('d-M-Y', strtotime($txn->fromIntDate)) . " to " . date('d-M-Y', strtotime($txn->toIntDate)) . ' @ ' . $OdandInterestRate . '%';
-			}		 
+			$inv_comp_data = json_decode($invoiceRec->inv_comp_data, TRUE);
+
+			$narration = $invoiceRec->trans_name;
+			if(in_array($invoiceRec->transTypeId, [config('lms.TRANS_TYPE.INTEREST'),config('lms.TRANS_TYPE.INTEREST_OVERDUE')])){
+				$narration .= " for Period " . date('d-M-Y', strtotime($invoiceRec->from_date)) . " To " . date('d-M-Y', strtotime($invoiceRec->to_date));
+			}
+			elseif(in_array($invoiceRec->transTypeId,[config('lms.TRANS_TYPE.WAVED_OFF')])){
+				if($invoiceRec->invoice_cat == 2){
+					$narration .= " against $invoiceRec->parent_invoice_no";
+				}
+			}  
+			elseif(in_array($invoiceRec->transTypeId,[config('lms.TRANS_TYPE.REVERSE')])){
+				if($invoiceRec->invoice_cat == 2){
+					$narration .= " against $invoiceRec->parent_invoice_no";
+				}elseif($invoiceRec->invoice_cat == 3){
+					$narration .= " against $invoiceRec->link_invoice_no";
+				}
+			}
+			elseif(in_array($invoiceRec->transTypeId,[config('lms.TRANS_TYPE.CANCEL')])){
+				if($invoiceRec->invoice_cat == 2){
+					$narration .= " against $invoiceRec->parent_invoice_no";
+				}elseif($invoiceRec->invoice_cat == 3){
+					$narration .= " against $invoiceRec->link_invoice_no";
+				}
+			}
+
+			$capsaveInvNo = '';
+			if($invoiceRec->invoice_cat == 3) {
+                $capsaveInvNo = '';
+            }else{
+                $capsaveInvNo = $invoiceRec->capinvoice;
+            }
+
+			$invCat = '';
+			if($invoiceRec->invoice_cat == 1){
+				$invCat = 'Debit Note';       
+			}elseif($invoiceRec->invoice_cat == 2){
+				$invCat = 'Credit Note';
+			}elseif($invoiceRec->invoice_cat == 3){
+				$invCat = 'Credit Note Reversed';
+			}
+
+			$gst_applied = 'No';
+			if($invoiceRec->sgst_rate > 0 || $invoiceRec->cgst_rate > 0 || $invoiceRec->igst_rate > 0){
+				$gst_applied = 'Yes';
+			}  
+			
+			$totalTax = ($invoiceRec->sgst_amount + $invoiceRec->igst_amount + $invoiceRec->cgst_amount);
+			
+			$totalRate = ($invoiceRec->sgst_rate + $invoiceRec->igst_rate + $invoiceRec->cgst_rate);
+
+			$cashFlowType = '';
+			if($invoiceRec->invoice_type_name == 1){
+				$cashFlowType = 'Charge';
+			}
+			elseif($invoiceRec->invoice_type_name == 2){
+				$cashFlowType = 'Interest';
+			}
+
+			$status = '';
+			if($invoiceRec->invoice_cat == 1){
+				$status = "Processed";
+			}elseif($invoiceRec->transTypeId == config('lms.TRANS_TYPE.REVERSE')){
+				$status = "Reversed";
+			}elseif($invoiceRec->transTypeId == config('lms.TRANS_TYPE.CANCEL')){
+				$status = "Cancelled";
+			}elseif($invoiceRec->transTypeId == config('lms.TRANS_TYPE.WAVED_OFF')){
+				$status = "Waived Off";
+			}
+
 			$leaseArr[] = [
-				'State' => $lease->name, 
-				'GSTN' => ($inv_comp_data['gst_no'] ?? $lease->biz_gst_no), 
-				'Cust. Id' =>  \Helpers::formatIdWithPrefix($lease->user_id, 'LEADID'), 
-				'Business Name' => $lease->biz_entity_name, 
-				'Cust. Addr' => $lease->gst_addr, 
-				'Cust. GSTN' => $lease->biz_gst_no, 
-				'SAC Code' => $sac_code, 
-				'Interest Period' => $desc, 
-				'Capsave Invoice No' => $lease->capinvoice, 
-				'Invoice No' => $lease->invoice, 
-				'Invoice Date' => $lease->invoice_date, 
-				'Base Amount' => number_format($lease->base_amount, 2), 
-				'SGST Rate' => ($lease->sgst_rate != 0 ? $lease->sgst_rate .'%' : '-'), 
-				'SGST Amount' => ($lease->sgst_amount != 0 ? number_format($lease->sgst_amount, 2) : '-'), 
-				'CGST Rate' => ($lease->cgst_rate != 0 ? $lease->cgst_rate .'%' : '-'), 
-				'CGST Amount' => ($lease->cgst_amount != 0 ? number_format($lease->cgst_amount, 2) : '-'), 
-				'IGST Rate' => ($lease->igst_rate != 0 ? $lease->igst_rate .'%' : '-'), 
-				'IGST Amount' => ($lease->igst_amount != 0 ? number_format($lease->igst_amount, 2) : '-'), 
-				'Total Amount' => number_format($total_amount, 2), 
-				'Total Rate' => ($total_rate != 0 ? $total_rate.'%' : '-'), 
-				'Total Tax' => ($total_tax != 0 ? number_format($total_tax, 2) : '-'), 
-				'CashFlow Type' => (!empty($lease->invoice_type) && $lease->invoice_type == 'C' ? 'Charge' : 'Interest'), 
-				'Considered In' => date('M-Y', strtotime($lease->invoice_date)), 
+				'State' => $invoiceRec->name,
+				'GSTN' => $inv_comp_data['gst_no'] ?? $invoiceRec->biz_gst_no,
+				'Cust. Id' => Helpers::formatIdWithPrefix($invoiceRec->user_id, 'LEADID'),
+				'Business Name' => $invoiceRec->biz_entity_name,
+				'Cust. Addr' => $invoiceRec->gst_addr,
+				'Cust. GSTN' => $invoiceRec->biz_gst_no,
+				'SAC Code' => $invoiceRec->sac_code != 0 ? $invoiceRec->sac_code : '000',
+				'Narration' => $narration,
+				'Capsave Invoice No' => $capsaveInvNo,
+				'Invoice No' => $invoiceRec->invoice,
+				'Invoice Type' => $invCat,
+				'Invoice Date' => date('d-m-Y', strtotime($invoiceRec->invoice_date)),
+				'Base Amount' => number_format($invoiceRec->base_amount, 2),
+				'GST Applicable' => $gst_applied,
+				'SGST Rate' => $invoiceRec->sgst_rate != 0 ? $invoiceRec->sgst_rate . '%' : '-',
+				'SGST Amount' => $invoiceRec->sgst_amount != 0 ? number_format($invoiceRec->sgst_amount, 2) : '-',
+				'CGST Rate' => $invoiceRec->cgst_rate != 0 ? $invoiceRec->cgst_rate . '%' : '-',
+				'CGST Amount' => $invoiceRec->cgst_amount != 0 ? number_format($invoiceRec->cgst_amount, 2) : '-',
+				'IGST Rate' => $invoiceRec->igst_rate != 0 ? $invoiceRec->igst_rate . '%' : '-',
+				'IGST Amount' => $invoiceRec->igst_amount != 0 ? number_format($invoiceRec->igst_amount, 2) : '-',
+				'Total Amount' => number_format($invoiceRec->base_amount + $invoiceRec->sgst_amount + $invoiceRec->cgst_amount + $invoiceRec->igst_amount, 2),
+				'Total Rate' => $totalRate != 0 ? $totalRate . '%' : '-',
+				'Total Tax' => $totalTax != 0 ? number_format($totalTax, 2) : '-',
+				'CashFlow Type' => $cashFlowType,
+				'Considered In' => date('M-Y', strtotime($invoiceRec->invoice_date)),
+				'Status' => $status,
 			];
 		}
 		if (strtolower($request->type) == 'excel') {
@@ -1236,6 +1293,20 @@ class ReportController extends Controller
 	public function downloadOutstandingReportFromLogs(Request $request)
 	{
 		$reportLog = OutstandingReportLog::findOrfail($request->report_log_id);
+		return response()->download($reportLog->file_path);
+	}
+
+	public function reconReport(Request $request){
+		try {
+			return view('reports.reconReport');
+		} catch (Exception $ex) {
+			return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex))->withInput();
+		}
+	}
+
+	public function downloadReconReportFromLogs(Request $request)
+	{
+		$reportLog = ReconReportLog::findOrfail($request->report_log_id);
 		return response()->download($reportLog->file_path);
 	}
 }

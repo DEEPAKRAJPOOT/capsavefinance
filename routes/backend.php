@@ -113,6 +113,10 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'as' => 'outstanding_report_manual',
                 'uses' => 'Backend\ReportController@outstandingReportManual'
             ]);
+            Route::get('/reconReport', [
+                'as' => 'recon_report',
+                'uses' => 'Backend\ReportController@reconReport'
+            ]);
         });
 
         Route::group(['prefix' => 'application'], function () {
