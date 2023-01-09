@@ -152,16 +152,17 @@ class PaymentController extends Controller {
 				'customer_id' => 'required', 
 				'virtual_acc' => 'required', 
 				'date_of_payment' => 'required|date_format:d/m/Y|before_or_equal:'.$curdate,
-				'amount' => 'required|numeric|gt:0', 
+				'amount' => 'required|numeric|gte:0.01|regex:/^(([0-9]*)(\.([0-9]{1,2}+))?)$/', 
 				'description' => 'required',
 				'doc_file' => 'checkmime'
 			],
 			[
 				'amount.required' => 'Transaction amount is required',
 				'amount.numeric' => 'Transaction amount must be number',
-				'amount.gt' => 'Transaction amount must be greater than zero',
+				'amount.gte' => 'Transaction amount must be greater than or equal to 0.01',
 				'date_of_payment.before_or_equal' => 'The Transaction Date must be a date before or equal to '.$curdateMesg.'.',
-				'doc_file.checkmime' => 'Invalid file format'
+				'doc_file.checkmime' => 'Invalid file format',
+				'amount.regex' =>  'Please enter only 2 decimal places',
 			]);
 
 			$utr ="";

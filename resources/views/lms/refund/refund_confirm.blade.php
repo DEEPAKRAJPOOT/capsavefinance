@@ -11,9 +11,10 @@
 	}
 	$totalCustomer = count($cust);
 @endphp
+<form id="manualDisburse" method="POST" action="{{ Route('refund_offline') }}" target="_top">
 <div class="row">
-	<div class="col-12 row">
-
+		<input type="hidden" value="{{ $transIds ?? '' }}" name="transaction_ids" id="transaction_ids">
+		@csrf
 		<div class="col-4">
 			<div class="form-group">
 				<label for="marginAmount"># No of Cust.</label>
@@ -26,72 +27,24 @@
 				<input type="text" name="" id="nonFactoredAmt" class="form-control" readonly="true" value="{{ $finalDisburseAmt }}">
 			</div>
 		</div>
+		<div class="col-4">
+			<div class="form-group">
+				<label for="nonFactoredAmount">Refund Date</label>
+				<input type="text" id="disburse_date" name="disburse_date" class="form-control date_of_birth datepicker-dis-fdate" required="">
+			</div>
+		</div>
+		@if(Session::has('error'))<div class="error">{{ Session::get('error') }}</div>@endif
 	</div>
-
-	<form id="manualDisburse" method="POST" action="{{ Route('refund_offline') }}" target="_top" class="col-12 row">
-	<div class="col-12 row">
-			<input type="hidden" value="{{ $transIds ?? '' }}" name="transaction_ids" id="transaction_ids">
-			@csrf
-			<div class="col-4">
-				<div class="form-group">
-					<label for="txtCreditPeriod">Refund Date <span class="error_message_label">*</span> </label>
-					<input type="text" id="disburse_date" name="disburse_date" class="form-control date_of_birth datepicker-dis-fdate" required="">
-					 @if(Session::has('error'))
-					 <div class="error">{{ Session::get('error') }}</div>
-					  
-					@endif
-				</div>
-			</div>
-			@if($data[0]['process_status'] == 0 && $data[0]['status'] == 6)
-			<div class="col-4">
-				<div class="form-group">
-					
-					<input type="submit" id="submitManualDisburse" value="Refund Offline" class="btn btn-success btn-sm ml-2" style="margin-top:26px;">
-				</div>
-			</div>
-			@endif
-		
-	</div>
-	</form>
-</div>
-
-<!--<div class="row">
-	<div class="col-12 row">
-		<form id="manualDisburse" method="POST" action="{{ Route('refund_offline') }}" target="_top">
-			<input type="hidden" value="{{ $transIds ?? '' }}" name="transaction_ids" id="transaction_ids">
-			@csrf
-			<div class="col-4">
-				<div class="form-group">
-					<label for="txtCreditPeriod">Refund Date <span class="error_message_label">*</span> </label>
-					<input type="text" id="disburse_date" name="disburse_date" class="form-control date_of_birth datepicker-dis-fdate" required="">
-					 @if(Session::has('error'))
-					 <div class="error">{{ Session::get('error') }}</div>
-					  
-					@endif
-				</div>
-			</div>
-			@if($data[0]['process_status'] == 0 && $data[0]['status'] == 6)
-			<div class="col-4">
+	<div class="row">
+		<div class="col-12">
+			<div class="form-group">
 				<input type="submit" id="submitManualDisburse" value="Refund Offline" class="btn btn-success btn-sm ml-2">
+				<button class="btn btn-secondary btn-sm ml-2" disabled>Disbursed Online</button>
+				{{-- <input type="submit" id="submitOnlineDisburse" value="Disburse Online" class="btn btn-success btn-sm ml-2"> --}}
 			</div>
-			@endif
-		</form>
+		</div>
 	</div>
-	<div class="col-6 right">
-		<form id="onlineDisburse" method="POST" action="{{ Route('refund_online') }}" target="_top">
-			<input type="hidden" value="{{ $transIds }}" name="transaction_ids">
-			@csrf
-			<div class="col-6">
-				
-			</div>
-			@if($data[0]['process_status'] == 0 && $data[0]['status'] == 6)
-			<div class="col-6">
-				<input type="submit" id="submitOnlineDisburse" value="Disburse Online" class="btn btn-success btn-sm ml-2">
-			</div>
-			@endif
-		</form>
-	</div>
-</div>-->
+</form>
 @endsection
 @section('jscript')
 

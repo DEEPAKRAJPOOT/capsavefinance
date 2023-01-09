@@ -17,6 +17,7 @@ use App\Inv\Repositories\Models\User as UserModel;
 use App\Inv\Repositories\Contracts\ReportInterface;
 use App\Inv\Repositories\Models\Lms\InvoiceDisbursed;
 use App\Inv\Repositories\Models\Lms\UserInvoiceTrans;
+use App\Inv\Repositories\Models\LmsUser;
 use App\Inv\Repositories\Factory\Repositories\BaseRepositories;
 use App\Inv\Repositories\Contracts\Traits\CommonRepositoryTraits;
 
@@ -714,7 +715,7 @@ class ReportsRepository extends BaseRepositories implements ReportInterface {
 		$report_1_res = DB::statement(\DB::raw($report_1_data));
 		
 		$report_2_clear = 'TRUNCATE `etl_settlement_report`';
-		$report_2_data = 'INSERT INTO etl_settlement_report (`receipt_date`,`receipt_account_no`,`client_borrower_name`,`client_id`,`head_against_ipc`,`invoice_no`,`utr_no`,`invoice_date`,`capsave_invoice_no`,`capsave_invoice_date`,`disbursement_date`,`amount_applied`,`amount_received`) SELECT `receipt_date`,`receipt_account`,`client_name`,`client_id`,`trans_type_name`,`invoice_no`,`receipt_utr`,`invoice_date`,`capsave_invoice_no`,`capsave_inv_date`,`disburse_date`,`amount`,`total_amount` FROM receipt_report';
+		$report_2_data = 'INSERT INTO etl_settlement_report (`receipt_date`,`receipt_account_no`,`client_borrower_name`,`client_id`,`head_against_ipc`,`invoice_no`,`utr_no`,`invoice_date`,`capsave_invoice_no`,`capsave_invoice_date`,`disbursement_date`,`amount_applied`,`amount_received`,`transaction_date`,`anchor_name`,`program_name`,`due_date`) SELECT `receipt_date`,`receipt_account`,`client_name`,`client_id`,`trans_type_name`,`invoice_no`,`receipt_utr`,`invoice_date`,`capsave_invoice_no`,`capsave_inv_date`,`disburse_date`,`amount`,`total_amount` FROM receipt_report';
 		DB::statement(\DB::raw($report_2_clear));
 		
 		$report_2_res = DB::statement(\DB::raw($report_2_data));
@@ -1181,4 +1182,69 @@ class ReportsRepository extends BaseRepositories implements ReportInterface {
 		}
 		return $result;
 	}
+
+	public function getReconReportData($userId){
+        $resultValue = [];
+		$soaBalance = DB::select('SELECT customer_id, soa_outstanding as SOA_Outstanding FROM (SELECT user_id, customer_id FROM rta_lms_users GROUP BY user_id ) AS a LEFT JOIN(SELECT b.user_id, (SUM(b.debit_amount) - SUM(b.credit_amount)) AS soa_outstanding FROM rta_customer_transaction_soa AS b LEFT JOIN rta_transactions AS c ON c.trans_id = b.trans_id WHERE c.soa_flag = 1 AND c.is_transaction = 1 GROUP BY c.user_id) AS d ON a.user_id = d.user_id'); 
+		foreach($soaBalance as $key => $soaBal) {
+			$resultValue[$soaBal->customer_id]['SOA_Outstanding'] = number_format($soaBal->SOA_Outstanding,2);
+		}
+		
+		$chargeOutstanding = DB::select('SELECT 
+		(select  customer_id from rta_lms_users as b where b.user_id = a.user_id limit 1) AS customer_id,
+		sum(a.outstanding) AS Outstanding_Amount
+		FROM rta_transactions AS a
+		JOIN rta_customer_transaction_soa AS c ON c.trans_id = a.trans_id
+		WHERE a.trans_type >= 50 AND a.entry_type = 0 AND a.`is_transaction` = 1 AND a.`soa_flag` = 1
+		group by customer_id');
+		// dd($datats);
+		foreach($chargeOutstanding as $key => $chrgOut) {
+			$resultValue[$chrgOut->customer_id]['Outstanding_Amount'] = isset($chrgOut->Outstanding_Amount) ? number_format($chrgOut->Outstanding_Amount,2) : 0;
+		}
+
+		$nonFactorOutstanding = DB::select('SELECT temp.customer_id AS customer_id,
+		SUM(temp.out_amt) AS outstandingAmount
+		FROM (
+		SELECT a.user_id, b.customer_id,(a.amount - IF(SUM(d.amount)>0,SUM(d.amount),0))AS out_amt
+		FROM rta_transactions AS a
+		JOIN (SELECT * FROM rta_lms_users GROUP BY user_id) AS b ON a.user_id = b.user_id
+		JOIN rta_customer_transaction_soa AS c ON c.trans_id = a.trans_id
+		LEFT JOIN rta_transactions AS d ON a.trans_id = d.link_trans_id
+		WHERE a.trans_type = 35 AND a.entry_type = 1 AND a.`is_transaction` = 1 AND a.`soa_flag` = 1
+		GROUP BY a.trans_id) AS temp
+		GROUP BY temp.user_id');
+		foreach($nonFactorOutstanding as $key => $nonfactorOut) {
+			$resultValue[$nonfactorOut->customer_id]['outstandingAmount'] = number_format($nonfactorOut->outstandingAmount,2);
+		}
+
+		$txnChrgRefund = DB::select('SELECT temp.cust_id AS customer_id, SUM(temp.refund) AS Refundable FROM (SELECT a.user_id, (SELECT customer_id FROM rta_lms_users AS b WHERE b.user_id = a.user_id LIMIT 1) AS cust_id, IF(actual_outstanding < 0 ,ABS(actual_outstanding),0) AS refund FROM rta_transactions AS a JOIN rta_customer_transaction_soa AS c ON c.trans_id = a.trans_id WHERE a.trans_type >= 50 AND a.entry_type = 0 AND a.`is_transaction` = 1 GROUP BY a.trans_id HAVING refund > 0) AS temp GROUP BY user_id');
+		foreach($txnChrgRefund as $key => $chrgRefund) {
+			$resultValue[$chrgRefund->customer_id]['Refundable'] = number_format($chrgRefund->Refundable,2);
+		}
+
+		$controller = app()->make('App\Http\Controllers\Lms\SoaController');
+		$controller2 = app()->make('App\Http\Controllers\Lms\ApportionmentController');
+		$users = LmsUser::groupBy('customer_id')->get();        
+		$cusOutData = [];
+		foreach($users as $key => $user) {
+			$cusOutData[$key]['customer_id'] = 0;
+			$cusOutData[$key]['customer_outstanding_amount'] = 0; 
+			$result = $controller->getUserLimitDetais($user->user_id);
+			if(isset($result['userInfo'])){
+				$resultValue[$user->customer_id]['customer_outstanding_amount'] = number_format($controller2->lmsRepo->getUnsettledTrans($user->user_id, ['trans_type_not_in' => [config('lms.TRANS_TYPE.MARGIN'),config('lms.TRANS_TYPE.NON_FACTORED_AMT')] ])->sum('outstanding'),2);
+			}
+		}
+		// dd($resultValue);
+		// // $datas = array_merge($soaData,$chrgData);
+        // foreach($datas as $data){
+        //     $result[] = [
+        //         'soa_outstanding' =>  $data['SOA_Outstanding'] ?? null,
+        //         'Outstanding_Amount' =>  $data['Outstanding_Amount'] ?? null,
+        //         'outstandingAmount' =>  $data['outstandingAmount'] ?? null,
+        //         'Refundable' =>  $data['Refundable'] ?? null,
+        //         'customer_outstanding_amount' =>  $data['customer_outstanding_amount'] ?? null,
+        //     ];
+        // }
+        return $resultValue;
+    }
 }

@@ -8,12 +8,13 @@
                             <thead>
                                 <tr role="row">                                                   
                                     <th>Trans Date</th>       
+                                    <th>Payment Due Date</th>       
                                     <th>Invoice No</th>       
                                     <th>Trans Type</th>		
                                     <th>Total Repay Amt</th>
                                     <th>Settled Amt</th>
                                     <th>Payment Date</th>
-                                    <th>Select</th>
+                                    {{-- <th>Select</th> --}}
                                 </tr>
                             </thead>
                             <tbody>

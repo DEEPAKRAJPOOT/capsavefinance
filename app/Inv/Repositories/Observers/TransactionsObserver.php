@@ -25,14 +25,8 @@ class TransactionsObserver
                 $controller = app()->make('App\Http\Controllers\Lms\userInvoiceController');
                 $invType = 'C';
                 $appId = $transaction->ChargesTransactions->app_id ?? null;
-                $controller->generateCapsaveInvoice([$transaction->trans_id], $transaction->user_id, $invType, $appId);
+                $controller->generateDebitNote([$transaction->trans_id], $transaction->user_id, $invType, $appId);
             }
-            // elseif(in_array($transaction->trans_type, [9])){
-            //     $controller = app()->make('App\Http\Controllers\Lms\userInvoiceController');
-            //     $invType = 'I';
-            //     $appId = $transaction->invoiceDisbursed->invoice->app_id ?? null;
-            //     $controller->generateCapsaveInvoice([$transaction->trans_id], $transaction->user_id, $invType);
-            // }
         }
     }
 
@@ -44,8 +38,6 @@ class TransactionsObserver
      */
     public function updated(Transactions $transaction)
     {
-        //InvoiceDisbursedDetail::updateTransactionDetails($transaction);
-        //CustomerTransactionSOA::updateTransactionSOADetails($transaction->user_id);
     }
 
     /**
@@ -56,7 +48,6 @@ class TransactionsObserver
      */
     public function deleted(Transactions $transaction)
     {
-        //$transaction->deleteAllChild();
         $transaction->calculateOutstandingsDelete();
         InvoiceDisbursedDetail::deleteTransactionDetails($transaction);
         CustomerTransactionSOA::deleteTransactionSOADetails($transaction);
@@ -70,7 +61,6 @@ class TransactionsObserver
      */
     public function forceDeleted(Transactions $transaction)
     {
-        //$transaction->deleteAllChild();
         $transaction->calculateOutstandingsDelete();
         InvoiceDisbursedDetail::forceDeletedTransactionDetails($transaction);
         CustomerTransactionSOA::forceDeletedTransactionSOADetails($transaction);

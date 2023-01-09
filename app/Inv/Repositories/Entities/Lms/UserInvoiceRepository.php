@@ -115,6 +115,7 @@ class UserInvoiceRepository extends BaseRepositories implements UserInvoiceInter
 		}
 		return $UserInvoiceTxns;
 	}
+
 	public function getTxnByTransId(int $trans_id) {
 		return Transactions::find($trans_id);
 	}
@@ -167,8 +168,8 @@ class UserInvoiceRepository extends BaseRepositories implements UserInvoiceInter
 		return UserInvoice::getUserLastInvoiceNo();
 	}
 
-	public function getLastInvoiceSerialNo($inv_type){
-		return UserInvoice::getLastInvoiceSerialNo($inv_type);
+	public function getLastInvoiceSerialNo($inv_type, $inv_cat = null){
+		return UserInvoice::getLastInvoiceSerialNo($inv_type, $inv_cat);
 	}
 
 	public function getCustAndCapsLocApp($user_id) {
@@ -179,4 +180,41 @@ class UserInvoiceRepository extends BaseRepositories implements UserInvoiceInter
 		return UserInvoiceRelation::unPublishAddrApp($user_id);
 	}
 
+	public function getCreditNoteTxns($userId, $invoiceType = 'I', $transIds = []){
+		$sql = Transactions::with('transType')
+		->whereNull('payment_id')
+		->where('user_id', $userId)
+		->where('entry_type',1)
+		->whereIn('trans_type',[config('lms.TRANS_TYPE.CANCEL'),config('lms.TRANS_TYPE.WAVED_OFF')])
+		->where('is_invoice_generated',0);
+		if (!empty($transIds)) {
+			$sql->whereIn('trans_id', $transIds);
+		}
+		return $sql->whereHas('parentTransactions.transType', function($query) use ($invoiceType) { 
+			if($invoiceType == 'I') {
+				$query->whereIn('id',[config('lms.TRANS_TYPE.INTEREST'),config('lms.TRANS_TYPE.INTEREST_OVERDUE')]);
+			} else {
+				$query->where('chrg_master_id','!=','0');
+			}
+		})->get();
+	}
+
+
+	public function getCreditNoteReversalTxns($userId, $invoiceType = 'I', $transIds){
+		$sql = Transactions::with('transType')
+		->where('user_id', $userId)
+		->where('entry_type',0)
+		->whereIn('trans_type',[config('lms.TRANS_TYPE.REVERSE')])
+		->where('is_invoice_generated',0);
+		if (!empty($transIds)) {
+			$sql->whereIn('trans_id', $transIds);
+		}
+		return $sql->whereHas('parentTransactions.transType', function($query) use ($invoiceType) { 
+			if($invoiceType == 'I') {
+				$query->whereIn('id',[config('lms.TRANS_TYPE.INTEREST'),config('lms.TRANS_TYPE.INTEREST_OVERDUE')]);
+			} else {
+				$query->where('chrg_master_id','!=','0');
+			}
+		})->get();
+	}
 }

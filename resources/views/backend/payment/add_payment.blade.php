@@ -8,12 +8,12 @@
             <i class="fa  fa-list"></i>
         </div>
         <div class="header-title">
-            <h3>Add Repayment & Waived Off TDS</h3>
+            <h3>Add Repayment & TDS</h3>
             <small>&nbsp;</small>
             <ol class="breadcrumb">
                 <li style="color:#374767;"> Home </li>
                 <li style="color:#374767;">Payment</li>
-                <li class="active">Add Repayment & Waived Off</li>
+                <li class="active">Add Repayment & TDS</li>
             </ol>
         </div>
     </section>
@@ -609,6 +609,10 @@ cursor: pointer;
                 return result;                
             },'This UTR number is already used by this customer.'
         );
+        $.validator.addMethod('decimal', function(value, element) {
+        return this.optional(element) || /^((\d+(\\.\d{0,2})?)|((\d*(\.\d{1,2}))))$/.test(value);
+        }, "Please enter only 2 decimal places");
+
         $('#savePayFrm').validate( {
             onkeyup: false,
             onclick: false,
@@ -637,7 +641,9 @@ cursor: pointer;
                         required:true,
                     },
                     amount:{
-                        required:true,
+                        required:true, 
+                        min:0.01,
+                        decimal:true,
                     },
                     payment_type:{
                         required:true,

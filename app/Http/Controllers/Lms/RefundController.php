@@ -55,12 +55,17 @@ class RefundController extends Controller
         try{
             $this->validate($request,[
                 'payment_id'=>'required|integer',
+                'apportionment_id'=>'required|integer',
             ],[
                 'payment_id.required' => 'Payment Detail missing',
-                'payment_id.required' => 'Payment ID must be integre'
+                'payment_id.integer' => 'Payment ID must be integre',
+                'apportionment_id.required' => 'Apportionment Detail missing',
+                'apportionment_id.integer' => 'Apportionment ID must be integre'
+
             ]);
             $paymentId = $request->get('payment_id');
-            $data = RefundHelper::calculateRefund($paymentId);
+            $apportionmentId = $request->get('apportionment_id');
+            $data = RefundHelper::calculateRefund($paymentId,$apportionmentId);
             return view('lms.refund.createRefundRequest', $data);
         }catch(Exception $exception){
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex))->withInput();
@@ -77,9 +82,12 @@ class RefundController extends Controller
             }
             $this->validate($request,[
                 'paymentId'=>'required|integer',
+                'apportionmentId'=>'required|integer',
             ],[
                 'paymentId.required' => 'Payment Detail missing',
-                'paymentId.required' => 'Payment ID must be integre'
+                'paymentId.required' => 'Payment ID must be integre',
+                'apportionmentId.required' => 'Apportionment Detail missing',
+                'apportionmentId.required' => 'Apportionment ID must be integre'
             ]);
             $paymentId = $request->get('paymentId');
             $refundData = RefundHelper::getRefundRqBypaymentIds($paymentId)->get();
@@ -88,7 +96,8 @@ class RefundController extends Controller
                 Session::flash('error', "Unable to process transaction, This has been already processed.");
                 return back(); 
             }
-            $data = RefundHelper::createRefundRequest($paymentId);
+            $apportionmentId = $request->get('apportionmentId');
+            $data = RefundHelper::createRefundRequest($paymentId,$apportionmentId);
 
             $whereActivi['activity_code'] = 'lms_refund_request_create';
             $activity = $this->master->getActivity($whereActivi);

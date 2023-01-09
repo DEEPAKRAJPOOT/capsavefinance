@@ -39,8 +39,10 @@ try {
                 {data: 'interest_prd'},
                 {data: 'cap_invoice_no'},
                 {data: 'invoice_no'},
+                {data: 'invoice_cat'},
                 {data: 'invoice_date'},
                 {data: 'base_amount'},
+                {data: 'gst_applicable'},
                 {data: 'sgst_rate'},
                 {data: 'sgst_amount'},
                 {data: 'cgst_rate'},
@@ -52,6 +54,7 @@ try {
                 {data: 'total_tax'},
                 {data: 'cash_flow'},
                 {data: 'considered_in'},
+                {data: 'status'},
             ],
             aoColumnDefs: [{'bSortable': false, 'aTargets': [1,2,3]}]
         });

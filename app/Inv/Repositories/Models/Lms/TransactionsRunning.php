@@ -48,6 +48,7 @@ class TransactionsRunning extends BaseModel {
     protected $fillable = [
         'invoice_disbursed_id',
         'user_id',
+        'from_date',
         'trans_date',
         'trans_type',
         'amount',
@@ -120,7 +121,7 @@ class TransactionsRunning extends BaseModel {
         $cr = $this->transaction
             ->where('entry_type','=','1')
             ->where('trans_type','=',config('lms.TRANS_TYPE.CANCEL'))
-            ->sum('amount');
+            ->sum('settled_outstanding');
 
         $amount -= round((round($dr,2) - round($cr,2)),2);
         return round($amount,2);

@@ -2,9 +2,9 @@ try {
     var oTable;
     jQuery(document).ready(function ($) {   
         //User Listing code
-        oTable = $('#lmsOutstandingLogsList').DataTable({
+        oTable = $('#lmsReconReportList').DataTable({
             destroy: true,
-            //deferLoading: false,
+            deferLoading: false,
             processing: true,
             serverSide: true,
             pageLength: 50,
@@ -12,7 +12,7 @@ try {
             responsive: true,
             searching: false,
             ajax: {
-                "url": messages.lms_get_invoice_outstanding_list, // json datasource
+                "url": messages.lms_get_recon_report, // json datasource
                 "method": 'POST',
                 data: function (d) {
                     d.to_date = $('input[name="to_date"]').val();
@@ -28,7 +28,7 @@ try {
                 "error": function () {  // error handling   
                     $('#sendMailBtn').prop('disabled', false);                 
                     $("#lmsOutstandingLogsList").append('<tbody class="appList-error"><tr><th colspan="3">' + messages.data_not_found + '</th></tr></tbody>');
-                    $("#lmsOutstandingLogsList_processing").css("display", "none");
+                    $("#lmsReconReportList_processing").css("display", "none");
                 } 
                 
             },
@@ -57,26 +57,11 @@ try {
             }else{
                 return false;
             }
-            $(".isloader").show(); 
-            var user_id = $("#user_id").val();
-            var to_date = $("#to_date").val();
-            var generate_report = 1;
-            var postData = ({'user_id':user_id, 'to_date':to_date, 'generate_report':generate_report, '_token': messages.token});
-            jQuery.ajax({
-                url: messages.lms_set_invoice_outstanding_date,
-                method: 'post',
-                dataType: 'json',
-                data: postData,
-                error: function (xhr, status, errorThrown) {
-                    $(".isloader").hide(); 
-                    alert(errorThrown);
-                },
-                success: function (data) {
-                    $(".isloader").hide(); 
-                    oTable.draw();
-                }
-            });
+            
+            oTable.draw();
+            //$('#sendMailBtn').prop('disabled', false); 
         });
+        oTable.draw();
     });    
 } catch (e) {
     if (typeof console !== 'undefined') {

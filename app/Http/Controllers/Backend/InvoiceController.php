@@ -32,6 +32,7 @@ use App\Inv\Repositories\Contracts\Traits\ActivityLogTrait;
 use Illuminate\Support\Facades\App;
 use App\Inv\Repositories\Models\Lms\Transactions;
 use App\Inv\Repositories\Models\AppOfferAdhocLimit;
+use App\Inv\Repositories\Models\Lms\TransactionsRunning;
 
 class InvoiceController extends Controller {
 
@@ -404,15 +405,20 @@ class InvoiceController extends Controller {
             $invDisbs[$value['disbursal']['user_id']][$value['invoice_disbursed_id']] = $value['invoice_disbursed_id'];           
             $tenor = $value['tenor_days'];
             $banchMarkDateFlag = $value['invoice']['program_offer']['benchmark_date'];
+            $paymentDueDate = date('Y-m-d', strtotime(str_replace('/','-',$fundedDate). "+ $tenor Days"));
 
             $updateInvoiceDisbursed = $this->lmsRepo->updateInvoiceDisbursed([
-                        'payment_due_date' => date('Y-m-d', strtotime(str_replace('/','-',$fundedDate). "+ $tenor Days")),                        
+                        'payment_due_date' => $paymentDueDate,                        
                         // 'payment_due_date' => ($banchMarkDateFlag == 2) ? date('Y-m-d', strtotime(str_replace('/','-',$fundedDate). "+ $tenor Days")) : date('Y-m-d', strtotime($value['invoice']['invoice_date']. "+ $tenor Days")),                        
                         'status_id' => config('lms.DISBURSAL_STATUS')['DISBURSED'],
                         'int_accrual_start_dt' => $selectDate,
                         'updated_by' => Auth::user()->user_id ?? 0,
                         'updated_at' => $curData
                     ], $value['invoice_disbursed_id']);
+
+            $value['payment_due_date'] =   $paymentDueDate;
+            $value['int_accrual_start_dt'] = $selectDate;
+            $value['status_id'] = config('lms.DISBURSAL_STATUS')['DISBURSED'];
 
             $interest= 0;
             $margin= 0;
@@ -464,16 +470,44 @@ class InvoiceController extends Controller {
                 /* Sudesh: Code to save Invoice Disbursed details : E */
 
                 if($disbAmt > 0.00){
-                    $transactionData = $this->createTransactionData($value['disbursal']['user_id'], ['amount' => $value['disburse_amt'], 'trans_date' => $fundedDate, 'invoice_disbursed_id' => $value['invoice_disbursed_id']], config('lms.TRANS_TYPE.PAYMENT_DISBURSED'));
+                    $transactionData = $this->createTransactionData($value['disbursal']['user_id'], [
+                        'amount' => $value['disburse_amt'], 
+                        'trans_date' => $fundedDate, 
+                        'invoice_disbursed_id' => $value['invoice_disbursed_id'],
+                        'from_date' => $value['int_accrual_start_dt'],
+                        'to_date' => $value['payment_due_date'],
+                        'due_date' => $value['payment_due_date'],
+                        'trans_mode' => '1'
+                    ], config('lms.TRANS_TYPE.PAYMENT_DISBURSED'));
                     $createTransaction = $this->lmsRepo->saveTransaction($transactionData);   
                 }
 
                 if ($intrstAmt > 0.00) {
-                    $intrstDbtTrnsData = $this->createTransactionData($value['disbursal']['user_id'], ['amount' => $intrstAmt, 'trans_date' => $fundedDate, 'invoice_disbursed_id' => $value['invoice_disbursed_id']], config('lms.TRANS_TYPE.INTEREST'));
+                    $transRunningId = TransactionsRunning::where('invoice_disbursed_id',2)->orderBy('trans_date','ASC')->pluck('trans_running_id')->first();
+                        
+                    $intrstDbtTrnsData = $this->createTransactionData($value['disbursal']['user_id'], [
+                        'amount' => $intrstAmt, 
+                        'trans_date' => $fundedDate, 
+                        'invoice_disbursed_id' => $value['invoice_disbursed_id'],
+                        'trans_running_id' => $transRunningId ?? NULL,
+                        'from_date' => $value['int_accrual_start_dt'],
+                        'to_date' =>   date('Y-m-d', strtotime($value['payment_due_date'] . "- 1 days")),
+                        'due_date' => (($value['invoice']['program_offer']['payment_frequency'] == 1 && $value['invoice']['program_offer']['program']['interest_borne_by'] == 1)) ? $value['int_accrual_start_dt'] : $value['payment_due_date'],
+                        'gst' => '0',
+                        'trans_mode' => '1'
+                    ], config('lms.TRANS_TYPE.INTEREST'));
                     $createTransaction = $this->lmsRepo->saveTransaction($intrstDbtTrnsData);
 
                     if ($value['invoice']['program_offer']['program']['interest_borne_by'] == 2) {
-                        $intrstCdtTrnsData = $this->createTransactionData($value['disbursal']['user_id'], ['parent_trans_id' => $createTransaction->trans_id, 'link_trans_id' => $createTransaction->trans_id, 'amount' => $intrstAmt, 'trans_date' => $fundedDate, 'invoice_disbursed_id' => $value['invoice_disbursed_id']], config('lms.TRANS_TYPE.INTEREST'), 1);
+                        $intrstCdtTrnsData = $this->createTransactionData($value['disbursal']['user_id'], [
+                            'parent_trans_id' => $createTransaction->trans_id, 
+                            'link_trans_id' => $createTransaction->trans_id, 
+                            'amount' => $intrstAmt, 
+                            'trans_date' => $fundedDate, 
+                            'invoice_disbursed_id' => $value['invoice_disbursed_id'],
+                            'gst' => '0',
+                            'trans_mode' => '1'
+                        ], config('lms.TRANS_TYPE.INTEREST'), 1);
                         $createTransaction = $this->lmsRepo->saveTransaction($intrstCdtTrnsData);
                     }
                 }
@@ -520,41 +554,42 @@ class InvoiceController extends Controller {
                     $marginTrnsData = $this->createTransactionData($value['disbursal']['user_id'], ['amount' => $marginAmt, 'trans_date' => $fundedDate, 'invoice_disbursed_id' => $value['invoice_disbursed_id']], config('lms.TRANS_TYPE.MARGIN'), 0);
                     $createTransaction = $this->lmsRepo->saveTransaction($marginTrnsData);
                 }
-            
-                $Obj->intAccrual($value['invoice_disbursed_id']);
+                $Obj->intAccrual($value['invoice_disbursed_id'], NULL,NULL,1);
+                $Obj->transactionPostingAdjustment($value['invoice_disbursed_id'], NULL); 
+                $Obj->generateCreditNote($value['disbursal']['user_id']);           
+                     
+                foreach($invDisbs as $userId => $invDisb){
+                    $invDisbIds = array_keys($invDisb);
+
+                    $intList = Transactions::whereIn('invoice_disbursed_id',$invDisbIds)
+                    ->whereIn('trans_type', [config('lms.TRANS_TYPE.INTEREST'),config('lms.TRANS_TYPE.INTEREST_OVERDUE')])
+                    ->where('user_id',$userId)
+                    ->where('entry_type','0')
+                    ->where('is_invoice_generated','0')
+                    ->pluck('trans_id')
+                    ->toArray();
+                
+                    $chrgList = Transactions::whereIn('invoice_disbursed_id',$invDisbIds)
+                    ->whereHas('transType', function($query){ $query->where('chrg_master_id','!=','0'); })
+                    ->where('user_id',$userId)
+                    ->where('entry_type',0)
+                    ->where('is_invoice_generated',0)
+                    ->pluck('trans_id')
+                    ->toArray();
+                
+                    if(!empty($intList)){
+                        $controller = app()->make('App\Http\Controllers\Lms\userInvoiceController');
+                        $controller->generateDebitNote($intList, $userId, 'I');
+                    }
+                
+                    if(!empty($chrgList)){
+                        $controller = app()->make('App\Http\Controllers\Lms\userInvoiceController');
+                        $controller->generateDebitNote($chrgList, $userId, 'C');
+                    }
+                }
+                date_default_timezone_set($oldTimeZone);
             }
         }
-        foreach($invDisbs as $userId => $invDisb){
-            $invDisbIds = array_keys($invDisb);
-
-            $intList = Transactions::whereIn('invoice_disbursed_id',$invDisbIds)
-            ->whereIn('trans_type', [config('lms.TRANS_TYPE.INTEREST'),config('lms.TRANS_TYPE.INTEREST_OVERDUE')])
-            ->where('user_id',$userId)
-            ->where('entry_type','0')
-            ->where('is_invoice_generated','0')
-            ->pluck('trans_id')
-            ->toArray();
-            
-            $chrgList = Transactions::whereIn('invoice_disbursed_id',$invDisbIds)
-            ->whereHas('transType', function($query){ $query->where('chrg_master_id','!=','0'); })
-            ->where('user_id',$userId)
-            ->where('entry_type',0)
-            ->where('is_invoice_generated',0)
-            ->pluck('trans_id')
-            ->toArray();
-            
-            if(!empty($intList)){
-                $controller = app()->make('App\Http\Controllers\Lms\userInvoiceController');
-                $controller->generateCapsaveInvoice($intList, $userId, 'I');
-            }
-            
-            if(!empty($chrgList)){
-                $controller = app()->make('App\Http\Controllers\Lms\userInvoiceController');
-                $controller->generateCapsaveInvoice($chrgList, $userId, 'C');
-            }
-        }
-
-        date_default_timezone_set($oldTimeZone);
         $disbursals = $this->lmsRepo->getDisbursals($disbursalIds)->toArray();
         foreach ($disbursals as $key => $value) {
         if($value['lms_user']['user']['is_buyer'] == 2) {
@@ -589,6 +624,7 @@ class InvoiceController extends Controller {
         }
         return true;
     }
+
 
 
     /* save bulk invoice */

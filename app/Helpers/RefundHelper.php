@@ -17,13 +17,13 @@ use App\Inv\Repositories\Models\Lms\Refund\RefundReqTrans;
 
 class RefundHelper{
 
-    public static function calculateRefund(int $paymentId){
+    public static function calculateRefund(int $paymentId, int $apportionmentId){
         $repayment = Payment::where('is_settled','=', 1)->where('payment_id','=',$paymentId)->first();
         if (!$repayment) {
             throw new InvalidArgumentException("Payment Detail is not Valid/Settled");
         }
 
-        $repaymentTrails = Transactions::where('payment_id','=',$paymentId)->whereNotIn('trans_type',[config('lms.TRANS_TYPE.REPAYMENT')])->get();
+        $repaymentTrails = Transactions::where('apportionment_id',$apportionmentId)->whereNotIn('trans_type',[config('lms.TRANS_TYPE.REPAYMENT')])->get();
         $interestRefundTotal = 0;
         $interestOverdueTotal = 0;
         $marginTotal = 0;
@@ -39,8 +39,6 @@ class RefundHelper{
                 $marginTotal +=$trans->refundoutstanding;
             }elseif($trans->entry_type == '1' && $trans->trans_type == config('lms.TRANS_TYPE.NON_FACTORED_AMT')){
                 $nonFactoredAmount +=$trans->refundoutstanding;
-            }elseif($trans->entry_type == '1' && $trans->trans_type == config('lms.TRANS_TYPE.TDS')){
-                $totalTdsAmount +=$trans->refundoutstanding;
             }
         }
         
@@ -55,14 +53,15 @@ class RefundHelper{
         'interestOverdue'=>$interestOverdueTotal,
         'marginTotal'=>$marginTotal,
         'refundableAmount'=>$refundableAmount,
-        'paymentId' => $paymentId
+        'paymentId' => $paymentId,
+        'apportionmentId' => $apportionmentId,
         ]; 
     } 
 
-    public static function createRefundRequest(int $paymentId){
+    public static function createRefundRequest(int $paymentId, Int $apportionmentId){
         try{
             $refundReqId = null;
-            $data = self::calculateRefund($paymentId);
+            $data = self::calculateRefund($paymentId, $apportionmentId);
             $request = self::createRequest($data['repayment'],$data['refundableAmount']);
         
             if($request){

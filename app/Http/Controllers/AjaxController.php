@@ -61,6 +61,9 @@ use App\Inv\Repositories\Models\AppApprover;
 use App\Inv\Repositories\Models\User;
 use App\Inv\Repositories\Models\Lms\OutstandingReportLog;
 use App\Inv\Repositories\Models\BizInvoice;
+use App\Inv\Repositories\Models\Lms\UserInvoice;
+use App\Inv\Repositories\Models\Lms\ReconReportLog;
+
 
 class AjaxController extends Controller {
 
@@ -5061,7 +5064,7 @@ if ($err) {
         ];
         $leaseRegistersList = $this->reportsRepo->leaseRegisters();
         $leaseRegisters = $dataProvider->leaseRegister($this->request, $leaseRegistersList);
-        $leaseRegisters     = $leaseRegisters->getData(true);
+        $leaseRegisters = $leaseRegisters->getData(true);
         $leaseRegisters['excelUrl'] = route('download_reports', $condArr);
         $condArr['type']  = 'pdf';
         $leaseRegisters['pdfUrl'] = route('download_reports', $condArr);
@@ -5910,12 +5913,26 @@ if ($err) {
             $request->validate([
                 'chrg_id' => 'required'
             ],['chrg_id.required' => 'Please select atleast one checked']);
-    
+
             $attr = is_array($request->chrg_id) && count($request->chrg_id) ? $request->chrg_id : [$request->chrg_id];
             $chrgTrans = ChargesTransactions::whereIn('chrg_trans_id', $attr)->get();
 
+            if (count($chrgTrans) > 1) {
+                $chrgTransIds = $chrgTrans->pluck('trans_id')->toArray();
+                $valResult = Helpers::validateInvoiceTypes($chrgTransIds, $specificMsg = false);
+                if ($valResult && isset($valResult['status']) && $valResult['status'] == false) {
+                    return response()->json(['status' => 0,'msg' => $valResult['message']]);
+                }
+            }
+
             \DB::beginTransaction();
             foreach($chrgTrans as $chrgTran) {
+
+                if ($chrgTran->transaction && $chrgTran->transaction->amount != $chrgTran->transaction->outstanding) {
+                    \DB::rollback();
+                    return response()->json(['status' => 0,'msg' => "Selected Charges can't be requested for cancellation because charge transaction is already settled."]);
+                }
+
                 $query  = ChargeTransactionDeleteLog::where('chrg_trans_id', $chrgTran->chrg_trans_id);
                 $newQuery = clone $query;
                 $isExistChrgTranReqLog     = $query->reqForDeletion()->first();
@@ -5954,7 +5971,7 @@ if ($err) {
                 \Event::dispatch("CHARGE_DELETION_REQUEST_MAIL", serialize($allEmailData));
             }
             \DB::commit();
-            return response()->json(['status' => 1,'msg' => "Charge deletion request sent for approval successfully."]);
+            return response()->json(['status' => 1,'msg' => "Charge cancellation request sent for approval successfully ."]);
         } catch (Exception $ex) {
             \DB::rollback();
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex))->withInput();
@@ -5975,33 +5992,69 @@ if ($err) {
                                             ->get();
 
             if (count($chrgTrans) != count($chrgTranReqDltLogs)) {
-                return response()->json(['status' => 0,'msg' => "Please request for deletion before approve the charge."]);
+                return response()->json(['status' => 0,'msg' => "Please request for cancellation before approve the charge."]);
             }
+
+            if (count($chrgTrans) > 1) {
+                $chrgTransIds = $chrgTrans->pluck('trans_id')->toArray();
+                $valResult = Helpers::validateInvoiceTypes($chrgTransIds, $specificMsg = false);
+                if ($valResult && isset($valResult['status']) && $valResult['status'] == false) {
+                    return response()->json(['status' => 0,'msg' => $valResult['message']]);
+                }
+            }
+
             \DB::beginTransaction();
+            $chrgTransactions = [];
+            $userId = '';
+            $debitNoteTransIds = [];
             foreach($chrgTrans as $chrgTran) {
+
+                if ($chrgTran->transaction && $chrgTran->transaction->amount != $chrgTran->transaction->outstanding) {
+                    \DB::rollback();
+                    return response()->json(['status' => 0,'msg' => "Selected Charges can't be cancelled because charge transaction is already settled."]);
+                }
+
                 $attr = [
                     'chrg_trans_id' => $chrgTran->chrg_trans_id,
                     'status'        => 2,
                     'created_at'    => now(),
                     'created_by'    => auth()->user()->user_id
                 ];
-                if ($chrgTran->transaction->childTransactions) {
-                    $childTrans = $chrgTran->transaction->childTransactions;
-                    foreach($childTrans as $childTran) {
-                        $childTran->delete();
-                    }
+
+                if ($chrgTran->transaction->is_invoice_generated == 0) {
+                    $debitNoteTransIds[] = $chrgTran->trans_id;
                 }
-                $chrgTran->transaction->delete();
+                $chrgTransactions[] = $chrgTran->transaction;
+                if (!$userId) {
+                    $userId = $chrgTran->transaction->user_id;
+                }
                 $this->lmsRepo->saveChargeTransDeleteLog($attr);
-            }            
-            
+            }
+
+            $controller = app()->make('App\Http\Controllers\Lms\userInvoiceController');
+
+            if (count($debitNoteTransIds)) {
+                $debitNoteResults = $controller->generateDebitNote($debitNoteTransIds, $userId, $billType = 'C');
+            }
+
+            $creditNoteTransIds = Transactions::processChrgTransDeletion($chrgTransactions);
+
             \DB::commit();
-            return response()->json(['status' => 1,'msg' => "Charge deletion approved successfully."]);
         } catch (Exception $ex) {
             \DB::rollback();
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex))->withInput();
         }
+
+        try {
+            if(count($creditNoteTransIds)) {
+                $creditNoteResults = $controller->generateCreditNote($creditNoteTransIds, $userId, $billType = 'C');
+            }
+            return response()->json(['status' => 1,'msg' => "Charge cancellation approved successfully."]);
+        } catch (Exception $ex) {
+            return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex))->withInput();
+        }
     }
+
     public function deleteManagementInfo(Request $request)
     {        
         try {
@@ -6279,7 +6332,7 @@ if ($err) {
         return new JsonResponse($users);
     }
     
-    public function sendInvoiceOutstandingReportByMail(DataProviderInterface $dataProvider)
+    public function sendInvoiceOutstandingReportByMail()
     {
         if ($this->request->get('to_date') && $this->request->get('generate_report')) {
             $to_date = Carbon::createFromFormat('d/m/Y', $this->request->get('to_date'))->format('Y-m-d');
@@ -6287,7 +6340,11 @@ if ($err) {
             $odReportLog = OutstandingReportLog::create([ 'user_id' => $userId, 'to_date' => $to_date]);
             \Artisan::call("report:outstandingManual", ['user' => $userId, 'date' => $to_date, 'logId' => $odReportLog->id ?? NULL]);
         }
-    
+        return \Response::json(['status' => 1, 'logId' => $odReportLog->id]); 
+    }
+
+    public function getInvoiceOutstandingReport(DataProviderInterface $dataProvider)
+    {
         $overdueReportLogs = OutstandingReportLog::orderBy('id','desc')->get();
         return $dataProvider->getOutstandingReportLogs($this->request, $overdueReportLogs);
     }
@@ -6365,5 +6422,39 @@ if ($err) {
         $cusCapLoc = $this->UserInvRepo->getCustAndCapsLocApp($user_id);
         $data = $dataProvider->getCustAndCapsLocApp($this->request, $cusCapLoc);
         return $data;
+    }
+
+    public function getReconReportByMail(DataProviderInterface $dataProvider) {
+        if($this->request->get('from_date')!= '' && $this->request->get('to_date')!=''){
+            $from_date = Carbon::createFromFormat('d/m/Y', $this->request->get('from_date'))->format('d/m/Y');
+            $to_date = Carbon::createFromFormat('d/m/Y', $this->request->get('to_date'))->format('d/m/Y');
+        }
+        $condArr = [
+            'from_date' => $from_date ?? NULL,
+            'to_date' => $to_date ?? NULL,
+            'user_id' => $this->request->get('user_id'),
+            'customer_id' => $this->request->get('customer_id'),
+            'type' => 'excel',
+        ];
+        $transactionList = $this->invRepo->getReportAllOutstandingInvoice();
+        $users = $dataProvider->getReportAllOverdueInvoice($this->request, $transactionList);
+        $users     = $users->getData(true);
+        $users['excelUrl'] = route('pdf_invoice_over_due_url', $condArr);
+        $condArr['type']  = 'pdf';
+        $users['pdfUrl'] = route('pdf_invoice_over_due_url', $condArr);
+        return new JsonResponse($users);
+    }
+
+    public function sendReconReportByMail(DataProviderInterface $dataProvider)
+    {
+        if ($this->request->get('to_date') && $this->request->get('generate_report')) {
+            $to_date = Carbon::createFromFormat('d/m/Y', $this->request->get('to_date'))->format('Y-m-d');
+            $userId  = $this->request->get('user_id') ?? 'all';
+            $odReportLog = ReconReportLog::create([ 'user_id' => $userId, 'to_date' => $to_date]);
+            \Artisan::call("report:reconReport", ['user' => $userId, 'date' => $to_date, 'logId' => $odReportLog->id ?? NULL]);
+        }
+    
+        $overdueReportLogs = ReconReportLog::orderBy('id','desc')->get();
+        return $dataProvider->getReconReportLogs($this->request, $overdueReportLogs);
     }
 }

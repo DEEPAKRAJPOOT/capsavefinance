@@ -43,8 +43,8 @@
                                         <table class="table table-striped cell-border dataTable no-footer overview-table" cellspacing="0" width="100%" role="grid" aria-describedby="supplier-listing_info" style="width: 100%;">
                                             <thead>
                                                 <tr role="row">                                                   
-                                                    {{-- <th>Trans Date</th> --}}
-                                                    <th>Value Date</th>
+                                                    <th>Trans Date</th>
+                                                    <th>Payment Due Date</th>
                                                     <th>Bill Type</th>       
                                                     <th>Bill No</th>       
                                                     <th>Trans Type</th>		
@@ -61,6 +61,7 @@
                                                 <tr>
                                                     {{-- <td>{{ Carbon\Carbon::now()->format('d-m-Y') }}</td> --}}
                                                     <td>{{ Carbon\Carbon::parse($trans['value_date'])->format('d-m-Y') }}</td>
+                                                    <td>{{ Carbon\Carbon::parse($trans['payment_due_date'])->format('d-m-Y') }}</td>
                                                     <td>{{ $trans['bill_type'] }}</td>
                                                     <td>{{ $trans['invoice_no'] }}</td>
                                                     <td>{{ $trans['trans_name'] }}</td>

@@ -42,12 +42,14 @@ class ManualApportionmentHelperTemp{
         $disbTransIds = null;
         $intTransIds = null;
         $Dr = 0;
+        $Cr = 0;
+        // Disbursement Debit Amount
         $invDisbDetails = InvoiceDisbursed::where('int_accrual_start_dt','<=',$transDate)->where('invoice_disbursed_id',$invDisbId)->first();
         if($invDisbDetails){
             $margin = ($invDisbDetails->invoice->invoice_approve_amount*$invDisbDetails->margin)/100;
-            $Dr = $invDisbDetails->invoice->invoice_approve_amount - $margin;
+            $Dr += $invDisbDetails->invoice->invoice_approve_amount - $margin;
         }
-
+        // Get Disbursement Transaction 
         $disbTransIds = Transactions::where('invoice_disbursed_id','=',$invDisbId) 
         ->whereNull('payment_id') 
         ->whereNull('link_trans_id') 
@@ -55,28 +57,20 @@ class ManualApportionmentHelperTemp{
         ->whereIn('trans_type',[config('lms.TRANS_TYPE.PAYMENT_DISBURSED')]) 
         ->pluck('trans_id')->toArray();
 
-        if($disbTransIds){
-            $disbIntTransIds = [];
-            $disbDetails = Transactions::find($disbTransIds[0]);
-            $intBornBy = $disbDetails->invoiceDisbursed->invoice->program->interest_borne_by;
-            $disTransDate = $disbDetails->trans_date;
-            /*if((int) $intBornBy == 1){
-                $disbIntTransIds = Transactions::where('invoice_disbursed_id','=',$invDisbId) 
-                ->whereNull('payment_id') 
-                ->whereNull('link_trans_id') 
-                ->whereNull('parent_trans_id')
-                ->where('trans_date',$disTransDate)
-                ->whereIn('trans_type',[config('lms.TRANS_TYPE.INTEREST')]) 
-                ->pluck('trans_id')->toArray();
-            }*/
-            $disbTransIds = array_merge($disbIntTransIds,$disbTransIds);
-        }
-
-        $Cr =  Transactions::whereDate('trans_date','<=',$transDate) 
+        $Cr +=  Transactions::whereDate('trans_date','<=',$transDate) 
         ->where('invoice_disbursed_id','=',$invDisbId)
         ->where('entry_type','=','1')
         ->where(function($query) use($disbTransIds){
             $query->whereIn('trans_id',$disbTransIds);
+            $query->OrwhereIn('parent_trans_id',$disbTransIds);
+        })
+        ->sum('amount');
+
+        $Dr +=  Transactions::whereDate('trans_date','<=',$transDate) 
+        ->where('invoice_disbursed_id','=',$invDisbId)
+        ->where('entry_type','=','0')
+        ->where(function($query) use($disbTransIds){
+            $query->whereIn('link_trans_id',$disbTransIds);
             $query->OrwhereIn('parent_trans_id',$disbTransIds);
         })
         ->sum('amount');
@@ -95,24 +89,22 @@ class ManualApportionmentHelperTemp{
             $Dr += round($mIntrest,2);
 
             $intTransIds = Transactions::where('invoice_disbursed_id','=',$invDisbId) 
-            ->whereNull('payment_id') 
-            ->whereNull('link_trans_id') 
-            ->whereNull('parent_trans_id')
+            ->where('entry_type',0)
             ->whereIn('trans_type',[config('lms.TRANS_TYPE.INTEREST')]) 
             ->pluck('trans_id')->toArray();
         }
 
         if($intTransIds){
   
-             $Cr +=  Transactions::whereDate('trans_date','<=',$transDate) 
-             ->where('invoice_disbursed_id','=',$invDisbId)
-             ->where('entry_type','=','1')
-             ->whereNotIn('trans_type',[config('lms.TRANS_TYPE.CANCEL')]) 
-             ->where(function($query) use($intTransIds){
-                 $query->whereIn('trans_id',$intTransIds);
-                 $query->OrwhereIn('parent_trans_id',$intTransIds);
-             })
-             ->sum('amount');
+            $Cr +=  Transactions::whereDate('trans_date','<=',$transDate) 
+            ->where('invoice_disbursed_id','=',$invDisbId)
+            ->where('entry_type','=','1')
+            ->whereNotIn('trans_type',[config('lms.TRANS_TYPE.CANCEL'),config('lms.TRANS_TYPE.REFUND')]) 
+            ->where(function($query) use($intTransIds){
+                $query->whereIn('trans_id',$intTransIds);
+                $query->OrwhereIn('parent_trans_id',$intTransIds);
+            })
+            ->sum('settled_outstanding');
         }
         return $Dr-$Cr;
     }

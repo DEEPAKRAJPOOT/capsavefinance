@@ -11,6 +11,7 @@ use App\Inv\Repositories\Factory\Models\BaseModel;
 use App\Inv\Repositories\Models\Lms\InterestAccrualTemp;
 use App\Inv\Repositories\Entities\User\Exceptions\BlankDataExceptions;
 use App\Inv\Repositories\Entities\User\Exceptions\InvalidDataTypeExceptions;
+use Illuminate\Support\Arr;
 
 class Transactions extends BaseModel {
     /* The database table used by the model.
@@ -55,6 +56,7 @@ class Transactions extends BaseModel {
         'invoice_disbursed_id',
         'trans_running_id',
         'user_id',
+        'apportionment_type',
         'apportionment_id',
         'trans_date',
         'trans_type',
@@ -64,6 +66,9 @@ class Transactions extends BaseModel {
         'actual_outstanding',
         'settled_outstanding',
         'entry_type',
+        'from_date',
+        'to_date',
+        'due_date',
         'gst',
         'gst_per',
         'chrg_gst_id',
@@ -108,6 +113,10 @@ class Transactions extends BaseModel {
         return $this->belongsTo('App\Inv\Repositories\Models\Lms\InvoiceDisbursed','invoice_disbursed_id','invoice_disbursed_id');
     }
 
+    public function customerTransactionSOA(){
+        return $this->hasOne('App\Inv\Repositories\Models\Lms\CustomerTransactionSOA','trans_id','trans_id');
+    }
+
     public function biz() {
        return $this->belongsTo('App\Inv\Repositories\Models\Business', 'biz_id');
     }
@@ -143,6 +152,10 @@ class Transactions extends BaseModel {
     public function userInvParentTrans(){
         return $this->hasOne('App\Inv\Repositories\Models\Lms\UserInvoiceTrans','trans_id','parent_trans_id');
     }
+    
+    public function userInvLinkTrans(){
+        return $this->hasOne('App\Inv\Repositories\Models\Lms\UserInvoiceTrans','trans_id','link_trans_id');
+    }
 
     public function refundReqTrans(){
         return $this->hasOne('App\Inv\Repositories\Models\Lms\Refund\RefundReqTrans','trans_id','trans_id');
@@ -164,25 +177,16 @@ class Transactions extends BaseModel {
         return $this->hasOne('App\Inv\Repositories\Models\Lms\ChargesTransactions','trans_id','trans_id');
     }
 
+    public function apportionment(){
+        return $this->hasOne('App\Inv\Repositories\Models\Lms\Apportionment','apportionment_id','apportionment_id');
+    }
+
     public function getInvoiceNoAttribute(){
           
         $invNo = '';
 
         if ($this->invoice_disbursed_id){
             $invNo = $this->invoiceDisbursed->invoice->billNo;
-        }
-
-        return $invNo;
-    }
-
-    public function getCapsaveInvoiceNoAttribute()
-    {
-        $invNo = '';
-
-        if ($this->userInvTrans) {
-            $invNo = $this->userInvTrans->getUserInvoice->invoice_no;
-        } elseif($this->userInvParentTrans) {
-            $invNo = $this->userInvParentTrans->getUserInvoice->invoice_no;
         }
 
         return $invNo;
@@ -204,7 +208,7 @@ class Transactions extends BaseModel {
     public function getFinalAmtAttribute()
     {
         $amount = 0;
-        if($this->entry_type = '1' && is_null($this->payment_id) && is_null($this->link_trans_id) && is_null($this->parent_trans_id)){
+        if($this->entry_type == '1' && is_null($this->payment_id) && is_null($this->link_trans_id) && is_null($this->parent_trans_id)){
             $cr = (float) self::where('parent_trans_id','=',$this->trans_id)
             ->where('entry_type','=','1')
             ->whereIn('trans_type',[config('lms.TRANS_TYPE.CANCEL')])
@@ -288,55 +292,153 @@ class Transactions extends BaseModel {
     public function calculateOutstandingsCreate(){
         $transType = $this->trans_type;
         $entryType = $this->entry_type;
-        $parentTrans = null;
+        $linkLinkTrans = null;
         $linkTrans = null;
+        $linkLinkLinkTrans = null;
 
         $trans = Transactions::find($this->trans_id);
-       
-
-        if($this->parent_trans_id){
-            $parentTrans = Transactions::find($this->parent_trans_id);
-        }
 
         if($this->link_trans_id){
-            $linkTrans = Transactions::find($this->link_trans_id);
+            $linkTrans = Transactions::find($trans->link_trans_id);
         }
 
-        if($entryType == '0'){
-            $trans->outstanding = $this->amount; 
-            if(is_null($this->parent_trans_id) && is_null($this->link_trans_id)){
-                $trans->actual_outstanding = $this->amount;
-            }
-            elseif(!is_null($this->parent_trans_id) && !is_null($this->link_trans_id) &&  $this->parent_trans_id <> $this->link_trans_id){   
-                $linkTrans->settled_outstanding -= $this->amount;
-                if($transType == config('lms.TRANS_TYPE.REVERSE')){
-                    $parentTrans->outstanding = ($parentTrans->outstanding - $this->amount) > 0 ? ($parentTrans->outstanding - $this->amount) : 0;
-                    $parentTrans->actual_outstanding -= $this->amount;
-                }
-            }
+        if($linkTrans && $linkTrans->link_trans_id){
+            $linkLinkTrans = Transactions::find($linkTrans->link_trans_id);
         }
-        elseif($entryType == '1'){
-            $trans->settled_outstanding = $this->amount;
-            if(!is_null($this->parent_trans_id) && !is_null($this->link_trans_id) &&  $this->parent_trans_id <> $this->link_trans_id){
-                if($this->trans_type == '32'){
-                    //$linkTrans->settled_outstanding -= $this->amount;
-                    // if($linkTrans->trans_type == '7'){
-                    //     $parentTrans->outstanding = ($parentTrans->outstanding - $this->amount) > 0 ? ($parentTrans->outstanding - $this->amount) : 0;
-                    //     $parentTrans->actual_outstanding -= $this->amount;
-                    // }
+
+        if($linkLinkTrans && $linkLinkTrans->link_trans_id){
+            $linkLinkLinkTrans = Transactions::find($linkLinkTrans->link_trans_id);
+        }
+
+        if($trans->entry_type == 0){
+            $trans->outstanding = $this->amount;
+            $trans->actual_outstanding = $this->amount;
+            if($linkTrans){
+                if($linkTrans->entry_type == 0){
+                    $linkTrans->actual_outstanding += $this->amount;
+                    $linkTrans->outstanding = ($linkTrans->actual_outstanding) > 0 ? ($linkTrans->actual_outstanding) : 0;
+                    if($linkLinkTrans){
+                        if($linkLinkTrans->entry_type == 0){
+                            $linkLinkTrans->actual_outstanding += $this->amount;
+                            $linkLinkTrans->outstanding = ($linkLinkTrans->actual_outstanding) > 0 ? ($linkLinkTrans->actual_outstanding) : 0;
+                            if($linkLinkLinkTrans){
+                                if($linkLinkLinkTrans->entry_type == 0){
+                                    $linkLinkLinkTrans->actual_outstanding += $this->amount;
+                                    $linkLinkLinkTrans->outstanding = ($linkLinkLinkTrans->actual_outstanding) > 0 ? ($linkLinkLinkTrans->actual_outstanding) : 0;        
+                                }else{
+                                    $linkLinkLinkTrans->settled_outstanding -= $this->amount;
+                                }
+                            }
+                        }else{
+                            $linkLinkTrans->settled_outstanding -= $this->amount;
+                            if($linkLinkLinkTrans && !in_array($linkLinkTrans->trans_type, [32])){
+                                if($linkLinkLinkTrans->entry_type == 0){
+                                    $linkLinkLinkTrans->actual_outstanding += $this->amount;
+                                    $linkLinkLinkTrans->outstanding = ($linkLinkLinkTrans->actual_outstanding) > 0 ? ($linkLinkLinkTrans->actual_outstanding) : 0;        
+                                }else{
+                                    $linkLinkLinkTrans->settled_outstanding -= $this->amount;
+                                }
+                            }
+                        }
+                    }
+                }else{
+                    $linkTrans->settled_outstanding -= $this->amount;
+                    if($linkLinkTrans && !in_array($linkTrans->trans_type, [32])){
+                        if($linkLinkTrans->entry_type == 0){
+                            $linkLinkTrans->actual_outstanding += $this->amount;
+                            $linkLinkTrans->outstanding = ($linkLinkTrans->actual_outstanding) > 0 ? ($linkLinkTrans->actual_outstanding) : 0;
+                            if($linkLinkLinkTrans){
+                                if($linkLinkLinkTrans->entry_type == 0){
+                                    $linkLinkLinkTrans->actual_outstanding += $this->amount;
+                                    $linkLinkLinkTrans->outstanding = ($linkLinkLinkTrans->actual_outstanding) > 0 ? ($linkLinkLinkTrans->actual_outstanding) : 0;        
+                                }else{
+                                    $linkLinkLinkTrans->settled_outstanding -= $this->amount;
+                                }
+                            }
+                        }else{
+                            $linkLinkTrans->settled_outstanding -= $this->amount;
+                            if($linkLinkLinkTrans && !in_array($linkLinkTrans->trans_type, [32])){
+                                if($linkLinkLinkTrans->entry_type == 0){
+                                    $linkLinkLinkTrans->actual_outstanding += $this->amount;
+                                    $linkLinkLinkTrans->outstanding = ($linkLinkLinkTrans->actual_outstanding) > 0 ? ($linkLinkLinkTrans->actual_outstanding) : 0;        
+                                }else{
+                                    $linkLinkLinkTrans->settled_outstanding -= $this->amount;
+                                }
+                            }
+                        }
+                    }
                 }
             }
-            elseif(!is_null($this->parent_trans_id) && !is_null($this->link_trans_id) &&  $this->parent_trans_id == $this->link_trans_id){
-                $parentTrans->outstanding = ($parentTrans->outstanding - $this->amount) > 0 ? ($parentTrans->outstanding - $this->amount) : 0;
-                $parentTrans->actual_outstanding -= $this->amount;
+
+        }else{
+            $trans->settled_outstanding = $this->amount;
+            if($linkTrans && !in_array($trans->trans_type, [32])){
+                if($linkTrans->entry_type == 0){
+                    $linkTrans->actual_outstanding -= $this->amount;
+                    $linkTrans->outstanding = ($linkTrans->actual_outstanding) > 0 ? ($linkTrans->actual_outstanding) : 0;
+                    if($linkLinkTrans){
+                        if($linkLinkTrans->entry_type == 0){
+                            $linkLinkTrans->actual_outstanding += $this->amount;
+                            $linkLinkTrans->outstanding = ($linkLinkTrans->actual_outstanding) > 0 ? ($linkLinkTrans->actual_outstanding) : 0;
+                            if($linkLinkLinkTrans){
+                                if($linkLinkLinkTrans->entry_type == 0){
+                                    $linkLinkLinkTrans->actual_outstanding += $this->amount;
+                                    $linkLinkLinkTrans->outstanding = ($linkLinkLinkTrans->actual_outstanding) > 0 ? ($linkLinkLinkTrans->actual_outstanding) : 0;        
+                                }else{
+                                    $linkLinkLinkTrans->settled_outstanding -= $this->amount;
+                                }
+                            }
+                        }else{
+                            $linkLinkTrans->settled_outstanding += $this->amount;
+                            if($linkLinkLinkTrans && !in_array($linkLinkTrans->trans_type, [32])){
+                                if($linkLinkLinkTrans->entry_type == 0){
+                                    $linkLinkLinkTrans->actual_outstanding -= $this->amount;
+                                    $linkLinkLinkTrans->outstanding = ($linkLinkLinkTrans->actual_outstanding) > 0 ? ($linkLinkLinkTrans->actual_outstanding) : 0;        
+                                }else{
+                                    $linkLinkLinkTrans->settled_outstanding += $this->amount;
+                                }
+                            }
+                        }
+                    }
+                }else{
+                    $linkLinkTrans->settled_outstanding += $this->amount;
+                    if($linkLinkTrans && !in_array($linkTrans->trans_type, [32])){
+                        if($linkLinkTrans->entry_type == 0){
+                            $linkLinkTrans->actual_outstanding += $this->amount;
+                            $linkLinkTrans->outstanding = ($linkLinkTrans->actual_outstanding) > 0 ? ($linkLinkTrans->actual_outstanding) : 0;
+                            if($linkLinkLinkTrans){
+                                if($linkLinkLinkTrans->entry_type == 0){
+                                    $linkLinkLinkTrans->actual_outstanding += $this->amount;
+                                    $linkLinkLinkTrans->outstanding = ($linkLinkLinkTrans->actual_outstanding) > 0 ? ($linkLinkLinkTrans->actual_outstanding) : 0;        
+                                }else{
+                                    $linkLinkLinkTrans->settled_outstanding -= $this->amount;
+                                }
+                            }
+                        }else{
+                            $linkLinkTrans->settled_outstanding -= $this->amount;
+                            if($linkLinkLinkTrans && !in_array($linkLinkTrans->trans_type, [32])){
+                                if($linkLinkLinkTrans->entry_type == 0){
+                                    $linkLinkLinkTrans->actual_outstanding += $this->amount;
+                                    $linkLinkLinkTrans->outstanding = ($linkLinkLinkTrans->actual_outstanding) > 0 ? ($linkLinkLinkTrans->actual_outstanding) : 0;        
+                                }else{
+                                    $linkLinkLinkTrans->settled_outstanding -= $this->amount;
+                                }
+                            }
+                        }
+                    }
+                }
             }
         }
         $trans->save();
-        if(!is_null($this->parent_trans_id) && !is_null($parentTrans)){
-            $parentTrans->save();
-        }
-        if(!is_null($this->link_trans_id) && !is_null($linkTrans)){
+        
+        if($linkTrans){
             $linkTrans->save();
+        }
+        if($linkLinkTrans){
+            $linkLinkTrans->save();
+        }
+        if($linkLinkLinkTrans){
+            $linkLinkLinkTrans->save();
         }
     }
 
@@ -347,22 +449,22 @@ class Transactions extends BaseModel {
         $parentTrans = null;
         $linkTrans = null;
 
+        $trans = Transactions::find($this->trans_id);
+
         if($this->parent_trans_id){
-            $parentTrans = $this->parentTransactions;
+            $parentTrans = Transactions::find($this->parent_trans_id);
         }
 
         if($this->link_trans_id){
-            $linkTrans = $this->linkTransactions;
+            $linkTrans = Transactions::find($this->link_trans_id);
         }
         
         if($entryType == '0'){
             if(!is_null($this->parent_trans_id) && !is_null($this->link_trans_id) &&  $this->parent_trans_id <> $this->link_trans_id){   
-                $settledAmount = $linkTrans->settled_outstanding + $this->amount;
-                self::where('trans_id', $linkTrans->trans_id)->update(['settled_outstanding' => $settledAmount]);
+                $linkTrans->settled_outstanding += $this->amount;
                 if($transType == config('lms.TRANS_TYPE.REVERSE')){
-                    $actualAmount = $parentTrans->actual_outstanding + $this->amount;
-                    $amount = $actualAmount > 0 ? $actualAmount : 0;
-                    self::where('trans_id', $parentTrans->trans_id)->update(['outstanding' => $amount,'actual_outstanding'=>$actualAmount]);
+                    $parentTrans->actual_outstanding -= $this->amount;
+                    $parentTrans->outstanding = ($parentTrans->actual_outstanding) > 0 ? ($parentTrans->actual_outstanding) : 0;
                 }
             }
         }
@@ -380,10 +482,15 @@ class Transactions extends BaseModel {
                 }
             }
             elseif(!is_null($this->parent_trans_id) && !is_null($this->link_trans_id) &&  $this->parent_trans_id == $this->link_trans_id){
-                $actualAmount = $parentTrans->actual_outstanding + $this->amount;
-                $amount = $actualAmount > 0 ? $actualAmount : 0;
-                self::where('trans_id', $parentTrans->trans_id)->update(['outstanding' => $amount,'actual_outstanding'=>$actualAmount]);
+                $parentTrans->actual_outstanding += $this->amount;
+                $parentTrans->outstanding = ($parentTrans->actual_outstanding) > 0 ? ($parentTrans->actual_outstanding) : 0;
             }
+        }
+        if(!is_null($this->parent_trans_id) && !is_null($parentTrans)){
+            $parentTrans->save();
+        }
+        if(!is_null($this->link_trans_id) && !is_null($linkTrans)){
+            $linkTrans->save();
         }
     }
     
@@ -455,18 +562,18 @@ class Transactions extends BaseModel {
     }
 
     public function getWaiveOffAmount(){
-        return self::where(['parent_trans_id' => $this->trans_id, 'trans_type' => config('lms.TRANS_TYPE.WAVED_OFF')])->sum('amount');
+        return self::where(['parent_trans_id' => $this->trans_id, 'trans_type' => config('lms.TRANS_TYPE.WAVED_OFF')])->sum('settled_outstanding');
     }
 
     public function getCancelledAmount(){
-        return self::where(['parent_trans_id' => $this->trans_id, 'trans_type' => config('lms.TRANS_TYPE.CANCEL')])->sum('amount');
+        return self::where(['link_trans_id' => $this->trans_id, 'trans_type' => config('lms.TRANS_TYPE.CANCEL')])->sum('settled_outstanding');
     }
 
     public function getRefundableAmtAttribute(){
         return self::where('link_trans_id','=',$this->trans_id)
         ->where('entry_type','=','0')
         ->whereIn('trans_type',[config('lms.TRANS_TYPE.REVERSE'),config('lms.TRANS_TYPE.REFUND'),config('lms.TRANS_TYPE.ADJUSTMENT')]) 
-        ->sum('amount');
+        ->sum('outstanding');
     }
 
     public function getRefundOutstandingAttribute(){
@@ -485,32 +592,18 @@ class Transactions extends BaseModel {
     }
 
     public function getTransNameAttribute(){
-        $name = ' '; 
-        $transCode = $this->trans_type.($this->entry_type ? 'C':'D');
-        if($this->trans_type == config('lms.TRANS_TYPE.REPAYMENT')) 
-        return $this->payment->paymentname;
+        $name = ''; 
 
-        if(in_array($this->trans_type,[config('lms.TRANS_TYPE.WRITE_OFF'),config('lms.TRANS_TYPE.WAVED_OFF'),config('lms.TRANS_TYPE.TDS'),config('lms.TRANS_TYPE.REVERSE'),config('lms.TRANS_TYPE.REFUND'),config('lms.TRANS_TYPE.CANCEL'),config('lms.TRANS_TYPE.ADJUSTMENT'),config('lms.TRANS_TYPE.NON_FACTORED_AMT')])){
-            if($this->parent_trans_id){
-                $parentTrans = self::find($this->parent_trans_id);
-                $transCode = $parentTrans->trans_type.($parentTrans->entry_type ? 'C':'D').$transCode;
-                if($parentTrans->entry_type == 0){
-                    $name .= ' '.$parentTrans->transType->debit_desc;
-                }elseif($parentTrans->entry_type == 1){
-                    $name .= ' '.$parentTrans->transType->credit_desc;
-                }
-                if($this->link_trans_id){
-                    $linkTrans = self::find($this->link_trans_id);
-                    if($linkTrans){
-                        if(in_array($linkTrans->trans_type,[config('lms.TRANS_TYPE.WRITE_OFF'),config('lms.TRANS_TYPE.WAVED_OFF'),config('lms.TRANS_TYPE.TDS'),config('lms.TRANS_TYPE.REVERSE'),config('lms.TRANS_TYPE.CANCEL'),config('lms.TRANS_TYPE.ADJUSTMENT')])){
-                            $transCode = $linkTrans->trans_type.($linkTrans->entry_type ? 'C':'D').$transCode;
-                            if($linkTrans->entry_type == 0){
-                                $name .= ' '.$linkTrans->transType->debit_desc;
-                            }elseif($linkTrans->entry_type == 1){
-                                $name .= ' '.$linkTrans->transType->credit_desc;
-                            }   
-                        } 
-                    }
+        if($this->trans_type == config('lms.TRANS_TYPE.REPAYMENT')) 
+        return $this->payment->paymentname??'';
+
+        if(in_array($this->trans_type,[config('lms.TRANS_TYPE.WRITE_OFF'),config('lms.TRANS_TYPE.WAVED_OFF'),config('lms.TRANS_TYPE.TDS'),config('lms.TRANS_TYPE.REVERSE'),config('lms.TRANS_TYPE.REFUND'),config('lms.TRANS_TYPE.CANCEL'),config('lms.TRANS_TYPE.ADJUSTMENT')])){
+            if($this->link_trans_id){
+                $linkTrans = $this->linkTransactions;
+                if($linkTrans && $linkTrans->trans_type == config('lms.TRANS_TYPE.REFUND') && $linkTrans->entry_type == '1'){
+                    $name .= ' '.$linkTrans->linkTransactions->customerTransactionSOA->trans_name;
+                }elseif($linkTrans){
+                    $name .= ' '.$linkTrans->customerTransactionSOA->trans_name;
                 }
             }
         }
@@ -520,7 +613,7 @@ class Transactions extends BaseModel {
         }elseif($this->entry_type == 1){
             $name .= ' '.$this->transType->credit_desc;
         }
-        return config('lms.TRANS_TYPE_NAME.'.$transCode) ?? trim($name);
+        return trim($name);
     }
 
     public function getBatchNoAttribute(){
@@ -531,7 +624,7 @@ class Transactions extends BaseModel {
             config('lms.TRANS_TYPE.WAVED_OFF'),
             config('lms.TRANS_TYPE.REFUND')
         ])){
-            return $this->invoiceDisbursed->disbursal->disbursal_batch->batch_id;
+            return $this->invoiceDisbursed->disbursal->disbursal_batch->batch_id ?? null;
         }
     }
 
@@ -541,12 +634,12 @@ class Transactions extends BaseModel {
         if(in_array($this->trans_type,[config('lms.TRANS_TYPE.REPAYMENT')])){
             if($this->BatchNo)
             $data .= $this->BatchNo.' ';
-            if($this->payment->transactionno)
+            if($this->payment->transactionno ?? NULL)
             $data .= $this->payment->paymentmode.': '.$this->payment->transactionno.' ' ;
-            $data .= ' Payment Allocated as Normal: INR '. number_format($this->payment->amount,2) . ' ';
+            $data .= ' Payment Allocated as Normal: INR '. number_format($this->payment->amount ?? 0,2) . ' ';
         }
         elseif(in_array($this->trans_type,[config('lms.TRANS_TYPE.FAILED')])){
-            $data .= ' Payment Failed as Normal: INR '. number_format($this->payment->amount,2) . ' ';
+            $data .= ' Payment Failed as Normal: INR '. number_format($this->payment->amount ?? 0,2) . ' ';
         }
         return trim($data);
     }
@@ -570,11 +663,23 @@ class Transactions extends BaseModel {
 
     public function getSoaBackgroundColorAttribute(){
         $color = '';
-        if($this->payment_id){
-            if($this->trans_type == config('lms.TRANS_TYPE.REPAYMENT'))
-            $color = '#f3c714';
-            elseif(!in_array($this->trans_type, [config('lms.TRANS_TYPE.TDS')]))
-            $color = '#ffe787';
+        switch ($this->apportionment->apportionment_type ?? null) {
+            case '1':
+                    if($this->trans_type == config('lms.TRANS_TYPE.REPAYMENT'))
+                    $color = '#f3c714';
+                    elseif(!in_array($this->trans_type, [config('lms.TRANS_TYPE.TDS')]))
+                    $color = '#ffe787';
+                break;
+            case '2':
+                    if($this->linkTransactions->trans_type == config('lms.TRANS_TYPE.REPAYMENT'))
+                    $color = '#ff6767';
+                    elseif(!in_array($this->linkTransactions->trans_type, [config('lms.TRANS_TYPE.TDS')]))
+                    $color = '#ffcccc';
+                break;
+            
+            default:
+                    $color = '';
+                break;
         }
         return $color;
     }
@@ -584,22 +689,23 @@ class Transactions extends BaseModel {
         return self::get_balance($this->user_id.Carbon::parse($this->created_at)->format('ymd').(1000000000+$this->trans_id), $this->user_id);
     }
 
-    public  function getPaymentDueDateAttribute()
-    {
+    public  function getPaymentDueDateAttribute(){  
+        if($this->due_date){
+            return carbon::parse($this->due_date)->format('Y-m-d');
+        } 
         if(in_array($this->trans_type,[
             config('lms.TRANS_TYPE.PAYMENT_DISBURSED'),
             config('lms.TRANS_TYPE.MARGIN'),
             config('lms.TRANS_TYPE.INTEREST'),
             config('lms.TRANS_TYPE.INTEREST_OVERDUE')]) && $this->entry_type == 0 && is_null($this->link_trans_id) && is_null($this->parent_trans_id)){
-            
+        
             $paymentFrequency = $this->invoiceDisbursed->invoice->program_offer->payment_frequency;
             $intBornBy = $this->invoiceDisbursed->invoice->program_offer->interest_borne_by;
             $prgmType = $this->invoiceDisbursed->invoice->program->prgm_type ?? null;
 
             if(in_array($this->trans_type,[config('lms.TRANS_TYPE.PAYMENT_DISBURSED'),config('lms.TRANS_TYPE.MARGIN')])){
                 return Carbon::parse($this->invoiceDisbursed->payment_due_date)->format('Y-m-d');
-            }
-            elseif(in_array($this->trans_type,[config('lms.TRANS_TYPE.INTEREST')]) && is_null($this->trans_running_id)){
+            }elseif(in_array($this->trans_type,[config('lms.TRANS_TYPE.INTEREST')]) && is_null($this->trans_running_id)){
                 if($paymentFrequency == 1 && $intBornBy == 1){
                     return Carbon::parse($this->invoiceDisbursed->int_accrual_start_dt)->format('Y-m-d');
                 }
@@ -611,7 +717,7 @@ class Transactions extends BaseModel {
     }
 
     public function getTDSRateAttribute(){
-        if($this->transType->chrg_master_id || $this->trans_type == config('lms.TRANS_TYPE.INTEREST')){
+        if($this->transType->chrg_master_id || in_array($this->trans_type,[config('lms.TRANS_TYPE.INTEREST'),config('lms.TRANS_TYPE.INTEREST_OVERDUE')])){
             return Tds::getActiveTdsBaseRate($this->trans_date);
         }else{
             return null;
@@ -624,8 +730,8 @@ class Transactions extends BaseModel {
         $tdsAmt = 0;
         $gstAmt = 0;
         $gst_per = 0;
-        if($this->transType->chrg_master_id || $this->trans_type == config('lms.TRANS_TYPE.INTEREST')){
-            $tdsRate = $this->tDSRate;
+        if($this->transType->chrg_master_id || in_array($this->trans_type,[config('lms.TRANS_TYPE.INTEREST'),config('lms.TRANS_TYPE.INTEREST_OVERDUE')]) ){
+            $tdsRate =  Tds::getActiveTdsBaseRate($this->trans_date);
             $amount -= $this->getCancelledAmount();
             
             if($this->transType->chrg_master_id && $this->transType->charge && $this->transType->charge->gst_percentage){
@@ -644,6 +750,7 @@ class Transactions extends BaseModel {
         $tds = self::where('parent_trans_id',$this->trans_id)
         ->where('trans_type', config('lms.TRANS_TYPE.TDS'))
         ->where('entry_type','1')
+        ->where('settled_outstanding','>',0)
         ->get();   
         foreach($tds as $tdsTrans){
             $tdsAmt -= round($tdsTrans->settled_outstanding,2);
@@ -716,12 +823,12 @@ class Transactions extends BaseModel {
             throw new InvalidDataTypeExceptions(trans('error_message.invalid_data_type'));
         }
 
-
         //  set default is_transaction value
         if(isset($transactions['trans_type']) && !isset($transactions['is_transaction'])){
             $transType = $transactions['trans_type'];
             $chrg_id = TransType::where('id',$transType)->value('chrg_master_id');
             if($chrg_id > 0){
+                $transactions['due_date'] = $transactions['trans_date'];
                 $transactions['is_transaction'] = false;
             }else{
                 $transactions['is_transaction'] = true;
@@ -810,21 +917,21 @@ class Transactions extends BaseModel {
     public static function getUnsettledInvoiceTransactions($data = [])
     {
        
-        // $SettledInvoiceDisbursedId = InvoiceDisbursed::whereHas('invoice',function($q) use($data){
-        //     $q->where('supplier_id',$data['user_id'])->where('is_repayment','1');
-        // })->whereNotNull('invoice_disbursed_id')->pluck('invoice_disbursed_id')->toArray();
-        $SettledInvoiceDisbursedId = null;
         $query =  self::whereNull('parent_trans_id')->whereNull('payment_id')->where('entry_type',0)->where('is_transaction', true);
-         
-        $invoiceDisbursed = $data['invoiceDisbursed']??null;
-        if(isset($invoiceDisbursed)){
-            $query->where(function($query2) use($invoiceDisbursed, $SettledInvoiceDisbursedId){
-                $query2->whereHas('invoiceDisbursed',function($query3) use ($invoiceDisbursed, $SettledInvoiceDisbursedId) {
-                    //$query3->whereNotIn('invoice_disbursed_id', $SettledInvoiceDisbursedId);
-                    if(isset($invoiceDisbursed['int_accrual_start_dt'])){
-                        $query3->where('int_accrual_start_dt','<=',$invoiceDisbursed['int_accrual_start_dt']);
-                    }
-                })->orWhereNull('invoice_disbursed_id');
+
+        if(isset($data['due_date'])){
+            $query->where(function($q) use($data) {
+                $q->orWhere(function($q2) use($data) {
+                    $q2->whereIn('trans_type',[config('lms.TRANS_TYPE.INTEREST'),config('lms.TRANS_TYPE.INTEREST_OVERDUE')])->whereDate('due_date','<=',$data['due_date']);
+                })
+                ->orWhere(function($q2) use($data) {
+                    $q2->whereIn('trans_type',[config('lms.TRANS_TYPE.PAYMENT_DISBURSED'),config('lms.TRANS_TYPE.MARGIN')])->whereDate('trans_date','<=',$data['due_date']);
+                })
+                ->orWhere(function($q2) use($data) {
+                    $q2->whereHas('transType', function($q3){
+                        $q3->where('chrg_master_id','>',0);
+                    })->whereDate('due_date','<=',$data['due_date']);
+                });
             });
         }
 
@@ -963,15 +1070,17 @@ class Transactions extends BaseModel {
                         $qry->Where('chrg_master_id','!=','0');
                     });
             })
-            ->orWhereIn('trans_type', [config('lms.TRANS_TYPE.REVERSE'), config('lms.TRANS_TYPE.WAVED_OFF'), config('lms.TRANS_TYPE.WRITE_OFF')])
             ->orWhere(function ($q) {
                 $q->whereIn('trans_type', [config('lms.TRANS_TYPE.REFUND')])->whereNotNull('parent_trans_id')->where('entry_type', '=', '1');
             })
             ->orWhere(function ($q) {
-                $q->whereIn('trans_type', [config('lms.TRANS_TYPE.TDS'), config('lms.TRANS_TYPE.CANCEL')])->where('entry_type', '=', '1');
+                $q->whereIn('trans_type', [config('lms.TRANS_TYPE.WAVED_OFF'), config('lms.TRANS_TYPE.WRITE_OFF'),config('lms.TRANS_TYPE.TDS'), config('lms.TRANS_TYPE.CANCEL')])->where('entry_type', '=', '1');
             })
             ->orWhere(function ($q) {
                 $q->WhereIn('trans_type', [config('lms.TRANS_TYPE.INTEREST'), config('lms.TRANS_TYPE.INTEREST_OVERDUE')])->where('entry_type', '=', '0');
+            })
+            ->orWhere(function ($q) {
+                $q->WhereIn('trans_type', [config('lms.TRANS_TYPE.REVERSE')])->whereNull('payment_id');
             });
         })->where($where)->orderBy('trans_date', 'ASC')->get();
     }
@@ -1211,6 +1320,15 @@ class Transactions extends BaseModel {
        }else{
           $sql->where('is_invoice_generated', '=', 0);
        }
+
+        if($invoiceType == 'C') {
+            if (!$is_force && empty($trans_ids)) {
+                $sql->whereHas('ChargesTransactions', function($newQuery) {
+                    $newQuery->doesntHave('deleteLogs');
+                });
+            }
+        }
+
        return $sql->whereHas('transType', function($query) use ($invoiceType) { 
             if($invoiceType == 'I') {
                 $query->whereIn('id',[config('lms.TRANS_TYPE.INTEREST'),config('lms.TRANS_TYPE.INTEREST_OVERDUE')]);
@@ -1304,6 +1422,9 @@ class Transactions extends BaseModel {
     }
     
     public function getFromIntDateAttribute($paymentFrequency = null, $disbursedDate = null, $paymentDate = null){
+        if($this->from_date){
+            return carbon::parse($this->from_date)->format('Y-m-d');
+        }
         $fromDate = null;
         if(in_array($this->trans_type,[config('lms.TRANS_TYPE.INTEREST'),config('lms.TRANS_TYPE.INTEREST_OVERDUE')])){
             
@@ -1327,22 +1448,26 @@ class Transactions extends BaseModel {
             if(!$lastTransToDate){
                 if($paymentFrequency == 1){
                     if($transDate == $disbursedDate){
-                        $fromDate = $disbursedDate;
+                        $fromDate = date('Y-m-d', strtotime($disbursedDate));
                     }
                     elseif($transDate == $paymentDate){
                         $fromDate = date('Y-m-d', strtotime($paymentDate . "- 1 days"));
                     }elseif($this->trans_type == config('lms.TRANS_TYPE.INTEREST')){
-                        $fromDate = $this->trans_date;
+                        $fromDate = date('Y-m-d', strtotime($this->trans_date));
                     }elseif($this->trans_type == config('lms.TRANS_TYPE.INTEREST_OVERDUE')){
-                        $fromDate = $paymentDate;
+                        $fromDate = date('Y-m-d', strtotime($paymentDate));
                     }
                 }else{
-                    $fromDate = $disbursedDate;
+                    if($this->trans_type == config('lms.TRANS_TYPE.INTEREST')){
+                        $fromDate = date('Y-m-d', strtotime($disbursedDate));
+                    }elseif($this->trans_type == config('lms.TRANS_TYPE.INTEREST_OVERDUE')){
+                        $fromDate = date('Y-m-d', strtotime($paymentDate));
+                    }
                 }
             }else{
                 if($paymentFrequency == 1){
                     if($lastTransToDate == $disbursedDate){
-                        $fromDate = $disbursedDate;
+                        $fromDate = date('Y-m-d', strtotime($disbursedDate));
                     }
                     elseif($lastTransToDate == $paymentDate && $this->trans_type == config('lms.TRANS_TYPE.INTEREST')){
                         $fromDate = date('Y-m-d', strtotime($paymentDate . "- 1 days"));
@@ -1361,6 +1486,10 @@ class Transactions extends BaseModel {
     }
 
     public function getToIntDateAttribute($paymentFrequency = null, $disbursedDate = null, $paymentDate = null){
+        if($this->to_date){
+            return carbon::parse($this->to_date)->format('Y-m-d');
+        }
+        
         $toDate = null;
         if(in_array($this->trans_type,[config('lms.TRANS_TYPE.INTEREST'),config('lms.TRANS_TYPE.INTEREST_OVERDUE')])){
             $paymentFrequency = $paymentFrequency ?? $this->invoiceDisbursed->invoice->program_offer->payment_frequency;
@@ -1371,13 +1500,35 @@ class Transactions extends BaseModel {
                if($transDate == $disbursedDate){
                     $toDate = date('Y-m-d', strtotime($paymentDate . "- 1 days"));
                 }else{
-                    $toDate = $transDate;
+                    $toDate = date('Y-m-d', strtotime($transDate));
                 }
             }else{
-                $toDate = $transDate;
+                $toDate = date('Y-m-d', strtotime($transDate));
             }
         }
         return $toDate;
+    }
+
+    public function getActInterestAttribute(){
+        $from = self::getFromIntDateAttribute();
+        $to = self::getToIntDateAttribute();
+        $transType = $this->trans_type;
+        $invoice_disbursed_id = $this->invoice_disbursed_id;
+        if($from && $to && $invoice_disbursed_id && in_array($transType,[config('lms.TRANS_TYPE.INTEREST'),config('lms.TRANS_TYPE.INTEREST_OVERDUE')])){
+            $actualAmount = InterestAccrual::whereDate('interest_date', '>=',$from)
+            ->whereDate('interest_date','<=',$to)
+            ->where(function($query) use($transType){
+                if($transType == 9){
+                    $query->whereNotNull('interest_rate'); 
+                }
+                elseif($transType == 33){
+                    $query->whereNotNull('overdue_interest_rate');
+                }
+            })
+            ->where('invoice_disbursed_id', $invoice_disbursed_id)
+            ->sum('accrued_interest');
+            return round($actualAmount,2);
+        }
     }
 
     public function getTempInterestAttribute(){
@@ -1386,9 +1537,17 @@ class Transactions extends BaseModel {
         $to = self::getToIntDateAttribute();
         $outstanding = $this->outstanding;
         $invoice_disbursed_id = $this->invoice_disbursed_id;
-        if($from && $to && $invoice_disbursed_id && in_array($this->trans_type,[config('lms.TRANS_TYPE.INTEREST'),config('lms.TRANS_TYPE.INTEREST_OVERDUE')])){
+        $transType = $this->trans_type;
+        if($from && $to && $invoice_disbursed_id && in_array($transType,[config('lms.TRANS_TYPE.INTEREST'),config('lms.TRANS_TYPE.INTEREST_OVERDUE')])){
             $amount = InterestAccrualTemp::whereDate('interest_date','>=',$from)
             ->whereDate('interest_date','<=',$to)
+            // ->where(function ($query) use ($transType){
+            //     if($transType == config('lms.TRANS_TYPE.INTEREST')){
+            //         $query->whereNotNull('interest_rate');
+            //     }elseif($transType == config('lms.TRANS_TYPE.INTEREST_OVERDUE')){
+            //         $query->whereNotNull('overdue_interest_rate');
+            //     }
+            // })
             ->where('invoice_disbursed_id',$invoice_disbursed_id)
             ->sum('accrued_interest');   
             if($amount <= $outstanding){
@@ -1640,6 +1799,9 @@ class Transactions extends BaseModel {
         if(!empty($where['trans_type_in'])){
             $query = $query->whereIn('trans_type', $where['trans_type_in']);
         }
+        if(!empty($where['due_date'])){
+            $query = $query->whereDate('due_date', '<=', $where['due_date']);
+        }
         $query->where(function ($query1) {
             $query1->whereIn('trans_type', [config('lms.TRANS_TYPE.INTEREST'),config('lms.TRANS_TYPE.INTEREST_OVERDUE')])
             ->orWhere(function ($query3) {
@@ -1668,5 +1830,47 @@ class Transactions extends BaseModel {
         ->get()
         ->each
         ->delete();*/
+    }
+
+    public static function processChrgTransDeletion($trans)
+    {
+        $transIds = [];
+        foreach($trans as $newTrans) {
+            $newChrgTransArray = [
+                'user_id' => $newTrans->user_id,
+                'invoice_disbursed_id' => $newTrans->invoice_disbursed_id,
+                'amount' => $newTrans->amount,
+                'gst' => $newTrans->gst,
+                'trans_mode' => 2,
+                'parent_trans_id' => $newTrans->trans_id,
+                'link_trans_id' => $newTrans->trans_id,
+                'trans_date' => \Helpers::getSysStartDate(),
+                'trans_type' => config('lms.TRANS_TYPE.CANCEL'),
+                'entry_type' => 1,
+            ];
+
+            $newChrgTrans = self::saveTransaction($newChrgTransArray);
+            $transIds[] = $newChrgTrans->trans_id;
+        }
+
+        return $transIds;
+    }
+
+    public function getCapsaveInvoiceNoAttribute()
+    {
+        $invNo = '';
+
+        if ($this->userInvTrans) {
+            $userInvoice = $this->userInvTrans->getUserInvoice;
+            if($userInvoice->invoice_cat == 3){
+                $invNo = $this->userInvLinkTrans->getUserInvoice->invoice_no;
+            }else{
+                $invNo = $userInvoice->invoice_no;
+            }
+        } elseif($this->userInvParentTrans) {
+            $invNo = $this->userInvParentTrans->getUserInvoice->invoice_no;
+        }
+
+        return $invNo;
     }
 }

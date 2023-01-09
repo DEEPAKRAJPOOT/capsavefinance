@@ -15,6 +15,7 @@
             </div>
             {!! Form::open( array( 'method' => 'post', 'route' => 'lms_refund_request_create', 'id' => 'frmRequestRefund') ) !!}        
             {!! Form::hidden('paymentId', $paymentId) !!}
+            {!! Form::hidden('apportionmentId', $apportionmentId) !!}
             {!! Form::hidden('total_refund_amount', $refundableAmount) !!}
             <div class="row">
                 <div class="form-group col-md-12 text-right">
