@@ -55,7 +55,14 @@
         $('#close_btn').click(function() {
             //alert('targetModel ' + targetModel);
             parent.$('#'+targetModel).modal('hide');
-        });        
+        });  
+        
+        $('#add_charge').click(function() {
+            $('#add_charge').hide();
+        });
+        
+        
+       
             
     })
     

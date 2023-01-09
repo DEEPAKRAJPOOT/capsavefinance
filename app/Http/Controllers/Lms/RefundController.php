@@ -68,8 +68,10 @@ class RefundController extends Controller
     }
 
     public function createRefundRequest(Request $request){
+        \DB::beginTransaction();
         try{
             if ($request->get('eod_process')) {
+                \DB::rollback();
                 Session::flash('error', trans('backend_messages.lms_eod_batch_process_msg'));
                 return back();
             }
@@ -80,8 +82,13 @@ class RefundController extends Controller
                 'paymentId.required' => 'Payment ID must be integre'
             ]);
             $paymentId = $request->get('paymentId');
+            $refundData = RefundHelper::getRefundRqBypaymentIds($paymentId)->get();
+            if(count($refundData) > 0) {
+                \DB::rollback();
+                Session::flash('error', "Unable to process transaction, This has been already processed.");
+                return back(); 
+            }
             $data = RefundHelper::createRefundRequest($paymentId);
-
 
             $whereActivi['activity_code'] = 'lms_refund_request_create';
             $activity = $this->master->getActivity($whereActivi);
@@ -91,10 +98,11 @@ class RefundController extends Controller
                 $arrActivity['app_id'] = null;
                 $this->activityLogByTrait($activity_type_id, $activity_desc, response()->json(['data'=>$data, 'request'=>$request->all()]), $arrActivity);
             }               
-            
+            \DB::commit();
             Session::flash('is_accept', 1);
             return view('lms.refund.viewRefundRequest', $data);
         }catch(Exception $exception){
+            \DB::rollback();
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex))->withInput();
         }
     }

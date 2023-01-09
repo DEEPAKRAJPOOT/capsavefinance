@@ -182,4 +182,11 @@ class RefundHelper{
         return $updatedRecord;
     }
 
+    public static function getRefundRqBypaymentIds(int $paymentId){
+        $refundReq = RefundReq::where('payment_id','=',$paymentId);
+        return $refundReq;
+    }
+
+    
+
 }

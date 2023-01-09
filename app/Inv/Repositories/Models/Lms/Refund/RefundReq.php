@@ -120,5 +120,12 @@ class RefundReq extends BaseModel {
             ->get();
     }
 
+
+    public static function getRefundRqBypaymentIds($payment_id) {
+        return self::select('payment_id')
+            ->where('payment_id', $payment_id)
+            ->get();
+    }
+
 }
 
