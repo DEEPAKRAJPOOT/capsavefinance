@@ -6,6 +6,7 @@ use Illuminate\Console\Command;
 use App\Inv\Repositories\Models\Lms\Disbursal;
 use App\Inv\Repositories\Models\Payment;
 use Carbon\Carbon;
+use App\Helpers\Helper;
 use DB;
 
 class DisbPayChecks extends Command
@@ -69,25 +70,30 @@ class DisbPayChecks extends Command
         ini_set('max_execution_time', 10000);
 
         try {
-            //dd($reportType);
             $dupPayments=false;
             $dupDisbursals=false;
             $actualDisbursals=false;
+            $actualPayment=false;
             if($reportType == '1'){
                 $dupPayments = $this->checkDuplicatePaymentRecords();
             }else if($reportType == '2'){
                 $dupDisbursals = $this->checkDuplicateDisbursalRecords();
             }else if($reportType == '3'){
                 $actualDisbursals = $this->checkActualDisbursalAmount();
+            }else if($reportType == '4'){
+                $actualPayment = $this->checkActualPaymentStatus();
             }else{
                 $dupPayments = $this->checkDuplicatePaymentRecords();
                 $dupDisbursals = $this->checkDuplicateDisbursalRecords();
                 $actualDisbursals = $this->checkActualDisbursalAmount();
+                $actualPayment = $this->checkActualPaymentStatus();   
             }
-            if ($dupPayments || $dupDisbursals || $actualDisbursals) {
+            
+            if ($dupPayments || $dupDisbursals || $actualDisbursals || $actualPayment) {
                 $emailData['disbursals'] = $dupDisbursals?$dupDisbursals: [];
                 $emailData['payments']   = $dupPayments ? $dupPayments : [];
                 $emailData['actualDisbursals'] = $actualDisbursals ? $actualDisbursals : [];
+                $emailData['actualPayment'] = $actualPayment ? $actualPayment : [];
                 \Event::dispatch("NOTIFY_DISB_PAY_CHECKS", serialize($emailData));
             }
         } catch (\Exception $ex) {
@@ -126,7 +132,6 @@ class DisbPayChecks extends Command
     }
 
     private function checkActualDisbursalAmount(){
-
         $prevDate = Carbon::parse($this->eodDate)->subDays(1)->format('Y-m-d');
         $actualDisbursals =  DB::select("SELECT 
                                         a.customer_id,
@@ -149,7 +154,6 @@ class DisbPayChecks extends Command
                                         WHERE a.created_at >= '".$prevDate." 18:30:00' AND a.created_at <= '".$this->eodDate." 18:29:00'
                                         GROUP BY a.customer_id;");
        $actualDisbursals = json_decode(json_encode ( $actualDisbursals ) , true);
-
        $totalDisbData=[];
        foreach($actualDisbursals as $key=>$value){
            $explodebatch = explode(",",$value['batch_amount']);
@@ -161,8 +165,42 @@ class DisbPayChecks extends Command
            $value['batch_disburse_amount'] = number_format((float)$batchAmount, 2, '.', '');
            $totalDisbData[] = $value;
        }
-
        return $totalDisbData;
+    }
+
+    public function checkActualPaymentStatus(){
+        $prevDate = Carbon::parse('2022-09-07')->subDays(1)->format('Y-m-d');
+        $actualPayment =  DB::select("SELECT a.user_id , b.payment_id,b.action_type,b.trans_type,
+         b.date_of_payment,SUM(ROUND(a.amount,2)) as transaction_amount,
+                                        GROUP_CONCAT(DISTINCT CONCAT(b.payment_id,'|',b.amount,'|',b.is_settled)) as payment_amount, 
+                                        SUM(ROUND(c.amount,2)) as tally_amount,
+                                        CASE WHEN SUM(ROUND(a.amount,2)) = SUM(ROUND(c.amount,2)) THEN 'Pass' ELSE 'Fail' END AS Result
+                                        FROM rta_transactions AS a 
+                                        JOIN rta_payments AS b ON a.payment_id = b.payment_id
+                                        JOIN rta_tally_entry AS c ON c.transactions_id = a.trans_id
+                                        WHERE  a.created_at >= '".$prevDate." 18:30:00' AND a.created_at <= '".$this->eodDate." 18:29:00'
+                                        AND a.trans_type NOT IN (2,8,32) AND a.entry_type = 1
+                                        GROUP BY a.user_id;");
+       $actualPayment = json_decode(json_encode($actualPayment),true); 
+       $totalPaymentData=[];
+       foreach($actualPayment as $key=>$value){
+           $explodePayment = explode(",",$value['payment_amount']);
+           $PaymentAmount=0.0;$is_settle=[];
+           for($i=0;$i<count($explodePayment);$i++){
+            $explodePaymentsign = explode("|",$explodePayment[$i]);
+            $PaymentAmount += number_format((float)$explodePaymentsign[1], 2, '.', '');
+            $is_settle[] =  $explodePaymentsign[2];
+           }
+           $value['trans_type'] = array_search($value['trans_type'],config('lms.TRANS_TYPE'),true);
+           $value['payment_amount'] = number_format((float)$PaymentAmount, 2, '.', '');
+           $value['user_id'] = Helper::formatIdWithPrefix($value['user_id'], 'CUSTID');
+           if(in_array(0,$is_settle) || ($value['payment_amount'] != $value['transaction_amount'])){
+              $value['Result'] = 'Fail';
+           }
+           
+           $totalPaymentData[] = $value;
+       }                    
+       return $totalPaymentData;                              
     }
 
 }
