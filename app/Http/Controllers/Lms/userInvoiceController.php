@@ -819,8 +819,8 @@ class userInvoiceController extends Controller
                 }
             }
 
-            $lastInvData = $this->UserInvRepo->getLastInvoiceSerialNo($invoice_type);
-            $invSerialNo = sprintf('%04d', (($lastInvData->inv_serial_no ?? 0) + 1) ?? rand(0, 9999));
+            $invSerialNo = null;
+            $newInvoiceNo = $origin_of_recipient['state_code'] . '/' . $origin_of_recipient['financial_year'] . '/' . $invCat;
             $InvoiceNoArr = explode('/',$requestedData['invoice_no']);
             $InvoiceNoArr[3] = $invSerialNo;
             $newInvoiceNo = implode('/',$InvoiceNoArr);
@@ -994,10 +994,8 @@ class userInvoiceController extends Controller
                 $invoiceType = "C";
             }
 
-            $lastInvData = $this->UserInvRepo->getLastInvoiceSerialNo($invoiceType);
-            $invSerialNo = sprintf('%04d', (($lastInvData->inv_serial_no ?? 0) + 1) ?? rand(0, 9999));
-
-            $newInvoiceNo = $origin_of_recipient['state_code'] . '/' . $origin_of_recipient['financial_year'] . '/' . $invCat . '/' . $invSerialNo;
+            $invSerialNo = null;
+            $newInvoiceNo = $origin_of_recipient['state_code'] . '/' . $origin_of_recipient['financial_year'] . '/' . $invCat;
 
             $intrest_charges = $inv_data[0];
             $total_sum_of_rental = $inv_data[1];
@@ -1179,9 +1177,7 @@ class userInvoiceController extends Controller
                 $invoiceType = "C";
             }
 
-            // $lastInvData = $this->UserInvRepo->getLastInvoiceSerialNo($invoiceType,'CN');
             $invSerialNo = null;
-
             $newInvoiceNo = $origin_of_recipient['state_code'] . '/' . $origin_of_recipient['financial_year'] . '/' . $invCat;
 
             $intrest_charges = $inv_data[0];
@@ -1362,10 +1358,8 @@ class userInvoiceController extends Controller
                 $invoiceType = "C";
             }
 
-            $lastInvData = $this->UserInvRepo->getLastInvoiceSerialNo($invoiceType,'DN');
-            $invSerialNo = sprintf('%04d', (($lastInvData->inv_serial_no ?? 0) + 1) ?? rand(0, 9999));
-
-            $newInvoiceNo = $origin_of_recipient['state_code'] . '/' . $origin_of_recipient['financial_year'] . '/' . $invCat . '/' . $invSerialNo;
+            $invSerialNo = null;
+            $newInvoiceNo = $origin_of_recipient['state_code'] . '/' . $origin_of_recipient['financial_year'] . '/' . $invCat;
 
             $intrest_charges = $inv_data[0];
             $total_sum_of_rental = $inv_data[1];
