@@ -38,7 +38,6 @@ class RefundController extends Controller
     protected $userRepo;
 	protected $lmsRepo;
     protected $docRepo;
-    protected $sod_date;
 
 	public function __construct(InvAppRepoInterface $app_repo, InvUserRepoInterface $user_repo, InvLmsRepoInterface $lms_repo, InvDocumentRepoInterface $docRepo, MasterInterface $master, Helpers $sod_date){
 		$this->appRepo = $app_repo;
@@ -48,7 +47,6 @@ class RefundController extends Controller
         $this->master = $master;
 		$this->middleware('checkBackendLeadAccess');
         $this->middleware('checkEodProcess');
-        $this->sod_date = $sod_date->getSysStartDate();
     }
       
     public function paymentAdvise(Request $request){
@@ -716,13 +714,11 @@ class RefundController extends Controller
             $payment_id = $request->get('payment_id');
             $refund_req_batch_id = $request->get('refund_req_batch_id');
             $refund_req_id = $request->get('refund_req_id');
-            $process_status = $request->get('process_status');
             return view('lms.refund.update_refund_disbursal')
                 ->with([
                     'payment_id' => $payment_id, 
                     'refund_req_batch_id' => $refund_req_batch_id,
-                    'refund_req_id' => $refund_req_id,
-                    'process_status' => $process_status
+                    'refund_req_id' => $refund_req_id
                 ]);
         }catch(Exception $exception){
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex))->withInput();
