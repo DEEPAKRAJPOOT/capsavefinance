@@ -184,7 +184,8 @@ class RoleUser extends BaseModel
          $query = self::select('users.*')
                  ->join('users', 'role_user.user_id', '=', 'users.user_id')
                  ->where('role_user.role_id',$role_id)
-                 ->where('users.is_active', 1);
+                 ->where('users.is_active', 1)
+                 ->orderBy('f_name','ASC');
          if (count($usersNotIn) > 0) {
              $query->whereNotIn('users.user_id', $usersNotIn);
          }
