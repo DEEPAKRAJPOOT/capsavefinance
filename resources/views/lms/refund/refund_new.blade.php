@@ -68,7 +68,6 @@
         </div>
     </div>
 </div>
-<input type="hidden" value="" name="transaction_ids" id="transaction_ids">
 {!!Helpers::makeIframePopup('lms_view_process_refund','View Refund Request', 'modal-lg')!!}
 @endsection
 @section('jscript')

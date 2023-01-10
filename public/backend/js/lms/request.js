@@ -172,7 +172,7 @@ $(document).on('click','#refundQueueBtn', function(){
 $(document).on('click','#sentToBankBtn', function(){
     var countCheckedCheckboxes = $(".refund-request").filter(':checked').length;
     if(countCheckedCheckboxes <= 0){
-        replaceAlert('Please select at least one record!');
+        replaceAlert('Please select at least one record!1');
         return false;
     }else{
         $(this).addClass('btn-disabled');
@@ -185,7 +185,7 @@ $(document).on('click','#sentToBankBtn', function(){
 }) 
 
     $(document).on('click', '.disburseClickBtn', function(){
-        var invoiceIds = $('#transaction_ids').val().trim();
+        var invoiceIds = selectedTransactionIds;
         if (invoiceIds.length == 0) {
             alert('Please select at least one record!');
             return false;
@@ -200,7 +200,7 @@ $(document).on('click','#sentToBankBtn', function(){
         $('#openDisburseInvoice').trigger('click');
     });
 
-    $(document).on('click', '.refund-request', function(){
+   /* $(document).on('click', '.refund-request', function(){
         let current_id = $(this).val();
         if($(this).is(':checked')){
             let parent_inv_ids = $('#transaction_ids').val().trim();
@@ -226,7 +226,7 @@ $(document).on('click','#sentToBankBtn', function(){
             $('#transaction_ids').val(allInvIds.join());
         }
     });
-    $(document).on('click', '#chkAll', function () {
+    $(document).on('click', '#chkAll_1', function () {
         var isChecked = $("#chkAll").is(':checked');
         if (isChecked)
         {
@@ -255,4 +255,48 @@ $(document).on('click','#sentToBankBtn', function(){
             $('#transaction_ids').val(allInvIds.join());
             $('input:checkbox').removeAttr('checked');
         }
-    });
+    });*/
+
+
+     //////////////// for checked & unchecked////////////////
+   /*  $(document).on('click', '#chkAll', function () {
+        var isChecked = $("#chkAll").is(':checked');
+        if (isChecked)
+        {
+            $('input:checkbox').attr('checked', 'checked');
+        } else
+        {
+            $('input:checkbox').removeAttr('checked');
+        }
+    });*/
+
+ 
+var selectedTransactionIds = [];
+
+$(document).on('click', '.refund-request', function(){
+    let current_id = $(this).val();
+    if($(this).is(':checked')){
+        selectedTransactionIds.push(current_id);
+    }else{
+        selectedTransactionIds = selectedTransactionIds.filter(e => e !== current_id);
+    }
+    console.log(selectedTransactionIds);
+});
+
+$(document).on('click', '#chkAll', function () {
+    var isChecked = $("#chkAll").is(':checked');
+    $("input:checkbox[class=refund-request]").prop('checked', isChecked);
+    if (isChecked)
+    {
+        $("input:checkbox[class=refund-request]:checked").each(function(){
+            let current_id = $(this).val();
+            selectedTransactionIds.push(current_id);
+        });
+    } else {
+        $("input:checkbox[class=refund-request]:checked").each(function(){
+            let current_id = $(this).val();
+            selectedTransactionIds = selectedTransactionIds.filter(e => e !== current_id);
+        });
+    }
+    console.log(selectedTransactionIds);
+});

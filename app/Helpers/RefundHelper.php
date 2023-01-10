@@ -182,14 +182,12 @@ class RefundHelper{
     }
 
     public static function getRefundRqBypaymentIds(int $paymentId){
-        $refundReq = RefundReq::where('payment_id','=',$paymentId);
-        return $refundReq;
+        return  RefundReq::where('payment_id','=',$paymentId);
     }
 
-    public static function getRefundRqByIds(int $refundReqId){
-        $refundReq = RefundReq::where('refund_req_id','=',$refundReqId)
-                    ->first();
-        return $refundReq;
+    public static function getRefundRqByIds($refundReqIds,$status){
+        return RefundReq::whereIn('refund_req_id',$refundReqIds)
+        ->where('status',$status);
     }
 
     

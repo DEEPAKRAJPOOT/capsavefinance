@@ -39,7 +39,7 @@ class RefundController extends Controller
 	protected $lmsRepo;
     protected $docRepo;
 
-	public function __construct(InvAppRepoInterface $app_repo, InvUserRepoInterface $user_repo, InvLmsRepoInterface $lms_repo, InvDocumentRepoInterface $docRepo, MasterInterface $master, Helpers $sod_date){
+	public function __construct(InvAppRepoInterface $app_repo, InvUserRepoInterface $user_repo, InvLmsRepoInterface $lms_repo, InvDocumentRepoInterface $docRepo, MasterInterface $master){
 		$this->appRepo = $app_repo;
         $this->userRepo = $user_repo;
 		$this->lmsRepo = $lms_repo;
@@ -153,28 +153,22 @@ class RefundController extends Controller
     }
 
     public function updateRequestStatus(Request $request){
+        DB::beginTransaction();
         try{
             if ($request->get('eod_process')) {
+                \DB::rollback();
                 Session::flash('error', trans('backend_messages.lms_eod_batch_process_msg'));
                 return back();
             }
-            DB::beginTransaction();
+            
             $refundRequests = $request->refundRequest;
             $status = $request->status;
             $newStatus  = $request->newStatus;
             $ref_code ='';
-
-            foreach ($refundRequests as $key => $reqId) {
-                $refunddata = RefundHelper::getRefundRqByIds($reqId)->toArray();
-                if(count($refunddata) > 0) {
-                    if($refunddata['status'] == $newStatus) {
-                        $ref_code.= $refunddata['ref_code'].", ";
-                    }
-                }            
-            }
-            if($ref_code!='') {
+            $refunddatas  = RefundHelper::getRefundRqByIds($refundRequests,$status)->count();
+            if(count($refundRequests) > $refunddatas) {
                 \DB::rollback();
-                Session::flash('error', 'Refrence Code  '.$ref_code.' has been already status changed');
+                Session::flash('error', 'Some Refrence Code  has been already status changed');
                 return back();
             }
 
@@ -380,7 +374,7 @@ class RefundController extends Controller
                         $disburseAmount += round($aprvl['refund_amount'], 5);
 
                         $aprvlRfd['bank_account_id'] = ($aprvl['payment']['user']['is_buyer'] == 2) ? $aprvl['payment']['user']['anchor_bank_details']['bank_account_id'] : $aprvl['payment']['lms_user']['bank_details']['bank_account_id'];
-                        $aprvlRfd['refund_date'] = (!empty($disburseDate)) ? date("Y-m-d h:i:s", strtotime(str_replace('/','-',$disburseDate))) : \Carbon\Carbon::parse($this->sod_date)->format('Y-m-d h:i:s');
+                        $aprvlRfd['refund_date'] = (!empty($disburseDate)) ? date("Y-m-d h:i:s", strtotime(str_replace('/','-',$disburseDate))) : \Carbon\Carbon::now()->format('Y-m-d h:i:s');
                         $aprvlRfd['bank_name'] = ($aprvl['payment']['user']['is_buyer'] == 2) ? $aprvl['payment']['user']['anchor_bank_details']['bank']['bank_name'] : $aprvl['payment']['lms_user']['bank_details']['bank']['bank_name'] ;
                         $aprvlRfd['ifsc_code'] = ($aprvl['payment']['user']['is_buyer'] == 2) ? $aprvl['payment']['user']['anchor_bank_details']['ifsc_code'] : $aprvl['payment']['lms_user']['bank_details']['ifsc_code'];
                         $aprvlRfd['acc_no'] = ($aprvl['payment']['user']['is_buyer'] == 2) ? $aprvl['payment']['user']['anchor_bank_details']['acc_no'] : $aprvl['payment']['lms_user']['bank_details']['acc_no'];           
@@ -499,7 +493,7 @@ class RefundController extends Controller
                     $refId = $aprvl['payment']['lms_user']['virtual_acc_id'];
 
                     $aprvlRfd['bank_account_id'] = ($aprvl['payment']['user']['is_buyer'] == 2) ? $aprvl['payment']['user']['anchor_bank_details']['bank_account_id'] : $aprvl['payment']['lms_user']['bank_details']['bank_account_id'];
-                    $aprvlRfd['refund_date'] = (!empty($disburseDate)) ? date("Y-m-d h:i:s", strtotime(str_replace('/','-',$disburseDate))) : \Carbon\Carbon::parse($this->sod_date)->format('Y-m-d h:i:s');
+                    $aprvlRfd['refund_date'] = (!empty($disburseDate)) ? date("Y-m-d h:i:s", strtotime(str_replace('/','-',$disburseDate))) : \Carbon\Carbon::now()->format('Y-m-d h:i:s');
                     $aprvlRfd['bank_name'] = ($aprvl['payment']['user']['is_buyer'] == 2) ? $aprvl['payment']['user']['anchor_bank_details']['bank']['bank_name'] : $aprvl['payment']['lms_user']['bank_details']['bank']['bank_name'] ;
                     $aprvlRfd['ifsc_code'] = ($aprvl['payment']['user']['is_buyer'] == 2) ? $aprvl['payment']['user']['anchor_bank_details']['ifsc_code'] : $aprvl['payment']['lms_user']['bank_details']['ifsc_code'];
                     $aprvlRfd['acc_no'] = ($aprvl['payment']['user']['is_buyer'] == 2) ? $aprvl['payment']['user']['anchor_bank_details']['acc_no'] : $aprvl['payment']['lms_user']['bank_details']['acc_no'];           
@@ -516,7 +510,6 @@ class RefundController extends Controller
 
                 }
             }
-            $sod_date =  \Helpers::getSysStartDate();
             $modePay = ($disburseAmount < 200000) ? 'NEFT' : 'RTGS' ;
             $exportData[$userId]['RefNo'] = $refId;
             $exportData[$userId]['Amount'] = $disburseAmount;
@@ -534,7 +527,7 @@ class RefundController extends Controller
             $exportData[$userId]['Mode_of_Pay'] = $modePay;
             $exportData[$userId]['Nature_of_Pay'] = 'MPYMT';
             $exportData[$userId]['Remarks'] = 'refund';
-            $exportData[$userId]['Value_Date'] = date('Y-m-d',strtotime($sod_date));
+            $exportData[$userId]['Value_Date'] = date('Y-m-d');
         }
         $result = $this->export($exportData, $batchNo);
         $file['file_path'] = ($result['file_path']) ?? null;
@@ -575,7 +568,6 @@ class RefundController extends Controller
         $downloadFlag = 1;
         $exportData = [];
         $filename = 'download-excel';
-        $sod_date =  \Helpers::getSysStartDate();
         foreach ($allAprvls as $aprvl) {
             $userid = $aprvl['payment']['user']['user_id'];
             $disburseAmount = round($aprvl['refund_amount'], 5);
@@ -595,7 +587,7 @@ class RefundController extends Controller
             //$exportData[$aprvl['refund_req_id']]['Mode_of_Pay'] = 'BT';
             $exportData[$aprvl['refund_req_id']]['Nature_of_Pay'] = 'MPYMT';
             $exportData[$aprvl['refund_req_id']]['Remarks'] = 'test remarks';
-            $exportData[$aprvl['refund_req_id']]['Value_Date'] = date('Y-m-d',strtotime($sod_date));
+            $exportData[$aprvl['refund_req_id']]['Value_Date'] = date('Y-m-d');
         }
         $result = $this->export($exportData, $filename, $downloadFlag);
 
@@ -742,7 +734,7 @@ class RefundController extends Controller
             $remarks = $request->remarks;
             $refund_req_id = $request->refund_req_id;
             $disburse_date = $request->disburse_date;
-            $actual_refund_date = (!empty($disburse_date)) ? date("Y-m-d", strtotime(str_replace('/','-',$disburse_date))) : \Carbon\Carbon::parse($this->sod_date)->format('Y-m-d h:i:s');
+            $actual_refund_date = (!empty($disburse_date)) ? date("Y-m-d", strtotime(str_replace('/','-',$disburse_date))) : \Carbon\Carbon::now()->format('Y-m-d h:i:s');
 
             $apiLogData = [];
             $apiProcesData = [];
@@ -1073,14 +1065,14 @@ class RefundController extends Controller
             $transId = $reqData['txn_id'];
             // $transId = '2RGIK4436OUMXHZGXH';
             $createdBy = Auth::user()->user_id;
-            $actual_refund_date = \Carbon\Carbon::parse($this->sod_date)->format('Y-m-d');
+            $actual_refund_date = \Carbon\Carbon::now()->format('Y-m-d');
             $transDisbursalIds = [];
             $tranNewIds = [];
 
             if(!empty($reqData)) {
             
                 $http_header = [
-                    'timestamp' => date('Y-m-d H:i:s',strtotime($this->sod_date)),
+                    'timestamp' => date('Y-m-d H:i:s'),
                     'txn_id' => $reqData['txn_id']
                     ];
 
@@ -1101,7 +1093,7 @@ class RefundController extends Controller
                 // dd($result);
                 if ($result['status'] == 'success') {
                     $fileDirPath = getPathByTxnId($transId);
-                    $time = date('y-m-d H:i:s',strtotime($this->sod_date));
+                    $time = date('y-m-d H:i:s');
                     
                     $result['result']['http_header'] = (is_array($result['result']['http_header'])) ? json_encode($result['result']['http_header']): $result['result']['http_header'];
                     $fileContents = PHP_EOL .' Log  '.$time .PHP_EOL. $result['result']['url'].  PHP_EOL
