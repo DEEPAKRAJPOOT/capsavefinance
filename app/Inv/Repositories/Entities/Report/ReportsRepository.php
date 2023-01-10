@@ -786,22 +786,22 @@ class ReportsRepository extends BaseRepositories implements ReportInterface {
 			$interestOutstanding = $invDisb->transactions->where('trans_type','9')->where('entry_type',0)->whereNull('parent_trans_id')->sum('outstanding');
 			$interestOutstanding = $interestOutstanding > 0 ? $interestOutstanding : 0;
 			
-			$overdueOutstanding = $invDisb->transactions->where('trans_type','33')->where('entry_type',0)->whereNull('parent_trans_id')->where('is_transaction','1')->where('soa_flag','1')->sum('outstanding');
+			$overdueOutstanding = $invDisb->transactions->where('trans_type','33')->where('entry_type',0)->whereNull('parent_trans_id')->where('soa_flag','1')->sum('outstanding');
 			$overdueOutstanding = $overdueOutstanding > 0 ? $overdueOutstanding : 0;
 
-			$chargesOutstanding = $invDisb->transactions->where('trans_type','>','50')->where('entry_type',0)->whereNull('parent_trans_id')->where('is_transaction','1')->where('soa_flag','1')->sum('outstanding');
+			$chargesOutstanding = $invDisb->transactions->where('trans_type','>','50')->where('entry_type',0)->whereNull('parent_trans_id')->where('soa_flag','1')->sum('outstanding');
 			
-			$charges = $invDisb->transactions->where('trans_type','>','50')->where('entry_type',0)->whereNull('parent_trans_id')->where('is_transaction','1')->where('soa_flag','1')->sum('amount');
+			$charges = $invDisb->transactions->where('trans_type','>','50')->where('entry_type',0)->whereNull('parent_trans_id')->where('soa_flag','1')->sum('amount');
 							  
 			$totalOutstanding = ($principalOutstanding + $interestOutstanding + $overdueOutstanding + $chargesOutstanding);
 	
-			$interestIds = $invDisb->transactions->where('trans_type','9')->where('entry_type',0)->whereNull('parent_trans_id')->where('is_transaction','1')->where('soa_flag','1')->pluck('trans_id')->toArray();
+			$interestIds = $invDisb->transactions->where('trans_type','9')->where('entry_type',0)->whereNull('parent_trans_id')->where('soa_flag','1')->pluck('trans_id')->toArray();
 			$interest_to_refunded = $invDisb->transactions->where('trans_type','32')->where('entry_type',1)->whereIn('parent_trans_id',$interestIds)->sum('amount');
 			$interest_to_refundedIds = $invDisb->transactions->where('trans_type','32')->where('entry_type',1)->whereIn('parent_trans_id',$interestIds)->pluck('trans_id')->toArray();
 			$intAdjRef = $invDisb->transactions->where('entry_type',0)->whereIn('link_trans_id',$interest_to_refundedIds)->sum('amount');
 			$interest_to_refunded = ($interest_to_refunded - $intAdjRef) > 0 ? ($interest_to_refunded - $intAdjRef) : 0;
 
-			$overdueIds = $invDisb->transactions->where('trans_type','33')->where('entry_type',0)->whereNull('parent_trans_id')->where('is_transaction','1')->where('soa_flag','1')->pluck('trans_id')->toArray();
+			$overdueIds = $invDisb->transactions->where('trans_type','33')->where('entry_type',0)->whereNull('parent_trans_id')->where('soa_flag','1')->pluck('trans_id')->toArray();
 			$overdueinterest_to_refunded = $invDisb->transactions->where('trans_type','32')->where('entry_type',1)->whereIn('parent_trans_id',$overdueIds)->sum('amount');
 			$overdueinterest_to_refundedIds = $invDisb->transactions->where('trans_type','32')->where('entry_type',1)->whereIn('parent_trans_id',$overdueIds)->pluck('trans_id')->toArray();
 			$odAdjRef = $invDisb->transactions->where('entry_type',0)->whereIn('link_trans_id',$overdueinterest_to_refundedIds)->sum('amount');
@@ -1185,12 +1185,12 @@ class ReportsRepository extends BaseRepositories implements ReportInterface {
 
 	public function getReconReportData($userId){
         $resultValue = [];
-		$soaBalance = DB::select('SELECT customer_id, soa_outstanding as SOA_Outstanding FROM (SELECT user_id, customer_id FROM rta_lms_users GROUP BY user_id ) AS a LEFT JOIN(SELECT b.user_id, (SUM(b.debit_amount) - SUM(b.credit_amount)) AS soa_outstanding FROM rta_customer_transaction_soa AS b LEFT JOIN rta_transactions AS c ON c.trans_id = b.trans_id WHERE c.soa_flag = \'1\' AND c.is_transaction = \'1\' GROUP BY c.user_id) AS d ON a.user_id = d.user_id'); 
+		$soaBalance = DB::select('SELECT customer_id, soa_outstanding as SOA_Outstanding FROM (SELECT user_id, customer_id FROM rta_lms_users GROUP BY user_id ) AS a LEFT JOIN(SELECT b.user_id, (SUM(b.debit_amount) - SUM(b.credit_amount)) AS soa_outstanding FROM rta_customer_transaction_soa AS b LEFT JOIN rta_transactions AS c ON c.trans_id = b.trans_id WHERE c.soa_flag = \'1\' GROUP BY c.user_id) AS d ON a.user_id = d.user_id'); 
 		foreach($soaBalance as $key => $soaBal) {
 			$resultValue[$soaBal->customer_id]['SOA_Outstanding'] = number_format($soaBal->SOA_Outstanding,2);
 		}
 		
-		$chargeOutstanding = DB::select('SELECT (select  customer_id from rta_lms_users as b where b.user_id = a.user_id limit 1) AS customer_id, sum(a.outstanding) AS Outstanding_Amount FROM rta_transactions AS a JOIN rta_customer_transaction_soa AS c ON c.trans_id = a.trans_id WHERE a.trans_type >= \'50\' AND a.entry_type = \'0\' AND a.`is_transaction` = \'1\' AND a.`soa_flag` = \'1\' group by customer_id');
+		$chargeOutstanding = DB::select('SELECT (select  customer_id from rta_lms_users as b where b.user_id = a.user_id limit 1) AS customer_id, sum(a.outstanding) AS Outstanding_Amount FROM rta_transactions AS a JOIN rta_customer_transaction_soa AS c ON c.trans_id = a.trans_id WHERE a.trans_type >= \'50\' AND a.entry_type = \'0\' AND a.`soa_flag` = \'1\' group by customer_id');
 		foreach($chargeOutstanding as $key => $chrgOut) {
 			$resultValue[$chrgOut->customer_id]['Outstanding_Amount'] = isset($chrgOut->Outstanding_Amount) ? number_format($chrgOut->Outstanding_Amount,2) : 0;
 		}
