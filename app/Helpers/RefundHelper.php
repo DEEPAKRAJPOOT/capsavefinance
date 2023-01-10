@@ -189,7 +189,4 @@ class RefundHelper{
         return RefundReq::whereIn('refund_req_id',$refundReqIds)
         ->where('status',$status);
     }
-
-    
-
 }

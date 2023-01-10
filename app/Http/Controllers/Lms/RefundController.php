@@ -718,18 +718,28 @@ class RefundController extends Controller
     }
     
     public function updateDisburseRefund(Request $request) {
+        DB::beginTransaction();
         try{
             if ($request->get('eod_process')) {
+                DB::rollback();
                 Session::flash('error', trans('backend_messages.lms_eod_batch_process_msg'));
                 return back();
             }
+
+            $validator = Validator::make($request->all(), [
+                'trans_no' => 'unique:lms_refund_req,tran_no',
+            ]);
+            if ($validator->fails()) {
+                DB::rollback();
+                return redirect()->route('lms_refund_sentbank')->withErrors('Transaction number already exist.');
+            }
+
             $allrecords[] =  $request->refund_req_id;
             $data = $this->lmsRepo->lmsGetCustomerRefund($allrecords);
             if(in_array($data[0]['process_status'], [RefundReq::REDUND_PROCESSED,RefundReq::REDUND_COMPLETED])) {
-                Session::flash('error', 'Unable to process transaction as this transaction has been already processed.');
-                return back(); 
+                DB::rollback();
+                return redirect()->route('lms_refund_sentbank')->withErrors('Unable to process transaction as this transaction has been already processed.');
             }
-            DB::beginTransaction();
             $transNo = $request->trans_no;
             $remarks = $request->remarks;
             $refund_req_id = $request->refund_req_id;
