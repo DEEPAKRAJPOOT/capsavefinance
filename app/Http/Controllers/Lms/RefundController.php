@@ -90,8 +90,8 @@ class RefundController extends Controller
                 'apportionmentId.required' => 'Apportionment ID must be integre'
             ]);
             $paymentId = $request->get('paymentId');
-            $refundData = RefundHelper::getRefundRqBypaymentIds($paymentId)->get();
-            if(count($refundData) > 0) {
+            $refundData = RefundHelper::getRefundRqBypaymentIds($paymentId)->count();
+            if($refundData > 0) {
                 \DB::rollback();
                 Session::flash('error', "Unable to process transaction, This has been already processed.");
                 return back(); 
