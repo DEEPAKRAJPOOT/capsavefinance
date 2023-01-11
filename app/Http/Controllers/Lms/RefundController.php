@@ -107,6 +107,7 @@ class RefundController extends Controller
             }               
             \DB::commit();
             Session::flash('is_accept', 1);
+            Session::flash('msg', trans('Refund created successfully.'));
             return view('lms.refund.viewRefundRequest', $data);
         }catch(Exception $exception){
             \DB::rollback();
