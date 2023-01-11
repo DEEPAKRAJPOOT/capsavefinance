@@ -168,7 +168,7 @@ class RefundController extends Controller
             $refunddatas  = RefundHelper::getRefundRqByIds($refundRequests,$status)->count();
             if(count($refundRequests) > $refunddatas) {
                 \DB::rollback();
-                Session::flash('error', 'Some Refrence Code  has been already status changed');
+                Session::flash('error', 'We are unable to process the selected transaction as some transaction has been already processed.');
                 return back();
             }
 
