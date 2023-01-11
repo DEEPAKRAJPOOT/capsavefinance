@@ -47,7 +47,6 @@
 </form>
 @endsection
 @section('jscript')
-
 <script type="text/javascript">
 	$('.datepicker-dis-fdate').datetimepicker({
         useCurrent:true,
