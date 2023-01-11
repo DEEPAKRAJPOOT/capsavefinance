@@ -1988,6 +1988,6 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
 	}
 	public function getDisbursedData($data)
 	{
-		return Disbursal::where($data)->get();
+		return Disbursal::select('updated_by','is_disbursed')->where($data);
 	}
 }

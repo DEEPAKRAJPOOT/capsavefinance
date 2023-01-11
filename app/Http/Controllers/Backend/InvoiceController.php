@@ -356,8 +356,15 @@ class InvoiceController extends Controller {
             $remarks = $request->remarks;
             $createdBy = Auth::user()->user_id;
 
-            $disbursalData = $this->lmsRepo->getDisbursedData(['user_id' => $userId, 'disbursal_batch_id' => $disbursalBatchId])->first();
+            $validator = Validator::make($request->all(), [
+                'trans_no' => 'unique:disbursal,tran_no',
+            ]);
+            if ($validator->fails()) {
+                Session::flash('error', 'Transaction number already exist');
+                return back();
+            }
 
+            $disbursalData = $this->lmsRepo->getDisbursedData(['user_id' => $userId, 'disbursal_batch_id' => $disbursalBatchId])->first();
             if (!$this->verifyDisbursalitiator($disbursalData,$disburseConfirmation = true)) {
                 DB::rollback();
                 return redirect()->route('backend_get_sent_to_bank')->withErrors('Someone is already trying to processed transactions');
@@ -624,7 +631,7 @@ class InvoiceController extends Controller {
         $userMailArr['anchor_email'] = isset($value['user']['anchor']) && isset($value['user']['anchor']['comp_email']) ? $value['user']['anchor']['comp_email'] : null;
         $userMailArr['sales_email'] = isset($value['user']['anchor']) && isset($value['user']['anchor']['sales_user']) ? $value['user']['anchor']['sales_user']['email'] : null;
         $userMailArr['auth_email'] = \Auth::user() ? \Auth::user()->email : null; 
-        //Event::dispatch("LMS_USER_DISBURSAL", serialize($userMailArr));
+        Event::dispatch("LMS_USER_DISBURSAL", serialize($userMailArr));
 
         // $userMailArr['receiver_user_name'] = $name = $value['user']['anchor']['comp_name'];
         // $userMailArr['amount'] = $value['disburse_amount'];
@@ -1046,9 +1053,6 @@ class InvoiceController extends Controller {
                 $idfcObj= new Idfc_lib();
                 $getResponse = false;
                 $result = $idfcObj->api_call(Idfc_lib::MULTI_PAYMENT, $params, $getResponse);
-                if ($getResponse) {
-                    dd($result);
-                }
                 if (isset($result['code'])) {
                     if (isset($result['http_code']) && $result['http_code'] == 200) {
                         
