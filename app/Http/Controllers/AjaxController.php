@@ -4147,6 +4147,7 @@ if ($err) {
    {
        \DB::beginTransaction();
        try {
+       // $request['invoice_id']
        $result = InvoiceTrait::checkInvoiceLimitExced($request); 
        foreach($request['invoice_id'] as $row)
        {  
