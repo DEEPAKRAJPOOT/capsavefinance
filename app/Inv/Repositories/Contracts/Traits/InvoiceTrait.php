@@ -1343,4 +1343,10 @@ trait InvoiceTrait
            
            
     }
+
+    public static function getInvoiceStatusByIds($invoiceIds,$status){
+      return BizInvoice::whereIn('invoice_id',$invoiceIds)
+      ->where('status_id',$status);
+  }
+
 }

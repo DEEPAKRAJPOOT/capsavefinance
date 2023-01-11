@@ -448,7 +448,7 @@ function uploadFile(app_id,id)
         if (confirm('Are you sure, You want to approve it.'))
         {     $(".isloader").show(); 
             var status = $(this).attr('data-status');
-            var postData = ({'invoice_id': arr, 'status': status, '_token': messages.token});
+            var postData = ({'invoice_id': arr, 'status': status, 'currentstatus': 7, '_token': messages.token});
           jQuery.ajax({
                 url: messages.update_bulk_invoice,
                 method: 'post',
@@ -469,6 +469,12 @@ function uploadFile(app_id,id)
                     {
                     //    localStorage.setItem('storageMsg', 'Invoice successfully moved');
                         localStorage.setItem('storageMsg', JSON.stringify({text: 'Invoice successfully moved', type: 'success'}));
+                       location.reload();
+                    }
+
+                    if(data.status==0)
+                    {
+                        localStorage.setItem('storageMsg', JSON.stringify({text: data.msg, type: 'error'}));
                        location.reload();
                     }
                     else
@@ -504,7 +510,7 @@ function uploadFile(app_id,id)
         if (confirm('Are you sure? You want to disbursement queue.'))
         {    $(".isloader").show(); 
             var status = $(this).attr('data-status');
-            var postData = ({'invoice_id': arr, 'status': status, '_token': messages.token});
+            var postData = ({'invoice_id': arr, 'status': status, 'currentstatus': 8, '_token': messages.token});
             jQuery.ajax({
                 url: messages.update_disburse_bulk_invoice,
                 method: 'post',
@@ -521,6 +527,11 @@ function uploadFile(app_id,id)
                         var alertmsg = '<div class="content-wrapper-msg"><div class=" alert-danger alert" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>' + data.message + '</div></div>';
                         parent.$("#iframeMessage").html(alertmsg);
                         return false;
+                    }
+                    if(data.status==0)
+                    {
+                        localStorage.setItem('storageMsg', JSON.stringify({text: data.msg, type: 'error'}));
+                       location.reload();
                     }
                     if(data.msg=="")
                     {
@@ -1112,7 +1123,7 @@ function uploadFile(app_id,id)
         if (confirm('Are you sure, You want to reject the selected invoices?'))
         {     $(".isloader").show(); 
             var status = $(this).attr('data-status');
-            var postData = ({'invoice_id': arr, 'status': status, '_token': messages.token});
+            var postData = ({'invoice_id': arr, 'status': status, 'currentstatus': 7, '_token': messages.token});
           jQuery.ajax({
                 url: messages.update_bulk_invoice,
                 method: 'post',
@@ -1169,7 +1180,7 @@ function uploadFile(app_id,id)
         if (confirm('Are you sure, You want to reject the selected invoices?'))
         {     $(".isloader").show(); 
             var status = $(this).attr('data-status');
-            var postData = ({'invoice_id': arr, 'status': status, '_token': messages.token});
+            var postData = ({'invoice_id': arr, 'status': status, 'currentstatus': 28, '_token': messages.token});
             jQuery.ajax({
                 url: messages.update_bulk_invoice,
                 method: 'post',
