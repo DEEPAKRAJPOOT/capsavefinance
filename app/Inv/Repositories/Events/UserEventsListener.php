@@ -1777,7 +1777,7 @@ class UserEventsListener extends BaseEvent
         if ($email_content) {
             Mail::send('email', ['baseUrl'=> env('HTTP_APPURL',''), 'varContent' => $eodCheckData],
                 function ($message) use ($data, $email_content, $eodCheckData) {                 
-                    $email = env('EOD_CHECK_MAIL_TO','deepak.singh@zuron.in');
+                    $email = env('EOD_CHECK_MAIL_TO');
                     $cc = array_filter(explode(',', $email_content->cc));
                     $bcc = array_filter(explode(',', $email_content->bcc));
                     if (!empty($bcc)) {
