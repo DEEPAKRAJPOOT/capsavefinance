@@ -346,6 +346,13 @@
     });   
     });
 
+    $("#add_charge").click(function(){
+      if($('form#chargesForm').valid()){
+          $('form#chargesForm').submit();
+          $("#add_charge").attr("disabled","disabled");
+      }  
+  });   
+
 function getpayments(chrgId) {
   if($.inArray(chrgId, messages.charges) >=0){
     $(".unsettledPayment").show();
