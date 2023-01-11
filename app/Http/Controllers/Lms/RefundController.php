@@ -106,8 +106,8 @@ class RefundController extends Controller
                 $this->activityLogByTrait($activity_type_id, $activity_desc, response()->json(['data'=>$data, 'request'=>$request->all()]), $arrActivity);
             }               
             \DB::commit();
-            Session::flash('is_accept', 1);
             Session::flash('msg', trans('Refund created successfully.'));
+            Session::flash('is_accept', 1);
             return view('lms.refund.viewRefundRequest', $data);
         }catch(Exception $exception){
             \DB::rollback();
