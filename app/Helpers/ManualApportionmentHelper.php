@@ -80,7 +80,7 @@ class ManualApportionmentHelper{
             if(is_null($trans->trans_running_id) && $payFreq == 1 /*&& strtotime($curdate) < strtotime($paymentDueDate)  && $interest_borne_by == '2'*/ && $principalTrans->outstanding > 0 ){
                 if(strtotime($curdate) < strtotime($paymentDueDate)){
                     $actualAmount = $amount;
-                    $refundFlag = false;
+                    //$refundFlag = false;
                 }
             }
             
@@ -228,11 +228,11 @@ class ManualApportionmentHelper{
                     $toBeRefundIds = $refundTransactions->where('entry_type','=',1)->where('link_trans_id',$paidTrans->trans_id)->pluck('trans_id')->toArray();
                     $refundedAmt = $refundTransactions->where('entry_type','=',0)->whereIn('link_trans_id',$toBeRefundIds)->sum('amount');
 
-                    $refundAmt = $toBeRefundAmt + $refundedAmt;
+                    $refundAmt = round($toBeRefundAmt + $refundedAmt,2);
                     if($refundAmt < abs($actualAmount2)){
-                        $refRevAmt = abs($actualAmount2) < $paidTrans->settled_outstanding ? abs($actualAmount2) : $paidTrans->settled_outstanding;
+                        $refRevAmt = abs($actualAmount2) < $paidTrans->settled_outstanding ? abs(round($actualAmount2 + $refundAmt,2)) : $paidTrans->settled_outstanding;
                         if(in_array($paidTrans->trans_type, [$trans->trans_type,7])){
-                            if($refundFlag){
+                            if($refundFlag && $refRevAmt > 0){
                                 $transactionList[] = [
                                     'payment_id' => NULL,
                                     'link_trans_id' => $paidTrans->trans_id,
@@ -250,21 +250,23 @@ class ManualApportionmentHelper{
                                 $actualAmount2 = round($actualAmount2 + $refRevAmt,2);
                             }
                         }elseif(in_array($paidTrans->trans_type, [36,37])){
-                            $transactionList[] = [
-                                'payment_id' => NULL,
-                                'link_trans_id' => $paidTrans->trans_id,
-                                'parent_trans_id' => $paidTrans->parent_trans_id ?? $paidTrans->trans_id,
-                                'trans_running_id'=> $paidTrans->trans_running_id,
-                                'invoice_disbursed_id' => $paidTrans->invoice_disbursed_id,
-                                'user_id' => $paidTrans->user_id,
-                                'trans_date' => $currentdate,
-                                'amount' => $refRevAmt,
-                                'entry_type' => 0,
-                                'soa_flag' => $paidTrans->soa_flag,
-                                'trans_type' => config('lms.TRANS_TYPE.REVERSE'),
-                                'apportionment_id' => $apportionmentId ?? null
-                            ];
-                            $actualAmount2 = round($actualAmount2 + $refRevAmt,2);
+                            if($refRevAmt > 0){
+                                $transactionList[] = [
+                                    'payment_id' => NULL,
+                                    'link_trans_id' => $paidTrans->trans_id,
+                                    'parent_trans_id' => $paidTrans->parent_trans_id ?? $paidTrans->trans_id,
+                                    'trans_running_id'=> $paidTrans->trans_running_id,
+                                    'invoice_disbursed_id' => $paidTrans->invoice_disbursed_id,
+                                    'user_id' => $paidTrans->user_id,
+                                    'trans_date' => $currentdate,
+                                    'amount' => $refRevAmt,
+                                    'entry_type' => 0,
+                                    'soa_flag' => $paidTrans->soa_flag,
+                                    'trans_type' => config('lms.TRANS_TYPE.REVERSE'),
+                                    'apportionment_id' => $apportionmentId ?? null
+                                ];
+                                $actualAmount2 = round($actualAmount2 + $refRevAmt,2);
+                            }
                         }
                     }elseif($refundAmt > abs($actualAmount2)){
                         $ndrevamt = round($refundAmt - abs($actualAmount2),2);
@@ -272,9 +274,13 @@ class ManualApportionmentHelper{
                         foreach ($rfTrans as $rtfKey => $rtf) {
                             $refRevAmt =  $ndrevamt < $rtf->settled_outstanding ? $ndrevamt : $rtf->settled_outstanding;
                             if($ndrevamt > $rtf->settled_outstanding){
-                                $refundTransactions{$rtfKey}->settled_outstanding = $rtf->settled_outstanding - $refRevAmt;
+                                $refundTransactions{$rtfKey}->settled_outstanding = round($rtf->settled_outstanding - $refRevAmt,2);
+                                $refundAmt = round($refundAmt - $refRevAmt,2);
+                                $ndrevamt = round($ndrevamt -  $refRevAmt,2);
                                 Log::info("$paidTrans->invoice_disbursed_id  $rtf->amount Overd Refund"); 
                             }else{
+                                $refundAmt = round($refundAmt - $refRevAmt,2);
+                                $ndrevamt = round($ndrevamt -  $refRevAmt,2);
                                 $refundTransactions->forget($rtfKey);
                             }
                             if($refRevAmt > 0){
@@ -295,7 +301,7 @@ class ManualApportionmentHelper{
                             }
                         }
                     }else{
-                        $actualAmount2 = round($actualAmount2 + $refundAmt);
+                        $actualAmount2 = round($actualAmount2 + $refundAmt,2);
                     }
                 }
             }
