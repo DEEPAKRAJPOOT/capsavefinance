@@ -155,7 +155,7 @@ class DisbPayChecks extends Command
                                         SUM(ROUND(a.tally_amount,2)) as tally_amount,
                                         a.batch_disburse_amount as batch_disburse_amount,
                                         CASE WHEN SUM(a.principal_amount) = SUM(a.trans_amount) AND SUM(a.principal_amount) = SUM(ROUND(a.tally_amount,2)) AND SUM(a.principal_amount) =  SUM(ROUND(a.disbursal_amount,2)) THEN 'Pass' ELSE 'Fail' END AS result
-                                        FROM invdisbtrantallycheck2 AS a 
+                                        FROM disbursalhealthcheckindividual AS a 
                                         WHERE a.created_at >= '".$prevDate." 18:30:00' AND a.created_at <= '".$this->eodDate." 18:29:00'
                                         GROUP BY a.customer_id;");
        $actualDisbursals = json_decode(json_encode ( $actualDisbursals ) , true);
