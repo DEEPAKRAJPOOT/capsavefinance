@@ -209,7 +209,7 @@ class DisbPayChecks extends Command
     }
 
     public function checkActualRefund(){
-        $prevDate = Carbon::parse('2022-11-10')->subDays(1)->format('Y-m-d');
+        $prevDate = Carbon::parse($this->eodDate)->subDays(1)->format('Y-m-d');
         $actualtransRefund = DB::select("SELECT SUM(a.amount) as trans_amount , a.user_id as user_id FROM rta_transactions AS a 
         WHERE a.trans_type = '32'
         AND a.entry_type = '0'
