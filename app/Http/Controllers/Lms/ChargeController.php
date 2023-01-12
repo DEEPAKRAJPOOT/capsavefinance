@@ -120,7 +120,6 @@ class ChargeController extends Controller
     public function saveManualCharges(Request $request)
        { 
         try { 
-            dd("ddddddd");
            $getUserState = $this->lmsRepo->getUserAddress($request->app_id);
            $comAddrState = $this->lmsRepo->companyAdress();
            $getAmount =  str_replace(',', '', $request->amount);
