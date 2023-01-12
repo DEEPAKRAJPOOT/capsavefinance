@@ -300,6 +300,7 @@ class ManualApportionmentHelper{
                                 ];
                             }
                         }
+                        $actualAmount2 = 0;
                     }else{
                         $actualAmount2 = round($actualAmount2 + $refundAmt,2);
                     }
