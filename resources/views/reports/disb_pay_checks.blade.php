@@ -176,7 +176,7 @@
                   @endphp
                   @forelse($actualDisbursals as $key => $disbursaldata)
                   @php 
-                      $total_trans_amount += $disbursaldata['tally_amount'];
+                      $total_trans_amount += $disbursaldata['trans_amount'];
                       $total_tally_amount += $disbursaldata['tally_amount'];
                       $total_principal_amount += $disbursaldata['principle_amount'];
                       $total_actual_invoice_disbursed += $disbursaldata['actual_invoice_disbursed'];
