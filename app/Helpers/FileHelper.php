@@ -166,7 +166,7 @@ class FileHelper {
             $objPHPExcel->setActiveSheetIndex($activeSheet);
             $activeSheet++;
             $column = 0;
-            $header_row = $ExtraRow + 1;
+            $header_row = $ExtraRow + 2;
             $start_row = $ExtraRow + 3;
             $row = $start_row;
             $column = 0;

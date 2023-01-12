@@ -58,6 +58,8 @@ var messages = {
         data_not_found: "{{ trans('error_messages.data_not_found') }}",
         token: "{{ csrf_token() }}",
         export_txns_url: "{{route('export_txns')}}",
+        export_fact_payment_txns_url: "{{route('export_fact_payment_txns')}}",
+        export_fact_journal_txns_url: "{{route('export_fact_journal_txns')}}",
     };
 </script>
 <script src="{{ asset('backend/js/ajax-js/tally_batch.js') }}"></script>
