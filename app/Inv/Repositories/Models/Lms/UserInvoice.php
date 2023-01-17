@@ -103,6 +103,10 @@ class UserInvoice extends BaseModel {
             $invoices['created_by'] = \Auth::user()->user_id;
         }        
         */
+        $invoiceSerialNo = self::where(['invoice_type'=> $invoices['invoice_type'],'invoice_cat' => $invoices['invoice_cat']])->orderBy('inv_serial_no','desc')->limit(1)->value('inv_serial_no');
+        $invoiceSerialNo = sprintf('%04d', (($invoiceSerialNo ?? 0) + 1) ?? rand(0, 9999));
+        $invoices['invoice_no'] = $invoices['invoice_no']. '/' . $invoiceSerialNo;
+        $invoices['inv_serial_no'] = $invoiceSerialNo;
         if (!empty($whereCondition)) {
             return self::where($whereCondition)->update($invoices);
         } else if (!isset($invoices[0])) {

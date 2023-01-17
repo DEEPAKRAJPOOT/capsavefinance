@@ -322,11 +322,6 @@ class userInvoiceController extends Controller
             $due_date = \DateTime::createFromFormat('d/m/Y', $due_date)->format('Y-m-d');
         }
 
-        $lastInvData = $this->UserInvRepo->getLastInvoiceSerialNo($invoice_type);
-        $invSerialNo = sprintf('%04d', (($lastInvData->inv_serial_no ?? 0) + 1) ?? rand(0, 9999));
-        $InvoiceNoArr = explode('/',$invoice_no);
-        $InvoiceNoArr[3] = $invSerialNo;
-        $invoice_no = implode('/',$InvoiceNoArr);
 
         if (!in_array($invoice_type, ['I', 'C'])) {
            return response()->json(['status' => 0,'message' => "Invalid Invoice Type found."]); 
@@ -819,11 +814,11 @@ class userInvoiceController extends Controller
                 }
             }
 
-            $lastInvData = $this->UserInvRepo->getLastInvoiceSerialNo($invoice_type);
-            $invSerialNo = sprintf('%04d', (($lastInvData->inv_serial_no ?? 0) + 1) ?? rand(0, 9999));
+            $invSerialNo = null;
             $InvoiceNoArr = explode('/',$requestedData['invoice_no']);
             $InvoiceNoArr[3] = $invSerialNo;
             $newInvoiceNo = implode('/',$InvoiceNoArr);
+            $newInvoiceNo = chop($newInvoiceNo,'/');
 
             $is_state_diffrent = ($userStateId != $companyStateId);
             $inv_data = $this->_calculateInvoiceTxns($txnsData, $is_state_diffrent, false, 1);
@@ -994,10 +989,8 @@ class userInvoiceController extends Controller
                 $invoiceType = "C";
             }
 
-            $lastInvData = $this->UserInvRepo->getLastInvoiceSerialNo($invoiceType);
-            $invSerialNo = sprintf('%04d', (($lastInvData->inv_serial_no ?? 0) + 1) ?? rand(0, 9999));
-
-            $newInvoiceNo = $origin_of_recipient['state_code'] . '/' . $origin_of_recipient['financial_year'] . '/' . $invCat . '/' . $invSerialNo;
+            $invSerialNo = null;
+            $newInvoiceNo = $origin_of_recipient['state_code'] . '/' . $origin_of_recipient['financial_year'] . '/' . $invCat;
 
             $intrest_charges = $inv_data[0];
             $total_sum_of_rental = $inv_data[1];
@@ -1179,10 +1172,8 @@ class userInvoiceController extends Controller
                 $invoiceType = "C";
             }
 
-            $lastInvData = $this->UserInvRepo->getLastInvoiceSerialNo($invoiceType,'CN');
-            $invSerialNo = sprintf('%04d', (($lastInvData->inv_serial_no ?? 0) + 1) ?? rand(0, 9999));
-
-            $newInvoiceNo = $origin_of_recipient['state_code'] . '/' . $origin_of_recipient['financial_year'] . '/' . $invCat . '/' . $invSerialNo;
+            $invSerialNo = null;
+            $newInvoiceNo = $origin_of_recipient['state_code'] . '/' . $origin_of_recipient['financial_year'] . '/' . $invCat;
 
             $intrest_charges = $inv_data[0];
             $total_sum_of_rental = $inv_data[1];
@@ -1362,10 +1353,8 @@ class userInvoiceController extends Controller
                 $invoiceType = "C";
             }
 
-            $lastInvData = $this->UserInvRepo->getLastInvoiceSerialNo($invoiceType,'DN');
-            $invSerialNo = sprintf('%04d', (($lastInvData->inv_serial_no ?? 0) + 1) ?? rand(0, 9999));
-
-            $newInvoiceNo = $origin_of_recipient['state_code'] . '/' . $origin_of_recipient['financial_year'] . '/' . $invCat . '/' . $invSerialNo;
+            $invSerialNo = null;
+            $newInvoiceNo = $origin_of_recipient['state_code'] . '/' . $origin_of_recipient['financial_year'] . '/' . $invCat;
 
             $intrest_charges = $inv_data[0];
             $total_sum_of_rental = $inv_data[1];
