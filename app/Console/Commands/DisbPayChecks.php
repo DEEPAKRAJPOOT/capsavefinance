@@ -16,9 +16,13 @@ class DisbPayChecks extends Command
      *
      * @var string
      */
-    protected $signature = 'disb_pays:checks 
+   /* protected $signature = 'disb_pays:checks 
     {type=0 : The type of report 1 = Duplicate payment Record , 2 = Duplicate Disbursal Report , 3 = Actual Disbursal Report and by default All Reports}
-    {report_date=0 : Date of disbursements Report(YYYY/MM/DD)}';
+    {report_date=0 : Date of disbursements Report(YYYY/MM/DD)}'; */
+
+
+    protected $signature = 'disb_pays:checks';
+
 
     /**
      * The console command description.
@@ -45,7 +49,7 @@ class DisbPayChecks extends Command
      */
     public function handle()
     {
-        if($this->argument('type') == '0'){
+      /*  if($this->argument('type') == '0'){
             $type = $this->choice(
                 'Which type of record you want to execute?',
                 ['1','2','3','0'],
@@ -62,10 +66,12 @@ class DisbPayChecks extends Command
             );
         }else{
             $report_date = $this->argument('report_date');
-        }
+        } */
 
-        $this->eodDate = now()->parse($report_date)->toDateString();
-        $reportType = $type;
+       // $this->eodDate = now()->parse($report_date)->toDateString();
+       // $reportType = $type;
+        $this->eodDate = now()->toDateString();
+        $reportType = '0';
         ini_set("memory_limit", "-1");
         ini_set('max_execution_time', 10000);
 
