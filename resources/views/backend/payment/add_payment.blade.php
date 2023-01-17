@@ -206,7 +206,7 @@
                                       
                                         <div class="col-md-12">
                                             <div class="text-right ">
-                                                <input type="text" class="trans_type" name="trans_type" id="trans_type" value="">
+                                                <input type="hidden" class="trans_type" name="trans_type" id="trans_type" value="">
                                                 <input type="reset" id="pre3" class="btn btn-secondary btn-sm" value="Cancel">
                                                 <input type="submit" id="savePayBtn" class="btn btn-success ml-2 btn-sm" value="Submit">
                                             </div>
