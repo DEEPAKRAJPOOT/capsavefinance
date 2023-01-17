@@ -73,7 +73,7 @@
                                             </div>
                                         </div>
 
-                                        <div class="col-md-4">
+                                        {{-- <div class="col-md-4">
                                             <div class="form-group">
                                                 <label for="txtCreditPeriod">Transation Type <span class="error_message_label">*</span></label>
                                                 <select class="form-control trans_type" name="trans_type" id="trans_type">
@@ -81,7 +81,7 @@
                                                 </select>
                                                 <span id="trans_type_error" class="error"></span>
                                             </div>
-                                        </div>
+                                        </div> --}}
 
                                         <div class="col-md-4" id="waiveoff_div" style="display: none">
                                             <div class="form-group">
@@ -167,7 +167,7 @@
                                             </div>
                                         </div>
                                         
-                                        <div class="col-md-8 payment-methods" style="display: none;" >
+                                        <div class="payment-methods" style="display: none;" id="pay-m">
                                             <div class="row" id="appendInput"></div>
                                         </div>
                                         <div class="col-md-4 bank-list">
@@ -206,6 +206,7 @@
                                       
                                         <div class="col-md-12">
                                             <div class="text-right ">
+                                                <input type="text" class="trans_type" name="trans_type" id="trans_type" value="">
                                                 <input type="reset" id="pre3" class="btn btn-secondary btn-sm" value="Cancel">
                                                 <input type="submit" id="savePayBtn" class="btn btn-success ml-2 btn-sm" value="Submit">
                                             </div>
@@ -289,6 +290,11 @@ cursor: pointer;
                 autoclose: true,
                 minView : 2,
                 endDate: new Date(messages.sysDate),
+        }).on('changeDate', function(e) {
+            if (userData['action_type'] == '3'){
+                selectedDate = e.date.getFullYear() + '-' + (e.date.getMonth() + 1) + '-' + e.date.getDate();
+                get_tdsoutstanding_amount(selectedDate);
+            }
         });
 
         var sample_data = new Bloodhound({
@@ -431,8 +437,12 @@ cursor: pointer;
         });
 
         $("#payment_type").on('change', function() {
+            $("#pay-m").addClass('col-md-8'); //fixed form disordered
             $('#appendInput').empty();
             var status = $(this).val();
+            if (status == '') {
+                $("#pay-m").removeClass('col-md-8'); //fixed form disordered 
+            }
             if (status == 1) {
                 $('#appendInput').append('<div class="col-md-6"><label for="repaid_amount" class="form-control-label"><span class="payment_text">Online RTGS/NEFT</span></label><span class="error_message_label">*</span><input type="text" class="form-control amountRepay" id="utr_no" name="utr_no" value=""><span id="utr_no_msg" class="error"></span></div>');
 
@@ -747,19 +757,23 @@ $.validator.addMethod('decimal', function(value, element) {
                     $('.isloader').show();
                 },
                 success: function(res) {
-                    $('#trans_type').parent().parent().show();
-                    $('#trans_type').html('<option value="">Select Transaction Type</option>');
+                    //$('#trans_type').parent().parent().show();
+                    //$('#trans_type').html('<option value="">Select Transaction Type</option>');
+                    $('#trans_type').show();
                     if (res.status == 'success') {
                         chargeResult = res.result;
-                        $(chargeResult).each(function(i,v){
-                            $('#trans_type').append('<option value="'+ v.id +'">' + v.trans_name + '</option>');
-                        })
+                        // $(chargeResult).each(function(i,v){
+                        //     $('#trans_type').append('<option value="'+ v.id +'">' + v.trans_name + '</option>');
+                        // })
+                        $('#trans_type').val(chargeResult[0].id);
+                        $("#trans_type").trigger("change");
                     }
                     $('.isloader').hide();
                 }     
             });
         } else {
-            $('#trans_type').parent().parent().hide();
+            //$('#trans_type').parent().parent().hide();
+            $('#trans_type').hide();
             get_tdsoutstanding_amount();
         }
     }
@@ -913,11 +927,12 @@ console.log(maxValue,inputValue);
         return true;
     });
 
-    function get_tdsoutstanding_amount() {
+    function get_tdsoutstanding_amount(selectedPaymentDate) {
+        selectedPaymentDate = selectedPaymentDate ? selectedPaymentDate : '';
         $.ajax({
             type: 'POST',                    
             url: messages.get_tdsoutstanding_amount_url,
-            data: {user_id: $("#user_id").val(), _token: messages.token},
+            data: {user_id: $("#user_id").val(), payment_date: selectedPaymentDate, _token: messages.token},
             beforeSend: function( xhr ) {
                 $('.isloader').show();
             },

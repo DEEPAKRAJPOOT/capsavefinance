@@ -5786,7 +5786,8 @@ if ($err) {
     public function getTDSOutstatingAmount(Request $request)
     {
         $userId    = $request->get('user_id');
-        $TDSOutstating = $this->lmsRepo->getTDSOutstatingAmount($userId);
+        $whereCon = $request->filled('payment_date') ? ['due_date' => $request->payment_date] : [];
+        $TDSOutstating = $this->lmsRepo->getTDSOutstatingAmount($userId, $whereCon);
         $TDSOutstating = ((float)$TDSOutstating<0) ? 0 : $TDSOutstating;
         return response()->json(['tds_amount' => round($TDSOutstating, 2)]);
     }
