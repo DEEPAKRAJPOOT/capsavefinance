@@ -292,7 +292,8 @@ cursor: pointer;
                 endDate: new Date(messages.sysDate),
         }).on('changeDate', function(e) {
             if (userData['action_type'] == '3'){
-                selectedDate = e.date.getFullYear() + '-' + (e.date.getMonth() + 1) + '-' + e.date.getDate();
+                selectedDate = e.date.getFullYear() + '-' + (e.date.getMonth() + 1).toString().padStart(2, '0') + '-' +
+                e.date.getDate().toString().padStart(2, '0');                
                 get_tdsoutstanding_amount(selectedDate);
             }
         });
@@ -343,7 +344,7 @@ cursor: pointer;
             $(".payment-methods").hide();
             $(".tds_certificate").hide();
             $(".bank-list").hide();
-            console.log($(this).val());
+            //console.log($(this).val());
             switch ($(this).val()) {
                 case "1":
                     $(".bank-list").show();
@@ -441,20 +442,24 @@ cursor: pointer;
             $('#appendInput').empty();
             var status = $(this).val();
             if (status == '') {
-                $("#pay-m").removeClass('col-md-8'); //fixed form disordered 
+                $("#pay-m").removeClass('col-md-8').removeClass('col-md-4'); //fixed form disordered 
             }
             if (status == 1) {
-                $('#appendInput').append('<div class="col-md-6"><label for="repaid_amount" class="form-control-label"><span class="payment_text">Online RTGS/NEFT</span></label><span class="error_message_label">*</span><input type="text" class="form-control amountRepay" id="utr_no" name="utr_no" value=""><span id="utr_no_msg" class="error"></span></div>');
+                $("#pay-m").removeClass('col-md-8').addClass('col-md-4'); //fixed form disordered
+                $('#appendInput').append('<div class="col-md-12"><label for="repaid_amount" class="form-control-label"><span class="payment_text">Online RTGS/NEFT</span></label><span class="error_message_label">*</span><input type="text" class="form-control amountRepay" id="utr_no" name="utr_no" value=""><span id="utr_no_msg" class="error"></span></div>');
 
             } else if (status == 2) {
+                $("#pay-m").removeClass('col-md-4').addClass('col-md-8');
                 //$('#appendInput').append('<label for="repaid_amount" class="form-control-label"><span class="payment_text">Cheque Number</span></label><span class="error_message_label">*</span><input type="text" class="form-control amountRepay" id="utr_no" name="utr_no" value=""><span id="utr_no_msg" class="error"></span>  <label for="repaid_amount" class="form-control-label"><span class="payment_text">Upload Cheque</span></label><span class="error_message_label">*</span><input type="file" class="form-control amountRepay" id="cheque" name="cheque" value=""><span id="utr_no_msg" class="error"></span>');
                 $('#appendInput').append('<div class="col-md-6"><label for="repaid_amount" class="form-control-label"><span class="payment_text">Cheque Number</span></label><span class="error_message_label">*</span><input type="text" class="form-control amountRepay" id="utr_no" name="utr_no" value="" minlength="6" maxlength="6" /><span id="utr_no_msg" class="error"></span></div><div class="col-md-6 tds_certificate"><div class="custom-file upload-btn-cls mb-3 mt-4"><input type="file" class="custom-file-input getFileName doc_file" id="cheque" name="cheque" multiple="" /><label class="custom-file-label" for="cheque">Upload Cheque</label></div><span id="utr_no_msg" class="error"></span></div>');
 
             } else if (status == 3) {
-                $('#appendInput').append('<div class="col-md-6"><label for="repaid_amount" class="form-control-label"><span class="payment_text">UNR Number</span></label><span class="error_message_label">*</span><input type="text" class="form-control amountRepay" id="utr_no" name="utr_no" value=""><span id="utr_no_msg" class="error"></span></div>');
+                $("#pay-m").removeClass('col-md-8').addClass('col-md-4');
+                $('#appendInput').append('<div class="col-md-12"><label for="repaid_amount" class="form-control-label"><span class="payment_text">UNR Number</span></label><span class="error_message_label">*</span><input type="text" class="form-control amountRepay" id="utr_no" name="utr_no" value=""><span id="utr_no_msg" class="error"></span></div>');
 
             } else if (status == 4) {
-                $('#appendInput').append('<label for="repaid_amount" class="form-control-label"><span class="payment_text">Transaction No</span></label><span class="error_message_label">*</span><input type="text" class="form-control amountRepay" id="utr_no" name="utr_no" value=""><span id="utr_no_msg" class="error"></span>');
+                $("#pay-m").removeClass('col-md-8').addClass('col-md-4');
+                $('#appendInput').append('<div class="col-md-12"><label for="repaid_amount" class="form-control-label"><span class="payment_text">Transaction No</span></label><span class="error_message_label">*</span><input type="text" class="form-control amountRepay" id="utr_no" name="utr_no" value=""><span id="utr_no_msg" class="error"></span></div>');
 
             }
         });
@@ -920,7 +925,7 @@ $.validator.addMethod('decimal', function(value, element) {
         $('#amountMax').html('');
         var maxValue = $(this).attr('max-data');
         var inputValue = parseFloat($(this).val().replace(/,/g, ''));
-console.log(maxValue,inputValue);
+        //console.log(maxValue,inputValue);
         if(inputValue > maxValue){
             $('#amountMax').html("Please enter a value less than or equal to " +maxValue+ ".");
         }
@@ -951,5 +956,8 @@ console.log(maxValue,inputValue);
             }
        });
     }
+    $("#pre3").click(function(){
+        $("#savePayFrm").validate().resetForm();
+    });
 </script>
 @endsection
