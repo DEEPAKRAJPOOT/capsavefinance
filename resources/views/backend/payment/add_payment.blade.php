@@ -292,8 +292,7 @@ cursor: pointer;
                 endDate: new Date(messages.sysDate),
         }).on('changeDate', function(e) {
             if (userData['action_type'] == '3'){
-                selectedDate = e.date.getFullYear() + '-' + (e.date.getMonth() + 1).toString().padStart(2, '0') + '-' +
-                e.date.getDate().toString().padStart(2, '0');                
+                selectedDate = $("#date_of_payment").val();                
                 get_tdsoutstanding_amount(selectedDate);
             }
         });
@@ -779,7 +778,11 @@ $.validator.addMethod('decimal', function(value, element) {
         } else {
             //$('#trans_type').parent().parent().hide();
             $('#trans_type').hide();
-            get_tdsoutstanding_amount();
+            let today = new Date();
+            selectedDate = today.getDate().toString().padStart(2, '0') + '/' 
+                        + (today.getMonth() + 1).toString().padStart(2, '0') + 
+                        '/' + today.getFullYear();
+            get_tdsoutstanding_amount(selectedDate);
         }
     }
     
