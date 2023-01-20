@@ -245,7 +245,9 @@ class ReportsRepository extends BaseRepositories implements ReportInterface {
 			'gross'=>'', // blank
 			'net_of_interest'=>'', // blank
 			'interest_borne_by'=> $interestBorneBy == 1 ? 'Anchor' : ($interestBorneBy == 2 ? 'Customer' : ''),
-			'grace_period'=> $invDisb->grace_period,
+			'customer_id'=> $invDisb->customer_id,
+			'invoice_no'=> $invDisb->invoice->invoice_no,
+			'disbursement_method'=> $invDisb->invoice->invoice_amount > 0 ? 'Net':'Gross',
 
 			// 'loan_ac'=>config('common.idprefix.APP').$invDisb->invoice->app_id,
 			// 'trans_date'=>$invDisb->disbursal->disburse_date,
