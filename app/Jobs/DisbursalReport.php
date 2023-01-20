@@ -144,7 +144,7 @@ class DisbursalReport implements ShouldQueue
             ->setCellValue('AU'.$rows, 'Net of interest, PF & Stamp')
             ->setCellValue('AV'.$rows, 'Interest Borne By')
             ->setCellValue('AW'.$rows, 'Grace Period (Days)');
-        $sheet->getActiveSheet()->getStyle('A'.$rows.':AT'.$rows)->applyFromArray(['font' => ['bold'  => true]]);
+        $sheet->getActiveSheet()->getStyle('A'.$rows.':AW'.$rows)->applyFromArray(['font' => ['bold'  => true]]);
         $rows++;
         foreach($exceldata as $rowData){
 			
