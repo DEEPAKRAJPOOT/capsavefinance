@@ -549,7 +549,7 @@ class Transactions extends BaseModel {
 
             if($this->trans_type == config('lms.TRANS_TYPE.PAYMENT_DISBURSED')){
                 if(strtotime($to) >= strtotime($graceEnd) && $this->outstanding > 0){
-                    $number_days = (strtotime($to) - strtotime($from)) / (60 * 60 * 24);
+                    $number_days = (strtotime($to) - strtotime($graceEnd)) / (60 * 60 * 24);
                 }
             }
             if($this->trans_type == config('lms.TRANS_TYPE.INTEREST')){
