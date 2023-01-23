@@ -52,13 +52,11 @@ class Kernel extends ConsoleKernel
         if(config('lms.LMS_STATUS')){
             $schedule->command('lms:interestaccrual')->timezone(config('common.timezone'))->dailyAt('23:10');
             $schedule->command('lms:interestaccrual')->dailyAt('00:01');
-        }
+            $schedule->command('finance:tallyposting')->timezone(config('common.timezone'))->dailyAt('00:01') 
+            ->onSuccess(function() use($schedule){
+                $this->call('eod:check-data');
+            });
 
-        if (config('lms.LMS_STATUS')) {
-            $schedule->command('finance:tallyposting')->timezone(config('common.timezone'))->dailyAt('00:01');
-        }
-
-        if (config('lms.LMS_STATUS')) {
             $schedule->command('disb_pays:checks')->timezone(config('common.timezone'))->dailyAt('00:11');
         }
         
@@ -81,7 +79,13 @@ class Kernel extends ConsoleKernel
             $schedule->command('report:receipt')->timezone(config('common.timezone'))->dailyAt('23:52');
             // To Generate Outstanding Report Manual
             $schedule->command('report:reconReport')->timezone(config('common.timezone'))->dailyAt('23:54');
-            $schedule->command('report:outstandingManual')->timezone(config('common.timezone'))->dailyAt('23:55');
+            $schedule->command('report:outstandingManual')->timezone(config('common.timezone'))->dailyAt('23:55')
+            ->onSuccess(function() use($schedule){
+                $this->call('etl:report_outstanding');
+                if(Carbon::now()->timezone(config('common.timezone'))->format('d') == '01'){
+                    $this->call('etl:report_outstanding_monthly');
+                }    
+            });
         }
         $schedule->command('command:lenovoNewUser')->timezone(config('common.timezone'))->dailyAt('23:00');
         $schedule->command('lms:maturityinvoicedueAlert')->timezone(config('common.timezone'))->dailyAt('21:30');
@@ -94,15 +98,6 @@ class Kernel extends ConsoleKernel
         $schedule->command('etl:report_utilization')->timezone(config('common.timezone'))->dailyAt('01:25');
         $schedule->command('etl:report_disbursal')->timezone(config('common.timezone'))->dailyAt('01:30');
         $schedule->command('etl:report_account_disbursal')->timezone(config('common.timezone'))->dailyAt('01:35');
-        $schedule->command('report:outstandingManual')
-        ->timezone(config('common.timezone'))
-        ->dailyAt('23:52')
-        ->onSuccess(function() use($schedule){
-            $this->call('etl:report_outstanding');
-            if(Carbon::now()->timezone(config('common.timezone'))->format('d') == '01'){
-                $this->call('etl:report_outstanding_monthly');
-            }    
-        });
         $schedule->command('lms:disbursalBatchRequest')->timezone(config('common.timezone'))->between('10:00','23:59')->hourlyAt('1');
         $schedule->command('lms:disbursalBatchRequest')->timezone(config('common.timezone'))->dailyAt('23:50');
         $schedule->command('alert:approvalMailForPendingCases')->timezone(config('common.timezone'))->tuesdays()->dailyAt('20:45');
