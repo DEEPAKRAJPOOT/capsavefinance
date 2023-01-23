@@ -481,9 +481,9 @@ class FinanceController extends Controller {
                     }  
                 }else{
                     if($entry_type == 'credit'){
-                        $amount = '-'.$fetchedArr['amount'];
-                    }else{
                         $amount = $fetchedArr['amount'];
+                    }else{
+                        $amount = '-'.$fetchedArr['amount'];
                     }  
                 }
                 
