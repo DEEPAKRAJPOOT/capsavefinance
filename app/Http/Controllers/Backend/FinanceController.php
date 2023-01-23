@@ -561,7 +561,7 @@ class FinanceController extends Controller {
                 $records['JOURNAL'][] = [
                         "voucher_no" => $fetchedArr['fact_voucher_number'],
                         "voucher_date"=> $transaction_date,
-                        "voucher_narration" => ($entry_type == 'credit' ? $fetchedArr['ledger_name'] : $fetchedArr['trans_type']),
+                        "voucher_narration" => ($entry_type == 'credit' ? $fetchedArr['trans_type'] : $fetchedArr['ledger_name']),
                         "general_ledger_code" => '',
                         "document_class"=>$documentClass,
                         "d_/_c" => 'D',
@@ -589,7 +589,7 @@ class FinanceController extends Controller {
                     $records['JOURNAL'][] = [
                         "voucher_no" => $fetchedArr['fact_voucher_number'],
                         "voucher_date"=> $transaction_date,
-                        "voucher_narration" => ($entry_type == 'credit' ? $fetchedArr['trans_type'] : $fetchedArr['ledger_name']),
+                        "voucher_narration" => ($entry_type == 'credit' ? $fetchedArr['ledger_name'] : $fetchedArr['trans_type']),
                         "general_ledger_code" => '',
                         "document_class"=>$documentClass,
                         "d_/_c" => 'C',
