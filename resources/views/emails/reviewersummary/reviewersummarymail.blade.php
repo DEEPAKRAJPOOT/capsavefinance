@@ -121,7 +121,10 @@
                     </td>
                 </tr>
                 @endif
-                
+                <tr>
+                    <td style="padding:8px 10px;font-size: 0.917rem; font-family: Calibri !important;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;"><b>XIRR %: </b></td>
+                    <td style="padding:8px 10px;font-size: 0.917rem; font-family: Calibri !important;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;">{{$leaseOffer->xirr}}</td>
+                </tr>
                 <tr>
                     <td style="padding:8px 10px;font-size: 0.917rem; font-family: Calibri !important;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;"><b>DSA Applicable: </b></td>
                     <td style="padding:8px 10px;font-size: 0.917rem; font-family: Calibri !important;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;">{{($leaseOffer->dsa_applicable == '1')?'Yes':'No'}}</td>
@@ -138,8 +141,6 @@
                 <tr>
                     <td style="padding:8px 10px;font-size: 0.917rem; font-family: Calibri !important;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;"><b>Payout Event: </b></td>
                     <td style="padding:8px 10px;font-size: 0.917rem; font-family: Calibri !important;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;">{{$leaseOffer->programOfferDsa->payout_event}}</td>
-                    <td style="padding:8px 10px;font-size: 0.917rem; font-family: Calibri !important;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;"><b>XIRR %: </b></td>
-                    <td style="padding:8px 10px;font-size: 0.917rem; font-family: Calibri !important;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;">{{$leaseOffer->programOfferDsa->xirr}}</td>
                 </tr>
                 @endif
                 @empty
@@ -203,7 +204,10 @@
                               <td style="padding:8px 10px;font-size: 0.917rem; font-family: Calibri !important;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;"><b>{{ isset($fee['1']) ? $fee['1']['chrg_name'].'' : ''}}{{ isset($fee['1']) ? ($fee['1']['chrg_type'] == 2 ? '(%):' : '(₹):') : ''}} </b></td>
                               <td style="padding:8px 10px;font-size: 0.917rem; font-family: Calibri !important;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;">{{ isset($fee['1']) ? $fee['1']['chrg_value'] : ''}}</td>
                           </tr>
-                          
+                          <tr>
+                            <td style="padding:8px 10px;font-size: 0.917rem; font-family: Calibri !important;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;"><b>XIRR %: </b></td>
+                            <td style="padding:8px 10px;font-size: 0.917rem; font-family: Calibri !important;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;">{{$supplyOffer->xirr}}</td>
+                          </tr>
                             <tr>
                                 <td style="padding:8px 10px;font-size: 0.917rem; font-family: Calibri !important;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;"><b>DSA Applicable: </b></td>
                                 <td style="padding:8px 10px;font-size: 0.917rem; font-family: Calibri !important;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;">{{($supplyOffer->dsa_applicable == '1')?'Yes':'No'}}</td>
@@ -220,8 +224,6 @@
                             <tr>
                                 <td style="padding:8px 10px;font-size: 0.917rem; font-family: Calibri !important;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;"><b>Payout Event: </b></td>
                                 <td style="padding:8px 10px;font-size: 0.917rem; font-family: Calibri !important;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;">{{$supplyOffer->programOfferDsa->payout_event}}</td>
-                                <td style="padding:8px 10px;font-size: 0.917rem; font-family: Calibri !important;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;"><b>XIRR %: </b></td>
-                                <td style="padding:8px 10px;font-size: 0.917rem; font-family: Calibri !important;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;">{{$supplyOffer->programOfferDsa->xirr}}</td>
                             </tr>
                           @endif
                           <tr>

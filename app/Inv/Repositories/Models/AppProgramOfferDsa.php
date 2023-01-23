@@ -57,7 +57,6 @@ class AppProgramOfferDsa extends BaseModel {
         'dsa_name',
         'payout',
         'payout_event',
-        'xirr',
         'created_at',
         'created_by',
         'updated_at',        

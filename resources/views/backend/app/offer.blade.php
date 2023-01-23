@@ -115,7 +115,8 @@ tr.border_bottom td {
                                                     <td></td>
                                                     <td><b>Invoice Processing Fee: </b></td>
                                                     <td>{{ ($supplyOffer->BizInvoice->invoice_disbursed->processing_fee ?? 0) + ($supplyOffer->BizInvoice->invoice_disbursed->processing_fee_gst ?? 0) }}</td>
-                                                    <td></td>
+                                                    <td><b>XIRR %:</b></td>
+                                                <td>{{number_format($supplyOffer->xirr,2)}}%</td>
                                                     <td colspan="3"></td>
                                                 </tr>
                                                 <tr>
@@ -282,8 +283,7 @@ tr.border_bottom td {
                                                 </tr>
                                                 <tr>
                                                 <td></td>
-                                                <td><b>XIRR %:</b></td>
-                                                <td>{{number_format($supplyOffer->programOfferDsa->xirr,2)}}%</td>
+                                                
                                                 <td></td>
                                                 <td></td>
                                                 </tr>
@@ -367,7 +367,8 @@ tr.border_bottom td {
                                                     <td></td>
                                                     <td><b>IRR: </b></td>
                                                     <td>{{ $termOffer->irr }}%</td>
-                                                    <td></td>
+                                                    <td><b>XIRR %:</b></td>
+                                                <td>{{number_format($termOffer->xirr,2)}}%</td>
                                                     <td></td>
                                                 </tr>
                                                 <td></td>
@@ -453,8 +454,6 @@ tr.border_bottom td {
                                                 </tr>
                                                 <tr>
                                                 <td></td>
-                                                <td><b>XIRR %:</b></td>
-                                                <td>{{number_format($termOffer->programOfferDsa->xirr,2)}}%</td>
                                                 <td></td>
                                                 <td></td>
                                                 </tr>
@@ -570,7 +569,8 @@ tr.border_bottom td {
                                                         @endphp 
                                                         {!! trim($add_sec_arr,', ') !!}
                                                     </td>
-                                                    <td></td>
+                                                    <td><b>XIRR %:</b></td>
+                                                <td>{{number_format($leaseOffer->xirr,2)}}%</td>
                                                 </tr>
                                                 @if($leaseOffer->dsa_applicable == '1')
                                                 <tr>
@@ -591,8 +591,7 @@ tr.border_bottom td {
                                                 </tr>
                                                 <tr>
                                                 <td></td>
-                                                <td><b>XIRR %:</b></td>
-                                                <td>{{number_format($leaseOffer->programOfferDsa->xirr,2)}}%</td>
+                                                
                                                 <td></td>
                                                 <td></td>
                                                 </tr>

@@ -97,8 +97,9 @@
                        {!! trim($add_sec_arr,', ') !!}
                   </td>
                </tr>
-               
               <tr>
+                    <td><b>XIRR %:</b></td>
+                    <td>{{number_format($leaseOffer->xirr,2)}}%</td>
                     <td><b>DSA Applicable: </b></td>
                     <td >{{($leaseOffer->dsa_applicable == '1')?'Yes':'No'}}</td>
                     <td></td>
@@ -114,8 +115,7 @@
                 <tr>
                     <td><b>Payout Event: </b></td>
                     <td>{{$leaseOffer->programOfferDsa->payout_event}}</td>
-                    <td><b>XIRR %:</b></td>
-                    <td>{{number_format($leaseOffer->programOfferDsa->xirr,2)}}%</td>
+                    
                 </tr>
               @endif
             </tbody>
@@ -201,10 +201,13 @@
               <tr>
                   <td><b>Grace Period (Days): </b></td>
                   <td>{{$supplyOffer->grace_period}}</td>
+                  <td><b>XIRR %: </b></td>
+                    <td>{{number_format($supplyOffer->xirr,2)}}%</td> 
                   <!--<td><b>Processing Fee (%): </b></td>
                   <td>{{$supplyOffer->processing_fee}} %</td>-->
                   <td>&nbsp;</td>
-                  <td>&nbsp;</td>                    
+                  <td>&nbsp;</td> 
+                                    
               </tr>
                 @foreach($supplyOffer->offerCharges as $key=>$offerCharge)              
                 @if($key%2 == 0)
@@ -254,8 +257,7 @@
                 <tr>
                     <td><b>Payout Event: </b></td>
                     <td>{{$supplyOffer->programOfferDsa->payout_event}}</td>
-                    <td><b>XIRR %: </b></td>
-                    <td>{{number_format($supplyOffer->programOfferDsa->xirr,2)}}%</td>
+                    
                 </tr>
               @endif
               @if($supplyOffer->offerPs->count() > 0)
@@ -454,7 +456,8 @@
                <tr role="row" class="odd">
                   <td class=""><b>IRR</b></td>
                   <td class="">{{isset($termLoanOffer->irr) ? $termLoanOffer->irr : ''}}</td>  
-                  <td></td>
+                  <td><b>XIRR %:</b></td>
+                    <td>{{number_format($termLoanOffer->xirr,2)}}%</td>
                   <td></td>                                 
                </tr>
               
@@ -474,8 +477,7 @@
                 <tr>
                     <td><b>Payout Event: </b></td>
                     <td>{{$termLoanOffer->programOfferDsa->payout_event}}</td>
-                    <td><b>XIRR %:</b></td>
-                    <td>{{number_format($termLoanOffer->programOfferDsa->xirr,2)}}%</td>
+                    
                 </tr>
               @endif
                @if(isset($termLoanOffer->asset_insurance) && $termLoanOffer->asset_insurance == 1)

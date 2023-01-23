@@ -125,6 +125,12 @@
                 <input type="text" name="irr" class="form-control" value="{{ isset($offerData->irr) ? $offerData->irr : '' }}" placeholder="IRR" maxlength="15">
             </div>
         </div>
+        <div class="col-md-3">
+            <div class="form-group">
+                <label for="txtPassword">XIRR (%)<span style="color: red;"> *</span></label> 
+                <input type="text" name="xirr" id="xirr" class="form-control" value="{{ (isset($offerData) && !empty($offerData->xirr))  ? number_format($offerData->xirr,2) : '' }}" placeholder="XIRR" >
+            </div>
+         </div>
          <!-----------------PROGRAM OFFER DSA--------------------->
     <div class="col-md-12">
           <div class="form-group row">
@@ -156,12 +162,7 @@
                         <input type="text" name="payout_event" id="payout_event" class="form-control" value="{{ (isset($offerData->programOfferDsa) && !empty($offerData->programOfferDsa->payout_event))  ? $offerData->programOfferDsa->payout_event : '' }}" placeholder="Payout Event">
                     </div>
                  </div>
-                 <div class="col-md-3">
-                    <div class="form-group">
-                        <label for="txtPassword">XIRR (%)<span style="color: red;"> *</span></label> 
-                        <input type="text" name="xirr" id="xirr" class="form-control" value="{{ (isset($offerData->programOfferDsa) && !empty($offerData->programOfferDsa->xirr))  ? number_format($offerData->programOfferDsa->xirr,2) : '' }}" placeholder="XIRR" >
-                    </div>
-                 </div>
+                
                </div>
             </div>
           </div> 
@@ -520,6 +521,20 @@
         setError('select[name=rental_frequency_type]', 'Please select frequency type');
         flag = false;
     }
+    var regex = /^[a-zA-Z\s]+$/;
+        if(xirr == ''){
+            setError('input[name=xirr]', 'please fill xirr');
+            flag = false;
+        }else if(isNaN(xirr) || !decimalregex.test(xirr)){
+            setError('input[name=xirr]', 'please enter valid data only');
+            flag = false;
+        }else if(parseFloat(xirr) > 100){
+            setError('input[name=xirr]', 'XIRR value should be in between 1-100% only');
+            flag = false;
+        }else if(parseFloat(xirr) < 1){
+            setError('input[name=xirr]', 'XIRR value should be in between 1-100% only');
+            flag = false;
+        }
     if(dsa_applicable == 1){
         var regex = /^[a-zA-Z\s]+$/;
         var isValid = regex.test(dsa_name)
@@ -553,21 +568,7 @@
             setError('input[name=payout_event]', 'please enter valid data only');
             flag = false;
         }
-        console.log(decimalregex.test(xirr));
-        console.log(isNaN(xirr));
-        if(xirr == ''){
-            setError('input[name=xirr]', 'please fill xirr');
-            flag = false;
-        }else if(isNaN(xirr) || !decimalregex.test(xirr)){
-            setError('input[name=xirr]', 'please enter valid data only');
-            flag = false;
-        }else if(parseFloat(xirr) > 100){
-            setError('input[name=xirr]', 'XIRR value should be in between 1-100% only');
-            flag = false;
-        }else if(parseFloat(xirr) < 1){
-            setError('input[name=xirr]', 'XIRR value should be in between 1-100% only');
-            flag = false;
-        }
+        
 
     }
     
@@ -753,7 +754,7 @@
         $('#dsa_name').val('');
         $('#payout').val('');
         $('#payout_event').val('');
-        $('#xirr').val('');
+        // $('#xirr').val('');
         unsetError('input[name=dsa_name]');
         unsetError('input[name=payout]');
         unsetError('input[name=payout_event]');

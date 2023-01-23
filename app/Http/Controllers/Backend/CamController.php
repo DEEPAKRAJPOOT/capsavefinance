@@ -2163,7 +2163,6 @@ class CamController extends Controller
               $dsaData['dsa_name'] = $requestData['dsa_name'];
               $dsaData['payout']   = number_format($requestData['payout'],2);
               $dsaData['payout_event'] = $requestData['payout_event'];
-              $dsaData['xirr'] = number_format($requestData['xirr'],2);
               $offerData= $this->appRepo->addProgramOffer($request->all(), $aplid, $prgmOfferId);
                if($requestData['offer_dsa_id'] != null){
                 $prgmOfferDsa = AppProgramOfferDsa::where(['offer_dsa_id'=>$requestData['offer_dsa_id'],'prgm_offer_id'=>$offerData->prgm_offer_id])->first();
