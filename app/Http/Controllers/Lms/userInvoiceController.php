@@ -873,6 +873,8 @@ class userInvoiceController extends Controller
                         'cgst_amount' => $txnsRec['cgst_amt'],
                         'igst_rate' => $txnsRec['igst_rate'],
                         'igst_amount' => $txnsRec['igst_amt'],
+                        'description' => $txnsRec['desc'], 
+                        'settle_payment_desc' => $txnsRec['trans_date'],
                    ]; 
                    $totalGst = ($txnsRec['sgst_amt'] + $txnsRec['cgst_amt'] + $txnsRec['igst_amt']);
                    $totalGstRate = ($txnsRec['sgst_rate'] + $txnsRec['cgst_rate'] + $txnsRec['igst_rate']);
