@@ -8,7 +8,7 @@
             <i class="fa  fa-list"></i>
         </div>
         <div class="header-title">
-            <h3>Batches</h3>
+            <h3>Accounting Entries</h3>
             <small>&nbsp;</small>
         </div>
     </section>
