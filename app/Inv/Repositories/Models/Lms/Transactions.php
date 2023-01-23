@@ -342,7 +342,7 @@ class Transactions extends BaseModel {
                         }
                     }
                 }else{
-                    if($trans->trans_type == 32){
+                    if(in_array($trans->trans_type, [32,31])){
                         if($linkTrans->trans_type == 32)
                             $linkTrans->settled_outstanding -= $this->amount;
                     }elseif($linkLinkTrans && !in_array($linkTrans->trans_type, [32])){
