@@ -253,6 +253,8 @@
                 <tr>
                     <td><b>Payout Event: </b></td>
                     <td>{{$supplyOffer->programOfferDsa->payout_event}}</td>
+                    <td></td>
+                    <td></td>
                     
                 </tr>
               @endif
