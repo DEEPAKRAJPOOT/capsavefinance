@@ -165,12 +165,6 @@
                 </select>
             </div>
         </div>
-        <div class="col-md-3">
-            <div class="form-group">
-                <label for="txtPassword">XIRR (%)<span style="color: red;"> *</span></label> 
-                <input type="text" name="xirr" id="xirr" class="form-control" value="{{ (isset($offerData) && !empty($offerData->xirr))  ? number_format($offerData->xirr,2) : '' }}" placeholder="XIRR" >
-            </div>
-         </div>
         <div class="col-md-6" id="invoice_processingfee_type_div" style="display: {{(isset($offerData->is_invoice_processingfee) && $offerData->is_invoice_processingfee == 1) ? 'block' : 'none' }};">
             <div class="form-group">
             <label for="txtCreditPeriod">Charge Type
@@ -191,6 +185,12 @@
 
             </div>
         </div>
+        <div class="col-md-3">
+            <div class="form-group">
+                <label for="txtPassword">XIRR (%)<span style="color: red;"> *</span></label> 
+                <input type="text" name="xirr" id="xirr" class="form-control" value="{{ (isset($offerData) && !empty($offerData->xirr))  ? number_format($offerData->xirr,2) : '' }}" placeholder="XIRR" >
+            </div>
+         </div>
 
     {{--<div class="col-md-6">
       <div class="form-group">
