@@ -102,8 +102,6 @@
                     <td>{{number_format($leaseOffer->xirr,2)}}%</td>
                     <td><b>DSA Applicable: </b></td>
                     <td >{{($leaseOffer->dsa_applicable == '1')?'Yes':'No'}}</td>
-                    <td></td>
-                    <td></td>
                 </tr>
                 @if($leaseOffer->dsa_applicable == '1')
                 <tr>
@@ -115,7 +113,8 @@
                 <tr>
                     <td><b>Payout Event: </b></td>
                     <td>{{$leaseOffer->programOfferDsa->payout_event}}</td>
-                    
+                    <td></td>
+                    <td></td>
                 </tr>
               @endif
             </tbody>
@@ -205,9 +204,6 @@
                     <td>{{number_format($supplyOffer->xirr,2)}}%</td> 
                   <!--<td><b>Processing Fee (%): </b></td>
                   <td>{{$supplyOffer->processing_fee}} %</td>-->
-                  <td>&nbsp;</td>
-                  <td>&nbsp;</td> 
-                                    
               </tr>
                 @foreach($supplyOffer->offerCharges as $key=>$offerCharge)              
                 @if($key%2 == 0)
@@ -458,7 +454,6 @@
                   <td class="">{{isset($termLoanOffer->irr) ? $termLoanOffer->irr : ''}}</td>  
                   <td><b>XIRR %:</b></td>
                     <td>{{number_format($termLoanOffer->xirr,2)}}%</td>
-                  <td></td>                                 
                </tr>
               
                 <tr>
