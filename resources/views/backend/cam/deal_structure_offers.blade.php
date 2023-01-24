@@ -472,6 +472,8 @@
                 <tr>
                     <td><b>Payout Event: </b></td>
                     <td>{{$termLoanOffer->programOfferDsa->payout_event}}</td>
+                    <td></td>
+                    <td></td>
                     
                 </tr>
               @endif
