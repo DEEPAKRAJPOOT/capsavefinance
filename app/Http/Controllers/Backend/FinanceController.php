@@ -486,7 +486,18 @@ class FinanceController extends Controller {
                         $amount = '-'.$fetchedArr['amount'];
                     }  
                 }
-                
+                $bankCode = null;
+                if($fetchedArr['bank'] == 'IDFC Bank' && $fetchedArr['bank_acc_no'] == '10006748999'){
+                    $bankCode = 4;
+                }elseif($fetchedArr['bank'] == 'IDFC Bank' && $fetchedArr['bank_acc_no'] == '10062193074'){
+                    $bankCode = 9;
+                }elseif($fetchedArr['bank'] == 'IDFC Bank' && $fetchedArr['bank_acc_no'] == '10047035004'){
+                    $bankCode = 3;
+                }elseif($fetchedArr['bank'] == 'HDFC Bank' && $fetchedArr['bank_acc_no'] == '50200030310781'){
+                    $bankCode = 19;
+                }elseif($fetchedArr['bank'] == 'Yes Bank' && $fetchedArr['bank_acc_no'] == '007884600002532'){
+                    $bankCode = 11;
+                }
                     $paymentRow =  [
                         "voucher" => $fetchedArr['fact_voucher_number'],
                         "sr"=>'',
@@ -496,7 +507,7 @@ class FinanceController extends Controller {
                         "dt_value" => $transaction_date,
                         "fc_amount" => '0',
                         "amount" => $amount,
-                        "bank_code" => '',
+                        "bank_code" => $bankCode,
                         "bank_name" => $fetchedArr['bank'],
                         "account_no" => $fetchedArr['bank_acc_no'],
                         "payment_vendor_name" => '',
@@ -570,9 +581,9 @@ class FinanceController extends Controller {
                         "item_serial_number" => $fetchedArr['trans_type'],
                         "tax_code" => '',
                         "name" => '',
-                        "gst_hsn_code" => '',
-                        "sac_code" => '',
-                        "gst_state_name" => '',
+                        "gST_hSN_code" => '',
+                        "sAC_code" => '',
+                        "gST_state_name" => '',
                         "address_line_1" => '',
                         "address_line_2" => '',
                         "address_line_3" => '',
@@ -581,9 +592,9 @@ class FinanceController extends Controller {
                         "postal_code" => '',
                         "telephone_number" => '',
                         "mobile_phone_number" => '',
-                        "fax" => '',
+                        "fAX" => '',
                         "email" => '',
-                        "gst_identification_number_(GSTIN)" => '',
+                        "gST_identification_number_(GSTIN)" => '',
                     ];
 
                     $records['JOURNAL'][] = [
