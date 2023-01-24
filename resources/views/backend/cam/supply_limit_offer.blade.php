@@ -1246,10 +1246,10 @@
     var decimalregex = /^\d+(\.\d{0,2})?$/g;
     console.log(isNaN(decimalregex));
         if(xirr == ''){
-            setError('input[name=xirr]', 'please fill xirr');
+            setError('input[name=xirr]', 'Please fill XIRR');
             flag = false;
         }else if(isNaN(xirr) || !decimalregex.test(xirr)){
-            setError('input[name=xirr]', 'please enter valid data only');
+            setError('input[name=xirr]', 'Please enter valid data only');
             flag = false;
         }else if(parseFloat(xirr) > 100){
             setError('input[name=xirr]', 'XIRR value should be in between 1-100% only');
@@ -1263,16 +1263,16 @@
         var regex = /^[a-zA-Z\s]+$/;
         var isValid = regex.test(dsa_name)
         if(dsa_name == ''){
-            setError('input[name=dsa_name]', 'Please fill dsa name');
+            setError('input[name=dsa_name]', 'Please fill DSA name');
             flag = false;
         }else if(!isValid){
-            setError('input[name=dsa_name]', 'please enter valid data only');
+            setError('input[name=dsa_name]', 'Please enter valid data only');
             flag = false;
         }
 
         var decimalregex = /^\d+(\.\d{0,2})?$/g;
         if(payout == ''){
-            setError('input[name=payout]', 'please fill payout');
+            setError('input[name=payout]', 'Please fill payout');
             flag = false;
         }else if(isNaN(payout) || !decimalregex.test(payout)){
             setError('input[name=payout]', 'please enter valid data only');
@@ -1290,7 +1290,7 @@
             setError('input[name=payout_event]', 'Please fill payout event');
             flag = false;
         }else if(!eventValid){
-            setError('input[name=payout_event]', 'please enter valid data only');
+            setError('input[name=payout_event]', 'Please enter valid data only');
             flag = false;
         }
        
