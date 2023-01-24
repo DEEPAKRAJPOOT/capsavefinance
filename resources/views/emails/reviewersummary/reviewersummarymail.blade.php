@@ -123,7 +123,9 @@
                 @endif
                 <tr>
                     <td style="padding:8px 10px;font-size: 0.917rem; font-family: Calibri !important;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;"><b>XIRR %: </b></td>
-                    <td style="padding:8px 10px;font-size: 0.917rem; font-family: Calibri !important;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;">{{$leaseOffer->xirr}}</td>
+                    <td style="padding:8px 10px;font-size: 0.917rem; font-family: Calibri !important;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;">{{round($leaseOffer->xirr,2)}}%</td>
+                    <td></td>
+                    <td></td>
                 </tr>
                 <tr>
                     <td style="padding:8px 10px;font-size: 0.917rem; font-family: Calibri !important;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;"><b>DSA Applicable: </b></td>
@@ -206,7 +208,9 @@
                           </tr>
                           <tr>
                             <td style="padding:8px 10px;font-size: 0.917rem; font-family: Calibri !important;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;"><b>XIRR %: </b></td>
-                            <td style="padding:8px 10px;font-size: 0.917rem; font-family: Calibri !important;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;">{{$supplyOffer->xirr}}</td>
+                            <td style="padding:8px 10px;font-size: 0.917rem; font-family: Calibri !important;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;">{{round($supplyOffer->xirr,2)}}%</td>
+                            <td></td>
+                            <td></td>
                           </tr>
                             <tr>
                                 <td style="padding:8px 10px;font-size: 0.917rem; font-family: Calibri !important;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;"><b>DSA Applicable: </b></td>
