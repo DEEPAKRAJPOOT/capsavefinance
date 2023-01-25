@@ -251,6 +251,8 @@ class ReportsRepository extends BaseRepositories implements ReportInterface {
 			'customer_id'=> $invDisb->customer_id,
 			'invoice_no'=> $invDisb->invoice->invoice_no,
 			'disbursement_method'=> $disbursement_method,
+			'grace_period'=> $invDisb->grace_period,
+			'anchor_address'=> isset($invDisb->invoice->anchor) ? $invDisb->invoice->anchor->comp_addr : '',
 
 			// 'loan_ac'=>config('common.idprefix.APP').$invDisb->invoice->app_id,
 			// 'trans_date'=>$invDisb->disbursal->disburse_date,

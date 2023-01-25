@@ -61,6 +61,7 @@ class DisbursalReport extends BaseModel
         "Disbursement Method",
         "Net of interest_PF _Stamp",
         "Interest Borne By",
-        "Grace Period"
+        "Grace Period",
+        "Anchor Address"
     ];
 }
