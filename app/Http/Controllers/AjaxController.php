@@ -4150,7 +4150,7 @@ if ($err) {
        $invoiceSubmitID = InvoiceTrait::getInvoiceStatusByIds($request['invoice_id'],$request->currentstatus)->count();
        if(count($request['invoice_id']) > $invoiceSubmitID) {
             \DB::rollback();
-            return \response()->json(['status' => 0,'msg' => 'We are unable to process the selected Invoice as some Invoice has been already processed.']);
+            return \response()->json(['duplicatestatus' => 0,'msg' => 'We are unable to process the selected Invoice as some Invoice has been already processed.']);
         }
        $result = InvoiceTrait::checkInvoiceLimitExced($request); 
        foreach($request['invoice_id'] as $row)

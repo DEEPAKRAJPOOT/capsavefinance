@@ -468,21 +468,21 @@ function uploadFile(app_id,id)
                    if(data.msg=="")
                     {
                     //    localStorage.setItem('storageMsg', 'Invoice successfully moved');
-                        localStorage.setItem('storageMsg', JSON.stringify({text: 'Invoice successfully moved', type: 'success'}));
+                        localStorage.setItem('Msg', JSON.stringify({text: 'Invoice successfully moved', type: 'success'}));
+                       location.reload();
+                    } else if(data.duplicatestatus && data.duplicatestatus==0)
+                    {
+                       localStorage.setItem('Msg', JSON.stringify({text: data.msg, type: 'error'}));
+                       location.reload();
+                    }else
+                    {
+                      
+                       localStorage.setItem('Msg', 'You cannot move this invoice ('+data.msg+') to Approved tab, as customer/anchor/program limit has been exceeded  or invoice has been moved to exception cases.');
                        location.reload();
                     }
 
-                    if(data.status==0)
-                    {
-                        localStorage.setItem('storageMsg', JSON.stringify({text: data.msg, type: 'error'}));
-                       location.reload();
-                    }
-                    else
-                    {
-                      
-                       localStorage.setItem('storageMsg', 'You cannot move this invoice ('+data.msg+') to Approved tab, as customer/anchor/program limit has been exceeded  or invoice has been moved to exception cases.');
-                       location.reload();
-                    }
+                    
+                    
                }
             });
         } else
