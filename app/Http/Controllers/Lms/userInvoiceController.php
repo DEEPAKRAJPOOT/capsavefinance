@@ -223,6 +223,7 @@ class userInvoiceController extends Controller
             'state_no' => $businessWithAddr->state->state_no ?? '',
             'state_code' => $businessWithAddr->state->state_code ?? '',
             'gstin_no' => $businessWithAddr->business->gst->pan_gst_hash ?? '',
+            'biz_gst_state_code' => substr($businessWithAddr->business->gst->pan_gst_hash ?? '',0,2),
         ];
         if (empty($billingDetails['state_name'])) {
             $response['message'] = 'State Detail not found. Please update address with state first.';
