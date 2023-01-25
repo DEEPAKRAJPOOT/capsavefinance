@@ -13,6 +13,9 @@ use App\Http\Requests\Backend\CreateJournalRequest;
 use App\Http\Requests\Backend\CreateAccountRequest;
 use App\Helpers\FinanceHelper;
 use App\Helpers\FileHelper;
+use App\Inv\Repositories\Models\Master\FactTransType;
+use App\Inv\Repositories\Models\Master\FactJournalEntry;
+use App\Inv\Repositories\Models\Master\FactPaymentEntry;
 
 class FinanceController extends Controller {
 
@@ -515,7 +518,7 @@ class FinanceController extends Controller {
                         "code" => $code,
                         "remarks" => $fetchedArr['narration'],
                         "type" => '',
-                        "gl_code" => $GLcode,
+                        "gL_code" => $GLcode,
                         "remark" => '',
                         "upload_status" => '',
                         "vendor_code_exists" => '',
@@ -528,6 +531,11 @@ class FinanceController extends Controller {
         }
 
         $toExportData = $records;
+        $payments = $records['PAYMENT'];
+        foreach($payments as $key => $payment){
+            $payments[$key]['date'] = date('Y-m-d', strtotime($payment['date']));
+        }
+        $data = FactPaymentEntry::insert($payments);
         return $this->fileHelper->array_to_excel($toExportData, "Fact-Payment-$batch_no.xlsx");
     }
 
@@ -539,6 +547,13 @@ class FinanceController extends Controller {
             $where = ['batch_no' => $batch_no,'voucher_type' => 'Journal'];
         }
         $result = $this->finRepo->getTallyTxns($where);
+        $factTransDebit = $factTransCredit = [];
+        $factTransTypeData = FactTransType::get()->toArray();
+        foreach($factTransTypeData as $key => $code){
+            $factTransDebit[strtolower($code['trans_type'])] = $code['debit_gl_code'];
+            $factTransCredit[strtolower($code['trans_type'])] = $code['credit_gl_code'];
+        }
+        // dd($factTransDebit,$factTransCredit);
         $records = [];
         $records['JOURNAL'] = array();
         $cr_amount_sum = 0;
@@ -568,12 +583,14 @@ class FinanceController extends Controller {
                 }else{
                     $amount = $fetchedArr['amount'];
                 }
+                $debitGlCode = $factTransDebit[strtolower($fetchedArr['trans_type'])] ?? null;
+                $creditGlCode = $factTransCredit[strtolower($fetchedArr['trans_type'])] ?? null;
                 $is_first_n_old = (empty($transType) || empty($transDate) || ($transType == $fetchedArr['trans_type'] && $transDate == $trans_date));
                 $records['JOURNAL'][] = [
                         "voucher_no" => $fetchedArr['fact_voucher_number'],
                         "voucher_date"=> $transaction_date,
                         "voucher_narration" => ($entry_type == 'credit' ? $fetchedArr['trans_type'] : $fetchedArr['ledger_name']),
-                        "general_ledger_code" => '',
+                        "general_ledger_code" => $debitGlCode,
                         "document_class"=>$documentClass,
                         "d_/_c" => 'D',
                         "amount" => $amount,
@@ -601,7 +618,7 @@ class FinanceController extends Controller {
                         "voucher_no" => $fetchedArr['fact_voucher_number'],
                         "voucher_date"=> $transaction_date,
                         "voucher_narration" => ($entry_type == 'credit' ? $fetchedArr['ledger_name'] : $fetchedArr['trans_type']),
-                        "general_ledger_code" => '',
+                        "general_ledger_code" => $creditGlCode,
                         "document_class"=>$documentClass,
                         "d_/_c" => 'C',
                         "amount" => $amount,
@@ -609,9 +626,9 @@ class FinanceController extends Controller {
                         "item_serial_number" => $fetchedArr['trans_type'],
                         "tax_code" => '',
                         "name" => '',
-                        "gst_hsn_code" => '',
-                        "sac_code" => '',
-                        "gst_state_name" => '',
+                        "gST_hSN_code" => '',
+                        "sAC_code" => '',
+                        "gST_state_name" => '',
                         "address_line_1" => '',
                         "address_line_2" => '',
                         "address_line_3" => '',
@@ -620,14 +637,19 @@ class FinanceController extends Controller {
                         "postal_code" => '',
                         "telephone_number" => '',
                         "mobile_phone_number" => '',
-                        "fax" => '',
+                        "fAX" => '',
                         "email" => '',
-                        "gst_identification_number_(GSTIN)" => '',
+                        "gST_identification_number_(GSTIN)" => '',
                     ];
             }
         }
 
         $toExportData = $records;
+        $journals = $records['JOURNAL'];
+        foreach($journals as $key => $journal){
+            $journals[$key]['voucher_date'] = date('Y-m-d', strtotime($journal['voucher_date']));
+        }
+        $data = FactJournalEntry::insert($journals);
         return $this->fileHelper->array_to_excel($toExportData, "Fact-Journal-$batch_no.xlsx");
     }
 }
