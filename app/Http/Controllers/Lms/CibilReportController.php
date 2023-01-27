@@ -324,14 +324,31 @@ class CibilReportController extends Controller
     private function _getCRData($appBusiness, $date) {
       
         $user = $appBusiness->users;
-        $outstanding = $this->lmsRepo->getUnsettledTrans($user->user_id, ['trans_date'=>$date, 'trans_type_not_in' => [config('lms.TRANS_TYPE.MARGIN'),config('lms.TRANS_TYPE.NON_FACTORED_AMT')] ])->sum('outstanding');
+        $invDisb = $this->cibilRecord->invoice_disbursed;
+        $curdate = Helper::getSysStartDate();
+		    $curdate = Carbon::parse($curdate)->format('Y-m-d');
+        $dueDate = Carbon::parse($invDisb->payment_due_date);
+        $difference = $dueDate->diffInDays($curdate);
+        $isOverdue = $difference > $invDisb->grace_period;
+        //$outstanding = $this->lmsRepo->getUnsettledTrans($user->user_id, ['trans_date'=>$date, 'trans_type_not_in' => [config('lms.TRANS_TYPE.MARGIN'),config('lms.TRANS_TYPE.NON_FACTORED_AMT')] ])->sum('outstanding');
+        $outstanding = Helper::getCustomerUtilizedAmt($user->user_id);
         $settledAmt = $this->lmsRepo->getSettledTrans($user->user_id)->sum('settled_outstanding');
         $sanctionDate = $appBusiness->sanctionDate->created_at ?? NULL;
-        $prgmLimit = $appBusiness->prgmLimit->limit_amt ?? NULL;
-        $maxDpd = $this->lmsRepo->maxDpdTransaction($user->user_id);
+        //$prgmLimit = $appBusiness->prgmLimit->limit_amt ?? NULL;
+        $prgmLimit = Helper::getCustomerSanctionedAmt($user->user_id);
+        //$maxDpd = $this->lmsRepo->maxDpdTransaction($user->user_id);
+        $maxDPD = max(
+          $this->lmsRepo->getMaxDpdTransaction($user->user_id , config('lms.TRANS_TYPE.INTEREST'))->dpd??0,
+          $this->lmsRepo->getMaxDpdTransaction($user->user_id , config('lms.TRANS_TYPE.PAYMENT_DISBURSED'))->dpd??0
+        );
         $userData = isset($this->userWiseData[$user->user_id]) ? $this->userWiseData[$user->user_id] : null;
-        $od_days = isset($maxDpd) ? (int)$maxDpd : 0;
-        $od_outstanding = isset($userData) ? round($userData->od_outstanding, 2) : 0;
+        $od_outstanding = '';
+        if($isOverdue) {
+          $od_outstanding = isset($userData) ? round($userData->od_outstanding, 2) : 0;
+        } 
+        
+        $od_days =  isset($maxDPD) && $od_outstanding > 0  ? (int)$maxDPD : 0;
+
         $data[] = [
             'Ac No' => $this->formatedCustId,
             'Segment Identifier' => 'CR',
@@ -348,7 +365,7 @@ class CibilReportController extends Controller
             'Notional Amount of Out-standing Restructured Contracts' => NULL,
             'Loan Expiry / Maturity Date' => NULL,
             'Loan Renewal Date' => NULL,
-            'Asset Classification/Days Past Due (DPD)' => $od_days,
+            'Asset Classification/Days Past Due (DPD)' => $maxDPD,//$od_days,
             'Asset Classification Date' => NULL,
             'Amount Overdue / Limit Overdue' => $od_outstanding,
             'Overdue Bucket 01 ( 1 – 30 days)' => ($od_days >= 1 && $od_days <= 30 ? $od_outstanding : 0),
