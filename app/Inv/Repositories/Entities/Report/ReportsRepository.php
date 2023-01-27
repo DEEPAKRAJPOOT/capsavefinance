@@ -766,7 +766,6 @@ class ReportsRepository extends BaseRepositories implements ReportInterface {
 		})
 		->whereDate('int_accrual_start_dt','<=',$curdate)
 		->get();
-	
 		$outstandingData = self::getOutstandingData($curdate);
 		$sendMail = ($invDisbList->count() > 0)?true:false;
 		$result = [];
@@ -921,11 +920,19 @@ class ReportsRepository extends BaseRepositories implements ReportInterface {
 				else
 				  $maturityMaxbucket = "90 + Days"; 
 			}
+			$anchorDetails = $invDetails->anchor;
+            $salesUserDetails = $anchorDetails->salesUser;
+			$date = $invDisb->inv_due_date;
+			$dateOutsFormat = Carbon::createFromFormat('Y-m-d', $invDisb->payment_due_date);
+			$daysToAdd = (int)$disbDetails->grace_period;
+			$graceDate = $dateOutsFormat->addDays($daysToAdd);
+			$graceDate = Carbon::parse($graceDate)->format('d-m-Y');
 
 			$result[$invDisb->invoice_disbursed_id] = [
 				'custName' => $invDetails->business->biz_entity_name ?? '',
 				'customerId' => $invDetails->lms_user->customer_id ?? '',
 				'anchorName'=> $anchor_name,
+				'SubPrgmName'=> $invDetails->program->prgm_name ?? '',
 				'invoiceNo' => $invDetails->invoice_no,
 				'disbursementDate' => isset($disbDetails->funded_date) ? Carbon::parse($disbDetails->funded_date)->format('d-m-Y'):'',
 				'invoiceAmt' => round($disbDetails->request_amount,2),
@@ -963,7 +970,9 @@ class ReportsRepository extends BaseRepositories implements ReportInterface {
 				'maturityBucket' => $maturityMaxbucket,
 				'marginToRefunded' => round($margin_to_refunded,2),
 				'interestToRefunded' => round($interest_to_refunded,2),
-				'overdueToRefunded' => round($overdueinterest_to_refunded,2)
+				'overdueToRefunded' => round($overdueinterest_to_refunded,2),
+				'salesManager' => $salesUserDetails->f_name.' '. $salesUserDetails->m_name.' '. $salesUserDetails->l_name,
+				'gracePeriodEndDate' => $graceDate,
 			];
 			$invDisbList->forget($key);
 		}
