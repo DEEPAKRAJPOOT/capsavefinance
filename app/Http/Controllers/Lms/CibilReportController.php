@@ -330,25 +330,20 @@ class CibilReportController extends Controller
         $dueDate = Carbon::parse($invDisb->payment_due_date);
         $difference = $dueDate->diffInDays($curdate);
         $isOverdue = $difference > $invDisb->grace_period;
-        //$outstanding = $this->lmsRepo->getUnsettledTrans($user->user_id, ['trans_date'=>$date, 'trans_type_not_in' => [config('lms.TRANS_TYPE.MARGIN'),config('lms.TRANS_TYPE.NON_FACTORED_AMT')] ])->sum('outstanding');
-        $outstanding = Helper::getCustomerUtilizedAmt($user->user_id);
+        $outstanding = $this->_getSOAbalanceData($user->user_id)['SOA_Balance'] ?? 0;
         $settledAmt = $this->lmsRepo->getSettledTrans($user->user_id)->sum('settled_outstanding');
         $sanctionDate = $appBusiness->sanctionDate->created_at ?? NULL;
-        //$prgmLimit = $appBusiness->prgmLimit->limit_amt ?? NULL;
         $prgmLimit = Helper::getCustomerSanctionedAmt($user->user_id);
-        //$maxDpd = $this->lmsRepo->maxDpdTransaction($user->user_id);
         $maxDPD = max(
           $this->lmsRepo->getMaxDpdTransaction($user->user_id , config('lms.TRANS_TYPE.INTEREST'))->dpd??0,
           $this->lmsRepo->getMaxDpdTransaction($user->user_id , config('lms.TRANS_TYPE.PAYMENT_DISBURSED'))->dpd??0
         );
         $userData = isset($this->userWiseData[$user->user_id]) ? $this->userWiseData[$user->user_id] : null;
-        $od_outstanding = '';
+        $od_outstanding = NULL;
         if($isOverdue) {
           $od_outstanding = isset($userData) ? round($userData->od_outstanding, 2) : 0;
-        } 
-        
-        $od_days =  isset($maxDPD) && $od_outstanding > 0  ? (int)$maxDPD : 0;
-
+        }
+        $od_days =  isset($maxDPD) && $isOverdue ? (int)$maxDPD : 0;
         $data[] = [
             'Ac No' => $this->formatedCustId,
             'Segment Identifier' => 'CR',
@@ -544,4 +539,12 @@ class CibilReportController extends Controller
       return $diff;
     }
 
+    private function _getSOAbalanceData($userId){
+      $soaBalance = \DB::select('SELECT soa_outstanding as SOA_Outstanding 
+      FROM (SELECT user_id FROM rta_lms_users WHERE user_id = ? GROUP BY user_id ) AS a 
+      LEFT JOIN(SELECT b.user_id, (SUM(b.debit_amount) - SUM(b.credit_amount)) AS soa_outstanding 
+      FROM rta_customer_transaction_soa AS b LEFT JOIN rta_transactions AS c ON c.trans_id = b.trans_id 
+      WHERE c.soa_flag = 1 AND c.is_transaction = 1 GROUP BY c.user_id) AS d ON a.user_id = d.user_id', [$userId]);
+      return ['SOA_Balance' => round($soaBalance[0]->SOA_Outstanding, 2)];
+    }
 }
