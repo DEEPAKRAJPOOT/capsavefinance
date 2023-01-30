@@ -223,6 +223,7 @@ class userInvoiceController extends Controller
             'state_no' => $businessWithAddr->state->state_no ?? '',
             'state_code' => $businessWithAddr->state->state_code ?? '',
             'gstin_no' => $businessWithAddr->business->gst->pan_gst_hash ?? '',
+            'biz_gst_state_code' => substr($businessWithAddr->business->gst->pan_gst_hash ?? '',0,2),
         ];
         if (empty($billingDetails['state_name'])) {
             $response['message'] = 'State Detail not found. Please update address with state first.';
@@ -873,6 +874,8 @@ class userInvoiceController extends Controller
                         'cgst_amount' => $txnsRec['cgst_amt'],
                         'igst_rate' => $txnsRec['igst_rate'],
                         'igst_amount' => $txnsRec['igst_amt'],
+                        'description' => $txnsRec['desc'], 
+                        'settle_payment_desc' => $txnsRec['trans_date'],
                    ]; 
                    $totalGst = ($txnsRec['sgst_amt'] + $txnsRec['cgst_amt'] + $txnsRec['igst_amt']);
                    $totalGstRate = ($txnsRec['sgst_rate'] + $txnsRec['cgst_rate'] + $txnsRec['igst_rate']);
