@@ -469,7 +469,7 @@ class FinanceController extends Controller {
                 $new[] = $fetchedArr = (array)$value;
                 $voucherDate = date('d-m-Y',strtotime($fetchedArr['voucher_date']));
                 $trans_date = date('Y-m-d', strtotime($fetchedArr['voucher_date'])); 
-                $transaction_date = $fetchedArr['transaction_date']?Helpers::utcToIst($fetchedArr['transaction_date'],'Y-m-d H:i:s', 'Y-m-d'):NULL;
+                $transaction_date = $fetchedArr['transaction_date']?Helpers::utcToIst($fetchedArr['transaction_date'],'Y-m-d H:i:s', 'd-m-Y'):NULL;
                 $entry_type = strtolower($fetchedArr['entry_type']);
                 $is_first_n_old = (empty($transType) || empty($transDate) || ($transType == $fetchedArr['trans_type'] && $transDate == $trans_date));
                 $code = '2SG00000S';
