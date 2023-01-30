@@ -54,10 +54,14 @@ class DisbursalReport extends BaseModel
         "Received",
         "Net Receivable",
         "Adhoc interest",
+        "Customer ID",
+        "Invoice No",
         "Net Disbursement",
         "Gross",
+        "Disbursement Method",
         "Net of interest_PF _Stamp",
         "Interest Borne By",
-        "Grace Period"
+        "Grace Period",
+        "Anchor Address"
     ];
 }

@@ -886,8 +886,11 @@ class ReportController extends Controller
             ->setCellValue('AO'.$rows, 'Adhoc interest')
             ->setCellValue('AP'.$rows, 'Net Disbursement')
             ->setCellValue('AQ'.$rows, 'Gross')
-            ->setCellValue('AR'.$rows, 'Net of interest, PF & Stamp');
-        $sheet->getActiveSheet()->getStyle('A'.$rows.':AR'.$rows)->applyFromArray(['font' => ['bold'  => true]]);
+            ->setCellValue('AR'.$rows, 'Net of interest, PF & Stamp')
+            ->setCellValue('AS'.$rows, 'Interest Borne By')
+            ->setCellValue('AT'.$rows, 'Grace Period (Days)')
+            ->setCellValue('AU'.$rows, 'Anchor Address');
+        $sheet->getActiveSheet()->getStyle('A'.$rows.':AU'.$rows)->applyFromArray(['font' => ['bold'  => true]]);
         $rows++;
         foreach($exceldata as $rowData){
 			
@@ -935,7 +938,10 @@ class ReportController extends Controller
             ->setCellValue('AO'.$rows, '---')
             ->setCellValue('AP'.$rows, number_format($rowData['net_disbursement'],2))
             ->setCellValue('AQ'.$rows, !empty($rowData['gross']) ? $rowData['gross'] : '---')
-            ->setCellValue('AR'.$rows, !empty($rowData['net_of_interest']) ? $rowData['net_of_interest'] : '---');
+            ->setCellValue('AR'.$rows, !empty($rowData['net_of_interest']) ? $rowData['net_of_interest'] : '---')
+            ->setCellValue('AS'.$rows, !empty($rowData['interest_borne_by']) ? $rowData['interest_borne_by'] : '---')
+            ->setCellValue('AT'.$rows, !empty($rowData['grace_period']) ? $rowData['grace_period'] : '---')
+            ->setCellValue('AU'.$rows, !empty($rowData['anchor_address']) ? $rowData['anchor_address'] : '---');
             $rows++;
         }
         

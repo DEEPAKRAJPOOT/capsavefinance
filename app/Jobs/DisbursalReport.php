@@ -85,7 +85,7 @@ class DisbursalReport implements ShouldQueue
             $filePath                = $this->downloadDailyDisbursalReport($data, $reportName);
             $emailData['to']      = $this->emailTo;
             $emailData['attachment'] = $filePath;
-            \Event::dispatch("NOTIFY_DISBURSAL_REPORT", serialize($emailData));
+            // \Event::dispatch("NOTIFY_DISBURSAL_REPORT", serialize($emailData));
         }
     }
 
@@ -136,12 +136,16 @@ class DisbursalReport implements ShouldQueue
             ->setCellValue('AM'.$rows, 'Received')
             ->setCellValue('AN'.$rows, 'Net Receivable')
             ->setCellValue('AO'.$rows, 'Adhoc interest')
-            ->setCellValue('AP'.$rows, 'Net Disbursement')
-            ->setCellValue('AQ'.$rows, 'Gross')
-            ->setCellValue('AR'.$rows, 'Net of interest, PF & Stamp')
-            ->setCellValue('AS'.$rows, 'Interest Borne By')
-            ->setCellValue('AT'.$rows, 'Grace Period (Days)');
-        $sheet->getActiveSheet()->getStyle('A'.$rows.':AT'.$rows)->applyFromArray(['font' => ['bold'  => true]]);
+            ->setCellValue('AP'.$rows, 'Customer ID')
+            ->setCellValue('AQ'.$rows, 'Invoice No')
+            ->setCellValue('AR'.$rows, 'Net Disbursement')
+            ->setCellValue('AS'.$rows, 'Gross')
+            ->setCellValue('AT'.$rows, 'Disbursement Method')
+            ->setCellValue('AU'.$rows, 'Net of interest, PF & Stamp')
+            ->setCellValue('AV'.$rows, 'Interest Borne By')
+            ->setCellValue('AW'.$rows, 'Grace Period (Days)')
+            ->setCellValue('AX'.$rows, 'Anchor Address');
+        $sheet->getActiveSheet()->getStyle('A'.$rows.':AX'.$rows)->applyFromArray(['font' => ['bold'  => true]]);
         $rows++;
         foreach($exceldata as $rowData){
 			
@@ -187,11 +191,15 @@ class DisbursalReport implements ShouldQueue
             ->setCellValueExplicit('AM'.$rows, number_format($rowData['received'],2), \PHPExcel_Cell_DataType::TYPE_STRING)
             ->setCellValueExplicit('AN'.$rows, number_format($rowData['net_receivalble'],2), \PHPExcel_Cell_DataType::TYPE_STRING)
             ->setCellValueExplicit('AO'.$rows, '---', \PHPExcel_Cell_DataType::TYPE_STRING)
-            ->setCellValueExplicit('AP'.$rows, number_format($rowData['net_disbursement'],2), \PHPExcel_Cell_DataType::TYPE_STRING)
-            ->setCellValueExplicit('AQ'.$rows, !empty($rowData['gross']) ? $rowData['gross'] : '---', \PHPExcel_Cell_DataType::TYPE_STRING)
-            ->setCellValueExplicit('AR'.$rows, !empty($rowData['net_of_interest']) ? $rowData['net_of_interest'] : '---', \PHPExcel_Cell_DataType::TYPE_STRING)
-            ->setCellValueExplicit('AS'.$rows, !empty($rowData['interest_borne_by']) ? $rowData['interest_borne_by'] : '---', \PHPExcel_Cell_DataType::TYPE_STRING)
-            ->setCellValueExplicit('AT'.$rows, !empty($rowData['grace_period']) ? $rowData['grace_period'] : '---', \PHPExcel_Cell_DataType::TYPE_STRING);
+            ->setCellValueExplicit('AP'.$rows, $rowData['customer_id'], \PHPExcel_Cell_DataType::TYPE_STRING)
+            ->setCellValueExplicit('AQ'.$rows, $rowData['invoice_no'], \PHPExcel_Cell_DataType::TYPE_STRING)
+            ->setCellValueExplicit('AR'.$rows, number_format($rowData['net_disbursement'],2), \PHPExcel_Cell_DataType::TYPE_STRING)
+            ->setCellValueExplicit('AS'.$rows, !empty($rowData['gross']) ? $rowData['gross'] : '---', \PHPExcel_Cell_DataType::TYPE_STRING)
+            ->setCellValueExplicit('AT'.$rows, $rowData['disbursement_method'], \PHPExcel_Cell_DataType::TYPE_STRING)
+            ->setCellValueExplicit('AU'.$rows, !empty($rowData['net_of_interest']) ? $rowData['net_of_interest'] : '---', \PHPExcel_Cell_DataType::TYPE_STRING)
+            ->setCellValueExplicit('AV'.$rows, !empty($rowData['interest_borne_by']) ? $rowData['interest_borne_by'] : '---', \PHPExcel_Cell_DataType::TYPE_STRING)
+            ->setCellValueExplicit('AW'.$rows, !empty($rowData['grace_period']) ? $rowData['grace_period'] : '---', \PHPExcel_Cell_DataType::TYPE_STRING)
+            ->setCellValueExplicit('AX'.$rows, !empty($rowData['anchor_address']) ? $rowData['anchor_address'] : '---', \PHPExcel_Cell_DataType::TYPE_STRING);
             $rows++;
         }
 

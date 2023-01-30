@@ -141,11 +141,15 @@ class DisbursalReport extends Command
                             "Received"                              => str_replace(',', '', $dataRecord['Received']),
                             "Net Receivable"                        => str_replace(',', '', $dataRecord['Net Receivable']),
                             "Adhoc interest"                        => str_replace(',', '', $dataRecord['Adhoc interest']),
+                            "Customer ID"                           => $dataRecord['Customer ID'], //ADD NEW C
+                            "Invoice No"                            => $dataRecord['Invoice No'], //ADD NEW C
                             "Net Disbursement"                      => str_replace(',', '', $dataRecord['Net Disbursement']),
                             "Gross"                                 => str_replace(',', '', $dataRecord['Gross']),
+                            "Disbursement Method"                   => $dataRecord['Disbursement Method'], //ADD NEW C
                             "Net of interest_PF _Stamp"             => $dataRecord['Net of interest_PF _Stamp'],
                             "Interest Borne By"                     => $dataRecord['Interest Borne By'],
                             "Grace Period"                          => $dataRecord['Grace Period'],
+                            "Anchor Address"                          => $dataRecord['Anchor Address'],
                         ]);
                     }
                 }        
