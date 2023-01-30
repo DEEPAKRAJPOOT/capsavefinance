@@ -530,6 +530,31 @@ class FinanceController extends Controller {
             }
         }
 
+        if (empty($records['PAYMENT'])) {
+            $records['PAYMENT'][] =  [
+                "voucher" => '',
+                "sr"=>'',
+                "date" => '',
+                "description" => '',
+                "chq_/_ref_number"=> '',
+                "dt_value" => '',
+                "fc_amount" => '',
+                "amount" => '',
+                "bank_code" => '',
+                "bank_name" => '',
+                "account_no" => '',
+                "payment_vendor_name" => '',
+                "paid_to_client" => '',
+                "code" => '',
+                "remarks" => '',
+                "type" => '',
+                "gL_code" => '',
+                "remark" => '',
+                "upload_status" => '',
+                "vendor_code_exists" => '',
+            ];
+        }
+
         $toExportData = $records;
         $payments = $records['PAYMENT'];
         foreach($payments as $key => $payment){
@@ -642,6 +667,36 @@ class FinanceController extends Controller {
                         "gST_identification_number_(GSTIN)" => '',
                     ];
             }
+        }
+
+        if (empty($records['JOURNAL'])) {
+            $records['JOURNAL'][] =  [
+                "voucher_no" => '',
+                "voucher_date"=> '',
+                "voucher_narration" => '',
+                "general_ledger_code" => '',
+                "document_class"=> '',
+                "d_/_c" => '',
+                "amount" => '',
+                "description" => '',
+                "item_serial_number" => '',
+                "tax_code" => '',
+                "name" => '',
+                "gST_hSN_code" => '',
+                "sAC_code" => '',
+                "gST_state_name" => '',
+                "address_line_1" => '',
+                "address_line_2" => '',
+                "address_line_3" => '',
+                "city" => '',
+                "country" => '',
+                "postal_code" => '',
+                "telephone_number" => '',
+                "mobile_phone_number" => '',
+                "fAX" => '',
+                "email" => '',
+                "gST_identification_number_(GSTIN)" => '',
+            ];
         }
 
         $toExportData = $records;
