@@ -418,10 +418,6 @@ class ManualApportionmentHelper{
                 ->whereDate('trans_date','>=',$invdueDate)
                 ->whereDate('trans_date','<=',$intAccrualDate)
                 ->whereDate('due_date',$dueDate)
-                ->where(function($query)use($invdueDate,$intAccrualDt){
-                    $firtOfMonth = Carbon::parse($intAccrualDt)->firstOfMonth()->format('Y-m-d');
-                    $query->whereDate('trans_date','<',$firtOfMonth);
-                })
                 ->get()
                 ->filter(function($item){
                     return $item->outstanding > 0;
@@ -437,10 +433,6 @@ class ManualApportionmentHelper{
                 ->where('entry_type','=',0)
                 ->whereDate('trans_date','<=',$intAccrualDate)
                 ->whereDate('due_date',$dueDate)
-                ->where(function($query)use($invdueDate,$intAccrualDt){
-                    $firtOfMonth = Carbon::parse($intAccrualDt)->firstOfMonth()->format('Y-m-d');
-                    $query->whereDate('trans_date','<',$firtOfMonth);
-                })
                 ->get()
                 ->filter(function($item){
                     return $item->outstanding > 0;
