@@ -1993,4 +1993,8 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
 				->whereIn('status', [7,8])
 				->get();
 	}
+	public function getDisbursedData($data)
+	{
+		return Disbursal::select('updated_by','is_disbursed')->where($data);
+	}
 }

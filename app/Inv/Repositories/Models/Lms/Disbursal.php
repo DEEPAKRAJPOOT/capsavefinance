@@ -59,11 +59,17 @@ class Disbursal extends BaseModel {
 		'status_id',
 		'disburse_type',
 		'status_update_time',
+		'is_disbursed',
 		'created_at',
 		'created_by',
 		'updated_at',
 		'updated_by',
 	];
+
+	CONST DISBURSAL_PENDING    = 0;
+    CONST DISBURSAL_PROCESSING = 2;
+    CONST DISBURSAL_PROCESSED  = 3;
+    CONST DISBURSAL_DISBURED   = 1;
 
 	/**
 	 * Get App Program Offer 

@@ -118,7 +118,8 @@ class ChargeController extends Controller
   
       
     public function saveManualCharges(Request $request)
-       {  
+       { 
+        try { 
            $getUserState = $this->lmsRepo->getUserAddress($request->app_id);
            $comAddrState = $this->lmsRepo->companyAdress();
            $getAmount =  str_replace(',', '', $request->amount);
@@ -262,13 +263,10 @@ class ChargeController extends Controller
                         'created_by' =>  $id,
                         'created_at' =>  $mytime
                     ];
-                
                     $chrgTransId = $this->lmsRepo->saveChargeTrans($arr);  
-              
                   if( $chrgTransId)
                   {
-                        
-                          if($res)
+                        if($res)
                         {
                                 $whereActivi['activity_code'] = 'save_manual_charges';
                                 $activity = $this->masterRepo->getActivity($whereActivi);
@@ -278,28 +276,38 @@ class ChargeController extends Controller
                                     $arrActivity['app_id'] = $request->get('app_id');
                                     $this->activityLogByTrait($activity_type_id, $activity_desc, response()->json($request->all()), $arrActivity);
                                 } 
-                            
+                                \DB::commit();
                                 Session::flash('message', 'Data has been saved');
                                 return redirect()->route('manage_charge', ['user_id' => $request->user_id]);
                                  
                         }
                         else
                         {
-                                Session::flash('message', 'Something went wrong, Please try again');
-                                return redirect()->route('manage_charge', ['user_id' => $request->user_id]);
+                            \DB::rollback();
+                            Session::flash('message', 'Something went wrong, Please try again');
+                            return redirect()->route('manage_charge', ['user_id' => $request->user_id]);
                         }
                   }
                    else
                         {
-                                Session::flash('message', 'Something went wrong1, Please try again');
-                                return redirect()->route('manage_charge', ['user_id' => $request->user_id]);
+                            \DB::rollback();
+                            Session::flash('message', 'Something went wrong1, Please try again');
+                            return redirect()->route('manage_charge', ['user_id' => $request->user_id]);
                         }
                  
                  }
                         else {
-                               Session::flash('message', 'Something went wrong2, Please try again');
-                              return redirect()->route('manage_charge', ['user_id' => $request->user_id]);
+                            \DB::rollback();
+                            Session::flash('message', 'Something went wrong2, Please try again');
+                            return redirect()->route('manage_charge', ['user_id' => $request->user_id]);
                       }
+
+                    } catch (Exception $ex) {
+                        \DB::rollback();
+                        return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
+                    }
+
+
         
        }
       

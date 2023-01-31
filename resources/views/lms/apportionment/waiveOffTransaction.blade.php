@@ -20,7 +20,7 @@
 </style>
 @endsection
 @section('content')
-<form action="{{route('apport_waiveoff_save', ['trans_id' => $TransDetail->trans_id, 'payment_id' => $payment_id, 'sanctionPageView'=>$sanctionPageView])}}" target="_top" method="post">
+<form action="{{route('apport_waiveoff_save', ['trans_id' => $TransDetail->trans_id, 'payment_id' => $payment_id, 'sanctionPageView'=>$sanctionPageView])}}" target="_top" method="post" id="waveofffsubmitform">
     @csrf
     <div class="form-inline">
         <div class="col">
@@ -120,6 +120,7 @@
          $('#comment_error').html('Comment can not empty');
          return false;
        }
+       $("#submit").hide();
     });
 </script>
 @endsection

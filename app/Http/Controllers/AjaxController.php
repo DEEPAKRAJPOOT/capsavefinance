@@ -3186,22 +3186,14 @@ if ($err) {
     
    public function updateInvoiceApprove(Request $request)
    {
-        
+        \DB::beginTransaction();
+        try {
            if($request->status==8)
            {
-              return  InvoiceTrait::updateApproveStatus($request);
-              /*
-              if ($result == 2) {
-                    $invoice_id = $request->invoice_id;
-                    $attr=[];
-                    $attr['invoice_id'] = $invoice_id;
-                    $attr['status'] = 28;
-                    $attr['remark'] = 'Limit Exceed';
-                    $attr['invoice_id'] = $invoice_id;
-                    InvoiceTrait::updateInvoiceData($attr);
-              }
-               * 
-               */              
+               $statuscheck = InvoiceTrait::updateApproveStatus($request);
+               \DB::commit();
+               return $statuscheck;
+            
            }elseif($request->status==14)
            {
             $invoice_id = $request->invoice_id;
@@ -3210,7 +3202,8 @@ if ($err) {
              $uid = Auth::user()->user_id;
              InvoiceStatusLog::saveInvoiceStatusLog($invoice_id,$request->status);
               $res = BizInvoice::where(['invoice_id' =>$invoice_id])->update(['status_id' =>$request->status,'status_update_time' => $cDate,'updated_by' =>$uid]);
-             return \Response::json(['status' => $res]);
+              \DB::commit();
+              return \Response::json(['status' => $res]);
            }
            else
            {
@@ -3244,9 +3237,14 @@ if ($err) {
                     $activity_desc = 'Update Invoice Approve, Approve Tab (Manage Invoice)';
                     $arrActivity['app_id'] = null;
                     $this->activityLogByTrait($activity_type_id, $activity_desc, response()->json($request->all()), $arrActivity);
-                }                
+                }
+                \DB::commit();                
               return \Response::json(['status' => $res]);
            }
+        } catch (Exception $ex) {
+            \DB::rollback();
+            return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
+        } 
    }
   
     public function getFiLists(DataProviderInterface $dataProvider, Request $request){
@@ -4147,6 +4145,13 @@ if ($err) {
     
    function updateBulkInvoice(Request $request)
    {
+       \DB::beginTransaction();
+       try {
+       $invoiceSubmitID = InvoiceTrait::getInvoiceStatusByIds($request['invoice_id'],$request->currentstatus)->count();
+       if(count($request['invoice_id']) > $invoiceSubmitID) {
+            \DB::rollback();
+            return \response()->json(['duplicatestatus' => 0,'msg' => 'We are unable to process the selected Invoice as some Invoice has been already processed.']);
+        }
        $result = InvoiceTrait::checkInvoiceLimitExced($request); 
        foreach($request['invoice_id'] as $row)
        {  
@@ -4201,8 +4206,13 @@ if ($err) {
             $activity_desc = 'Update bulk and Disburse Invoice (Pending, Approved Tab), Approve (Manage Invoice)';
             $arrActivity['app_id'] = null;
             $this->activityLogByTrait($activity_type_id, $activity_desc, response()->json($request->all()), $arrActivity);
-        } 
-      return \response()->json(['status' => 1,'msg' => substr($result,0,-1)]); 
+        }
+        \DB::commit(); 
+      return \response()->json(['status' => 1,'msg' => substr($result,0,-1)]);
+    } catch (Exception $ex) {
+        \DB::rollback();
+        return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
+    } 
        
    }  
    /**
