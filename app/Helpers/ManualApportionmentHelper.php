@@ -405,11 +405,8 @@ class ManualApportionmentHelper{
         $odTransactions = new collection();
         $transactions = new collection();
         $transactionList = [];
-
-        $check1 = $checkByPass;
         if($payFreq == 1){
-            if((strtotime($endOfMonthDate) == strtotime($intAccrualDate) ||  $check1 )){
-
+            if((strtotime($endOfMonthDate) == strtotime($intAccrualDate))){
                 $intTransactions = TransactionsRunning::where('invoice_disbursed_id','=',$invDisbId)
                 ->where('trans_type','=',config('lms.TRANS_TYPE.INTEREST'))
                 ->where('entry_type','=',0)
@@ -423,9 +420,7 @@ class ManualApportionmentHelper{
             }
         }
         if($payFreq == 2){
-
-            if((strtotime($endOfMonthDate) == strtotime($intAccrualDate) ||  $check1 )){
-
+            if((strtotime($endOfMonthDate) == strtotime($intAccrualDate))){
                 $intTransactions = TransactionsRunning::where('invoice_disbursed_id','=',$invDisbId)
                 ->where('trans_type','=',config('lms.TRANS_TYPE.INTEREST'))
                 ->where('entry_type','=',0)
@@ -436,11 +431,9 @@ class ManualApportionmentHelper{
                     return $item->outstanding > 0;
                 });
             }
-
         }
         elseif($payFreq == 3){
-            
-            if( ($check1 || strtotime($invdueDate) == strtotime($intAccrualDate)) && strtotime($intAccrualDate) >= strtotime($invdueDate)){
+            if((strtotime($invdueDate) == strtotime($intAccrualDate)) && strtotime($intAccrualDate) >= strtotime($invdueDate)){
                 $intTransactions = TransactionsRunning::where('invoice_disbursed_id','=',$invDisbId)
                 ->where('trans_type','=',config('lms.TRANS_TYPE.INTEREST'))
                 ->where('entry_type','=',0)
@@ -454,8 +447,7 @@ class ManualApportionmentHelper{
         }
         
         //Overdue Posting
-        if( ((strtotime($endOfMonthDate) == strtotime($intAccrualDate)) && strtotime($intAccrualDate) >= strtotime($odStartDate)) || $checkByPass){
-        
+        if( ((strtotime($endOfMonthDate) == strtotime($intAccrualDate)) && strtotime($intAccrualDate) >= strtotime($odStartDate))){
             $odTransactions = TransactionsRunning::where('invoice_disbursed_id','=',$invDisbId)
             ->whereIn('trans_type',[config('lms.TRANS_TYPE.INTEREST'),config('lms.TRANS_TYPE.INTEREST_OVERDUE')])
             ->where('entry_type','=',0)
