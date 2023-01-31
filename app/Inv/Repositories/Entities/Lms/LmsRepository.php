@@ -744,7 +744,7 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
 
    public function getRequestList($request)
    {
-		return RefundReq::where('status','=',$request->status);
+		return RefundReq::where('status','=',$request->status)->orderby('updated_at', 'desc');
    }
 
    public function createBatch()
@@ -1985,5 +1985,12 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
 		$data = Payment::where('unr_no',$unrNumber)
 						->whereNotIn('user_id',[$userId])->first();
 		return $data;
+	}
+
+	public function findRefundByRefundReqId($RefundReqId)
+	{
+		return RefundReq::where('refund_req_id', $RefundReqId)
+				->whereIn('status', [7,8])
+				->get();
 	}
 }

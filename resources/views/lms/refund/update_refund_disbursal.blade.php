@@ -66,7 +66,7 @@ $(document).ready(function () {
 
 		$('#manualDisburse').validate();
 
-		$("#savedocument").click(function() {
+		$("#submitManualDisburse").click(function() {
 			if($('#manualDisburse').valid()) {
 				$('form#manualDisburse').submit();
 				$("#submitManualDisburse").attr("disabled","disabled");

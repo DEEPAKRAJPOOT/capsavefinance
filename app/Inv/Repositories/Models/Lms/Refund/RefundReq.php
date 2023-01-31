@@ -55,13 +55,19 @@ class RefundReq extends BaseModel {
         'acc_no',
         'tran_no',
         'actual_refund_date',
-        'status',  
+        'status', 
+        'process_status', 
         'comment',  
         'created_at',  
         'created_by',  
         'updated_at',  
         'updated_by'
     ];
+
+    CONST REDUND_PENDING    = 1;
+    CONST REDUND_PROCESSING = 2;
+    CONST REDUND_PROCESSED  = 3;
+    CONST REDUND_COMPLETED  = 4;
 
     public function payment(){
         return $this->belongsTo('App\Inv\Repositories\Models\Payment','payment_id','payment_id');
@@ -111,6 +117,13 @@ class RefundReq extends BaseModel {
             ->join('payments', 'payments.payment_id', '=', 'lms_refund_req.payment_id')
             ->whereIn('refund_req_id', $ids)
             ->groupBy('payments.user_id')
+            ->get();
+    }
+
+
+    public static function getRefundRqBypaymentIds($payment_id) {
+        return self::select('payment_id')
+            ->where('payment_id', $payment_id)
             ->get();
     }
 

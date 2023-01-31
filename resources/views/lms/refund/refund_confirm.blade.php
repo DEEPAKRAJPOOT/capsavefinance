@@ -11,7 +11,8 @@
 	}
 	$totalCustomer = count($cust);
 @endphp
-<form id="manualDisburse" method="POST" action="{{ Route('refund_offline') }}" target="_top">
+
+<form id="manualDisburse" method="POST" action="{{ Route('refund_offline') }}" target="_top" >
 <div class="row">
 		<input type="hidden" value="{{ $transIds ?? '' }}" name="transaction_ids" id="transaction_ids">
 		@csrf
@@ -47,7 +48,6 @@
 </form>
 @endsection
 @section('jscript')
-
 <script type="text/javascript">
 	$('.datepicker-dis-fdate').datetimepicker({
         useCurrent:true,
