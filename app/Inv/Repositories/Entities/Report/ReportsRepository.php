@@ -813,7 +813,8 @@ class ReportsRepository extends BaseRepositories implements ReportInterface {
 			$odAdjRef = $invDisb->transactions->where('entry_type',0)->whereIn('link_trans_id',$overdueinterest_to_refundedIds)->sum('amount');
 			$overdueinterest_to_refunded = $overdueinterest_to_refunded-$odAdjRef > 0 ? $overdueinterest_to_refunded-$odAdjRef : 0;
 
-			$margin_to_refunded = $invDisb->transactions->where('trans_type','10')->where('entry_type',1)->sum('settled_outstanding');
+			$marginIds = $invDisb->transactions->where('trans_type','10')->where('entry_type',1)->whereNull('parent_trans_id')->where('is_transaction','1')->where('soa_flag','1')->pluck('trans_id')->toArray();
+			$margin_to_refunded = $invDisb->transactions->where('trans_type','32')->where('entry_type',1)->whereIn('link_trans_id',$marginIds)->sum('amount');
 			$margin_to_refunded = $margin_to_refunded > 0 ? $margin_to_refunded : 0;
 
 			// if($totalOutstanding <= 0 && $interest_to_refunded <= 0 && $margin_to_refunded <= 0 && $overdueinterest_to_refunded <= 0 && $marginOutstanding <= 0){
@@ -1218,17 +1219,7 @@ class ReportsRepository extends BaseRepositories implements ReportInterface {
 			$resultValue[$chrgOut->customer_id]['Outstanding_Amount'] = isset($chrgOut->Outstanding_Amount) ? number_format($chrgOut->Outstanding_Amount,2) : 0;
 		}
 
-		$nonFactorOutstanding = DB::select('SELECT temp.customer_id AS customer_id,
-		SUM(temp.out_amt) AS outstandingAmount
-		FROM (
-		SELECT a.user_id, b.customer_id,(a.amount - IF(SUM(d.amount)>0,SUM(d.amount),0))AS out_amt
-		FROM rta_transactions AS a
-		JOIN (SELECT * FROM rta_lms_users GROUP BY user_id) AS b ON a.user_id = b.user_id
-		JOIN rta_customer_transaction_soa AS c ON c.trans_id = a.trans_id
-		LEFT JOIN rta_transactions AS d ON a.trans_id = d.link_trans_id
-		WHERE a.trans_type = 35 AND a.entry_type = 1 AND a.`is_transaction` = 1 AND a.`soa_flag` = 1
-		GROUP BY a.trans_id) AS temp
-		GROUP BY temp.user_id');
+		$nonFactorOutstanding = DB::select('SELECT temp.customer_id AS customer_id, SUM(temp.out_amt) AS outstandingAmount FROM ( SELECT a.user_id, b.customer_id, (d.settled_outstanding) AS out_amt FROM rta_transactions AS a JOIN (SELECT * FROM rta_lms_users GROUP BY user_id) AS b ON a.user_id = b.user_id LEFT JOIN rta_transactions AS d ON a.trans_id = d.link_trans_id AND d.trans_type = 32 AND d.entry_type = 1 WHERE a.trans_type = 35 AND a.entry_type = 1 AND a.`is_transaction` = 1 AND a.`soa_flag` = 1 ) AS temp GROUP BY temp.user_id');
 		foreach($nonFactorOutstanding as $key => $nonfactorOut) {
 			$resultValue[$nonfactorOut->customer_id]['outstandingAmount'] = number_format($nonfactorOut->outstandingAmount,2);
 		}
