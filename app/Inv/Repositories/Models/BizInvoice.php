@@ -629,4 +629,8 @@ class BizInvoice extends BaseModel
         return $this->hasMany('App\Inv\Repositories\Models\AppStatusLog','app_id','app_id')->where('status_id',50)->latest();
     }    
     
+    // function roleUser()
+    //  {
+    //     return $this->hasMany('App\Inv\Repositories\Models\Master\RoleUser', 'user_id','supplier_id');  
+    //  }
 }
