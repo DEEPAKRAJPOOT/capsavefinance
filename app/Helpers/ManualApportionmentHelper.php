@@ -42,6 +42,9 @@ class ManualApportionmentHelper{
     }
 
     public function transactionPostingAdjustment($invDisbId, $apportionmentId = NULL){
+        
+        $currentdate =  Helpers::getSysStartDate();
+        $curdate = Carbon::parse($currentdate)->setTimezone(config('common.timezone'))->format('Y-m-d');
         $transactionList = [];
         $amount = 0.00;
 
@@ -66,9 +69,6 @@ class ManualApportionmentHelper{
             ->whereIn('trans_type',[config('lms.TRANS_TYPE.INTEREST'),config('lms.TRANS_TYPE.INTEREST_OVERDUE')])
             ->get();
         
-        $currentdate =  Helpers::getSysStartDate();
-        $curdate = Carbon::parse($currentdate)->format('Y-m-d');
-            
         foreach($transactions as $trans){
             $tdsRate = Tds::getActiveTdsBaseRate($trans->trans_date);
 
@@ -77,10 +77,9 @@ class ManualApportionmentHelper{
             $refundFlag = true;
             $actualAmount = $trans->actInterest;
             $actualAmount = ($actualAmount > $amount) ? $amount : $actualAmount;
-            if(is_null($trans->trans_running_id) && $payFreq == 1 /*&& strtotime($curdate) < strtotime($paymentDueDate)  && $interest_borne_by == '2'*/ && $principalTrans->outstanding > 0 ){
+            if(is_null($trans->trans_running_id) && $payFreq == 1 && $principalTrans->outstanding > 0 ){
                 if(strtotime($curdate) < strtotime($paymentDueDate)){
                     $actualAmount = $amount;
-                    //$refundFlag = false;
                 }
             }
             
@@ -395,9 +394,8 @@ class ManualApportionmentHelper{
         }
     }
 
-    public function runningToTransPosting($invDisbId, $intAccrualDt, $payFreq, $invdueDate, $odStartDate, $checkByPass = false){
-        $currDate = Helpers::getSysStartDate();
-        $dueDate = Carbon::parse($currDate)->setTimezone(config('common.timezone'))->format('Y-m-d');
+    public function runningToTransPosting($invDisbId, $intAccrualDt, $payFreq, $invdueDate, $odStartDate, $currDate = NULL){
+        $dueDate = Carbon::parse($currDate)->format('Y-m-d');
         $intAccrualDate = $intAccrualDt;
         $invdueDate = $this->subDays($invdueDate,1);
         $graceStartDate = $invdueDate;
@@ -584,7 +582,7 @@ class ManualApportionmentHelper{
         return $Dr-$Cr;
     }
     
-    public function overDuePosting($invDisbId, $userId, $payFreq, $transDate, $gStartDate, $gEndDate){
+    public function overDuePosting($invDisbId, $userId, $payFreq, $transDate, $gStartDate, $gEndDate, $curdate){
         $overdues = InterestAccrual::select(\DB::raw("
         sum(accrued_interest) as totalInt, 
         max(interest_date) as interestDate, 
@@ -596,8 +594,7 @@ class ManualApportionmentHelper{
         TransactionsRunning::where('invoice_disbursed_id','=',$invDisbId)
         ->whereDate('trans_date','>=',$transDate)
         ->update(['amount'=>0,'sys_updated_at' => Helpers::getSysStartDate()]);
-        $curdate = Helpers::getSysStartDate();
-        $eomdate = Carbon::parse($curdate)->setTimezone(config('common.timezone'))->endOfMonth()->format('Y-m-d');
+        $eomdate = Carbon::parse($curdate)->endOfMonth()->format('Y-m-d');
         if($overdues->count() > 0 ){
             foreach ($overdues as $odue) {
                 $odEomDate = Carbon::parse($odue->interestDate)->endOfMonth()->format('Y-m-d');
@@ -762,9 +759,14 @@ class ManualApportionmentHelper{
         try{   
             $startDate = $startDate ? Carbon::parse($startDate)->format('Y-m-d') : $startDate;
             $invdisbInN = [];
-            $curdate =  Helpers::getSysStartDate();
-            $curdate = Carbon::parse($curdate)->format('Y-m-d');
-            
+            $curdate =  Helpers::getSysStartDate();  
+            $curdate = Carbon::parse($curdate)->setTimezone(config('common.timezone'));
+            if($curdate->format('His') >= '223000'){
+                $curdate = $curdate->format('Y-m-d');
+            }else{
+                $curdate = $curdate->subDay()->format('Y-m-d');
+            }
+
             $invDisbDetail = InvoiceDisbursed::find($invDisbId);
             $offerDetails = $invDisbDetail->invoice->program_offer;
             $userId = $invDisbDetail->disbursal->user_id;
@@ -863,7 +865,7 @@ class ManualApportionmentHelper{
                 $this->interestPosting($invDisbId, $userId, $payFreq, $loopStratDate, $gStartDate, $gEndDate);
                 
                 if(strtotime($loopStratDate) >= strtotime($odStartDate))
-                $this->overDuePosting($invDisbId, $userId, $payFreq, $loopStratDate, $gStartDate, $gEndDate);
+                $this->overDuePosting($invDisbId, $userId, $payFreq, $loopStratDate, $gStartDate, $gEndDate, $curdate);
                 
                 
                 if(!in_array($invDisbId, $invdisbInN)){
@@ -871,19 +873,19 @@ class ManualApportionmentHelper{
                         $eomdate = Carbon::createFromFormat('Y-m-d', $curdate)->endOfMonth()->format('Y-m-d');
                         if($payFreq == 1){
                             if(strtotime($curdate) > strTotime($gStartDate) && strtotime($eomdate) == strtotime($curdate)){
-                                $this->runningToTransPosting($invDisbId, $loopStratDate, $payFreq, $payDueDate, $odStartDate);
+                                $this->runningToTransPosting($invDisbId, $loopStratDate, $payFreq, $payDueDate, $odStartDate, $curdate);
                             }
                         }elseif($payFreq == 2){
                             if(strtotime($eomdate) == strtotime($curdate)){
-                                $this->runningToTransPosting($invDisbId, $loopStratDate, $payFreq, $payDueDate, $odStartDate);
+                                $this->runningToTransPosting($invDisbId, $loopStratDate, $payFreq, $payDueDate, $odStartDate, $curdate);
                             }
                         }elseif($payFreq == 3){
                             if(strTotime($gStartDate) == strtotime($curdate) || (strtotime($curdate) > strtotime($gStartDate) && strtotime($eomdate) == strtotime($curdate))){
-                                $this->runningToTransPosting($invDisbId, $loopStratDate, $payFreq, $payDueDate, $odStartDate);
+                                $this->runningToTransPosting($invDisbId, $loopStratDate, $payFreq, $payDueDate, $odStartDate, $curdate);
                             }
                         }
                     }elseif($event == 1){
-                        $this->runningToTransPosting($invDisbId, $loopStratDate, $payFreq, $payDueDate, $odStartDate);
+                        $this->runningToTransPosting($invDisbId, $loopStratDate, $payFreq, $payDueDate, $odStartDate, $curdate);
                     }
                 }
                 $loopStratDate = $this->addDays($loopStratDate,1);
@@ -1065,7 +1067,7 @@ class ManualApportionmentHelper{
 
     public function runningIntPosting(){
         $curDate = Helpers::getSysStartDate();
-        $curDate = Carbon::parse($curDate)->format('Y-m-d');
+        $curDate = Carbon::parse($curDate)->setTimezone(config('common.timezone'))->format('Y-m-d');
         $invDisbursedIds = TransactionsRunning::whereDate('trans_date','<=',$curDate)
         ->whereDate('due_date',$curDate)
         ->orderBy('invoice_disbursed_id','ASC')
@@ -1085,7 +1087,7 @@ class ManualApportionmentHelper{
             $gPeriod = $invDisbDetail->grace_period;
             $gEndDate = $this->addDays($payDueDate,$gPeriod);
             $odStartDate = $gEndDate;
-            $this->runningToTransPosting($invDisbId, $curDate, $payFreq, $payDueDate, $odStartDate);
+            $this->runningToTransPosting($invDisbId, $curDate, $payFreq, $payDueDate, $odStartDate, $curDate);
         }
     }
     
