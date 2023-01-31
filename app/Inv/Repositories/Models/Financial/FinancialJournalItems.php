@@ -120,4 +120,19 @@ class FinancialJournalItems extends BaseModel {
         $result = \DB::SELECT(\DB::raw($sql));
         return !empty($result[0]) ? $result[0] : [] ;
     }
+
+    public static function getPaymentFactTxns(array $where = array()) {
+        $query = "SELECT tally_entry_id, batch_no, is_debit_credit  entry_type, trans_type, voucher_type, voucher_no, voucher_date,transaction_date, invoice_no,fact_voucher_number, invoice_date, ledger_name, amount, ref_no, ref_amount, acc_no, ifsc_code, bank_name, cheque_amount, cross_using, mode_of_pay,utr_no, inst_no, inst_date, favoring_name, remarks, narration, is_updated is_posted,company_bank_name,company_bank_acc,(SELECT b.bank_name FROM rta_tally_entry AS b WHERE a.batch_no = b.batch_no AND a.fact_voucher_number = b.fact_voucher_number AND b.transactions_id IS NULL GROUP BY batch_no AND fact_voucher_number) AS bank,(SELECT b.acc_no FROM rta_tally_entry AS b WHERE a.batch_no = b.batch_no AND a.fact_voucher_number = b.fact_voucher_number AND b.transactions_id IS NULL GROUP BY batch_no AND fact_voucher_number) AS bank_acc_no  FROM rta_tally_entry AS a ";
+          $cond = 'WHERE transactions_id is not null AND voucher_type IN ("Payment","Receipt")';
+          if (!empty($where)) {
+              foreach ($where as $key => $value) {
+                  $wh[] = "$key = '$value'";
+              }
+             $cond .= ' AND ' .implode(' AND ', $wh);
+          }
+          $sql = $query .$cond;
+          $sql .= " ORDER BY voucher_no ASC ";
+          $result = \DB::SELECT(\DB::raw($sql));
+          return $result;
+      }
 }

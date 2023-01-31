@@ -208,4 +208,9 @@ class FinanceRepository extends BaseRepositories implements FinanceInterface
     public function getDebtPosition($appID) {
         return FinanceModel::getDebtPosition((int) $appID);
     }
+
+    public function getPaymentFactTxns(array $where = array()) {
+        $this->result = FinancialJournalItems::getPaymentFactTxns($where);
+        return $this->result;
+    }
 }
