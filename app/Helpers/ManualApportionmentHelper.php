@@ -760,6 +760,7 @@ class ManualApportionmentHelper{
      */
     public function intAccrual(int $invDisbId, $startDate = null, $apportionmentId = NULL, $event = NULL){
         try{   
+            $startDate = $startDate ? Carbon::parse($startDate)->format('Y-m-d') : $startDate;
             $invdisbInN = [];
             $curdate =  Helpers::getSysStartDate();
             $curdate = Carbon::parse($curdate)->format('Y-m-d');
