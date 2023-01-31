@@ -1080,6 +1080,7 @@ class ManualApportionmentHelper{
             $gEndDate = $this->addDays($payDueDate,$gPeriod);
             $odStartDate = $gEndDate;
             $this->runningToTransPosting($invDisbId, $curDate, $payFreq, $payDueDate, $odStartDate, $curDate);
+            $this->transactionPostingAdjustment($invDisbId, NULL);
         }
     }
     
