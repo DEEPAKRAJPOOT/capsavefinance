@@ -98,9 +98,11 @@ class OutstandingReport extends Command
                 OutstandingReportModel::create([
                     'report_log_id' => $reportLogId, 
                     'Batch No' => $batchNo,
+                    'UCIC ID' => '',
                     'Customer Name' => $dataRecord['Customer Name'],
                     'Customer ID' => $dataRecord['Customer ID'],
                     'Anchor Name' => $dataRecord['Anchor Name'],
+                    'Sub Program Name' => $dataRecord['Sub Program Name'],
                     'Invoice No' => $dataRecord['Invoice No'],
                     'Date of Disbursement' => implode("-", array_reverse(explode("-", $dataRecord['Date of Disbursement']))),
                     'Invoice Amount' => (double)$dataRecord['Invoice Amount'],
@@ -128,6 +130,7 @@ class OutstandingReport extends Command
                     'Total Outstanding' => (double)$dataRecord['Total Outstanding'],
                     'Grace Days Interest' => (int)$dataRecord['Grace Days Interest'],
                     'Grace Days Principal' => (int)$dataRecord['Grace Days Principal'],
+                    'Grace Period End Date' => (int)$dataRecord['Grace Period End Date'],
                     'Principal Overdue' => $dataRecord['Principal Overdue'],
                     'Principal Overdue Category' => $dataRecord['Principal Overdue Category'],
                     'Principal DPD' => (int)$dataRecord['Principal DPD'],
@@ -138,7 +141,8 @@ class OutstandingReport extends Command
                     'Maturity Bucket' => $dataRecord['Maturity Bucket'],
                     'Balance Margin to be Refunded' => (double)$dataRecord['Balance Margin to be Refunded'],
                     'Balance Interest to be refunded' => (double)$dataRecord['Balance Interest to be refunded'],
-                    'Balance Overdue Interest to be refunded' => (double)$dataRecord['Balance Overdue Interest to be refunded']
+                    'Balance Overdue Interest to be refunded' => (double)$dataRecord['Balance Overdue Interest to be refunded'],
+                    'Sales Manager' => (double)$dataRecord['Sales Manager']
                 ]);
             }
             $this->info("The Outstanding Report sync to database successfully.");
