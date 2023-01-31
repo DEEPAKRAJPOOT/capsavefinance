@@ -129,7 +129,7 @@ class OutstandingReportManual implements ShouldQueue
         ->setCellValue('AD'.$rows, 'Total Outstanding')
         ->setCellValue('AE'.$rows, 'Grace Days - Interest')
         ->setCellValue('AF'.$rows, 'Grace Days - Principal')
-        ->setCellValue('AG'.$rows, 'Grace Period End Date')
+        ->setCellValue('AG'.$rows, 'Invoice Due Date After Grace')
         ->setCellValue('AH'.$rows, 'Principal Overdue')
         ->setCellValue('AI'.$rows, 'Principal Overdue Category')
         ->setCellValue('AJ'.$rows, 'Principal DPD')
