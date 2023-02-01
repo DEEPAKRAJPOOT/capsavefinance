@@ -23,7 +23,7 @@ class RefundHelper{
             throw new InvalidArgumentException("Payment Detail is not Valid/Settled");
         }
 
-        $repaymentTrails = Transactions::where('apportionment_id',$apportionmentId)->whereNotIn('trans_type',[config('lms.TRANS_TYPE.REPAYMENT')])->where('is_soa',1)->get();
+        $repaymentTrails = Transactions::where('apportionment_id',$apportionmentId)->whereNotIn('trans_type',[config('lms.TRANS_TYPE.REPAYMENT')])->where('soa_flag',1)->get();
         $interestRefundTotal = 0;
         $interestOverdueTotal = 0;
         $marginTotal = 0;
