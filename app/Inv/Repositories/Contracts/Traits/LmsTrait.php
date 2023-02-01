@@ -632,14 +632,15 @@ trait LmsTrait
         $transactions = $transactions->merge($transactionsTds); 
         
         foreach ($transactions as $key => $trans) {
-            if($trans->req_amount>0 && $trans->transaction->refundoutstanding > 0){
-                $refundData = $this->createTransactionData($trans->transaction->user_id, [
-                    'amount' => $trans->transaction->refundoutstanding,
+            $transDetail = $trans->transaction;
+            if($trans->req_amount > 0 && $transDetail->settled_outstanding > 0 && $transDetail->trans_type == 32 && $transDetail->entry_type == 1){
+                $refundData = $this->createTransactionData($transDetail->user_id, [
+                    'amount' => $transDetail->refundoutstanding,
                     'trans_date'=>$actualRefundDate,
                     'tds_per'=>0,
-                    'invoice_disbursed_id'=>$trans->transaction->invoice_disbursed_id,
-                    'parent_trans_id'=>$trans->transaction->parent_trans_id??$trans->transaction->trans_id,
-                    'link_trans_id'=>$trans->transaction->trans_id,
+                    'invoice_disbursed_id'=>$transDetail->invoice_disbursed_id,
+                    'parent_trans_id'=>$transDetail->parent_trans_id??$transDetail->trans_id,
+                    'link_trans_id'=>$transDetail->trans_id,
                     'soa_flag'=>1
                 ], config('lms.TRANS_TYPE.REFUND'), 0);
 
