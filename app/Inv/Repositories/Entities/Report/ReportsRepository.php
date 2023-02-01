@@ -927,13 +927,17 @@ class ReportsRepository extends BaseRepositories implements ReportInterface {
 				else
 				  $maturityMaxbucket = "90 + Days"; 
 			}
+			$graceDate = 0;
+
+			if($invDisb->payment_due_date){
+				$dateOutsFormat = Carbon::createFromFormat('Y-m-d', $invDisb->payment_due_date);
+				$daysToAdd = (int)$disbDetails->grace_period;
+				$graceDate = $dateOutsFormat->addDays($daysToAdd);
+				$graceDate = Carbon::parse($graceDate)->format('d-m-Y');
+			}
 			$anchorDetails = $invDetails->anchor;
             $salesUserDetails = $anchorDetails->salesUser;
 			$date = $invDisb->inv_due_date;
-			$dateOutsFormat = Carbon::createFromFormat('Y-m-d', $invDisb->payment_due_date);
-			$daysToAdd = (int)$disbDetails->grace_period;
-			$graceDate = $dateOutsFormat->addDays($daysToAdd);
-			$graceDate = Carbon::parse($graceDate)->format('d-m-Y');
 
 			$result[$invDisb->invoice_disbursed_id] = [
 				'custName' => $invDetails->business->biz_entity_name ?? '',
