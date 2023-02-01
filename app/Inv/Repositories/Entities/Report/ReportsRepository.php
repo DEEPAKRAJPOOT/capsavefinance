@@ -813,8 +813,8 @@ class ReportsRepository extends BaseRepositories implements ReportInterface {
 			$odAdjRef = $invDisb->transactions->where('entry_type',0)->whereIn('link_trans_id',$overdueinterest_to_refundedIds)->sum('amount');
 			$overdueinterest_to_refunded = $overdueinterest_to_refunded-$odAdjRef > 0 ? $overdueinterest_to_refunded-$odAdjRef : 0;
 
-			$marginIds = $invDisb->transactions->where('trans_type','10')->where('entry_type',1)->whereNull('parent_trans_id')->where('is_transaction','1')->where('soa_flag','1')->pluck('trans_id')->toArray();
-			$margin_to_refunded = $invDisb->transactions->where('trans_type','32')->where('entry_type',1)->whereIn('link_trans_id',$marginIds)->sum('amount');
+			$marginIds = $invDisb->transactions->where('trans_type','10')->where('entry_type',1)->where('is_transaction','1')->where('soa_flag','1')->pluck('trans_id')->toArray();
+			$margin_to_refunded = $invDisb->transactions->where('trans_type','32')->where('entry_type',1)->whereIn('link_trans_id',$marginIds)->sum('settled_outstanding');
 			$margin_to_refunded = $margin_to_refunded > 0 ? $margin_to_refunded : 0;
 
 			// if($totalOutstanding <= 0 && $interest_to_refunded <= 0 && $margin_to_refunded <= 0 && $overdueinterest_to_refunded <= 0 && $marginOutstanding <= 0){
