@@ -6144,9 +6144,9 @@ class DataRenderer implements DataProviderInterface
                         function ($dataRecords) {
                         $btn = '<a class="btn btn-success btn-sm" href="'.route('export_txns', ['batch_no' => $dataRecords->batch_no]).'"><i class="fa fa-file-excel-o" style="color:white" aria-hidden="true"></i> Tally</a>';
 
-                        $btn .= '<a class="btn btn-success btn-sm" href="'.route('export_fact_payment_txns', ['batch_no' => $dataRecords->batch_no]).'"><i class="fa fa-file-excel-o" style="color:white" aria-hidden="true"></i> Fact Payment</a>';
+                        // $btn .= '<a class="btn btn-success btn-sm" href="'.route('export_fact_payment_txns', ['batch_no' => $dataRecords->batch_no]).'"><i class="fa fa-file-excel-o" style="color:white" aria-hidden="true"></i> Fact Payment</a>';
 
-                        $btn .= '<a class="btn btn-success btn-sm" href="'.route('export_fact_journal_txns', ['batch_no' => $dataRecords->batch_no]).'"><i class="fa fa-file-excel-o" style="color:white" aria-hidden="true"></i> Fact Journal</a>';
+                        // $btn .= '<a class="btn btn-success btn-sm" href="'.route('export_fact_journal_txns', ['batch_no' => $dataRecords->batch_no]).'"><i class="fa fa-file-excel-o" style="color:white" aria-hidden="true"></i> Fact Journal</a>';
                         // abcd
                         
                         return $btn;
