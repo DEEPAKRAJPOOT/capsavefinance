@@ -796,18 +796,11 @@ class Transactions extends BaseModel {
 
     public static function getRefundTrans($userId){
         return self::where('entry_type','1')
-                //->whereNotNull('parent_trans_id')
-                ->whereIn('trans_type',[config('lms.TRANS_TYPE.REFUND'),config('lms.TRANS_TYPE.TDS'),config('lms.TRANS_TYPE.MARGIN'),config('lms.TRANS_TYPE.NON_FACTORED_AMT')])
-                ->where('user_id','=',$userId)->get()
-                ->filter(function($item){
-                    if($item->refundReqTrans){
-                        return false;
-                    }
-                    if($item->trans_type == config('lms.TRANS_TYPE.TDS') && $item->payment->is_refundable == 0){
-                        return false;
-                    }
-                    return $item->refundoutstanding > 0;
-                });
+        ->whereIn('trans_type',[config('lms.TRANS_TYPE.REFUND')])
+        ->where('settled_outstanding','>',0)
+        ->where('user_id','=',$userId)
+        ->whereDoesntHave('refundReqTrans')
+        ->get();
     }
 
     /**
