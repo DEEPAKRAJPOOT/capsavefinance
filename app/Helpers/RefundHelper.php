@@ -31,8 +31,11 @@ class RefundHelper{
 
         $interestRefundTotal = Transactions::where('trans_type',config('lms.TRANS_TYPE.REFUND'))
         ->where('entry_type',1)
+        ->whereHas('parentTransactions',function($query){
+            $query->where('trans_type',config('lms.TRANS_TYPE.INTEREST'));
+        })
         ->whereHas('linkTransactions',function($query) use($paymentId,$apportionmentId){
-            $query->where('trans_type',config('lms.TRANS_TYPE.INTEREST'))
+            $query->whereIn('trans_type',[config('lms.TRANS_TYPE.TDS'),config('lms.TRANS_TYPE.INTEREST')])
             ->where('entry_type',1)
             ->where('payment_id',$paymentId)
             ->where('apportionment_id',$apportionmentId);
@@ -41,8 +44,11 @@ class RefundHelper{
 
         $interestOverdueTotal = Transactions::where('trans_type',config('lms.TRANS_TYPE.REFUND'))
         ->where('entry_type',1)
+        ->whereHas('parentTransactions',function($query){
+            $query->where('trans_type',config('lms.TRANS_TYPE.INTEREST_OVERDUE'));
+        })
         ->whereHas('linkTransactions',function($query) use($paymentId,$apportionmentId){
-            $query->where('trans_type',config('lms.TRANS_TYPE.INTEREST_OVERDUE'))
+            $query->whereIn('trans_type',[config('lms.TRANS_TYPE.TDS'),config('lms.TRANS_TYPE.INTEREST_OVERDUE')])
             ->where('entry_type',1)
             ->where('payment_id',$paymentId)
             ->where('apportionment_id',$apportionmentId);
