@@ -635,7 +635,7 @@ trait LmsTrait
             $transDetail = $trans->transaction;
             if($trans->req_amount > 0 && $transDetail->settled_outstanding > 0 && $transDetail->trans_type == 32 && $transDetail->entry_type == 1){
                 $refundData = $this->createTransactionData($transDetail->user_id, [
-                    'amount' => $transDetail->refundoutstanding,
+                    'amount' => $transDetail->settled_outstanding,
                     'trans_date'=>$actualRefundDate,
                     'tds_per'=>0,
                     'invoice_disbursed_id'=>$transDetail->invoice_disbursed_id,
