@@ -412,7 +412,8 @@ class ManualApportionmentHelper{
                 ->where('entry_type','=',0)
                 ->whereDate('trans_date','>=',$invdueDate)
                 ->whereDate('trans_date','<=',$intAccrualDate)
-                ->whereDate('due_date',$dueDate)
+                ->whereDate('due_date','<=',$dueDate)
+                ->where('is_posted',0)
                 ->get()
                 ->filter(function($item){
                     return $item->outstanding > 0;
@@ -425,7 +426,8 @@ class ManualApportionmentHelper{
                 ->where('trans_type','=',config('lms.TRANS_TYPE.INTEREST'))
                 ->where('entry_type','=',0)
                 ->whereDate('trans_date','<=',$intAccrualDate)
-                ->whereDate('due_date',$dueDate)
+                ->whereDate('due_date','<=',$dueDate)
+                ->where('is_posted',0)
                 ->get()
                 ->filter(function($item){
                     return $item->outstanding > 0;
@@ -438,7 +440,8 @@ class ManualApportionmentHelper{
                 ->where('trans_type','=',config('lms.TRANS_TYPE.INTEREST'))
                 ->where('entry_type','=',0)
                 ->whereDate('trans_date','<=',"$invdueDate")
-                ->whereDate('due_date',$dueDate)
+                ->whereDate('due_date','<=',$dueDate)
+                ->where('is_posted',0)
                 ->get()
                 ->filter(function($item){
                     return $item->outstanding > 0;
@@ -451,7 +454,8 @@ class ManualApportionmentHelper{
             $odTransactions = TransactionsRunning::where('invoice_disbursed_id','=',$invDisbId)
             ->whereIn('trans_type',[config('lms.TRANS_TYPE.INTEREST'),config('lms.TRANS_TYPE.INTEREST_OVERDUE')])
             ->where('entry_type','=',0)
-            ->whereDate('due_date',$dueDate)
+            ->whereDate('due_date','<=',$dueDate)
+            ->where('is_posted',0)
             ->get()
             ->filter(function($item){
                 return $item->outstanding > 0;
