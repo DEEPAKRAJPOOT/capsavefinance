@@ -823,8 +823,8 @@ class ApportionmentController extends Controller
     }
 
     public function markSettleSave(Request $request){
-        DB::beginTransaction();
         try {
+            DB::beginTransaction();
             ini_set('max_execution_time', 2000);
             $payment = Payment::find($request->payment_id);
 
@@ -851,6 +851,7 @@ class ApportionmentController extends Controller
             $payment->update(['is_settled' => Payment::PAYMENT_SETTLED_PROCESSED]);
             DB::commit();
 
+            DB::beginTransaction();
             $Obj = new ManualApportionmentHelper($this->lmsRepo);
             $sanctionPageView = false;
             if($request->has('sanctionPageView')){
@@ -955,6 +956,23 @@ class ApportionmentController extends Controller
 
                 $unAppliedAmt = round(($repaymentAmt-$amtToSettle),2);
 
+                if($unAppliedAmt > 0){
+                    $transactionList[] = [
+                        'payment_id' => $paymentId,
+                        'apportionment_id'=> $apportionment->apportionment_id,
+                        'link_trans_id' => null,
+                        'parent_trans_id' => null,
+                        'invoice_disbursed_id' => null,
+                        'user_id' => $userId,
+                        'trans_date' => $paymentDetails['date_of_payment'],
+                        'amount' => $unAppliedAmt,
+                        'entry_type' => 1,
+                        'soa_flag' => 1,
+                        'trans_type' => config('lms.TRANS_TYPE.NON_FACTORED_AMT'),
+                        'trans_mode' => 2,
+                    ];
+                    $amtToSettle += $unAppliedAmt;
+                }
                 if((float) round($amtToSettle,2) > (float) round($repaymentAmt,2)){
                     Session::flash('error', trans('error_messages.apport_invalid_unapplied_amt'));
                     DB::rollback();
@@ -971,29 +989,6 @@ class ApportionmentController extends Controller
                     $payment->save();
                 }
 
-                $transactionList = [];
-                
-                if($unAppliedAmt > 0){
-                    $transactionList[] = [
-                        'payment_id' => $paymentId,
-                        'apportionment_id'=> $apportionment->apportionment_id,
-                        'link_trans_id' => null,
-                        'parent_trans_id' => null,
-                        'invoice_disbursed_id' => null,
-                        'user_id' => $userId,
-                        'trans_date' => $paymentDetails['date_of_payment'],
-                        'amount' => $unAppliedAmt,
-                        'entry_type' => 1,
-                        'soa_flag' => 1,
-                        'trans_type' => config('lms.TRANS_TYPE.NON_FACTORED_AMT'),
-                        'trans_mode' => 2,
-                    ];
-                }
-                if(!empty($transactionList)){
-                    foreach ($transactionList as $key => $newTrans) {
-                        $this->lmsRepo->saveTransaction($newTrans);
-                    }
-                }
                 foreach ($invoiceList as $invDisb) {
                     $date_of_payment = $invDisb['date_of_payment'];
                     if( (strtotime($invDisb['payment_due_date']) <= strtotime($invDisb['date_of_payment']) )  && ( strtotime($invDisb['date_of_payment']) <= strtotime($invDisb['payment_due_date'] . "+". $invDisb['grace_period']." days"))){
@@ -1028,7 +1023,6 @@ class ApportionmentController extends Controller
             if ($payment)
             $payment->update(['is_settled' => Payment::PAYMENT_SETTLED_PENDING]);
 
-            DB::rollback();
             return redirect()->route('unsettled_payments')->withErrors(Helpers::getExceptionMessage($ex));
         }
     }
@@ -1860,8 +1854,8 @@ class ApportionmentController extends Controller
     }
 
     public function TDSMarkSettleSave(Request $request){
-        DB::beginTransaction();
         try {
+            DB::beginTransaction();
             $payment = Payment::find($request->payment_id);
 
             if (!$this->verifyUnSettleTransInitiator($payment)) {
@@ -1891,6 +1885,7 @@ class ApportionmentController extends Controller
             if($request->has('sanctionPageView')){
                 $sanctionPageView = $request->get('sanctionPageView');
             }
+            DB::beginTransaction();
             if($request->session()->has('apportionment')){
                 $amtToSettle = 0; 
                 $transIds = [];
@@ -1920,12 +1915,9 @@ class ApportionmentController extends Controller
                 }
                 $apportionment = $this->lmsRepo->saveApportionment(['apportionment_type'=>'1', 'payment_id' => $paymentId]);
 
-                $totalOutstanding = 0;
                 $refundTrans = [];
-                foreach ($transactions as $trans){
-
-                    $totalOutstanding += (float)$trans->outstanding; 
-                    
+                foreach ($transactions as $trans){ 
+                    $amount = round($payments[$trans->trans_id],2);           
                     $transactionList[] = [
                         'payment_id' => $paymentId,
                         'apportionment_id'=> $apportionment->apportionment_id,
@@ -1934,20 +1926,17 @@ class ApportionmentController extends Controller
                         'invoice_disbursed_id' => $trans->invoice_disbursed_id,
                         'user_id' => $userId,
                         'trans_date' => $paymentDetails['date_of_payment'],
-                        'amount' => $payments[$trans->trans_id],
+                        'amount' => $amount,
                         'entry_type' => 1,
                         'soa_flag' => 1,
                         'trans_type' => config('lms.TRANS_TYPE.TDS'),
                         'trans_mode' => 2,
                         'tds_per' => $trans->TDSRate,
                     ];
-                    $amtToSettle += $payments[$trans->trans_id];
+                    $amtToSettle += $amount;
                 }
-                $unAppliedAmt = round(($repaymentAmt-$amtToSettle),2);
 
-                if($paymentDetails['action_type'] == '6' &&  $paymentDetails['trans_type'] == '14' && $unAppliedAmt > 0 && $totalOutstanding > 0
-                    || ($paymentDetails['action_type'] == 3 && $unAppliedAmt > 0)
-                ){
+                if( (float) $repaymentAmt > (float) $amtToSettle){
                     Session::flash('error', trans('Please use whole unapplied amount.'));
                     DB::rollback();
                     return redirect()->back()->withInput();
@@ -1959,22 +1948,6 @@ class ApportionmentController extends Controller
                     return redirect()->back()->withInput();
                 }
 
-                if($unAppliedAmt > 0){
-                    $transactionList[] = [
-                        'payment_id'           => $paymentId,
-                        'apportionment_id'     => $apportionment->apportionment_id,
-                        'link_trans_id'        => null,
-                        'parent_trans_id'      => null,
-                        'invoice_disbursed_id' => null,
-                        'user_id'              => $userId,
-                        'trans_date'           => $paymentDetails['date_of_payment'],
-                        'amount'               => $unAppliedAmt,
-                        'entry_type'           => 1,
-                        'soa_flag'             => 1,
-                        'trans_type'           => config('lms.TRANS_TYPE.NON_FACTORED_AMT'),
-                        'trans_mode'           => 2,
-                    ];
-                }
                 if(!empty($transactionList)){
                     foreach ($transactionList as $key => $newTrans) {
                         $this->lmsRepo->saveTransaction($newTrans);
@@ -2011,7 +1984,6 @@ class ApportionmentController extends Controller
             $payment = Payment::find($request->payment_id);
             if ($payment)
                 $payment->update(['is_settled' => Payment::PAYMENT_SETTLED_PROCESSING]);
-            DB::rollback();
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex))->withInput();
         }
     }
