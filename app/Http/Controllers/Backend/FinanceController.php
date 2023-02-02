@@ -623,6 +623,7 @@ class FinanceController extends Controller {
             $transType = "";
             $voucher_date = "";
             $transDate = "";
+            $factGstHand = [];
             if (!empty($result)) {
             foreach ($result as $key => $value) {
                 
@@ -648,6 +649,19 @@ class FinanceController extends Controller {
                     $debitGlCode = $factTransDebit[strtolower($fetchedArr['trans_type'])] ?? null;
                     $creditGlCode = $factTransCredit[strtolower($fetchedArr['trans_type'])] ?? null;
                     $is_first_n_old = (empty($transType) || empty($transDate) || ($transType == $fetchedArr['trans_type'] && $transDate == $trans_date));
+                    $transType = strtolower($fetchedArr['trans_type']);
+                    if (strpos($transType, '+') !== false) {
+                        $factGstHand[$fetchedArr['fact_voucher_number']] = isset($factGstHand[$fetchedArr['fact_voucher_number']])?$factGstHand[$fetchedArr['fact_voucher_number']]+1:1;
+                        if($factGstHand[$fetchedArr['fact_voucher_number']] == '1'){
+                            $fetchedArr['trans_type'] = 'SGST';
+                            $creditGlCode = $factTransCredit['sgst'];
+                            $debitGlCode = $factTransDebit['sgst'];
+                        }elseif($factGstHand[$fetchedArr['fact_voucher_number']] == '2'){
+                            $fetchedArr['trans_type'] = 'CGST';
+                            $creditGlCode = $factTransCredit['cgst'];
+                            $debitGlCode = $factTransDebit['cgst'];
+                        }
+                    }
                     $records['JOURNAL'][] = [
                             "voucher_no" => $fetchedArr['fact_voucher_number'],
                             "voucher_date"=> $transaction_date,
@@ -675,7 +689,7 @@ class FinanceController extends Controller {
                             "email" => '',
                             "gST_identification_number_(GSTIN)" => '',
                         ];
-
+                        
                         $records['JOURNAL'][] = [
                             "voucher_no" => $fetchedArr['fact_voucher_number'],
                             "voucher_date"=> $transaction_date,
