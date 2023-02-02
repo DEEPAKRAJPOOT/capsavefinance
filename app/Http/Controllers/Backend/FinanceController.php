@@ -463,6 +463,10 @@ class FinanceController extends Controller {
             Session::flash('error', 'Fact Payment File is already in process');
             return redirect()->back();
         }
+        if($tallyData->is_fact_payment_generated == "0"){
+            $tallyBatch = \DB::table('tally')->where('batch_no',$batch_no)->update(['is_fact_payment_generated'=>1]);
+        }
+        $tallyData = \DB::table('tally')->select('is_fact_payment_generated')->where(['batch_no'=> $batch_no])->first();
         $result = $this->finRepo->getPaymentFactTxns($where);
         $records = [];
         $payment = array();
@@ -565,13 +569,10 @@ class FinanceController extends Controller {
         }
 
         $toExportData = $records;
-        if($tallyData->is_fact_payment_generated == "0"){
+        if($tallyData->is_fact_payment_generated == "1"){
             $payments = $records['PAYMENT'];
             foreach($payments as $key => $payment){
                 $payments[$key]['date'] = date('Y-m-d', strtotime($payment['date']));
-            }
-            if(!empty($payments)){
-                $tallyBatch = \DB::table('tally')->where('batch_no',$batch_no)->update(['is_fact_payment_generated'=>1]);
             }
             $data = FactPaymentEntry::insert($payments);
             if(!empty($data)){
@@ -603,6 +604,10 @@ class FinanceController extends Controller {
                 Session::flash('error', 'Fact Jornal File is already in process');
                 return redirect()->back();
             }
+            if($tallyData->is_fact_journal_generated == "0"){
+                $tallyBatch = \DB::table('tally')->where('batch_no',$batch_no)->update(['is_fact_journal_generated'=>1]);
+            }
+            $tallyData = \DB::table('tally')->select('is_fact_journal_generated')->where(['batch_no'=> $batch_no])->first();
             $result = $this->finRepo->getTallyTxns($where);
             $factTransDebit = $factTransCredit = [];
             $factTransTypeData = FactTransType::get()->toArray();
@@ -732,14 +737,11 @@ class FinanceController extends Controller {
             }
 
             $toExportData = $records;
-            if($tallyData->is_fact_journal_generated == "0"){
+            if($tallyData->is_fact_journal_generated == "1"){
                 $journals = $records['JOURNAL'];
                 foreach($journals as $key => $journal){
                     $journals[$key]['voucher_date'] = date('Y-m-d', strtotime($journal['voucher_date']));
                 }
-                    if(!empty($journals)){
-                        $tallyBatch = \DB::table('tally')->where('batch_no',$batch_no)->update(['is_fact_journal_generated'=>1]);
-                    }
                     $data = FactJournalEntry::insert($journals);
                     if(!empty($data)){
                         $tallyBatch = \DB::table('tally')->where('batch_no',$batch_no)->update(['is_fact_journal_generated'=>2]);
