@@ -1399,8 +1399,8 @@ fieldset[disabled] a.btn {
   .btn-primary:focus, .btn-primary.focus {
     box-shadow: 0 0 0 3px rgba(15, 154, 238, 0.5); }
   .btn-primary.disabled, .btn-primary:disabled {
-    background-color: #138864;
-    border-color: #138864; }
+    background-color: #30878e;
+    border-color: #30878e; }
   .btn-primary:active, .btn-primary.active,
   .show > .btn-primary.dropdown-toggle {
     background-color: #0d83ca;
