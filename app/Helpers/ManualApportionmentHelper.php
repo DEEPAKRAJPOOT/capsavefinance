@@ -42,7 +42,6 @@ class ManualApportionmentHelper{
     }
 
     public function transactionPostingAdjustment($invDisbId, $apportionmentId = NULL){
-        
         $currentdate =  Helpers::getSysStartDate();
         $curdate = Carbon::parse($currentdate)->setTimezone(config('common.timezone'))->format('Y-m-d');
         $transactionList = [];
@@ -757,7 +756,7 @@ class ManualApportionmentHelper{
             $invdisbInN = [];
             $curdate =  Helpers::getSysStartDate();  
             $curdate = Carbon::parse($curdate)->setTimezone(config('common.timezone'));
-            if($curdate->format('His') >= '223000'){
+            if($curdate->format('His') >= '230000'){
                 $curdate = $curdate->format('Y-m-d');
             }else{
                 $curdate = $curdate->subDay()->format('Y-m-d');
@@ -1065,7 +1064,8 @@ class ManualApportionmentHelper{
         $curDate = Helpers::getSysStartDate();
         $curDate = Carbon::parse($curDate)->setTimezone(config('common.timezone'))->format('Y-m-d');
         $invDisbursedIds = TransactionsRunning::whereDate('trans_date','<=',$curDate)
-        ->whereDate('due_date',$curDate)
+        ->whereDate('due_date','<',$curDate)
+        ->where('is_posted',0)
         ->orderBy('invoice_disbursed_id','ASC')
         ->get()
         ->filter(function($item) {

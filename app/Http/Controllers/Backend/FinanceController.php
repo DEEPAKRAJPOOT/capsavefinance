@@ -457,7 +457,6 @@ class FinanceController extends Controller {
             $where = ['batch_no' => $batch_no];
         }
         $tallyData = \DB::table('tally')->select('is_fact_payment_generated')->where(['batch_no'=> $batch_no])->first();
-        // dd($tallyData->is_fact_journal_generated);
         if($tallyData->is_fact_payment_generated == "1"){
             \DB::rollback();
             Session::flash('error', 'Fact Payment File is already in process');
@@ -598,7 +597,6 @@ class FinanceController extends Controller {
                 $where = ['batch_no' => $batch_no,'voucher_type' => 'Journal'];
             }
             $tallyData = \DB::table('tally')->select('is_fact_journal_generated')->where(['batch_no'=> $batch_no])->first();
-            // dd($tallyData->is_fact_journal_generated);
             if($tallyData->is_fact_journal_generated == "1"){
                 \DB::rollback();
                 Session::flash('error', 'Fact Jornal File is already in process');
@@ -756,10 +754,10 @@ class FinanceController extends Controller {
                 foreach($journals as $key => $journal){
                     $journals[$key]['voucher_date'] = date('Y-m-d', strtotime($journal['voucher_date']));
                 }
-                    $data = FactJournalEntry::insert($journals);
-                    if(!empty($data)){
-                        $tallyBatch = \DB::table('tally')->where('batch_no',$batch_no)->update(['is_fact_journal_generated'=>2]);
-                    }
+                $data = FactJournalEntry::insert($journals);
+                if(!empty($data)){
+                    $tallyBatch = \DB::table('tally')->where('batch_no',$batch_no)->update(['is_fact_journal_generated'=>2]);
+                }
             }
             \DB::commit();
             return $this->fileHelper->array_to_excel($toExportData, "Fact-Journal-$batch_no.xlsx");
@@ -767,6 +765,5 @@ class FinanceController extends Controller {
             \DB::rollback();
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
         }
-        
     }
 }

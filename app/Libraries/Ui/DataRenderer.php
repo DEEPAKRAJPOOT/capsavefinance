@@ -6142,7 +6142,6 @@ class DataRenderer implements DataProviderInterface
                     ->editColumn(
                         'action',
                         function ($dataRecords) {
-                            // dd($dataRecords);
                         $btn = '<a class="btn btn-success btn-sm" href="'.route('export_txns', ['batch_no' => $dataRecords->batch_no]).'"><i class="fa fa-file-excel-o" style="color:white" aria-hidden="true"></i> Tally</a>';
                         if($dataRecords->is_fact_payment_generated == 0){
                             $btn .= '<a class="btn btn-success btn-sm payment_button" href="'.route('export_fact_payment_txns', ['batch_no' => $dataRecords->batch_no]).'"><i class="fa fa-file-excel-o" style="color:white" aria-hidden="true"></i> Generate Fact Payment</a>';
@@ -6158,8 +6157,6 @@ class DataRenderer implements DataProviderInterface
                         }elseif($dataRecords->is_fact_journal_generated == 2){
                             $btn .= '<a class="btn btn-success btn-sm" href="'.route('export_fact_journal_txns', ['batch_no' => $dataRecords->batch_no]).'"><i class="fa fa-file-excel-o" style="color:white" aria-hidden="true"></i> Download Fact Journal</a>';
                         }
-                        
-                        // abcd
                         
                         return $btn;
                          
