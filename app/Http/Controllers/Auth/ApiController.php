@@ -1010,20 +1010,15 @@ class ApiController
     $refundArray = $this->createRefundData($refundData, $batch_no);
     $allTransFactVoucher = array_merge($this->journalTransFactVoucher,$this->disbursalTransFactVoucher,$this->receiptTransFactVoucher,$this->refundTransFactVoucher);
     $tally_data = array_merge($disbursalArray, $journalArray , $receiptArray, $receiptReversalArray, $refundArray);
-    try {
-        if (empty($tally_data)) {
-           $response['message'] =  'No Records are selected to Post in tally.';
-           return $response;
-        }
-        $res = \DB::table('tally_entry')->insert($tally_data);
-        $transfactres = \DB::table('trans_fact_voucher')->insert($allTransFactVoucher);
-    } catch (\Exception $e) {
-        $errorInfo  = $e->errorInfo;
-        $res = $errorInfo;
+    if (empty($tally_data)) {
+      $response['message'] =  'No Records are selected to Post in tally.';
+      return $response;
     }
     $selectedTxnData = $this->selectedTxnData;
     $selectedPaymentData = $this->selectedPaymentData;
-    if ($res === true) {
+    DB::beginTransaction();
+
+    try {
       $totalTxnRecords = 0;
       if (!empty($selectedTxnData)) {
         foreach(array_chunk($selectedTxnData,100,true) as $selTxnData){
@@ -1039,6 +1034,7 @@ class ApiController
       $totalRecords = $totalTxnRecords + $totalPaymentsRecords;
       $recordsTobeInserted = count($selectedTxnData) + count($selectedPaymentData);
       if (empty($totalRecords)) {
+        DB::rollback();
         $response['message'] =  'Some error occured. No Record can be posted in tally.';
       }else{
         $response['status'] = 'success';
@@ -1055,6 +1051,12 @@ class ApiController
         ];
         $tally_inst_data = FinanceModel::dataLogger($batchData, 'tally');
         if($tally_inst_data){
+              array_walk($tally_data,function(&$value,$key) use ($tally_inst_data){ $value['tally_id'] = $tally_inst_data; });
+              \DB::table('tally_entry')->insert($tally_data);
+              unset($tally_data);
+              array_walk($allTransFactVoucher,function(&$value,$key) use ($tally_inst_data){ $value['tally_id'] = $tally_inst_data; });
+              \DB::table('trans_fact_voucher')->insert($allTransFactVoucher);
+              unset($allTransFactVoucher);
           $tallyfactVoucher = [
             'tally_id'=>$tally_inst_data,
             'fact_year1'=>$lastFactVoucher['year1'],
@@ -1067,9 +1069,11 @@ class ApiController
         }
         $response['message'] =  ($recordsTobeInserted > 1 ? $recordsTobeInserted .' Records inserted successfully' : '1 Record inserted.');
       }
-    }else{
-      
-      $response['message'] =  ($res[2] ?? 'DB error occured.').' No Record can be posted in tally.';
+      DB::commit();
+    } catch (\Exception $e) {
+      DB::rollback();
+      Helpers::getExceptionMessage($ex);
+      $response['message'] =  ('DB error occured.').' No Record can be posted in tally.';
     }
     return $response;
   }
