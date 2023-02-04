@@ -982,7 +982,7 @@ class ApportionmentController extends Controller
                 if(!empty($transactionList)){
                     foreach ($transactionList as $key => $newTrans) {
                         $saveTrans = $this->lmsRepo->saveTransaction($newTrans);
-                        if(in_array($newTrans['trans_type'] ,[config('lms.TRANS_TYPE.MARGIN')])){
+                        if(in_array($newTrans['trans_type'] ,[config('lms.TRANS_TYPE.MARGIN'),config('lms.TRANS_TYPE.NON_FACTORED_AMT')])){
                             $newTrans['payment_id'] = NULL;
                             $newTrans['link_trans_id'] = $saveTrans->trans_id;
                             $newTrans['trans_type'] = config('lms.TRANS_TYPE.REFUND');
