@@ -436,7 +436,7 @@ class userInvoiceController extends Controller
         $activeGst = (in_array($invCat, [1,3])) ? GstTax::getActiveGST()->first() : NULL;
 
         foreach ($txnsData as  $key => $txn) {
-            $desc = $txn->customerTransactionSOA->trans_name;
+            $desc = $txn->customerTransactionSOA->trans_name??'';
             $totalamount = $txn->amount;
             $total_gst_rate = 0 ; 
             $cgst_rate = 0;

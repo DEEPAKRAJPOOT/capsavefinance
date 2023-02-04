@@ -963,7 +963,15 @@ class ApportionmentController extends Controller
 
                 if(!empty($transactionList)){
                     foreach ($transactionList as $key => $newTrans) {
-                        $this->lmsRepo->saveTransaction($newTrans);
+                        $saveTrans = $this->lmsRepo->saveTransaction($newTrans);
+                        if(in_array($newTrans['trans_type'] ,[config('lms.TRANS_TYPE.MARGIN')])){
+                            $newTrans['payment_id'] = NULL;
+                            $newTrans['link_trans_id'] = $saveTrans->trans_id;
+                            $newTrans['trans_type'] = config('lms.TRANS_TYPE.REFUND');
+                            $newTrans['soa_flag'] = 0;
+                            $newTrans['trans_mode'] = 1;
+                            $this->lmsRepo->saveTransaction($newTrans);
+                        }
                     }
                     /** Mark Payment Settled */
                     $payment = Payment::find($paymentId);
@@ -991,7 +999,15 @@ class ApportionmentController extends Controller
                 }
                 if(!empty($transactionList)){
                     foreach ($transactionList as $key => $newTrans) {
-                        $this->lmsRepo->saveTransaction($newTrans);
+                        $saveTrans = $this->lmsRepo->saveTransaction($newTrans);
+                        if(in_array($newTrans['trans_type'] ,[config('lms.TRANS_TYPE.NON_FACTORED_AMT')])){
+                            $newTrans['payment_id'] = NULL;
+                            $newTrans['link_trans_id'] = $saveTrans->trans_id;
+                            $newTrans['trans_type'] = config('lms.TRANS_TYPE.REFUND');
+                            $newTrans['soa_flag'] = 0;
+                            $newTrans['trans_mode'] = 1;
+                            $this->lmsRepo->saveTransaction($newTrans);
+                        }
                     }
                 }
                 foreach ($invoiceList as $invDisb) {
