@@ -401,7 +401,7 @@ class Transactions extends BaseModel {
                         }
                     }
                 }else{
-                    $linkLinkTrans->settled_outstanding += $this->amount;
+                    $linkTrans->settled_outstanding += $this->amount;
                     if($linkLinkTrans && !in_array($linkTrans->trans_type, [32])){
                         if($linkLinkTrans->entry_type == 0){
                             $linkLinkTrans->actual_outstanding += $this->amount;
