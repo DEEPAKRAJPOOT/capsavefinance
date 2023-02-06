@@ -449,158 +449,26 @@ class FinanceController extends Controller {
     }
 
     public function exportFactPaymentTransactions(Request $request) {
-    try {
-        \DB::beginTransaction();
-        ini_set("memory_limit", "-1");
-        $batch_no = $request->get('batch_no') ?? NULL;
-        $where = [];
-        if (!empty($batch_no)) {
-            $where = ['batch_no' => $batch_no];
-        }
-        $tallyData = \DB::table('tally')->select('is_fact_payment_generated')->where(['batch_no'=> $batch_no])->first();
-        // dd($tallyData->is_fact_journal_generated);
-        if($tallyData->is_fact_payment_generated == "1"){
-            \DB::rollback();
-            Session::flash('error', 'Fact Payment File is already in process');
-            return redirect()->back();
-        }
-        if($tallyData->is_fact_payment_generated == "0"){
-            $tallyBatch = \DB::table('tally')->where('batch_no',$batch_no)->update(['is_fact_payment_generated'=>1]);
-        }
-        $tallyData = \DB::table('tally')->select('is_fact_payment_generated')->where(['batch_no'=> $batch_no])->first();
-        $result = $this->finRepo->getPaymentFactTxns($where);
-        $records = [];
-        $payment = array();
-        $records['PAYMENT'] = array();
-        $cr_amount_sum = 0;
-
-        $transType = "";
-        $voucher_date = "";
-        $transDate = "";
-        if (!empty($result)) {
-           foreach ($result as $key => $value) {
-               
-                $new[] = $fetchedArr = (array)$value;
-                $batchNo = $fetchedArr['batch_no'];
-                $voucherDate = date('d-m-Y',strtotime($fetchedArr['voucher_date']));
-                $trans_date = date('Y-m-d', strtotime($fetchedArr['voucher_date'])); 
-                $transaction_date = $fetchedArr['transaction_date']?Helpers::utcToIst($fetchedArr['transaction_date'],'Y-m-d H:i:s', 'd-m-Y'):NULL;
-                $entry_type = strtolower($fetchedArr['entry_type']);
-                $is_first_n_old = (empty($transType) || empty($transDate) || ($transType == $fetchedArr['trans_type'] && $transDate == $trans_date));
-                $code = '2SG00000S';
-                $GLcode = '54000021';
-                $amount = '';
-                $accNo = '';
-                if($fetchedArr['voucher_type'] == 'Payment'){
-                    if($entry_type == 'credit'){
-                        $amount = $fetchedArr['amount'];
-                    }else{
-                        $amount = '-'.$fetchedArr['amount'];
-                    }  
-                }else{
-                    if($entry_type == 'credit'){
-                        $amount = $fetchedArr['amount'];
-                    }else{
-                        $amount = '-'.$fetchedArr['amount'];
-                    }  
-                }
-                $bankCode = null;
-                if($fetchedArr['bank'] == 'IDFC Bank' && $fetchedArr['bank_acc_no'] == '10006748999'){
-                    $bankCode = 4;
-                }elseif($fetchedArr['bank'] == 'IDFC Bank' && $fetchedArr['bank_acc_no'] == '10062193074'){
-                    $bankCode = 9;
-                }elseif($fetchedArr['bank'] == 'IDFC Bank' && $fetchedArr['bank_acc_no'] == '10047035004'){
-                    $bankCode = 3;
-                }elseif($fetchedArr['bank'] == 'HDFC Bank' && $fetchedArr['bank_acc_no'] == '50200030310781'){
-                    $bankCode = 19;
-                }elseif($fetchedArr['bank'] == 'Yes Bank' && $fetchedArr['bank_acc_no'] == '007884600002532'){
-                    $bankCode = 11;
-                }
-                    $paymentRow =  [
-                        "voucher" => $fetchedArr['fact_voucher_number'],
-                        "sr"=>'',
-                        "date" => $voucherDate,
-                        "description" => $fetchedArr['trans_type'],
-                        "chq_/_ref_number"=> $fetchedArr['utr_no'],
-                        "dt_value" => $transaction_date,
-                        "fc_amount" => '0',
-                        "amount" => $amount,
-                        "bank_code" => $bankCode,
-                        "bank_name" => $fetchedArr['bank'],
-                        "account_no" => $fetchedArr['bank_acc_no'],
-                        "payment_vendor_name" => $fetchedArr['ledger_name'],
-                        "paid_to_client" => $fetchedArr['ledger_name'],
-                        "code" => $code,
-                        "remarks" => $fetchedArr['narration'],
-                        "type" => '',
-                        "gL_code" => $GLcode,
-                        "remark" => '',
-                        "upload_status" => '',
-                        "vendor_code_exists" => '',
-                    ];
-                    $records['PAYMENT'][] = $paymentRow;
-                
-                $transType = $fetchedArr['trans_type'];
-                $transDate = date('Y-m-d', strtotime($fetchedArr['voucher_date'])); 
-            }
-        }
-
-        if (empty($records['PAYMENT'])) {
-            $records['PAYMENT'][] =  [
-                "voucher" => '',
-                "sr"=>'',
-                "date" => '',
-                "description" => '',
-                "chq_/_ref_number"=> '',
-                "dt_value" => '',
-                "fc_amount" => '',
-                "amount" => '',
-                "bank_code" => '',
-                "bank_name" => '',
-                "account_no" => '',
-                "payment_vendor_name" => '',
-                "paid_to_client" => '',
-                "code" => '',
-                "remarks" => '',
-                "type" => '',
-                "gL_code" => '',
-                "remark" => '',
-                "upload_status" => '',
-                "vendor_code_exists" => '',
-            ];
-        }
-
-        $toExportData = $records;
-        if($tallyData->is_fact_payment_generated == "1"){
-            $payments = $records['PAYMENT'];
-            array_walk($payments,function(&$value,$key) use ($batchNo){ $value['batch_no'] = $batchNo; });
-            foreach($payments as $key => $payment){
-                $payments[$key]['date'] = date('Y-m-d', strtotime($payment['date']));
-                $payments[$key]['dt_value'] = date('Y-m-d', strtotime($payment['dt_value']));
-            }
-            $data = FactPaymentEntry::insert($payments);
-            if(!empty($data)){
-                $tallyBatch = \DB::table('tally')->where('batch_no',$batch_no)->update(['is_fact_payment_generated'=>2]);
-            }
-        }
-        \DB::commit();
-        return $this->fileHelper->array_to_excel($toExportData, "Fact-Payment-$batch_no.xlsx");
-    }catch (Exception $ex) {
-        \DB::rollback();
-        return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
-    }
-        
-    }
-
-    public function downloadFactPaymentTransactions(Request $request) {
         try {
+            \DB::beginTransaction();
             ini_set("memory_limit", "-1");
             $batch_no = $request->get('batch_no') ?? NULL;
             $where = [];
             if (!empty($batch_no)) {
                 $where = ['batch_no' => $batch_no];
             }
-            $result = $this->finRepo->getPaymentReportData($where);
+            $tallyData = \DB::table('tally')->select('is_fact_payment_generated')->where(['batch_no'=> $batch_no])->first();
+            // dd($tallyData->is_fact_journal_generated);
+            if($tallyData->is_fact_payment_generated == "1"){
+                \DB::rollback();
+                Session::flash('error', 'Fact Payment File is already in process');
+                return redirect()->back();
+            }
+            if($tallyData->is_fact_payment_generated == "0"){
+                $tallyBatch = \DB::table('tally')->where('batch_no',$batch_no)->update(['is_fact_payment_generated'=>1]);
+            }
+            $tallyData = \DB::table('tally')->select('is_fact_payment_generated')->where(['batch_no'=> $batch_no])->first();
+            $result = $this->finRepo->getPaymentFactTxns($where);
             $records = [];
             $payment = array();
             $records['PAYMENT'] = array();
@@ -613,13 +481,47 @@ class FinanceController extends Controller {
             foreach ($result as $key => $value) {
                 
                     $new[] = $fetchedArr = (array)$value;
-                    $transaction_date = $fetchedArr['dt_value']?Helpers::utcToIst($fetchedArr['dt_value'],'Y-m-d H:i:s', 'd-m-Y'):NULL;
+                    $batchNo = $fetchedArr['batch_no'];
+                    $voucherDate = date('d-m-Y',strtotime($fetchedArr['voucher_date']));
+                    $trans_date = date('Y-m-d', strtotime($fetchedArr['voucher_date'])); 
+                    $transaction_date = $fetchedArr['transaction_date']?Helpers::utcToIst($fetchedArr['transaction_date'],'Y-m-d H:i:s', 'd-m-Y'):NULL;
+                    $entry_type = strtolower($fetchedArr['entry_type']);
+                    $is_first_n_old = (empty($transType) || empty($transDate) || ($transType == $fetchedArr['trans_type'] && $transDate == $trans_date));
+                    $code = '2SG00000S';
+                    $GLcode = '54000021';
+                    $amount = '';
+                    $accNo = '';
+                    if($fetchedArr['voucher_type'] == 'Payment'){
+                        if($entry_type == 'credit'){
+                            $amount = $fetchedArr['amount'];
+                        }else{
+                            $amount = '-'.$fetchedArr['amount'];
+                        }  
+                    }else{
+                        if($entry_type == 'credit'){
+                            $amount = $fetchedArr['amount'];
+                        }else{
+                            $amount = '-'.$fetchedArr['amount'];
+                        }  
+                    }
+                    $bankCode = null;
+                    if($fetchedArr['bank'] == 'IDFC Bank' && $fetchedArr['bank_acc_no'] == '10006748999'){
+                        $bankCode = 4;
+                    }elseif($fetchedArr['bank'] == 'IDFC Bank' && $fetchedArr['bank_acc_no'] == '10062193074'){
+                        $bankCode = 9;
+                    }elseif($fetchedArr['bank'] == 'IDFC Bank' && $fetchedArr['bank_acc_no'] == '10047035004'){
+                        $bankCode = 3;
+                    }elseif($fetchedArr['bank'] == 'HDFC Bank' && $fetchedArr['bank_acc_no'] == '50200030310781'){
+                        $bankCode = 19;
+                    }elseif($fetchedArr['bank'] == 'Yes Bank' && $fetchedArr['bank_acc_no'] == '007884600002532'){
+                        $bankCode = 11;
+                    }
                         $paymentRow =  [
-                            "voucher" => $fetchedArr['voucher'],
-                            "sr"=>$fetchedArr['sr'],
-                            "date" => $fetchedArr['date'],
-                            "description" => $fetchedArr['description'],
-                            "chq_/_ref_number"=> $fetchedArr['chq_/_ref_number'],
+                            "voucher" => $fetchedArr['fact_voucher_number'],
+                            "sr"=>'',
+                            "date" => $voucherDate,
+                            "description" => $fetchedArr['trans_type'],
+                            "chq_/_ref_number"=> $fetchedArr['utr_no'],
                             "dt_value" => $transaction_date,
                             "fc_amount" => '0',
                             "amount" => $amount,
@@ -640,6 +542,101 @@ class FinanceController extends Controller {
                     
                     $transType = $fetchedArr['trans_type'];
                     $transDate = date('Y-m-d', strtotime($fetchedArr['voucher_date'])); 
+                }
+            }
+
+            if (empty($records['PAYMENT'])) {
+                $records['PAYMENT'][] =  [
+                    "voucher" => '',
+                    "sr"=>'',
+                    "date" => '',
+                    "description" => '',
+                    "chq_/_ref_number"=> '',
+                    "dt_value" => '',
+                    "fc_amount" => '',
+                    "amount" => '',
+                    "bank_code" => '',
+                    "bank_name" => '',
+                    "account_no" => '',
+                    "payment_vendor_name" => '',
+                    "paid_to_client" => '',
+                    "code" => '',
+                    "remarks" => '',
+                    "type" => '',
+                    "gL_code" => '',
+                    "remark" => '',
+                    "upload_status" => '',
+                    "vendor_code_exists" => '',
+                ];
+            }
+
+            $toExportData = $records;
+            if($tallyData->is_fact_payment_generated == "1"){
+                $payments = $records['PAYMENT'];
+                array_walk($payments,function(&$value,$key) use ($batchNo){ $value['batch_no'] = $batchNo; });
+                foreach($payments as $key => $payment){
+                    $payments[$key]['date'] = date('Y-m-d', strtotime($payment['date']));
+                    $payments[$key]['dt_value'] = date('Y-m-d', strtotime($payment['dt_value']));
+                }
+                $data = FactPaymentEntry::insert($payments);
+                if(!empty($data)){
+                    $tallyBatch = \DB::table('tally')->where('batch_no',$batch_no)->update(['is_fact_payment_generated'=>2]);
+                }
+            }
+            \DB::commit();
+            return $this->fileHelper->array_to_excel($toExportData, "Fact-Payment-$batch_no.xlsx");
+        }catch (Exception $ex) {
+            \DB::rollback();
+            return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
+        }
+    }
+
+    public function downloadFactPaymentTransactions(Request $request) {
+        try {
+            ini_set("memory_limit", "-1");
+            $batch_no = $request->get('batch_no') ?? NULL;
+            $where = [];
+            if (!empty($batch_no)) {
+                $where = ['batch_no' => $batch_no];
+            }
+            $result = $this->finRepo->getPaymentReportData($where);
+            $records = [];
+            $payment = array();
+            $records['PAYMENT'] = array();
+            $cr_amount_sum = 0;
+
+            $transType = "";
+            $voucher_date = "";
+            $transDate = "";
+            if (!empty($result)) {
+                foreach ($result as $key => $value) {
+                    
+                        $new[] = $fetchedArr = (array)$value;
+                        $voucher_date = $fetchedArr['date']?Helpers::utcToIst($fetchedArr['date'],'Y-m-d H:i:s', 'd-m-Y'):NULL;
+                        $transaction_date = $fetchedArr['dt_value']?Helpers::utcToIst($fetchedArr['dt_value'],'Y-m-d H:i:s', 'd-m-Y'):NULL;
+                            $paymentRow =  [
+                                "voucher" => $fetchedArr['voucher'],
+                                "sr"=>$fetchedArr['sr'],
+                                "date" => $voucher_date,
+                                "description" => $fetchedArr['description'],
+                                "chq_/_ref_number"=> $fetchedArr['chq_/_ref_number'],
+                                "dt_value" => $transaction_date,
+                                "fc_amount" => '0',
+                                "amount" => $fetchedArr['amount'],
+                                "bank_code" => $fetchedArr['bank_code'],
+                                "bank_name" => $fetchedArr['bank_name'],
+                                "account_no" => $fetchedArr['account_no'],
+                                "payment_vendor_name" => $fetchedArr['payment_vendor_name'],
+                                "paid_to_client" => $fetchedArr['paid_to_client'],
+                                "code" => $fetchedArr['code'],
+                                "remarks" => $fetchedArr['remarks'],
+                                "type" => '',
+                                "gL_code" => $fetchedArr['gL_code'],
+                                "remark" => '',
+                                "upload_status" => '',
+                                "vendor_code_exists" => '',
+                            ];
+                            $records['PAYMENT'][] = $paymentRow;
                 }
             }
 
