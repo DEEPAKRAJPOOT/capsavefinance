@@ -16,6 +16,7 @@ use App\Helpers\FileHelper;
 use App\Inv\Repositories\Models\Master\FactTransType;
 use App\Inv\Repositories\Models\Master\FactJournalEntry;
 use App\Inv\Repositories\Models\Master\FactPaymentEntry;
+use App\Helpers\Helper;
 
 class FinanceController extends Controller {
 
@@ -480,6 +481,7 @@ class FinanceController extends Controller {
            foreach ($result as $key => $value) {
                
                 $new[] = $fetchedArr = (array)$value;
+                $batchNo = $fetchedArr['batch_no'];
                 $voucherDate = date('d-m-Y',strtotime($fetchedArr['voucher_date']));
                 $trans_date = date('Y-m-d', strtotime($fetchedArr['voucher_date'])); 
                 $transaction_date = $fetchedArr['transaction_date']?Helpers::utcToIst($fetchedArr['transaction_date'],'Y-m-d H:i:s', 'd-m-Y'):NULL;
@@ -571,8 +573,10 @@ class FinanceController extends Controller {
         $toExportData = $records;
         if($tallyData->is_fact_payment_generated == "1"){
             $payments = $records['PAYMENT'];
+            array_walk($payments,function(&$value,$key) use ($batchNo){ $value['batch_no'] = $batchNo; });
             foreach($payments as $key => $payment){
                 $payments[$key]['date'] = date('Y-m-d', strtotime($payment['date']));
+                $payments[$key]['dt_value'] = date('Y-m-d', strtotime($payment['dt_value']));
             }
             $data = FactPaymentEntry::insert($payments);
             if(!empty($data)){
@@ -585,6 +589,90 @@ class FinanceController extends Controller {
         \DB::rollback();
         return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
     }
+        
+    }
+
+    public function downloadFactPaymentTransactions(Request $request) {
+        try {
+            ini_set("memory_limit", "-1");
+            $batch_no = $request->get('batch_no') ?? NULL;
+            $where = [];
+            if (!empty($batch_no)) {
+                $where = ['batch_no' => $batch_no];
+            }
+            $result = $this->finRepo->getPaymentReportData($where);
+            $records = [];
+            $payment = array();
+            $records['PAYMENT'] = array();
+            $cr_amount_sum = 0;
+
+            $transType = "";
+            $voucher_date = "";
+            $transDate = "";
+            if (!empty($result)) {
+            foreach ($result as $key => $value) {
+                
+                    $new[] = $fetchedArr = (array)$value;
+                    $transaction_date = $fetchedArr['dt_value']?Helpers::utcToIst($fetchedArr['dt_value'],'Y-m-d H:i:s', 'd-m-Y'):NULL;
+                        $paymentRow =  [
+                            "voucher" => $fetchedArr['voucher'],
+                            "sr"=>$fetchedArr['sr'],
+                            "date" => $fetchedArr['date'],
+                            "description" => $fetchedArr['description'],
+                            "chq_/_ref_number"=> $fetchedArr['chq_/_ref_number'],
+                            "dt_value" => $transaction_date,
+                            "fc_amount" => '0',
+                            "amount" => $amount,
+                            "bank_code" => $bankCode,
+                            "bank_name" => $fetchedArr['bank'],
+                            "account_no" => $fetchedArr['bank_acc_no'],
+                            "payment_vendor_name" => $fetchedArr['ledger_name'],
+                            "paid_to_client" => $fetchedArr['ledger_name'],
+                            "code" => $code,
+                            "remarks" => $fetchedArr['narration'],
+                            "type" => '',
+                            "gL_code" => $GLcode,
+                            "remark" => '',
+                            "upload_status" => '',
+                            "vendor_code_exists" => '',
+                        ];
+                        $records['PAYMENT'][] = $paymentRow;
+                    
+                    $transType = $fetchedArr['trans_type'];
+                    $transDate = date('Y-m-d', strtotime($fetchedArr['voucher_date'])); 
+                }
+            }
+
+            if (empty($records['PAYMENT'])) {
+                $records['PAYMENT'][] =  [
+                    "voucher" => '',
+                    "sr"=>'',
+                    "date" => '',
+                    "description" => '',
+                    "chq_/_ref_number"=> '',
+                    "dt_value" => '',
+                    "fc_amount" => '',
+                    "amount" => '',
+                    "bank_code" => '',
+                    "bank_name" => '',
+                    "account_no" => '',
+                    "payment_vendor_name" => '',
+                    "paid_to_client" => '',
+                    "code" => '',
+                    "remarks" => '',
+                    "type" => '',
+                    "gL_code" => '',
+                    "remark" => '',
+                    "upload_status" => '',
+                    "vendor_code_exists" => '',
+                ];
+            }
+
+            $toExportData = $records;
+            return $this->fileHelper->array_to_excel($toExportData, "Fact-Payment-$batch_no.xlsx");
+        }catch (Exception $ex) {
+            return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
+        }
         
     }
 
@@ -628,6 +716,7 @@ class FinanceController extends Controller {
             foreach ($result as $key => $value) {
                 
                     $new[] = $fetchedArr = (array)$value;
+                    $batchNo = $fetchedArr['batch_no'];
                     $voucherDate = date('d-m-Y',strtotime($fetchedArr['voucher_date']));
                     $trans_date = date('Y-m-d', strtotime($fetchedArr['voucher_date'])); 
                     $transaction_date = $fetchedArr['transaction_date']?Helpers::utcToIst($fetchedArr['transaction_date'],'Y-m-d H:i:s', 'd-m-Y'):NULL;
@@ -753,6 +842,8 @@ class FinanceController extends Controller {
             $toExportData = $records;
             if($tallyData->is_fact_journal_generated == "1"){
                 $journals = $records['JOURNAL'];
+                array_walk($journals,function(&$value,$key) use ($batchNo){ $value['batch_no'] = $batchNo; });
+                // dd($journals);
                 foreach($journals as $key => $journal){
                     $journals[$key]['voucher_date'] = date('Y-m-d', strtotime($journal['voucher_date']));
                 }
@@ -765,6 +856,104 @@ class FinanceController extends Controller {
             return $this->fileHelper->array_to_excel($toExportData, "Fact-Journal-$batch_no.xlsx");
         }catch (Exception $ex) {
             \DB::rollback();
+            return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
+        }
+        
+    }
+
+    public function downloadFactJournalTransactions(Request $request) {
+        try {
+            ini_set("memory_limit", "-1");
+            $batch_no = $request->get('batch_no') ?? NULL;
+            $where = [];
+            if (!empty($batch_no)) {
+                $where = ['batch_no' => $batch_no];
+            }
+            $result = $this->finRepo->getJournalReportData($where);
+            $factTransDebit = $factTransCredit = [];
+            $factTransTypeData = FactTransType::get()->toArray();
+            foreach($factTransTypeData as $key => $code){
+                $factTransDebit[strtolower($code['trans_type'])] = $code['debit_gl_code'];
+                $factTransCredit[strtolower($code['trans_type'])] = $code['credit_gl_code'];
+            }
+            $records = [];
+            $records['JOURNAL'] = array();
+            $cr_amount_sum = 0;
+
+            $transType = "";
+            $voucher_date = "";
+            $transDate = "";
+            $factGstHand = [];
+            if (!empty($result)) {
+                foreach ($result as $key => $value) {
+                    
+                        $new[] = $fetchedArr = (array)$value;
+                        $voucherDate = date('d-m-Y',strtotime($fetchedArr['voucher_date']));
+                        $trans_date = date('Y-m-d', strtotime($fetchedArr['voucher_date'])); 
+                        $records['JOURNAL'][] = [
+                                "voucher_no" => $fetchedArr['voucher_no'],
+                                "voucher_date"=> $voucherDate,
+                                "voucher_narration" => ($fetchedArr['voucher_narration']),
+                                "general_ledger_code" => $fetchedArr['general_ledger_code'],
+                                "document_class"=>$fetchedArr['document_class'],
+                                "d_/_c" => $fetchedArr['d_/_c'],
+                                "amount" => $fetchedArr['amount'],
+                                "description" => $fetchedArr['description'],
+                                "item_serial_number" => $fetchedArr['item_serial_number'],
+                                "tax_code" => '',
+                                "name" => '',
+                                "gST_hSN_code" => '',
+                                "sAC_code" => '',
+                                "gST_state_name" => '',
+                                "address_line_1" => '',
+                                "address_line_2" => '',
+                                "address_line_3" => '',
+                                "city" => '',
+                                "country" => '',
+                                "postal_code" => '',
+                                "telephone_number" => '',
+                                "mobile_phone_number" => '',
+                                "fAX" => '',
+                                "email" => '',
+                                "gST_identification_number_(GSTIN)" => '',
+                            ];
+                            
+                }
+            }
+
+            if (empty($records['JOURNAL'])) {
+                $records['JOURNAL'][] =  [
+                    "voucher_no" => '',
+                    "voucher_date"=> '',
+                    "voucher_narration" => '',
+                    "general_ledger_code" => '',
+                    "document_class"=> '',
+                    "d_/_c" => '',
+                    "amount" => '',
+                    "description" => '',
+                    "item_serial_number" => '',
+                    "tax_code" => '',
+                    "name" => '',
+                    "gST_hSN_code" => '',
+                    "sAC_code" => '',
+                    "gST_state_name" => '',
+                    "address_line_1" => '',
+                    "address_line_2" => '',
+                    "address_line_3" => '',
+                    "city" => '',
+                    "country" => '',
+                    "postal_code" => '',
+                    "telephone_number" => '',
+                    "mobile_phone_number" => '',
+                    "fAX" => '',
+                    "email" => '',
+                    "gST_identification_number_(GSTIN)" => '',
+                ];
+            }
+
+            $toExportData = $records;
+            return $this->fileHelper->array_to_excel($toExportData, "Fact-Journal-$batch_no.xlsx");
+        }catch (Exception $ex) {
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
         }
         
