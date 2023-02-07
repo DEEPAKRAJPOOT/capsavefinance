@@ -30,18 +30,6 @@ class RefundHelper{
         $nonFactoredAmount = 0;
         $totalTdsAmount = 0;
         
-        foreach ($repaymentTrails as $key => $trans) {
-            if($trans->entry_type == '1' && $trans->trans_type == config('lms.TRANS_TYPE.REFUND')){
-                $interestRefundTotal +=$trans->refundoutstanding;
-            }elseif($trans->entry_type == '1' && $trans->trans_type == config('lms.TRANS_TYPE.INTEREST_OVERDUE')){
-                $interestOverdueTotal +=$trans->refundoutstanding;
-            }elseif($trans->entry_type == '1' && $trans->trans_type == config('lms.TRANS_TYPE.MARGIN')){
-                $marginTotal +=$trans->refundoutstanding;
-            }elseif($trans->entry_type == '1' && $trans->trans_type == config('lms.TRANS_TYPE.NON_FACTORED_AMT')){
-                $nonFactoredAmount +=$trans->refundoutstanding;
-            }
-        }
-        
         $chargeRefund = Transactions::where('trans_type',config('lms.TRANS_TYPE.REFUND'))
         ->where('entry_type',1)
         ->whereHas('parentTransactions.transType',function($query){
