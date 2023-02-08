@@ -234,7 +234,7 @@
                  <div class="col-md-3">
                     <div class="form-group">
                         <label for="txtPassword">Payout Event <span style="color: red;"> *</span></label> 
-                        <input type="text" name="payout_event" id="payout_event" class="form-control" value="{{ (isset($offerData->programOfferDsa) && !empty($offerData->programOfferDsa->payout_event))  ? $offerData->programOfferDsa->payout_event : '' }}" placeholder="Payout Event">
+                        <input type="text" name="payout_event" id="payout_event" class="form-control" value="{{ (isset($offerData->programOfferDsa) && !empty($offerData->programOfferDsa->payout_event))  ? $offerData->programOfferDsa->payout_event : '' }}" placeholder="Payout Event" maxlength="100">
                     </div>
                  </div>
                  
@@ -1265,10 +1265,11 @@
         if(dsa_name == ''){
             setError('input[name=dsa_name]', 'Please fill DSA name');
             flag = false;
-        }else if(!isValid){
-            setError('input[name=dsa_name]', 'Please enter valid data only');
-            flag = false;
         }
+        // else if(!isValid){
+        //     setError('input[name=dsa_name]', 'Please enter valid data only');
+        //     flag = false;
+        // }
 
         var decimalregex = /^\d+(\.\d{0,2})?$/g;
         if(payout == ''){
@@ -1289,10 +1290,11 @@
         if(payout_event == ''){
             setError('input[name=payout_event]', 'Please fill payout event');
             flag = false;
-        }else if(!eventValid){
-            setError('input[name=payout_event]', 'Please enter valid data only');
-            flag = false;
         }
+        // else if(!eventValid){
+        //     setError('input[name=payout_event]', 'Please enter valid data only');
+        //     flag = false;
+        // }
        
 
     }
