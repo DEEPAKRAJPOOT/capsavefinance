@@ -184,7 +184,7 @@ class UserInvoice extends BaseModel {
                 $invoiceDetails->where('invoice_cat','1');
                 break;
         }
-        return $invoiceDetails->orderBy('inv_serial_no','desc')->first();
+        return $invoiceDetails->orderBy('user_invoice_id','desc')->first();
     }
 
     public function lmsUser(){
