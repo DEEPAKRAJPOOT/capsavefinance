@@ -792,28 +792,28 @@ class ReportsRepository extends BaseRepositories implements ReportInterface {
 			$interestOutstanding = $invDisb->transactions->where('trans_type','9')->where('entry_type',0)->whereNull('parent_trans_id')->sum('outstanding');
 			$interestOutstanding = $interestOutstanding > 0 ? $interestOutstanding : 0;
 			
-			$overdueOutstanding = $invDisb->transactions->where('trans_type','33')->where('entry_type',0)->whereNull('parent_trans_id')->where('is_transaction','1')->where('soa_flag','1')->sum('outstanding');
+			$overdueOutstanding = $invDisb->transactions->where('trans_type','33')->where('entry_type',0)->whereNull('parent_trans_id')->where('soa_flag','1')->sum('outstanding');
 			$overdueOutstanding = $overdueOutstanding > 0 ? $overdueOutstanding : 0;
 
-			$chargesOutstanding = $invDisb->transactions->where('trans_type','>','50')->where('entry_type',0)->whereNull('parent_trans_id')->where('is_transaction','1')->where('soa_flag','1')->sum('outstanding');
+			$chargesOutstanding = $invDisb->transactions->where('trans_type','>','50')->where('entry_type',0)->whereNull('parent_trans_id')->where('soa_flag','1')->sum('outstanding');
 			
-			$charges = $invDisb->transactions->where('trans_type','>','50')->where('entry_type',0)->whereNull('parent_trans_id')->where('is_transaction','1')->where('soa_flag','1')->sum('amount');
+			$charges = $invDisb->transactions->where('trans_type','>','50')->where('entry_type',0)->whereNull('parent_trans_id')->where('soa_flag','1')->sum('amount');
 							  
 			$totalOutstanding = ($principalOutstanding + $interestOutstanding + $overdueOutstanding + $chargesOutstanding);
 	
-			$interestIds = $invDisb->transactions->where('trans_type','9')->where('entry_type',0)->whereNull('parent_trans_id')->where('is_transaction','1')->where('soa_flag','1')->pluck('trans_id')->toArray();
+			$interestIds = $invDisb->transactions->where('trans_type','9')->where('entry_type',0)->whereNull('parent_trans_id')->where('soa_flag','1')->pluck('trans_id')->toArray();
 			$interest_to_refunded = $invDisb->transactions->where('trans_type','32')->where('entry_type',1)->whereIn('parent_trans_id',$interestIds)->sum('amount');
 			$interest_to_refundedIds = $invDisb->transactions->where('trans_type','32')->where('entry_type',1)->whereIn('parent_trans_id',$interestIds)->pluck('trans_id')->toArray();
 			$intAdjRef = $invDisb->transactions->where('entry_type',0)->whereIn('link_trans_id',$interest_to_refundedIds)->sum('amount');
 			$interest_to_refunded = ($interest_to_refunded - $intAdjRef) > 0 ? ($interest_to_refunded - $intAdjRef) : 0;
 
-			$overdueIds = $invDisb->transactions->where('trans_type','33')->where('entry_type',0)->whereNull('parent_trans_id')->where('is_transaction','1')->where('soa_flag','1')->pluck('trans_id')->toArray();
+			$overdueIds = $invDisb->transactions->where('trans_type','33')->where('entry_type',0)->whereNull('parent_trans_id')->where('soa_flag','1')->pluck('trans_id')->toArray();
 			$overdueinterest_to_refunded = $invDisb->transactions->where('trans_type','32')->where('entry_type',1)->whereIn('parent_trans_id',$overdueIds)->sum('amount');
 			$overdueinterest_to_refundedIds = $invDisb->transactions->where('trans_type','32')->where('entry_type',1)->whereIn('parent_trans_id',$overdueIds)->pluck('trans_id')->toArray();
 			$odAdjRef = $invDisb->transactions->where('entry_type',0)->whereIn('link_trans_id',$overdueinterest_to_refundedIds)->sum('amount');
 			$overdueinterest_to_refunded = $overdueinterest_to_refunded-$odAdjRef > 0 ? $overdueinterest_to_refunded-$odAdjRef : 0;
 
-			$marginIds = $invDisb->transactions->where('trans_type','10')->where('entry_type',1)->where('is_transaction','1')->where('soa_flag','1')->pluck('trans_id')->toArray();
+			$marginIds = $invDisb->transactions->where('trans_type','10')->where('entry_type',1)->where('soa_flag','1')->pluck('trans_id')->toArray();
 			$margin_to_refunded = $invDisb->transactions->where('trans_type','32')->where('entry_type',1)->whereIn('link_trans_id',$marginIds)->sum('settled_outstanding');
 			$margin_to_refunded = $margin_to_refunded > 0 ? $margin_to_refunded : 0;
 
