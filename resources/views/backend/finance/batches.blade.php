@@ -63,4 +63,15 @@ var messages = {
     };
 </script>
 <script src="{{ asset('backend/js/ajax-js/tally_batch.js') }}"></script>
+<script>
+        $(document).on('click', '.payment_button', function (e) {
+                    $(this).addClass("disabled");
+                
+            });
+
+            $(document).on('click', '.journal_button', function (e) {
+                    $(this).addClass("disabled");
+                
+            });
+</script>
 @endsection
