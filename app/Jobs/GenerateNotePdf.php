@@ -9,6 +9,7 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\App;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Storage;
 use App\Inv\Repositories\Models\LmsUser;
 use Illuminate\Queue\InteractsWithQueue;
 use App\Inv\Repositories\Models\UserFile;
@@ -139,7 +140,9 @@ class GenerateNotePdf implements ShouldQueue
             ];
             view()->share($data);
             $path ='capsaveInvoice/'.str_replace("/","_",strtoupper($data['origin_of_recipient']['invoice_no'])).'.pdf';
-            
+            if(Storage::exists('public/'.$path)){
+                Storage::move('public/'.$path, 'public/'.'capsaveInvoice/'.str_replace("/","_",strtoupper($data['origin_of_recipient']['invoice_no'])).'_'.time().'.pdf');
+            }
             switch ($invData->invoice_cat) {
                 case '1':
                     $pdf = PDF::loadView('lms.note.generate_debit_note');
