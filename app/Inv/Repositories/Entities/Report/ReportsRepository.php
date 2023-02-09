@@ -1223,7 +1223,7 @@ class ReportsRepository extends BaseRepositories implements ReportInterface {
 			$resultValue[$chrgOut->customer_id]['Outstanding_Amount'] = isset($chrgOut->Outstanding_Amount) ? number_format($chrgOut->Outstanding_Amount,2) : 0;
 		}
 
-		$nonFactorOutstanding = DB::select('SELECT temp.customer_id AS customer_id, SUM(temp.out_amt) AS outstandingAmount FROM ( SELECT a.user_id, b.customer_id, (d.settled_outstanding) AS out_amt FROM rta_transactions AS a JOIN (SELECT * FROM rta_lms_users GROUP BY user_id) AS b ON a.user_id = b.user_id LEFT JOIN rta_transactions AS d ON a.trans_id = d.link_trans_id AND d.trans_type = 32 AND d.entry_type = 1 WHERE a.trans_type = 35 AND a.entry_type = 1 AND a.`is_transaction` = 1 AND a.`soa_flag` = 1 ) AS temp GROUP BY temp.user_id');
+		$nonFactorOutstanding = DB::select('SELECT temp.customer_id AS customer_id, SUM(temp.out_amt) AS outstandingAmount FROM ( SELECT a.user_id, b.customer_id, COALESCE(d.settled_outstanding,0) AS out_amt FROM rta_transactions AS a JOIN (SELECT * FROM rta_lms_users GROUP BY user_id) AS b ON a.user_id = b.user_id LEFT JOIN rta_transactions AS d ON a.trans_id = d.link_trans_id AND d.trans_type = 32 AND d.entry_type = 1 WHERE a.trans_type = 35 AND a.entry_type = 1 AND a.`is_transaction` = 1 AND a.`soa_flag` = 1 ) AS temp GROUP BY temp.user_id');
 		foreach($nonFactorOutstanding as $key => $nonfactorOut) {
 			$resultValue[$nonfactorOut->customer_id]['outstandingAmount'] = number_format($nonfactorOut->outstandingAmount,2);
 		}
