@@ -2848,15 +2848,22 @@ class Helper extends PaypalHelper
         $startDate = Helper::utcToIst($startDate,'Y-m-d H:i:s', 'Y-m-d H:i:s');
         
         $month =  Carbon::parse($startDate)->format('M');
-        $year =  Carbon::parse($startDate)->format('Y');
-        $year2 = Carbon::parse($startDate)->format('y');
+        if($month > 4){
+            $year =  Carbon::parse($startDate)->format('Y'); 
+            $year = date('Y', strtotime('+1 year'));
+            $pt = substr($year,2);
+        }else{
+            $year = Carbon::parse($startDate)->format('Y');
+            $year = date('Y', strtotime('-1 year'));
+            $pt = substr($year,2);
+        }
         $factResult = array(
             'year1'=>$year,
             'year2'=>($year+1),
             'month'=>$month,
             'fact_srp_seq_number'=>0,
             'fact_sjv_seq_number'=>0,
-            'voucher_format'=> $year2.($year2+1).'/'.mb_substr($month, 0, 1)
+            'voucher_format'=> $pt.($pt+1).'/'.mb_substr($month, 0, 1)
         );
 
         $factvoucherData = TallyFactVoucher::getfactVoucherNumber();
@@ -2871,7 +2878,7 @@ class Helper extends PaypalHelper
                 'month'=>$month,
                 'fact_srp_seq_number'=>$factvoucherData->fact_srp_seq_number,
                 'fact_sjv_seq_number'=>$factvoucherData->fact_sjv_seq_number,
-                'voucher_format'=> $year2.($year2+1).'/'.mb_substr($month, 0, 1)
+                'voucher_format'=> $pt.($pt+1).'/'.mb_substr($month, 0, 1)
             );
         }
         return $factResult;
