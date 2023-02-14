@@ -130,7 +130,7 @@ class OutstandingReport extends Command
                     'Total Outstanding' => (double)$dataRecord['Total Outstanding'],
                     'Grace Days Interest' => (int)$dataRecord['Grace Days Interest'],
                     'Grace Days Principal' => (int)$dataRecord['Grace Days Principal'],
-                    'Grace Period End Date' => (int)$dataRecord['Grace Period End Date'],
+                    'Grace Period End Date' => $dataRecord['Grace Period End Date'],
                     'Principal Overdue' => $dataRecord['Principal Overdue'],
                     'Principal Overdue Category' => $dataRecord['Principal Overdue Category'],
                     'Principal DPD' => (int)$dataRecord['Principal DPD'],
