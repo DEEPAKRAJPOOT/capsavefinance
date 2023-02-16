@@ -348,6 +348,7 @@ class CibilReportController extends Controller
           $od_outstanding = isset($userData) ? round($userData->od_outstanding, 2) : 0;
         }
         $od_days =  isset($maxDPD) && $isOverdue ? (int)$maxDPD : 0;
+        $graceEnd = Carbon::parse($dueDate)->addDays($invDisb->grace_period ?? 0)->format('Y-m-d');
         $data[] = [
             'Ac No' => $this->formatedCustId,
             'Segment Identifier' => 'CR',
@@ -365,7 +366,7 @@ class CibilReportController extends Controller
             'Loan Expiry / Maturity Date' => !empty($getUserBizLimit->limit_expiration_date) ? date('d M Y', strtotime($getUserBizLimit->limit_expiration_date)) : NULL,
             'Loan Renewal Date' => NULL,
             'Asset Classification/Days Past Due (DPD)' => $maxDPD,//$od_days,
-            'Asset Classification Date' => NULL,
+            'Asset Classification Date' => $graceEnd,
             'Amount Overdue / Limit Overdue' => $od_outstanding,
             'Overdue Bucket 01 ( 1 – 30 days)' => ($od_days >= 1 && $od_days <= 30 ? $od_outstanding : 0),
             'Overdue Bucket 02 ( 31 – 60 days)' => ($od_days >= 31 && $od_days <= 60 ? $od_outstanding : 0),
@@ -396,7 +397,7 @@ class CibilReportController extends Controller
             'UFCE (Amount)' => NULL,
             'UFCE Date' => NULL,
         ];
-        dd($data);
+        
         return $data;
     }
 
@@ -550,6 +551,9 @@ class CibilReportController extends Controller
       LEFT JOIN(SELECT b.user_id, (SUM(b.debit_amount) - SUM(b.credit_amount)) AS soa_outstanding 
       FROM rta_customer_transaction_soa AS b LEFT JOIN rta_transactions AS c ON c.trans_id = b.trans_id 
       WHERE c.soa_flag = 1 AND c.is_transaction = 1 GROUP BY c.user_id) AS d ON a.user_id = d.user_id', [$userId]);
-      return ['SOA_Balance' => round($soaBalance[0]->SOA_Outstanding, 2)];
+      return !empty($soaBalance) && isset($soaBalance[0]->SOA_Outstanding) ? 
+      ['SOA_Balance' => round($soaBalance[0]->SOA_Outstanding, 2)] : 
+      ['SOA_Balance' => 0];
     }
+
 }
