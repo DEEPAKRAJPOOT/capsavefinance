@@ -103,14 +103,15 @@ class UserInvoiceRepository extends BaseRepositories implements UserInvoiceInter
 
 	public function getUserInvoiceTxns($userId, $invoiceType = 'I', $transIds = [], $is_force = false) {
 		$UserInvoiceTxns = Transactions::getUserInvoiceTxns($userId, $invoiceType, $transIds, $is_force);
+		// dd($UserInvoiceTxns);
 		if (!empty($UserInvoiceTxns)) {
 			foreach ($UserInvoiceTxns as $key => $txn) {
 				if($txn->trans_type == config('lms.TRANS_TYPE.INVOICE_PROCESSING_FEE')){
 					$txn->amount = $txn->amount;
 				}
-				if ($txn->amount == 0) {
-					unset($UserInvoiceTxns[$key]);
-				}
+				// if ($txn->amount == 0) {
+				// 	unset($UserInvoiceTxns[$key]);
+				// }
 			}
 		}
 		return $UserInvoiceTxns;

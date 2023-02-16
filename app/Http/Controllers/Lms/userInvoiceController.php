@@ -755,160 +755,160 @@ class userInvoiceController extends Controller
         }
     }
 
-    public function generateManualDebitNote(Request $request) {
-        try {
-            $url_user_id = $request->get('user_id');
-            $invoice_type = $request->get('invoice_type');
-            $trans_ids = $request->get('trans_id');
-            $invoice_date = $request->get('invoice_date');
-            $due_date = $request->get('due_date');
-            $reference_no = $request->get('reference_no');
-            if (!is_array($trans_ids) || empty($trans_ids)) {
-                return redirect()->route('view_user_invoice', ['user_id' => $url_user_id])->with('error', 'No selected txns found for the invoice.');
-            }
-            if (empty(preg_replace('#[^A-Z0-9]+#', '', strtoupper($reference_no)))) {
-               return redirect()->route('view_user_invoice', ['user_id' => $url_user_id])->with('error', 'Invalid Reference No found.');
-            }
-            $registeredCompany  = $this->UserInvRepo->getCompanyRegAddr();
-            if (empty($registeredCompany) || $registeredCompany->isEmpty()) {
-               return redirect()->route('view_user_invoice', ['user_id' => $url_user_id])->with('error', 'Company Registered address not found..'); 
-            }
-            if ($registeredCompany->count() != 1) {
-               return redirect()->route('view_user_invoice', ['user_id' => $url_user_id])->with('error', 'Multiple Company Registered addresses found..'); 
-            }
-            $registeredCompany = $registeredCompany->toArray();
-            $registeredCompany = $registeredCompany[0];
-            if (empty($registeredCompany['bank_account_id'])) {
-              return redirect()->route('view_user_invoice', ['user_id' => $url_user_id])->with('error', 'No bank detail found for the Registered Company.'); 
-            }
-            $requestedData = $request->all();
-            $decryptedData = _decrypt($requestedData['encData']);
-            if (empty($decryptedData)) {
-                return redirect()->route('view_user_invoice', ['user_id' => $url_user_id])->with('error', 'Data modified, Please try again.');
-            }
-            list($user_id, $company_id, $biz_addr_id, $user_invoice_rel_id) = explode('|', $decryptedData);
-            if ($url_user_id != $user_id) {
-               return redirect()->route('view_user_invoice', ['user_id' => $url_user_id])->with('error', 'Data can not be modified.');
-            }
-            $companyDetail = $this->_getCompanyDetail($company_id);
-            if ($companyDetail['status'] != 'success') {
-               return redirect()->route('view_user_invoice', ['user_id' => $url_user_id])->with('error', $companyDetail['message']);
-            }
-            $company_data = $companyDetail['data'];
-            $billingDetail = $this->_getBillingDetail($biz_addr_id);
-            if ($billingDetail['status'] != 'success') {
-               return redirect()->route('view_user_invoice', ['user_id' => $url_user_id])->with('error', $billingDetail['message']);
-            }
-            $billing_data = $billingDetail['data'];
-            $companyStateId = $company_data['state_id'];
-            $userStateId = $billing_data['state_id'];
+    // public function generateManualDebitNote(Request $request) {
+    //     try {
+    //         $url_user_id = $request->get('user_id');
+    //         $invoice_type = $request->get('invoice_type');
+    //         $trans_ids = $request->get('trans_id');
+    //         $invoice_date = $request->get('invoice_date');
+    //         $due_date = $request->get('due_date');
+    //         $reference_no = $request->get('reference_no');
+    //         if (!is_array($trans_ids) || empty($trans_ids)) {
+    //             return redirect()->route('view_user_invoice', ['user_id' => $url_user_id])->with('error', 'No selected txns found for the invoice.');
+    //         }
+    //         if (empty(preg_replace('#[^A-Z0-9]+#', '', strtoupper($reference_no)))) {
+    //            return redirect()->route('view_user_invoice', ['user_id' => $url_user_id])->with('error', 'Invalid Reference No found.');
+    //         }
+    //         $registeredCompany  = $this->UserInvRepo->getCompanyRegAddr();
+    //         if (empty($registeredCompany) || $registeredCompany->isEmpty()) {
+    //            return redirect()->route('view_user_invoice', ['user_id' => $url_user_id])->with('error', 'Company Registered address not found..'); 
+    //         }
+    //         if ($registeredCompany->count() != 1) {
+    //            return redirect()->route('view_user_invoice', ['user_id' => $url_user_id])->with('error', 'Multiple Company Registered addresses found..'); 
+    //         }
+    //         $registeredCompany = $registeredCompany->toArray();
+    //         $registeredCompany = $registeredCompany[0];
+    //         if (empty($registeredCompany['bank_account_id'])) {
+    //           return redirect()->route('view_user_invoice', ['user_id' => $url_user_id])->with('error', 'No bank detail found for the Registered Company.'); 
+    //         }
+    //         $requestedData = $request->all();
+    //         $decryptedData = _decrypt($requestedData['encData']);
+    //         if (empty($decryptedData)) {
+    //             return redirect()->route('view_user_invoice', ['user_id' => $url_user_id])->with('error', 'Data modified, Please try again.');
+    //         }
+    //         list($user_id, $company_id, $biz_addr_id, $user_invoice_rel_id) = explode('|', $decryptedData);
+    //         if ($url_user_id != $user_id) {
+    //            return redirect()->route('view_user_invoice', ['user_id' => $url_user_id])->with('error', 'Data can not be modified.');
+    //         }
+    //         $companyDetail = $this->_getCompanyDetail($company_id);
+    //         if ($companyDetail['status'] != 'success') {
+    //            return redirect()->route('view_user_invoice', ['user_id' => $url_user_id])->with('error', $companyDetail['message']);
+    //         }
+    //         $company_data = $companyDetail['data'];
+    //         $billingDetail = $this->_getBillingDetail($biz_addr_id);
+    //         if ($billingDetail['status'] != 'success') {
+    //            return redirect()->route('view_user_invoice', ['user_id' => $url_user_id])->with('error', $billingDetail['message']);
+    //         }
+    //         $billing_data = $billingDetail['data'];
+    //         $companyStateId = $company_data['state_id'];
+    //         $userStateId = $billing_data['state_id'];
 
-            $txnsData = $this->UserInvRepo->getUserInvoiceTxns($url_user_id, $invoice_type, $trans_ids, true);
-            if(empty($txnsData) ||  $txnsData->isEmpty()){
-                return redirect()->route('view_user_invoice', ['user_id' => $url_user_id])->with('error', 'No remaining txns found for the invoice.');
-            }
+    //         $txnsData = $this->UserInvRepo->getUserInvoiceTxns($url_user_id, $invoice_type, $trans_ids, true);
+    //         if(empty($txnsData) ||  $txnsData->isEmpty()){
+    //             return redirect()->route('view_user_invoice', ['user_id' => $url_user_id])->with('error', 'No remaining txns found for the invoice.');
+    //         }
             
-            if (count($trans_ids) > 1) {
-                $valResult = Helpers::validateInvoiceTypes($trans_ids, $specificMsg = false);
-                if ($valResult && isset($valResult['status']) && $valResult['status'] == false) {
-                    return redirect()->route('view_user_invoice', ['user_id' => $url_user_id])->with('error', $valResult['message']);
-                }
-            }
+    //         if (count($trans_ids) > 1) {
+    //             $valResult = Helpers::validateInvoiceTypes($trans_ids, $specificMsg = false);
+    //             if ($valResult && isset($valResult['status']) && $valResult['status'] == false) {
+    //                 return redirect()->route('view_user_invoice', ['user_id' => $url_user_id])->with('error', $valResult['message']);
+    //             }
+    //         }
 
-            $invSerialNo = null;
-            $InvoiceNoArr = explode('/',$requestedData['invoice_no']);
-            $InvoiceNoArr[3] = $invSerialNo;
-            $newInvoiceNo = implode('/',$InvoiceNoArr);
-            $newInvoiceNo = chop($newInvoiceNo,'/');
+    //         $invSerialNo = null;
+    //         $InvoiceNoArr = explode('/',$requestedData['invoice_no']);
+    //         $InvoiceNoArr[3] = $invSerialNo;
+    //         $newInvoiceNo = implode('/',$InvoiceNoArr);
+    //         $newInvoiceNo = chop($newInvoiceNo,'/');
 
-            $is_state_diffrent = ($userStateId != $companyStateId);
-            $inv_data = $this->_calculateInvoiceTxns($txnsData, $is_state_diffrent, false, 1);
-            $intrest_charges = $inv_data[0];
-            $total_sum_of_rental = $inv_data[1];
-            $requestedData['created_at'] = \carbon\Carbon::now();
-            $requestedData['created_by'] = Auth::user()->user_id;
-            unset($company_data['state']);
-            $bank_id = bankDetailIsOfRegisteredCompanyInInvoice() ? $registeredCompany['bank_account_id'] : $company_data['bank_id'];
-            $userInvoiceData = [
-                'user_id' => $requestedData['user_id'],
-                'user_invoice_rel_id' => $user_invoice_rel_id,
-                'user_gst_state_id' => $userStateId,
-                'comp_gst_state_id' => $companyStateId,
-                'pan_no' => $billing_data['pan_no'],
-                'biz_gst_no' => $billing_data['gstin_no'],
-                'biz_gst_state_code' => substr($billing_data['gstin_no'],0,2),
-                'gst_addr' => $billing_data['address'],
-                'biz_entity_name' => $billing_data['name'],
-                'reference_no' => $reference_no,
-                'invoice_type' => $requestedData['invoice_type'],
-                'invoice_cat' => '1',
-                'invoice_type_name' => $requestedData['invoice_type'] == "C" ? 1 : 2, 
-                'invoice_no' => $newInvoiceNo,
-                'inv_serial_no' => $invSerialNo,
-                'invoice_date' => Carbon::createFromFormat('d/m/Y', $invoice_date)->format('Y-m-d H:i:s'),
-                'due_date' => Carbon::createFromFormat('d/m/Y', $due_date)->format('Y-m-d H:i:s'),
-                'invoice_state_code' => $company_data['state_code'],
-                'place_of_supply' => $billing_data['state_name'],
-                'tot_no_of_trans' => count($requestedData['trans_id']),
-                'tot_paid_amt' => $total_sum_of_rental ?? 0,
-                'comp_addr_id' => $company_data['comp_id'],
-                'inv_comp_data' => json_encode($company_data),
-                'registered_comp_id' => $registeredCompany['comp_addr_id'],
-                'comp_addr_register' => json_encode($registeredCompany),
-                'bank_id' => $bank_id,
-                'is_active' => 1
-            ];
-            $invoiceResp = $this->UserInvRepo->saveUserInvoice($userInvoiceData);
-            if(!empty($invoiceResp->user_invoice_id)){
-                $userInvoice_id = $invoiceResp->user_invoice_id;
-                foreach ($intrest_charges as $key => $txnsRec) {
-                    $update_transactions[0] = $txnsRec['trans_id'];
-                   $user_invoice_trans_data[] = [
-                        'user_invoice_id' => $userInvoice_id,
-                        'trans_id' => $txnsRec['trans_id'],
-                        'sac_code' => $txnsRec['sac'],
-                        'base_amount' => $txnsRec['base_amt'],
-                        'sgst_rate' => $txnsRec['sgst_rate'],
-                        'sgst_amount' => $txnsRec['sgst_amt'],
-                        'cgst_rate' => $txnsRec['cgst_rate'],
-                        'cgst_amount' => $txnsRec['cgst_amt'],
-                        'igst_rate' => $txnsRec['igst_rate'],
-                        'igst_amount' => $txnsRec['igst_amt'],
-                        'description' => $txnsRec['desc'], 
-                        'settle_payment_desc' => $txnsRec['trans_date'],
-                   ]; 
-                   $totalGst = ($txnsRec['sgst_amt'] + $txnsRec['cgst_amt'] + $txnsRec['igst_amt']);
-                   $totalGstRate = ($txnsRec['sgst_rate'] + $txnsRec['cgst_rate'] + $txnsRec['igst_rate']);
-                   $data = ['is_invoice_generated' => 1, 'gst_per' => $totalGstRate, 'soa_flag' => 1, 'base_amt' => $txnsRec['base_amt'], 'gst_amt' => $totalGst];
-                   if ($invoice_type == 'C')
-                        $this->checkIsTransactionUpdatable($txnsRec['trans_id']);
+    //         $is_state_diffrent = ($userStateId != $companyStateId);
+    //         $inv_data = $this->_calculateInvoiceTxns($txnsData, $is_state_diffrent, false, 1);
+    //         $intrest_charges = $inv_data[0];
+    //         $total_sum_of_rental = $inv_data[1];
+    //         $requestedData['created_at'] = \carbon\Carbon::now();
+    //         $requestedData['created_by'] = Auth::user()->user_id;
+    //         unset($company_data['state']);
+    //         $bank_id = bankDetailIsOfRegisteredCompanyInInvoice() ? $registeredCompany['bank_account_id'] : $company_data['bank_id'];
+    //         $userInvoiceData = [
+    //             'user_id' => $requestedData['user_id'],
+    //             'user_invoice_rel_id' => $user_invoice_rel_id,
+    //             'user_gst_state_id' => $userStateId,
+    //             'comp_gst_state_id' => $companyStateId,
+    //             'pan_no' => $billing_data['pan_no'],
+    //             'biz_gst_no' => $billing_data['gstin_no'],
+    //             'biz_gst_state_code' => substr($billing_data['gstin_no'],0,2),
+    //             'gst_addr' => $billing_data['address'],
+    //             'biz_entity_name' => $billing_data['name'],
+    //             'reference_no' => $reference_no,
+    //             'invoice_type' => $requestedData['invoice_type'],
+    //             'invoice_cat' => '1',
+    //             'invoice_type_name' => $requestedData['invoice_type'] == "C" ? 1 : 2, 
+    //             'invoice_no' => $newInvoiceNo,
+    //             'inv_serial_no' => $invSerialNo,
+    //             'invoice_date' => Carbon::createFromFormat('d/m/Y', $invoice_date)->format('Y-m-d H:i:s'),
+    //             'due_date' => Carbon::createFromFormat('d/m/Y', $due_date)->format('Y-m-d H:i:s'),
+    //             'invoice_state_code' => $company_data['state_code'],
+    //             'place_of_supply' => $billing_data['state_name'],
+    //             'tot_no_of_trans' => count($requestedData['trans_id']),
+    //             'tot_paid_amt' => $total_sum_of_rental ?? 0,
+    //             'comp_addr_id' => $company_data['comp_id'],
+    //             'inv_comp_data' => json_encode($company_data),
+    //             'registered_comp_id' => $registeredCompany['comp_addr_id'],
+    //             'comp_addr_register' => json_encode($registeredCompany),
+    //             'bank_id' => $bank_id,
+    //             'is_active' => 1
+    //         ];
+    //         $invoiceResp = $this->UserInvRepo->saveUserInvoice($userInvoiceData);
+    //         if(!empty($invoiceResp->user_invoice_id)){
+    //             $userInvoice_id = $invoiceResp->user_invoice_id;
+    //             foreach ($intrest_charges as $key => $txnsRec) {
+    //                 $update_transactions[0] = $txnsRec['trans_id'];
+    //                $user_invoice_trans_data[] = [
+    //                     'user_invoice_id' => $userInvoice_id,
+    //                     'trans_id' => $txnsRec['trans_id'],
+    //                     'sac_code' => $txnsRec['sac'],
+    //                     'base_amount' => $txnsRec['base_amt'],
+    //                     'sgst_rate' => $txnsRec['sgst_rate'],
+    //                     'sgst_amount' => $txnsRec['sgst_amt'],
+    //                     'cgst_rate' => $txnsRec['cgst_rate'],
+    //                     'cgst_amount' => $txnsRec['cgst_amt'],
+    //                     'igst_rate' => $txnsRec['igst_rate'],
+    //                     'igst_amount' => $txnsRec['igst_amt'],
+    //                     'description' => $txnsRec['desc'], 
+    //                     'settle_payment_desc' => $txnsRec['trans_date'],
+    //                ]; 
+    //                $totalGst = ($txnsRec['sgst_amt'] + $txnsRec['cgst_amt'] + $txnsRec['igst_amt']);
+    //                $totalGstRate = ($txnsRec['sgst_rate'] + $txnsRec['cgst_rate'] + $txnsRec['igst_rate']);
+    //                $data = ['is_invoice_generated' => 1, 'gst_per' => $totalGstRate, 'soa_flag' => 1, 'base_amt' => $txnsRec['base_amt'], 'gst_amt' => $totalGst];
+    //                if ($invoice_type == 'C')
+    //                     $this->checkIsTransactionUpdatable($txnsRec['trans_id']);
 
-                   $isInvoiceGenerated = $this->UserInvRepo->updateIsInvoiceGenerated($update_transactions, $data);
-                }
-                $UserInvoiceTxns = $this->UserInvRepo->saveUserInvoiceTxns($user_invoice_trans_data);
-                if($UserInvoiceTxns){
-                    GenerateNotePdf::dispatch($userInvoice_id);
-                }
+    //                $isInvoiceGenerated = $this->UserInvRepo->updateIsInvoiceGenerated($update_transactions, $data);
+    //             }
+    //             $UserInvoiceTxns = $this->UserInvRepo->saveUserInvoiceTxns($user_invoice_trans_data);
+    //             if($UserInvoiceTxns){
+    //                 GenerateNotePdf::dispatch($userInvoice_id);
+    //             }
 
-                if ($UserInvoiceTxns == true) {
-                    $whereActivi['activity_code'] = 'save_user_invoice';
-                    $activity = $this->master->getActivity($whereActivi);
-                    if(!empty($activity)) {
-                        $activity_type_id = isset($activity[0]) ? $activity[0]->id : 0;
-                        $activity_desc = 'Create Invoice Int/Charge Invoice (Manage Sanction Cases) ';
-                        $arrActivity['app_id'] = null;
-                        $this->activityLogByTrait($activity_type_id, $activity_desc, response()->json(['userInvoiceData'=>$userInvoiceData, 'intrest_charges'=>$intrest_charges]), $arrActivity);
-                    }                     
+    //             if ($UserInvoiceTxns == true) {
+    //                 $whereActivi['activity_code'] = 'save_user_invoice';
+    //                 $activity = $this->master->getActivity($whereActivi);
+    //                 if(!empty($activity)) {
+    //                     $activity_type_id = isset($activity[0]) ? $activity[0]->id : 0;
+    //                     $activity_desc = 'Create Invoice Int/Charge Invoice (Manage Sanction Cases) ';
+    //                     $arrActivity['app_id'] = null;
+    //                     $this->activityLogByTrait($activity_type_id, $activity_desc, response()->json(['userInvoiceData'=>$userInvoiceData, 'intrest_charges'=>$intrest_charges]), $arrActivity);
+    //                 }                     
                     
-                   return redirect()->route('view_user_invoice', ['user_id' => $user_id])->with('message', 'Invoice generated Successfully');
-                }
-            }else{
-               return redirect()->route('view_user_invoice', ['user_id' => $user_id])->with('error', 'Some error occured while inserting UserInvoice Data');
-            }
-        } catch (Exception $ex) {
-             return redirect()->route('view_user_invoice', ['user_id' => $user_id])->withErrors(Helpers::getExceptionMessage($ex));
-        }
-    }
+    //                return redirect()->route('view_user_invoice', ['user_id' => $user_id])->with('message', 'Invoice generated Successfully');
+    //             }
+    //         }else{
+    //            return redirect()->route('view_user_invoice', ['user_id' => $user_id])->with('error', 'Some error occured while inserting UserInvoice Data');
+    //         }
+    //     } catch (Exception $ex) {
+    //          return redirect()->route('view_user_invoice', ['user_id' => $user_id])->withErrors(Helpers::getExceptionMessage($ex));
+    //     }
+    // }
 
     public function generateDebitNote($transId = [], $userId, $invoiceType, $invoiceDate = null, $dueDate  = null){
         $status = 0;
@@ -935,8 +935,7 @@ class userInvoiceController extends Controller
                 $error[] = 'No bank detail found for the Registered Company.'; 
                 return $result;
             }
-            
-            $userCompanyRelation  = $this->UserInvRepo->getUserCompanyRelation($userId);
+            $userCompanyRelation  = $this->UserInvRepo->getUserCompanyRelation((int)$userId);
             if (empty($userCompanyRelation)) {
                 $error[] = 'No Relation found between Company and User.'; 
                 return $result;
@@ -954,7 +953,6 @@ class userInvoiceController extends Controller
             $user_invoice_rel_id = $userCompanyRelation->user_invoice_rel_id ?? NULL;
 
             $companyDetail = $this->_getCompanyDetail($company_id);
-            
             if ($companyDetail['status'] != 'success') {
                 $error[] = $companyDetail['message'];
                 return $result;
@@ -962,7 +960,6 @@ class userInvoiceController extends Controller
 
             $company_data = $companyDetail['data'];
             $billingDetail = $this->_getBillingDetail($biz_addr_id);
-            
             if ($billingDetail['status'] != 'success') {
                 $error[] = $billingDetail['message'];
                 return $result;
@@ -971,7 +968,6 @@ class userInvoiceController extends Controller
             $billing_data = $billingDetail['data'];
             $companyStateId = $company_data['state_id'];
             $userStateId = $billing_data['state_id'];
-
             $txnsData = $this->UserInvRepo->getUserInvoiceTxns($userId, $invoiceType, $transId, true);
             if(empty($txnsData) ||  $txnsData->isEmpty()){
                 $error[] = 'No remaining txns found for the invoice.';
