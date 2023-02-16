@@ -37,7 +37,7 @@ class RefundHelper{
         ->whereHas('linkTransactions',function($query) use($paymentId,$apportionmentId){
             $query->whereIn('trans_type',[config('lms.TRANS_TYPE.TDS'),config('lms.TRANS_TYPE.INTEREST')])
             ->where('entry_type',1)
-            // ->where('payment_id',$paymentId)
+            ->where('payment_id',$paymentId)
             ->where('apportionment_id',$apportionmentId);
         })
         ->sum('settled_outstanding');
@@ -50,7 +50,7 @@ class RefundHelper{
         ->whereHas('linkTransactions',function($query) use($paymentId,$apportionmentId){
             $query->whereIn('trans_type',[config('lms.TRANS_TYPE.TDS'),config('lms.TRANS_TYPE.INTEREST_OVERDUE')])
             ->where('entry_type',1)
-            // ->where('payment_id',$paymentId)
+            ->where('payment_id',$paymentId)
             ->where('apportionment_id',$apportionmentId);
         })
         ->sum('settled_outstanding');
@@ -60,7 +60,7 @@ class RefundHelper{
         ->whereHas('linkTransactions',function($query) use($paymentId,$apportionmentId){
             $query->where('trans_type',config('lms.TRANS_TYPE.MARGIN'))
             ->where('entry_type',1)
-            // ->where('payment_id',$paymentId)
+            ->where('payment_id',$paymentId)
             ->where('apportionment_id',$apportionmentId);
         })
         ->sum('settled_outstanding');
@@ -70,7 +70,7 @@ class RefundHelper{
         ->whereHas('linkTransactions',function($query) use($paymentId,$apportionmentId){
             $query->where('trans_type',config('lms.TRANS_TYPE.NON_FACTORED_AMT'))
             ->where('entry_type',1)
-            // ->where('payment_id',$paymentId)
+            ->where('payment_id',$paymentId)
             ->where('apportionment_id',$apportionmentId);
         })
         ->sum('settled_outstanding');
