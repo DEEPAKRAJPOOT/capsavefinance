@@ -7,6 +7,7 @@ use Carbon\Carbon;
 use App\Http\Controllers\Controller;
 use App\Inv\Repositories\Models\FinanceModel;
 use App\Inv\Repositories\Models\Lms\Transactions;
+use App\Inv\Repositories\Contracts\ApplicationInterface as InvAppRepoInterface;
 use Illuminate\Http\Request;
 use App\Helpers\FileHelper;
 use App\Inv\Repositories\Contracts\LmsInterface as InvLmsRepoInterface;
@@ -15,10 +16,12 @@ use App\Inv\Repositories\Models\Business;
 class CibilReportController extends Controller
 {   
     protected $selectedDisbursedData = [];
+    protected $appRepo;
 
-	  public function __construct(FileHelper $file_helper, InvLmsRepoInterface $lms_repo){
-		 $this->fileHelper = $file_helper;
-		 $this->lmsRepo = $lms_repo;
+	  public function __construct(InvAppRepoInterface $app_repo, FileHelper $file_helper, InvLmsRepoInterface $lms_repo){
+		  $this->appRepo = $app_repo;
+      $this->fileHelper = $file_helper;
+		  $this->lmsRepo = $lms_repo;
 	  }
 
 	
@@ -334,6 +337,7 @@ class CibilReportController extends Controller
         $settledAmt = $this->lmsRepo->getSettledTrans($user->user_id)->sum('settled_outstanding');
         $sanctionDate = $appBusiness->sanctionDate->created_at ?? NULL;
         $prgmLimit = Helper::getCustomerSanctionedAmt($user->user_id);
+        $getUserBizLimit = $this->appRepo->getUserProgramLimitByBizId($appBusiness->biz_id);
         $maxDPD = max(
           $this->lmsRepo->getMaxDpdTransaction($user->user_id , config('lms.TRANS_TYPE.INTEREST'))->dpd??0,
           $this->lmsRepo->getMaxDpdTransaction($user->user_id , config('lms.TRANS_TYPE.PAYMENT_DISBURSED'))->dpd??0
@@ -358,7 +362,7 @@ class CibilReportController extends Controller
             'Drawing Power' => NULL,
             'Current   Balance / Limit Utilized /Mark to Market' => isset($outstanding) ? $outstanding : 0,
             'Notional Amount of Out-standing Restructured Contracts' => NULL,
-            'Loan Expiry / Maturity Date' => NULL,
+            'Loan Expiry / Maturity Date' => !empty($getUserBizLimit->limit_expiration_date) ? date('d M Y', strtotime($getUserBizLimit->limit_expiration_date)) : NULL,
             'Loan Renewal Date' => NULL,
             'Asset Classification/Days Past Due (DPD)' => $maxDPD,//$od_days,
             'Asset Classification Date' => NULL,
@@ -392,6 +396,7 @@ class CibilReportController extends Controller
             'UFCE (Amount)' => NULL,
             'UFCE Date' => NULL,
         ];
+        dd($data);
         return $data;
     }
 
