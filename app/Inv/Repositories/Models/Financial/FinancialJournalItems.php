@@ -99,7 +99,7 @@ class FinancialJournalItems extends BaseModel {
           $cond .= ' 1';  
         }
         $sql = $query .$cond;
-        $sql .= " ORDER BY id DESC ";
+        $sql .= " ORDER BY created_at DESC ";
         $result = \DB::SELECT(\DB::raw($sql));
         return $result;
     }
