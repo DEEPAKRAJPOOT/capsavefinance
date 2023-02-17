@@ -6041,14 +6041,6 @@ if ($err) {
                 $this->lmsRepo->saveChargeTransDeleteLog($attr);
             }
 
-            // $controller = app()->make('App\Http\Controllers\Lms\userInvoiceController');
-
-            // if (count($debitNoteTransIds)) {
-            //     $debitNoteResults = $controller->generateDebitNote($debitNoteTransIds, $userId, $billType = 'C');
-            // }
-
-            // $creditNoteTransIds = Transactions::processChrgTransDeletion($chrgTransactions);
-
             \DB::commit();
         } catch (Exception $ex) {
             \DB::rollback();

@@ -109,9 +109,9 @@ class UserInvoiceRepository extends BaseRepositories implements UserInvoiceInter
 				if($txn->trans_type == config('lms.TRANS_TYPE.INVOICE_PROCESSING_FEE')){
 					$txn->amount = $txn->amount;
 				}
-				// if ($txn->amount == 0) {
-				// 	unset($UserInvoiceTxns[$key]);
-				// }
+				if ($txn->amount == 0) {
+					unset($UserInvoiceTxns[$key]);
+				}
 			}
 		}
 		return $UserInvoiceTxns;

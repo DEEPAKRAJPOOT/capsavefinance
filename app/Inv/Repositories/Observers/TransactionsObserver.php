@@ -25,7 +25,6 @@ class TransactionsObserver
                 $controller = app()->make('App\Http\Controllers\Lms\userInvoiceController');
                 $invType = 'C';
                 $appId = $transaction->ChargesTransactions->app_id ?? null;
-                // $controller->generateDebitNote([$transaction->trans_id], $transaction->user_id, $invType, $appId);
             }
         }
     }
