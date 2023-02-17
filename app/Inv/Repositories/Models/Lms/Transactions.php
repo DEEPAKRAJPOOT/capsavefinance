@@ -80,7 +80,6 @@ class Transactions extends BaseModel {
         'is_settled',
         'is_posted_in_tally',
         'is_invoice_generated',
-        'is_transaction',
         'sys_created_at',
         'sys_updated_at',
         'created_at',
@@ -88,11 +87,7 @@ class Transactions extends BaseModel {
         'updated_at',
         'updated_by'
     ];
-
-    protected $casts = [
-        'is_transaction' => 'boolean',
-    ];
-
+    
     public function childTransactions(){
         return $this->belongsTo('App\Inv\Repositories\Models\Lms\Transactions', 'trans_id', 'parent_trans_id');
     }
@@ -766,8 +761,7 @@ class Transactions extends BaseModel {
         $query = self::whereNull('parent_trans_id')
                 ->whereNull('payment_id')
                 ->where('user_id',$userId)
-                ->where('outstanding', '>', 0)
-                ->where('is_transaction', true);
+                ->where('outstanding', '>', 0);
 
         if(!empty($where['trans_type_not_in'])){
             $query = $query->whereNotIn('trans_type',$where['trans_type_not_in']); 
@@ -790,7 +784,6 @@ class Transactions extends BaseModel {
                 //->whereNotNull('parent_trans_id')
                 ->whereNotIn('trans_type',[config('lms.TRANS_TYPE.REPAYMENT'),config('lms.TRANS_TYPE.CANCEL'),config('lms.TRANS_TYPE.REFUND'),config('lms.TRANS_TYPE.REVERSE'),config('lms.TRANS_TYPE.NON_FACTORED_AMT')])
                 ->where('user_id','=',$userId)->get()
-                ->where('is_transaction',1)
                 ->where('settled_outstanding','>',0);
     }
 
@@ -816,15 +809,12 @@ class Transactions extends BaseModel {
             throw new InvalidDataTypeExceptions(trans('error_message.invalid_data_type'));
         }
 
-        //  set default is_transaction value
-        if(isset($transactions['trans_type']) && !isset($transactions['is_transaction'])){
+        if(isset($transactions['trans_type'])){
             $transType = $transactions['trans_type'];
             $chrg_id = TransType::where('id',$transType)->value('chrg_master_id');
             if($chrg_id > 0){
                 $transactions['due_date'] = $transactions['trans_date'];
-                $transactions['is_transaction'] = false;
             }else{
-                $transactions['is_transaction'] = true;
             }
         }
 
@@ -910,7 +900,7 @@ class Transactions extends BaseModel {
     public static function getUnsettledInvoiceTransactions($data = [])
     {
        
-        $query =  self::whereNull('parent_trans_id')->whereNull('payment_id')->where('entry_type',0)->where('is_transaction', true);
+        $query =  self::whereNull('parent_trans_id')->whereNull('payment_id')->where('entry_type',0);
 
         if(isset($data['due_date'])){
             $query->where(function($q) use($data) {
@@ -966,8 +956,7 @@ class Transactions extends BaseModel {
         }
         $query->orderBy('trans_date','ASC');
 
-        return $query->where('is_transaction',1)
-        ->where('outstanding','>', 0)
+        return $query->where('outstanding','>', 0)
         ->get();
     }
 
@@ -1056,7 +1045,7 @@ class Transactions extends BaseModel {
     }
 
     public static function getJournalTxnTally(array $where = []){
-        return self::with('transType')->where('is_transaction', true)
+        return self::with('transType')
         ->where(function ($query) {
             $query->whereHas('transType', function($q) { 
                 $q->where('entry_type', '=', '0')->where('is_invoice_generated', '=', '1')->where(function ($qry) {
@@ -1282,7 +1271,6 @@ class Transactions extends BaseModel {
         ->whereNull('link_trans_id')
         ->whereNull('payment_id')
         ->where('entry_type',0)
-        ->where('is_transaction',1)
         ->get();
     }
     
@@ -1765,8 +1753,7 @@ class Transactions extends BaseModel {
         $query = self::whereNull('parent_trans_id')
                 ->whereNull('payment_id')
                 ->where('user_id',$userId)
-                ->doesntHave('nachTansReq')
-                ->where('is_transaction', true);
+                ->doesntHave('nachTansReq');
         if(!empty($where['trans_type_not_in'])){
             $query = $query->whereNotIn('trans_type',$where['trans_type_not_in']); 
         }
@@ -1803,8 +1790,7 @@ class Transactions extends BaseModel {
                 });
             });
         });
-        return $query->get()->where('is_transaction', true)
-                ->filter(function($item) {
+        return $query->get()->filter(function($item) {
                     return ($item->TDSAmount > 0 );
                 });
     }

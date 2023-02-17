@@ -802,16 +802,12 @@ class ReportsRepository extends BaseRepositories implements ReportInterface {
 			$totalOutstanding = ($principalOutstanding + $interestOutstanding + $overdueOutstanding + $chargesOutstanding);
 	
 			$interestIds = $invDisb->transactions->where('trans_type','9')->where('entry_type',0)->whereNull('parent_trans_id')->where('soa_flag','1')->pluck('trans_id')->toArray();
-			$interest_to_refunded = $invDisb->transactions->where('trans_type','32')->where('entry_type',1)->whereIn('parent_trans_id',$interestIds)->sum('amount');
-			$interest_to_refundedIds = $invDisb->transactions->where('trans_type','32')->where('entry_type',1)->whereIn('parent_trans_id',$interestIds)->pluck('trans_id')->toArray();
-			$intAdjRef = $invDisb->transactions->where('entry_type',0)->whereIn('link_trans_id',$interest_to_refundedIds)->sum('amount');
-			$interest_to_refunded = ($interest_to_refunded - $intAdjRef) > 0 ? ($interest_to_refunded - $intAdjRef) : 0;
+			$interest_to_refunded = $invDisb->transactions->where('trans_type','32')->where('entry_type',1)->whereIn('parent_trans_id',$interestIds)->sum('settled_outstanding');
+			$interest_to_refunded = $interest_to_refunded > 0 ? $interest_to_refunded : 0;
 
 			$overdueIds = $invDisb->transactions->where('trans_type','33')->where('entry_type',0)->whereNull('parent_trans_id')->where('soa_flag','1')->pluck('trans_id')->toArray();
-			$overdueinterest_to_refunded = $invDisb->transactions->where('trans_type','32')->where('entry_type',1)->whereIn('parent_trans_id',$overdueIds)->sum('amount');
-			$overdueinterest_to_refundedIds = $invDisb->transactions->where('trans_type','32')->where('entry_type',1)->whereIn('parent_trans_id',$overdueIds)->pluck('trans_id')->toArray();
-			$odAdjRef = $invDisb->transactions->where('entry_type',0)->whereIn('link_trans_id',$overdueinterest_to_refundedIds)->sum('amount');
-			$overdueinterest_to_refunded = $overdueinterest_to_refunded-$odAdjRef > 0 ? $overdueinterest_to_refunded-$odAdjRef : 0;
+			$overdueinterest_to_refunded = $invDisb->transactions->where('trans_type','32')->where('entry_type',1)->whereIn('parent_trans_id',$overdueIds)->sum('settled_outstanding');
+			$overdueinterest_to_refunded = $overdueinterest_to_refunded > 0 ? $overdueinterest_to_refunded : 0;
 
 			$marginIds = $invDisb->transactions->where('trans_type','10')->where('entry_type',1)->where('soa_flag','1')->pluck('trans_id')->toArray();
 			$margin_to_refunded = $invDisb->transactions->where('trans_type','32')->where('entry_type',1)->whereIn('link_trans_id',$marginIds)->sum('settled_outstanding');
@@ -1206,29 +1202,23 @@ class ReportsRepository extends BaseRepositories implements ReportInterface {
 
 	public function getReconReportData($userId){
         $resultValue = [];
-		$soaBalance = DB::select('SELECT customer_id, soa_outstanding as SOA_Outstanding FROM (SELECT user_id, customer_id FROM rta_lms_users GROUP BY user_id ) AS a LEFT JOIN(SELECT b.user_id, (SUM(b.debit_amount) - SUM(b.credit_amount)) AS soa_outstanding FROM rta_customer_transaction_soa AS b LEFT JOIN rta_transactions AS c ON c.trans_id = b.trans_id WHERE c.soa_flag = 1 AND c.is_transaction = 1 GROUP BY c.user_id) AS d ON a.user_id = d.user_id'); 
+		$soaBalance = DB::select('SELECT customer_id, soa_outstanding as SOA_Outstanding FROM (SELECT user_id, customer_id FROM rta_lms_users GROUP BY user_id ) AS a LEFT JOIN(SELECT b.user_id, (SUM(b.debit_amount) - SUM(b.credit_amount)) AS soa_outstanding FROM rta_customer_transaction_soa AS b LEFT JOIN rta_transactions AS c ON c.trans_id = b.trans_id WHERE c.soa_flag = 1 GROUP BY c.user_id) AS d ON a.user_id = d.user_id'); 
 		foreach($soaBalance as $key => $soaBal) {
 			$resultValue[$soaBal->customer_id]['SOA_Outstanding'] = number_format($soaBal->SOA_Outstanding,2);
 		}
 		
-		$chargeOutstanding = DB::select('SELECT 
-		(select  customer_id from rta_lms_users as b where b.user_id = a.user_id limit 1) AS customer_id,
-		sum(a.outstanding) AS Outstanding_Amount
-		FROM rta_transactions AS a
-		JOIN rta_customer_transaction_soa AS c ON c.trans_id = a.trans_id
-		WHERE a.trans_type >= 50 AND a.entry_type = 0 AND a.`is_transaction` = 1 AND a.`soa_flag` = 1
-		group by customer_id');
-		// dd($datats);
+		$chargeOutstanding = DB::select('SELECT b.customer_id, SUM(a.outstanding) as Outstanding_Amount FROM rta_transactions AS a JOIN (SELECT * FROM rta_lms_users GROUP BY user_id) AS b ON a.user_id = b.user_id WHERE a.trans_type > 50 AND a.entry_type = 0 GROUP BY a.user_id');
+
 		foreach($chargeOutstanding as $key => $chrgOut) {
 			$resultValue[$chrgOut->customer_id]['Outstanding_Amount'] = isset($chrgOut->Outstanding_Amount) ? number_format($chrgOut->Outstanding_Amount,2) : 0;
 		}
 
-		$nonFactorOutstanding = DB::select('SELECT temp.customer_id AS customer_id, SUM(temp.out_amt) AS outstandingAmount FROM ( SELECT a.user_id, b.customer_id, COALESCE(d.settled_outstanding,0) AS out_amt FROM rta_transactions AS a JOIN (SELECT * FROM rta_lms_users GROUP BY user_id) AS b ON a.user_id = b.user_id LEFT JOIN rta_transactions AS d ON a.trans_id = d.link_trans_id AND d.trans_type = 32 AND d.entry_type = 1 WHERE a.trans_type = 35 AND a.entry_type = 1 AND a.`is_transaction` = 1 AND a.`soa_flag` = 1 ) AS temp GROUP BY temp.user_id');
+		$nonFactorOutstanding = DB::select('SELECT c.customer_id AS customer_id, SUM(a.settled_outstanding) AS outstandingAmount FROM rta_transactions AS a JOIN rta_transactions AS b ON a.link_trans_id = b.trans_id AND b.trans_type = 35 AND b.entry_type = 1 JOIN (SELECT * FROM rta_lms_users GROUP BY user_id) AS c ON a.user_id = c.user_id WHERE a.trans_type = 32 AND a.entry_type = 1 AND a.settled_outstanding > 0 GROUP BY a.user_id');
 		foreach($nonFactorOutstanding as $key => $nonfactorOut) {
 			$resultValue[$nonfactorOut->customer_id]['outstandingAmount'] = number_format($nonfactorOut->outstandingAmount,2);
 		}
-
-		$txnChrgRefund = DB::select('SELECT temp.cust_id AS customer_id, SUM(temp.refund) AS Refundable FROM (SELECT a.user_id, (SELECT customer_id FROM rta_lms_users AS b WHERE b.user_id = a.user_id LIMIT 1) AS cust_id, IF(actual_outstanding < 0 ,ABS(actual_outstanding),0) AS refund FROM rta_transactions AS a JOIN rta_customer_transaction_soa AS c ON c.trans_id = a.trans_id WHERE a.trans_type >= 50 AND a.entry_type = 0 AND a.`is_transaction` = 1 GROUP BY a.trans_id HAVING refund > 0) AS temp GROUP BY user_id');
+		
+		$txnChrgRefund = DB::select('SELECT c.customer_id AS customer_id, SUM(a.settled_outstanding) AS Refundable FROM rta_transactions AS a JOIN rta_transactions AS b ON a.parent_trans_id = b.trans_id AND b.trans_type > 50 AND b.entry_type = 0 JOIN (SELECT * FROM rta_lms_users GROUP BY user_id) AS c ON a.user_id = c.user_id WHERE a.trans_type = 32 AND a.entry_type = 1 AND a.settled_outstanding > 0 GROUP BY a.user_id');
 		foreach($txnChrgRefund as $key => $chrgRefund) {
 			$resultValue[$chrgRefund->customer_id]['Refundable'] = number_format($chrgRefund->Refundable,2);
 		}

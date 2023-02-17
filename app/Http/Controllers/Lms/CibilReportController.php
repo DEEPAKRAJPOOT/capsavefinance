@@ -544,7 +544,7 @@ class CibilReportController extends Controller
       FROM (SELECT user_id FROM rta_lms_users WHERE user_id = ? GROUP BY user_id ) AS a 
       LEFT JOIN(SELECT b.user_id, (SUM(b.debit_amount) - SUM(b.credit_amount)) AS soa_outstanding 
       FROM rta_customer_transaction_soa AS b LEFT JOIN rta_transactions AS c ON c.trans_id = b.trans_id 
-      WHERE c.soa_flag = 1 AND c.is_transaction = 1 GROUP BY c.user_id) AS d ON a.user_id = d.user_id', [$userId]);
+      WHERE c.soa_flag = 1 GROUP BY c.user_id) AS d ON a.user_id = d.user_id', [$userId]);
       return ['SOA_Balance' => round($soaBalance[0]->SOA_Outstanding, 2)];
     }
 }

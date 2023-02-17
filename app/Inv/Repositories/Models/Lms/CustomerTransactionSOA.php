@@ -138,8 +138,7 @@ class CustomerTransactionSOA extends BaseModel
 
     public static function getSoaList(){
         return self::whereHas('transaction', function ($q) {
-            $q->where('is_transaction', true)
-            ->where('soa_flag', 1);
+            $q->where('soa_flag', 1);
         })
         ->orderBy('user_id', 'asc')
         #->orderBy('value_date', 'asc')
@@ -147,9 +146,7 @@ class CustomerTransactionSOA extends BaseModel
     }
 
     public static function getConsolidatedSoaList(){
-        return self::with('transaction.invoiceDisbursed.disbursal','transaction.payment')->whereHas('transaction', function ($q) {
-            $q->where('is_transaction', true);
-        })
+        return self::with('transaction.invoiceDisbursed.disbursal','transaction.payment')
         ->orderBy('user_id', 'asc')
         ->orderBy('value_date', 'asc')
         ->orderBy('trans_id', 'asc');
@@ -199,7 +196,7 @@ class CustomerTransactionSOA extends BaseModel
     // public function getCustomerSoaBalanceAttribute(){
         
     //     $transaction = self::where('user_id',$this->user_id)->whereDate('value_date','<=',$this->value_date)->where('trans_id','<=',$this->trans_id)->whereHas('transaction', function($query){
-    //         $query->where('is_transaction',1)->where('soa_flag',1);
+    //         $query->where('soa_flag',1);
     //     });
 
     //     $crTrans = clone $transaction;
@@ -213,9 +210,7 @@ class CustomerTransactionSOA extends BaseModel
 
     // public function getConsolidatedSoaBalanceAttribute(){
         
-    //     $transaction = self::where('user_id',$this->user_id)->whereDate('value_date','<=',$this->value_date)->where('trans_id','<=',$this->trans_id)->whereHas('transaction', function($query){
-    //         $query->where('is_transaction', 1);
-    //     });
+    //     $transaction = self::where('user_id',$this->user_id)->whereDate('value_date','<=',$this->value_date)->where('trans_id','<=',$this->trans_id);
 
     //     $crTrans = clone $transaction;
     //     $drTrans = clone $transaction;
