@@ -3055,4 +3055,15 @@ class CamController extends Controller
         return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
       }
   }
+
+  public function deleteLimitOffer(Request $request){
+      $appId = (int)$request->get('app_id');
+      $biz_id = (int)$request->get('biz_id');
+      $aplid = $request->get('app_prgm_limit_id');
+      $prgmOfferId = $request->has('prgm_offer_id') ? $request->get('prgm_offer_id') : null;
+      if($prgmOfferId){
+         AppProgramOffer::where('prgm_offer_id',$prgmOfferId)->update(['status' => 2]);
+      }
+      return redirect()->route('limit_assessment', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')]);
+  }
 }

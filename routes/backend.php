@@ -744,6 +744,10 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                     'as' => 'show_limit_offer',
                     'uses' => 'Backend\CamController@showLimitOffer'
                 ]);
+                Route::get('delete-limit-offer', [
+                    'as' => 'delete_limit_offer',
+                    'uses' => 'Backend\CamController@deleteLimitOffer'
+                ]);
 
                 Route::get('approve-adhoc-limit', [
                     'as' => 'approve_adhoc_limit',
