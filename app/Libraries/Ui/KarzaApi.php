@@ -62,7 +62,8 @@ class KarzaApi {
     public function getPromoterDetailsByCin($promoter) {
        
         try {
-             $api_url = '/v1/corp/profile';
+            // $api_url = '/v1/corp/profile';
+             $api_url = '/v3/corp/profile';
              $baseUrl = config('proin.get_promoter_url');
              $apiKey = config('proin.get_promoter_key');
              $options = [
