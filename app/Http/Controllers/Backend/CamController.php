@@ -1677,7 +1677,9 @@ class CamController extends Controller
         $currStageCode = isset($currStage->stage_code)? $currStage->stage_code: '';
         $userRole = $this->userRepo->getBackendUser(Auth::user()->user_id);
         $appData = $this->appRepo->getAppData($appId);
+        // dd($appData);
         $appType = $appData->app_type;
+        $appStatus = $appData->curr_status_id;
 
         return view('backend.cam.limit_assessment')
                 ->with('appId', $appId)
@@ -1694,6 +1696,7 @@ class CamController extends Controller
                 ->with('userRole', $userRole)
                 ->with('product_types', $product_types)
                 ->with('appType', $appType)
+                ->with('appStatus', $appStatus)
                 ->with('user_id', $user_id);
     }
 
