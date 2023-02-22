@@ -349,6 +349,10 @@ class CibilReportController extends Controller
         }
         $od_days =  isset($maxDPD) && $isOverdue ? (int)$maxDPD : 0;
         $graceEnd = Carbon::parse($dueDate)->addDays($maxDPD ?? 0)->format('Y-m-d');
+        if($maxDPD > 0){
+          dd($dueDate,$maxDPD,$graceEnd,$this->formatedCustId);
+        }
+       
         $data[] = [
             'Ac No' => $this->formatedCustId,
             'Segment Identifier' => 'CR',
