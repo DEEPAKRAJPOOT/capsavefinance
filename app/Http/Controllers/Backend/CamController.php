@@ -9,6 +9,7 @@ use Session;
 use Storage;
 use PDF as DPDF;
 use PHPExcel;
+use DB;
 use PHPExcel_IOFactory;
 use Carbon\Carbon;
 use App\Mail\ReviewerSummary;
@@ -55,6 +56,7 @@ use Validator;
 use App\Inv\Repositories\Contracts\Traits\ActivityLogTrait;
 use App\Inv\Repositories\Contracts\Traits\ApplicationTrait;
 use App\Inv\Repositories\Models\Anchor;
+use App\Inv\Repositories\Models\AppProgramOfferDsa;
 use App\Inv\Repositories\Models\AppSecurityDoc;
 use App\Inv\Repositories\Models\DocumentMaster;
 use App\Inv\Repositories\Models\Application;
@@ -2055,7 +2057,7 @@ class CamController extends Controller
         $program_id = (int)$request->prgm_id;
         $anchorId = (int)$request->anchor_id;
         $prgm_data =  $this->appRepo->getProgram(['prgm_id' => $program_id]);
- 
+        
         if ($prgm_data && $prgm_data->product_id == 1) {
           $offerIsExist = \Helpers::checkAnchorPrgmOfferDuplicate($prgm_data->anchor_id, $program_id, $appId);
           if ((!$prgmOfferId && $offerIsExist) ||  ($prgmOfferId && $offerIsExist && $prgmOfferId != $offerIsExist->prgm_offer_id)) {
@@ -2155,9 +2157,38 @@ class CamController extends Controller
           }
           //if (empty($prgmOfferId)) {
             Helpers::updateAppCurrentStatus($appId, config('common.mst_status_id.OFFER_GENERATED'));
-            //}
-        $offerData= $this->appRepo->addProgramOffer($request->all(), $aplid, $prgmOfferId);
-            
+            //} 
+            $requestData =  $request->all();
+            if($requestData['dsa_applicable'] == '1'){
+              $dsaData['dsa_name'] = $requestData['dsa_name'];
+              $dsaData['payout']   = number_format($requestData['payout'],2);
+              $dsaData['payout_event'] = $requestData['payout_event'];
+              $offerData= $this->appRepo->addProgramOffer($request->all(), $aplid, $prgmOfferId);
+               if($requestData['offer_dsa_id'] != null){
+                $prgmOfferDsa = AppProgramOfferDsa::where(['offer_dsa_id'=>$requestData['offer_dsa_id'],'prgm_offer_id'=>$offerData->prgm_offer_id])->first();
+                if($prgmOfferDsa){
+                   $dsa_updated = AppProgramOfferDsa::where(['offer_dsa_id'=>$requestData['offer_dsa_id'],'prgm_offer_id'=>$offerData->prgm_offer_id])->update($dsaData);
+                  }else{
+                   $dsaData['prgm_offer_id'] = $offerData->prgm_offer_id;
+                   $dsa_added = AppProgramOfferDsa::create($dsaData);
+                 }
+               }else{
+                 $dsaData['prgm_offer_id'] = $offerData->prgm_offer_id;
+                 $dsa_added = AppProgramOfferDsa::create($dsaData);
+               }
+            }else if($requestData['dsa_applicable'] == '0'){
+              $requestData['dsa_applicable'] = 0;
+              $offerData= $this->appRepo->addProgramOffer($requestData, $aplid, $prgmOfferId);
+              if($requestData['offer_dsa_id'] != null){
+                $prgmOfferDsa = AppProgramOfferDsa::where(['offer_dsa_id'=>$requestData['offer_dsa_id'],'prgm_offer_id'=>$offerData->prgm_offer_id])->first();
+                if($prgmOfferDsa){
+                  DB::table('app_prgm_offer_dsa')
+                    ->where('offer_dsa_id', $requestData['offer_dsa_id'])
+                    ->delete();
+                 }
+               }
+            }  
+      
         $whereActivi['activity_code'] = 'update_limit_offer';
         $activity = $this->mstRepo->getActivity($whereActivi);
         if(!empty($activity)) {
@@ -3054,5 +3085,20 @@ class CamController extends Controller
         \DB::rollBack();
         return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
       }
+  }
+
+  public function getAppDsa(Request $request){
+
+    try{
+        $biz_id = $request->get('biz_id');
+        $app_id = $request->get('app_id');
+        $appData 	 = $this->appRepo->getAppData($request->get('app_id'));
+        $user_id = $appData->user_id;
+        return view('backend.cam.app_dsa')->with('biz_id',$biz_id)
+        ->with('app_id',$app_id)
+        ->with('user_id',$user_id);
+    } catch (Exception $ex) {
+      return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
+    }
   }
 }
