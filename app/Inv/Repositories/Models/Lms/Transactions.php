@@ -87,7 +87,7 @@ class Transactions extends BaseModel {
         'updated_at',
         'updated_by'
     ];
-
+    
     public function childTransactions(){
         return $this->belongsTo('App\Inv\Repositories\Models\Lms\Transactions', 'trans_id', 'parent_trans_id');
     }
@@ -815,6 +815,7 @@ class Transactions extends BaseModel {
             $chrg_id = TransType::where('id',$transType)->value('chrg_master_id');
             if($chrg_id > 0){
                 $transactions['due_date'] = $transactions['trans_date'];
+            }else{
             }
         }
 

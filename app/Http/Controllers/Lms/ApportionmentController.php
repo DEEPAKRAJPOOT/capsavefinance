@@ -947,7 +947,7 @@ class ApportionmentController extends Controller
                             'entry_type' => 1,
                             'soa_flag' => 1,
                             'trans_type' => $trans->trans_type,
-                            'trans_mode' => 2,
+                            'trans_mode' => 2
                         ];
                         $amtToSettle += $payments[$trans->trans_id];
                     }
