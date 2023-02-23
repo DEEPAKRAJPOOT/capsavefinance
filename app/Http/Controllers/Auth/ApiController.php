@@ -278,7 +278,7 @@ class ApiController
 
   private function createReversalData($rvrslRow, $batch_no) {
     $reversalPayment = [];
-    $where = [['is_posted_in_tally', '=', '0'],['soa_flag', '=', '1'],['is_transaction','=',true]];
+    $where = [['is_posted_in_tally', '=', '0'],['soa_flag', '=', '1']];
     $settledTransactoionsFromReversal = $rvrslRow->getReversalParent ? $rvrslRow->getReversalParent->getSettledTxns()->where($where)?? []:[];
     if (!empty($settledTransactoionsFromReversal)) {
       foreach ($settledTransactoionsFromReversal as  $rvrsl) {
@@ -996,7 +996,7 @@ class ApiController
     $this->journalFactStartVoucherNumber = 'SJV'.$this->voucherFormat.sprintf('%06d',$this->journalFactVoucherSeq+1);
     $this->paymentFactStartVoucherNumber = 'SRP'.$this->voucherFormat.sprintf('%06d',$this->paymentFactVoucherSeq+1);
     $batch_no = _getRand(15);
-    $where = [['is_posted_in_tally', '=', '0'], ['created_at', '>=', $startDate],['created_at', '<=', $endDate],['soa_flag', '=', '1'],['is_transaction','=',true]];
+    $where = [['is_posted_in_tally', '=', '0'], ['created_at', '>=', $startDate],['created_at', '<=', $endDate],['soa_flag', '=', '1']];
     $journalData = Transactions::getJournalTxnTally($where);
     $disbursalData = Transactions::getDisbursalTxnTally($where);
     $refundData = Transactions::getRefundTxnTally($where);

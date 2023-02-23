@@ -320,7 +320,6 @@ class ManualApportionmentHelper{
         $charges = Transactions::whereHas('transType',function($query){
             $query->where('chrg_master_id','!=','0');
         })->whereNull('parent_trans_id')
-        ->whereNull('invoice_disbursed_id')
         ->where('actual_outstanding', '<', 0)
         ->where('entry_type',0)
         ->whereIn('trans_id',$transIds)
@@ -352,6 +351,7 @@ class ManualApportionmentHelper{
                             'payment_id' => $paymentId,
                             'link_trans_id' => $settleTrans->trans_id,
                             'parent_trans_id' => $charge->trans_id,
+                            'invoice_disbursed_id' => $settleTrans->invoice_disbursed_id,
                             'user_id' => $charge->user_id,
                             'trans_date' => $currentdate,
                             'amount' => $refAmt,
@@ -372,6 +372,7 @@ class ManualApportionmentHelper{
                             'payment_id' => NULL,
                             'link_trans_id' => $toBeRefTrans->trans_id,
                             'parent_trans_id' => $charge->trans_id,
+                            'invoice_disbursed_id' => $toBeRefTrans->invoice_disbursed_id,
                             'user_id' => $charge->user_id,
                             'trans_date' => $currentdate,
                             'amount' => abs($revAmt),

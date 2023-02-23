@@ -1206,19 +1206,12 @@ class ReportsRepository extends BaseRepositories implements ReportInterface {
 
 	public function getReconReportData($userId){
         $resultValue = [];
-		$soaBalance = DB::select('SELECT customer_id, soa_outstanding as SOA_Outstanding FROM (SELECT user_id, customer_id FROM rta_lms_users GROUP BY user_id ) AS a LEFT JOIN(SELECT b.user_id, (SUM(b.debit_amount) - SUM(b.credit_amount)) AS soa_outstanding FROM rta_customer_transaction_soa AS b LEFT JOIN rta_transactions AS c ON c.trans_id = b.trans_id WHERE c.soa_flag = 1 AND c.is_transaction = 1 GROUP BY c.user_id) AS d ON a.user_id = d.user_id'); 
+		$soaBalance = DB::select('SELECT customer_id, soa_outstanding as SOA_Outstanding FROM (SELECT user_id, customer_id FROM rta_lms_users GROUP BY user_id ) AS a LEFT JOIN(SELECT b.user_id, (SUM(b.debit_amount) - SUM(b.credit_amount)) AS soa_outstanding FROM rta_customer_transaction_soa AS b LEFT JOIN rta_transactions AS c ON c.trans_id = b.trans_id WHERE c.soa_flag = \'1\' GROUP BY c.user_id) AS d ON a.user_id = d.user_id'); 
 		foreach($soaBalance as $key => $soaBal) {
 			$resultValue[$soaBal->customer_id]['SOA_Outstanding'] = number_format($soaBal->SOA_Outstanding,2);
 		}
 		
-		$chargeOutstanding = DB::select('SELECT 
-		(select  customer_id from rta_lms_users as b where b.user_id = a.user_id limit 1) AS customer_id,
-		sum(a.outstanding) AS Outstanding_Amount
-		FROM rta_transactions AS a
-		JOIN rta_customer_transaction_soa AS c ON c.trans_id = a.trans_id
-		WHERE a.trans_type >= 50 AND a.entry_type = 0 AND a.`is_transaction` = 1 AND a.`soa_flag` = 1
-		group by customer_id');
-		// dd($datats);
+		$chargeOutstanding = DB::select('SELECT (select  customer_id from rta_lms_users as b where b.user_id = a.user_id limit 1) AS customer_id, sum(a.outstanding) AS Outstanding_Amount FROM rta_transactions AS a JOIN rta_customer_transaction_soa AS c ON c.trans_id = a.trans_id WHERE a.trans_type >= \'50\' AND a.entry_type = \'0\' AND a.`soa_flag` = \'1\' group by customer_id');
 		foreach($chargeOutstanding as $key => $chrgOut) {
 			$resultValue[$chrgOut->customer_id]['Outstanding_Amount'] = isset($chrgOut->Outstanding_Amount) ? number_format($chrgOut->Outstanding_Amount,2) : 0;
 		}
@@ -1228,7 +1221,7 @@ class ReportsRepository extends BaseRepositories implements ReportInterface {
 			$resultValue[$nonfactorOut->customer_id]['outstandingAmount'] = number_format($nonfactorOut->outstandingAmount,2);
 		}
 
-		$txnChrgRefund = DB::select('SELECT temp.cust_id AS customer_id, SUM(temp.refund) AS Refundable FROM (SELECT a.user_id, (SELECT customer_id FROM rta_lms_users AS b WHERE b.user_id = a.user_id LIMIT 1) AS cust_id, IF(actual_outstanding < 0 ,ABS(actual_outstanding),0) AS refund FROM rta_transactions AS a JOIN rta_customer_transaction_soa AS c ON c.trans_id = a.trans_id WHERE a.trans_type >= 50 AND a.entry_type = 0 AND a.`is_transaction` = 1 GROUP BY a.trans_id HAVING refund > 0) AS temp GROUP BY user_id');
+		$txnChrgRefund = DB::select('SELECT (SELECT customer_id FROM rta_lms_users AS d WHERE d.user_id = b.user_id LIMIT 1) AS customer_id, SUM(a.settled_outstanding) AS Refundable FROM rta_transactions AS a JOIN rta_transactions AS b ON a.parent_trans_id = b.trans_id JOIN rta_mst_trans_type AS c ON c.id = b.trans_type WHERE c.chrg_master_id > \'0\' AND a.trans_type = \'32\' AND a.entry_type = \'1\' GROUP BY b.user_id');
 		foreach($txnChrgRefund as $key => $chrgRefund) {
 			$resultValue[$chrgRefund->customer_id]['Refundable'] = number_format($chrgRefund->Refundable,2);
 		}
@@ -1245,17 +1238,6 @@ class ReportsRepository extends BaseRepositories implements ReportInterface {
 				$resultValue[$user->customer_id]['customer_outstanding_amount'] = number_format($controller2->lmsRepo->getUnsettledTrans($user->user_id, ['trans_type_not_in' => [config('lms.TRANS_TYPE.MARGIN'),config('lms.TRANS_TYPE.NON_FACTORED_AMT')] ])->sum('outstanding'),2);
 			}
 		}
-		// dd($resultValue);
-		// // $datas = array_merge($soaData,$chrgData);
-        // foreach($datas as $data){
-        //     $result[] = [
-        //         'soa_outstanding' =>  $data['SOA_Outstanding'] ?? null,
-        //         'Outstanding_Amount' =>  $data['Outstanding_Amount'] ?? null,
-        //         'outstandingAmount' =>  $data['outstandingAmount'] ?? null,
-        //         'Refundable' =>  $data['Refundable'] ?? null,
-        //         'customer_outstanding_amount' =>  $data['customer_outstanding_amount'] ?? null,
-        //     ];
-        // }
         return $resultValue;
     }
 }
