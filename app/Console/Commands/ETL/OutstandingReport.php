@@ -142,7 +142,8 @@ class OutstandingReport extends Command
                     'Balance Margin to be Refunded' => (double)$dataRecord['Balance Margin to be Refunded'],
                     'Balance Interest to be refunded' => (double)$dataRecord['Balance Interest to be refunded'],
                     'Balance Overdue Interest to be refunded' => (double)$dataRecord['Balance Overdue Interest to be refunded'],
-                    'Sales Manager' => (double)$dataRecord['Sales Manager']
+                    'Sales Manager' => (double)$dataRecord['Sales Manager'],
+                    'Date' => $dataRecord['currentDate'] ?? NULL,
                 ]);
             }
             $this->info("The Outstanding Report sync to database successfully.");

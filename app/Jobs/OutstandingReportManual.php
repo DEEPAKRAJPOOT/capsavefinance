@@ -141,9 +141,10 @@ class OutstandingReportManual implements ShouldQueue
         ->setCellValue('AP'.$rows, 'Balance Margin to be Refunded')
         ->setCellValue('AQ'.$rows, 'Balance Interest to be refunded')
         ->setCellValue('AR'.$rows, 'Balance Overdue Interest to be refunded')
-        ->setCellValue('AS'.$rows, 'Sales Manager');
+        ->setCellValue('AS'.$rows, 'Sales Manager')
+        ->setCellValue('AT'.$rows, 'Date');
         // ->setCellValue('AS'.$rows, 'Grace Period End Date');
-        $sheet->getActiveSheet()->getStyle('A'.$rows.':AS'.$rows)->applyFromArray(['font' => ['bold'  => true]]);
+        $sheet->getActiveSheet()->getStyle('A'.$rows.':AT'.$rows)->applyFromArray(['font' => ['bold'  => true]]);
         $rows++;
         foreach($exceldata as $rowData){
             $sheet->setActiveSheetIndex(0)
@@ -191,7 +192,8 @@ class OutstandingReportManual implements ShouldQueue
             ->setCellValue('AP'.$rows, $rowData['marginToRefunded'])
             ->setCellValue('AQ'.$rows, $rowData['interestToRefunded'])
             ->setCellValue('AR'.$rows, $rowData['overdueToRefunded'])
-            ->setCellValue('AS'.$rows, $rowData['salesManager']);
+            ->setCellValue('AS'.$rows, $rowData['salesManager'])
+            ->setCellValue('AT'.$rows, $rowData['currentDate']);
             $rows++;
         }
 
