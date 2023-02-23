@@ -350,7 +350,9 @@ class CibilReportController extends Controller
         $od_days =  isset($maxDPD) && $isOverdue ? (int)$maxDPD : 0;
         $graceEnd = Carbon::parse($dueDate)->addDays($maxDPD ?? 0)->format('Y-m-d');
         if($maxDPD > 0){
-          dd($dueDate,$maxDPD,$graceEnd,$this->formatedCustId);
+          $assetClassificationDate = $graceEnd;
+        }else{
+          $assetClassificationDate = 0;
         }
        
         $data[] = [
@@ -370,7 +372,7 @@ class CibilReportController extends Controller
             'Loan Expiry / Maturity Date' => !empty($getUserBizLimit->limit_expiration_date) ? date('d M Y', strtotime($getUserBizLimit->limit_expiration_date)) : NULL,
             'Loan Renewal Date' => NULL,
             'Asset Classification/Days Past Due (DPD)' => $maxDPD,//$od_days,
-            'Asset Classification Date' => $graceEnd,
+            'Asset Classification Date' => $assetClassificationDate,
             'Amount Overdue / Limit Overdue' => $od_outstanding,
             'Overdue Bucket 01 ( 1 – 30 days)' => ($od_days >= 1 && $od_days <= 30 ? $od_outstanding : 0),
             'Overdue Bucket 02 ( 31 – 60 days)' => ($od_days >= 31 && $od_days <= 60 ? $od_outstanding : 0),
