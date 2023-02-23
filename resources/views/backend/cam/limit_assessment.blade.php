@@ -176,7 +176,7 @@
                                                     @can('delete_limit_offer')
                                                     @if($appStatus == 56 && $userRole->name == 'Credit Manager')
                                                     <a class="btn btn-btn-success" href = "{{ route('delete_limit_offer', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id'), 'app_prgm_limit_id'=>$prgmLimit->app_prgm_limit_id, 'prgm_offer_id'=>$prgmOffer->prgm_offer_id]) }}"
-                                                    type="button" title="Reject"><i class="fa fa-trash"></i></a>
+                                                    type="button" title="Reject Offer"><i class="fa fa-trash"></i></a>
                                                     @endif
                                                     @endcan
                                                     @endif
@@ -306,7 +306,7 @@
                                                     @can('delete_limit_offer')
                                                     @if($appStatus == 56 && $userRole->name == 'Credit Manager')
                                                     <a href = "{{ route('delete_limit_offer', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id'), 'app_prgm_limit_id'=>$prgmLimit->app_prgm_limit_id, 'prgm_offer_id'=>$prgmOffer->prgm_offer_id]) }}"
-                                                    type="button" title="Reject"><i class="fa fa-trash"></a>
+                                                    type="button" title="Reject Offer"><i class="fa fa-trash"></i></a>
                                                     @endif
                                                     @endcan
                                                     @endif
@@ -438,7 +438,7 @@
                                                     @can('delete_limit_offer')
                                                     @if($appStatus == 56 && $userRole->name == 'Credit Manager')
                                                     <a href = "{{ route('delete_limit_offer', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id'), 'app_prgm_limit_id'=>$prgmLimit->app_prgm_limit_id, 'prgm_offer_id'=>$prgmOffer->prgm_offer_id]) }}"
-                                                    type="button" title="Reject"><i class="fa fa-trash"></a>
+                                                    type="button" title="Reject Offer"><i class="fa fa-trash"></i></a>
                                                     @endif
                                                     @endcan
                                                     @endif
