@@ -1868,7 +1868,7 @@ class ApportionmentController extends Controller
             $payment = Payment::find($request->payment_id);
 
             if (!$this->verifyUnSettleTransInitiator($payment)) {
-                DB::rollback();
+                DB::rollback();                
                 return redirect()->route('unsettled_payments')->withErrors('Someone is already trying to settle transactions');
             }
 
@@ -1948,13 +1948,13 @@ class ApportionmentController extends Controller
                 if( (float) $repaymentAmt > (float) $amtToSettle){
                     Session::flash('error', trans('Please use whole unapplied amount.'));
                     DB::rollback();
-                    return redirect()->back()->withInput();
+                    return redirect()->route('apport_mark_settle_confirmation_tds',[ 'user_id' => $userId , 'payment_id' => $paymentId, 'settlement' => 'TDS' ])->withInput();
                 }
 
                 if(round($amtToSettle, 2) > round($repaymentAmt, 2)){
                     Session::flash('error', trans('error_messages.apport_invalid_unapplied_amt'));
                     DB::rollback();
-                    return redirect()->back()->withInput();
+                    return redirect()->route('apport_mark_settle_confirmation_tds',[ 'user_id' => $userId , 'payment_id' => $paymentId, 'settlement' => 'TDS' ])->withInput();
                 }
 
                 if(!empty($transactionList)){
@@ -1994,7 +1994,7 @@ class ApportionmentController extends Controller
             $payment = Payment::find($request->payment_id);
             if ($payment)
                 $payment->update(['is_settled' => Payment::PAYMENT_SETTLED_PROCESSING]);
-            return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex))->withInput();
+            return redirect()->route('unsettled_payments')->withErrors(Helpers::getExceptionMessage($ex))->withInput();
         }
     }
 
