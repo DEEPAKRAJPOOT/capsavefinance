@@ -20,8 +20,9 @@
                                     <label>Total Credit Assessed</label>
                                     <div class="relative">
                                     <a href="javascript:void(0);" class="remaining"><i class="fa fa-inr" aria-hidden="true"></i></a>
-                                    @if($userRole->name == 'Credit Manager' && ($appStatus == 56 || $appStatus == 20 || $appStatus == 49))
+                                    @if($userRole->name == 'Credit Manager' && ($appStatus == 56 || $appStatus == 20 || $appStatus == 49) && !empty($limitData))
                                     <input type="text" class="form-control number_format" id="tot_limit_amt" name="tot_limit_amt" value="{{ isset($limitData->tot_limit_amt)? number_format($limitData->tot_limit_amt): '' }}" maxlength="15" placeholder="Total Exposure">
+                                        <a title="Edit Total Credit" data-toggle="modal" data-target="#EditTotalCreditAssessed" data-url ="{{ route('edit_total_limit_amnt', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')]) }}" data-height="300px" data-width="100%" data-placement="top" class="float-right" ><i class="fa fa-edit"></i></a>
                                     @else
                                     <input type="text" class="form-control number_format" id="tot_limit_amt" name="tot_limit_amt" value="{{ isset($limitData->tot_limit_amt)? number_format($limitData->tot_limit_amt): '' }}" maxlength="15" placeholder="Total Exposure" {{isset($limitData->tot_limit_amt)? 'disabled': ''}}>
                                     @endif
@@ -46,7 +47,7 @@
                             <div class="col-md-3">
                                 <div class="form-group">
                                     <label class="mb-21">Select Product Type</label>
-                                    <select class="form-control" name="product_id" id="product_id">
+                                    <select class="form-control" name="product_id" id="product_id" style="margin-top: -18px;">
                                         <option value="">Select Product</option>
                                         @foreach($product_types as $key => $product_type)
                                         <option value="{{$key}}" {{(old('product_id') == $key)?'selected': ''}}>{{$product_type}}</option>
@@ -125,6 +126,12 @@
                                                        @can('show_limit_offer')
                                                        <button class="btn btn-success btn-sm add-offer" data-url="{{route('show_limit_offer', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id'), 'app_prgm_limit_id'=>$prgmLimit->app_prgm_limit_id])}}" title="Add Offer"><i class="fa fa-plus"></i></button>
                                                        @endcan
+                                                       @can('delete_prgm_limit')
+                                                        @if($userRole->name == 'Credit Manager' && ($appStatus == 56 || $appStatus == 20 || $appStatus == 49) && $offerRejectStatus == 1)
+                                                        <a class="btn btn-success btn-sm" href = "{{ route('delete_prgm_limit', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id'), 'app_prgm_limit_id'=>$prgmLimit->app_prgm_limit_id]) }}"
+                                                        type="button" title="Delete"><i class="fa fa-trash"></i></a>
+                                                        @endif
+                                                       @endcan
                                                        @if($offerStatus == 2)
                                                        @can('share_to_colender')
                                                        <a data-toggle="modal" data-target="#shareColenderFrame" data-url ="{{route('share_to_colender', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id'), 'app_prgm_limit_id'=>$prgmLimit->app_prgm_limit_id])}}" data-height="500px" data-width="100%" data-placement="top" class="btn btn-success btn-sm" style="font-size: 13px;" title="Share with Co-Lender"><i class="fa fa-share"></i></a>
@@ -174,9 +181,10 @@
                                                     <a class="btn btn-action-btn btn-sm add-offer" data-url="{{route('show_limit_offer', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id'), 'app_prgm_limit_id'=>$prgmLimit->app_prgm_limit_id, 'prgm_offer_id'=>$prgmOffer->prgm_offer_id])}}" title="Edit Offer"><i class="fa fa-edit"></i></a>
                                                     @endcan
                                                     @can('delete_limit_offer')
-                                                    @if($appStatus == 56 && $userRole->name == 'Credit Manager')
+                                                    @if(($appStatus == 56 || $appStatus == 20 || $appStatus == 49) && $userRole->name == 'Credit Manager')
                                                     <a class="btn btn-btn-success" href = "{{ route('delete_limit_offer', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id'), 'app_prgm_limit_id'=>$prgmLimit->app_prgm_limit_id, 'prgm_offer_id'=>$prgmOffer->prgm_offer_id]) }}"
-                                                    type="button" title="Reject Offer"><i class="fa fa-trash"></i></a>
+                                                    type="button" title="Reject Offer"><i class="fa fa-trash" style="padding-left: 6px;
+                                                    padding-top: 9px;"></i></a>
                                                     @endif
                                                     @endcan
                                                     @endif
@@ -238,6 +246,12 @@
                                                        @can('show_limit_offer')
                                                        <button class="btn btn-success btn-sm add-offer" data-url="{{route('show_limit_offer', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id'), 'app_prgm_limit_id'=>$prgmLimit->app_prgm_limit_id])}}" title="Add Offer"><i class="fa fa-plus"></i></button>
                                                        @endcan
+                                                       @can('delete_prgm_limit')
+                                                       @if($userRole->name == 'Credit Manager' && ($appStatus == 56 || $appStatus == 20 || $appStatus == 49) && $offerRejectStatus == 1)
+                                                       <a class="btn btn-success btn-sm" href = "{{ route('delete_prgm_limit', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id'), 'app_prgm_limit_id'=>$prgmLimit->app_prgm_limit_id]) }}"
+                                                       type="button" title="Delete"><i class="fa fa-trash"></i></a>
+                                                       @endif
+                                                      @endcan
                                                        </td>
                                                     </tr>
                                                 </tbody>
@@ -304,9 +318,10 @@
                                                     <a class="btn btn-action-btn btn-sm add-offer" data-url="{{route('show_limit_offer', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id'), 'app_prgm_limit_id'=>$prgmLimit->app_prgm_limit_id, 'prgm_offer_id'=>$prgmOffer->prgm_offer_id])}}" title="Edit Offer"><i class="fa fa-edit"></i></a>
                                                     @endcan
                                                     @can('delete_limit_offer')
-                                                    @if($appStatus == 56 && $userRole->name == 'Credit Manager')
+                                                    @if(($appStatus == 56 || $appStatus == 20 || $appStatus == 49) && $userRole->name == 'Credit Manager')
                                                     <a href = "{{ route('delete_limit_offer', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id'), 'app_prgm_limit_id'=>$prgmLimit->app_prgm_limit_id, 'prgm_offer_id'=>$prgmOffer->prgm_offer_id]) }}"
-                                                    type="button" title="Reject Offer"><i class="fa fa-trash"></i></a>
+                                                    type="button" title="Reject Offer"><i class="fa fa-trash" style="padding-left: 6px;
+                                                    padding-top: 9px;"></i></a>
                                                     @endif
                                                     @endcan
                                                     @endif
@@ -367,6 +382,12 @@
                                                        @can('show_limit_offer')
                                                        <button class="btn btn-success btn-sm add-offer" data-url="{{route('show_limit_offer', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id'), 'app_prgm_limit_id'=>$prgmLimit->app_prgm_limit_id])}}" title="Add Offer"><i class="fa fa-plus"></i></button>
                                                        @endcan
+                                                       @can('delete_prgm_limit')
+                                                       @if(($appStatus == 56 || $appStatus == 20 || $appStatus == 49) && $offerRejectStatus == 1 && $userRole->name == 'Credit Manager')
+                                                       <a class="btn btn-success btn-sm" href = "{{ route('delete_prgm_limit', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id'), 'app_prgm_limit_id'=>$prgmLimit->app_prgm_limit_id]) }}"
+                                                       type="button" title="Delete"><i class="fa fa-trash"></i></a>
+                                                       @endif
+                                                      @endcan
                                                        </td>
                                                     </tr>
                                                 </tbody>
@@ -436,9 +457,10 @@
                                                     <a class="btn btn-action-btn btn-sm add-offer" data-url="{{route('show_limit_offer', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id'), 'app_prgm_limit_id'=>$prgmLimit->app_prgm_limit_id, 'prgm_offer_id'=>$prgmOffer->prgm_offer_id])}}" title="Edit Offer"><i class="fa fa-edit"></i></a>
                                                     @endcan
                                                     @can('delete_limit_offer')
-                                                    @if($appStatus == 56 && $userRole->name == 'Credit Manager')
+                                                    @if(($appStatus == 56 || $appStatus == 20 || $appStatus == 49) && $userRole->name == 'Credit Manager')
                                                     <a href = "{{ route('delete_limit_offer', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id'), 'app_prgm_limit_id'=>$prgmLimit->app_prgm_limit_id, 'prgm_offer_id'=>$prgmOffer->prgm_offer_id]) }}"
-                                                    type="button" title="Reject Offer"><i class="fa fa-trash"></i></a>
+                                                    type="button" title="Reject Offer"><i class="fa fa-trash" style="padding-left: 6px;
+                                                    padding-top: 9px;"></i></a>
                                                     @endif
                                                     @endcan
                                                     @endif
@@ -496,6 +518,7 @@
 {!!Helpers::makeIframePopup('viewSharedColenderFrame','View shared Co-Lender', 'modal-lg')!!}
 {!!Helpers::makeIframePopup('limitOfferFrame', $offerHeading, 'modal-lg')!!}
 {!!Helpers::makeIframePopup('editLimitFrame','Update Limit', 'modal-md')!!}
+{!!Helpers::makeIframePopup('EditTotalCreditAssessed','Edit Total Credit Assessed', 'modal-md')!!}
 
 @endsection
 @section('jscript')
@@ -531,8 +554,8 @@ function checkValidation(){
     let limit_amt = $('input[name=limit_amt]').val().trim();
     let tot_limit_amt = $('input[name=tot_limit_amt]').val().trim();
     let prgmLimitTotal = "{{$prgmLimitTotal}}";
-    let totalOfferLimitAmnt = "{{$totOfferedLimit}}";
-    console.log(totalOfferLimitAmnt);
+    // let totalOfferLimitAmnt = "{{$totOfferedLimit}}";
+    // console.log(totalOfferLimitAmnt);
     if(tot_limit_amt.length == 0 || parseInt(tot_limit_amt.replace(/,/g, '')) == 0){
         setError('input[name=tot_limit_amt]', 'Please fill total Credit Assessed');
         flag = false;

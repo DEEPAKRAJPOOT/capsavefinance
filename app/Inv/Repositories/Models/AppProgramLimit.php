@@ -63,6 +63,7 @@ class AppProgramLimit extends BaseModel {
         'start_date',
         'end_date',
         'actual_end_date',        
+        'is_active',        
         'created_at',
         'created_by',
         'updated_at',        
@@ -107,9 +108,9 @@ class AppProgramLimit extends BaseModel {
             throw new InvalidDataTypeExceptions(trans('error_message.invalid_data_type'));
         }else{
             if($type != null)
-                return AppProgramLimit::where('app_id', $appId)->where('product_id', $type)->get();
+                return AppProgramLimit::where(['app_id'=> $appId, 'is_active' => 0])->where('product_id', $type)->get();
             else
-                return AppProgramLimit::where('app_id', $appId)->get();
+                return AppProgramLimit::where(['app_id'=> $appId,'is_active' => 0])->get();
             
         }
     }

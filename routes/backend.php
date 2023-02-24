@@ -719,6 +719,16 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                     'uses' => 'Backend\CamController@saveLimitAssessment'
                 ]);
 
+                Route::get('edit-total-limit-amnt', [
+                    'as' => 'edit_total_limit_amnt',
+                    'uses' => 'Backend\CamController@totalCreditAssessed'
+                ]); 
+
+                Route::post('update-total-limit-amnt', [
+                    'as' => 'update_total_limit_amnt',
+                    'uses' => 'Backend\CamController@updateTotalCreditAssessed'
+                ]);
+
                 Route::get('anchor-view', [
                     'as' => 'anchor_view',
                     'uses' => 'Backend\CamController@anchorViewForm'
@@ -747,6 +757,11 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 Route::get('delete-limit-offer', [
                     'as' => 'delete_limit_offer',
                     'uses' => 'Backend\CamController@deleteLimitOffer'
+                ]);
+
+                Route::get('delete-prgm-limit', [
+                    'as' => 'delete_prgm_limit',
+                    'uses' => 'Backend\CamController@deletePrgmLimit'
                 ]);
 
                 Route::get('approve-adhoc-limit', [
