@@ -3084,7 +3084,6 @@ class CamController extends Controller
 
   public function updateTotalCreditAssessed(Request $request){
 
-      // dd($request->all());
       $appId = $request->get('app_id');
       $bizId = $request->get('biz_id');
       $totalLimitAmnt = $request->get('tot_limit_amt');
@@ -3095,6 +3094,7 @@ class CamController extends Controller
         Session::flash('error', 'Total Credit Assessed should be greater than total prgm limit');
       }else{
         AppLimit::where('app_id', $appId)->update(['tot_limit_amt' => $totalLimitAmnt]);
+        Session::flash('message', 'Total Credit Assessed updated successfully');
       }
       return redirect()->route('limit_assessment', ['app_id' => $appId, 'biz_id' => $bizId]);
 

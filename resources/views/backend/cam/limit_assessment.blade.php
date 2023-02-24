@@ -22,7 +22,9 @@
                                     <a href="javascript:void(0);" class="remaining"><i class="fa fa-inr" aria-hidden="true"></i></a>
                                     @if($userRole->name == 'Credit Manager' && ($appStatus == 56 || $appStatus == 20 || $appStatus == 49) && !empty($limitData))
                                     <input type="text" class="form-control number_format" id="tot_limit_amt" name="tot_limit_amt" value="{{ isset($limitData->tot_limit_amt)? number_format($limitData->tot_limit_amt): '' }}" maxlength="15" placeholder="Total Exposure">
+                                    @can('edit_total_limit_amnt')
                                         <a title="Edit Total Credit" data-toggle="modal" data-target="#EditTotalCreditAssessed" data-url ="{{ route('edit_total_limit_amnt', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')]) }}" data-height="300px" data-width="100%" data-placement="top" class="float-right" ><i class="fa fa-edit"></i></a>
+                                    @endcan
                                     @else
                                     <input type="text" class="form-control number_format" id="tot_limit_amt" name="tot_limit_amt" value="{{ isset($limitData->tot_limit_amt)? number_format($limitData->tot_limit_amt): '' }}" maxlength="15" placeholder="Total Exposure" {{isset($limitData->tot_limit_amt)? 'disabled': ''}}>
                                     @endif
