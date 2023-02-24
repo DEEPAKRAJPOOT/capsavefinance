@@ -339,7 +339,7 @@ class CibilReportController extends Controller
         $prgmLimit = Helper::getCustomerSanctionedAmt($user->user_id);
         $getUserBizLimit = $this->appRepo->getUserProgramLimitByBizId($appBusiness->biz_id);
 
-        $principalDpd = $this->lmsRepo->getMaxDpdTransaction($user->user_id , config('lms.TRANS_TYPE.PAYMENT_DISBURSED'))->dpd;
+        $principalDpd = $this->lmsRepo->getMaxDpdTransaction($user->user_id , config('lms.TRANS_TYPE.PAYMENT_DISBURSED'))->dpd??0;
         $maxDPD = max(
           $this->lmsRepo->getMaxDpdTransaction($user->user_id , config('lms.TRANS_TYPE.INTEREST'))->dpd??0,
           $principalDpd??0
