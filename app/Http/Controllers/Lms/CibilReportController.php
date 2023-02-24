@@ -338,9 +338,11 @@ class CibilReportController extends Controller
         $sanctionDate = $appBusiness->sanctionDate->created_at ?? NULL;
         $prgmLimit = Helper::getCustomerSanctionedAmt($user->user_id);
         $getUserBizLimit = $this->appRepo->getUserProgramLimitByBizId($appBusiness->biz_id);
+
+        $principalDpd = $this->lmsRepo->getMaxDpdTransaction($user->user_id , config('lms.TRANS_TYPE.PAYMENT_DISBURSED'))->dpd;
         $maxDPD = max(
           $this->lmsRepo->getMaxDpdTransaction($user->user_id , config('lms.TRANS_TYPE.INTEREST'))->dpd??0,
-          $this->lmsRepo->getMaxDpdTransaction($user->user_id , config('lms.TRANS_TYPE.PAYMENT_DISBURSED'))->dpd??0
+          $principalDpd??0
         );
 
         $userData = isset($this->userWiseData[$user->user_id]) ? $this->userWiseData[$user->user_id] : null;
@@ -349,10 +351,12 @@ class CibilReportController extends Controller
           $od_outstanding = isset($userData) ? round($userData->od_outstanding, 2) : 0;
         }
         $od_days =  isset($maxDPD) && $isOverdue ? (int)$maxDPD : 0;
-        $graceEnd = Carbon::parse($dueDate)->addDays($maxDPD ?? 0)->format('Y-m-d');
-        
         if($maxDPD > 0){
-          $assetClassificationDate = $graceEnd;
+          if($maxDPD == $principalDpd){
+              $graceEnd = Carbon::parse($dueDate)->addDays($maxDPD ?? 0)->format('Y-m-d');
+              $assetClassificationDate = $graceEnd;
+          }else
+            $assetClassificationDate = 0;
         }else{
           $assetClassificationDate = 0;
         }
