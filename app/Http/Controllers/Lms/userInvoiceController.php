@@ -795,25 +795,21 @@ class userInvoiceController extends Controller
     //         $billing_data = $billingDetail['data'];
     //         $companyStateId = $company_data['state_id'];
     //         $userStateId = $billing_data['state_id'];
-
     //         $txnsData = $this->UserInvRepo->getUserInvoiceTxns($url_user_id, $invoice_type, $trans_ids, true);
     //         if(empty($txnsData) ||  $txnsData->isEmpty()){
     //             return redirect()->route('view_user_invoice', ['user_id' => $url_user_id])->with('error', 'No remaining txns found for the invoice.');
     //         }
-            
     //         if (count($trans_ids) > 1) {
     //             $valResult = Helpers::validateInvoiceTypes($trans_ids, $specificMsg = false);
     //             if ($valResult && isset($valResult['status']) && $valResult['status'] == false) {
     //                 return redirect()->route('view_user_invoice', ['user_id' => $url_user_id])->with('error', $valResult['message']);
     //             }
     //         }
-
     //         $invSerialNo = null;
     //         $InvoiceNoArr = explode('/',$requestedData['invoice_no']);
     //         $InvoiceNoArr[3] = $invSerialNo;
     //         $newInvoiceNo = implode('/',$InvoiceNoArr);
     //         $newInvoiceNo = chop($newInvoiceNo,'/');
-
     //         $is_state_diffrent = ($userStateId != $companyStateId);
     //         $inv_data = $this->_calculateInvoiceTxns($txnsData, $is_state_diffrent, false, 1);
     //         $intrest_charges = $inv_data[0];
@@ -875,14 +871,12 @@ class userInvoiceController extends Controller
     //                $data = ['is_invoice_generated' => 1, 'gst_per' => $totalGstRate, 'soa_flag' => 1, 'base_amt' => $txnsRec['base_amt'], 'gst_amt' => $totalGst];
     //                if ($invoice_type == 'C')
     //                     $this->checkIsTransactionUpdatable($txnsRec['trans_id']);
-
     //                $isInvoiceGenerated = $this->UserInvRepo->updateIsInvoiceGenerated($update_transactions, $data);
     //             }
     //             $UserInvoiceTxns = $this->UserInvRepo->saveUserInvoiceTxns($user_invoice_trans_data);
     //             if($UserInvoiceTxns){
     //                 GenerateNotePdf::dispatch($userInvoice_id);
     //             }
-
     //             if ($UserInvoiceTxns == true) {
     //                 $whereActivi['activity_code'] = 'save_user_invoice';
     //                 $activity = $this->master->getActivity($whereActivi);
@@ -891,8 +885,7 @@ class userInvoiceController extends Controller
     //                     $activity_desc = 'Create Invoice Int/Charge Invoice (Manage Sanction Cases) ';
     //                     $arrActivity['app_id'] = null;
     //                     $this->activityLogByTrait($activity_type_id, $activity_desc, response()->json(['userInvoiceData'=>$userInvoiceData, 'intrest_charges'=>$intrest_charges]), $arrActivity);
-    //                 }                     
-                    
+    //                 }                                      
     //                return redirect()->route('view_user_invoice', ['user_id' => $user_id])->with('message', 'Invoice generated Successfully');
     //             }
     //         }else{
@@ -928,7 +921,8 @@ class userInvoiceController extends Controller
                 $error[] = 'No bank detail found for the Registered Company.'; 
                 return $result;
             }
-            $userCompanyRelation  = $this->UserInvRepo->getUserCompanyRelation((int)$userId);
+
+            $userCompanyRelation  = $this->UserInvRepo->getUserCompanyRelation($userId);
             if (empty($userCompanyRelation)) {
                 $error[] = 'No Relation found between Company and User.'; 
                 return $result;
@@ -946,6 +940,7 @@ class userInvoiceController extends Controller
             $user_invoice_rel_id = $userCompanyRelation->user_invoice_rel_id ?? NULL;
 
             $companyDetail = $this->_getCompanyDetail($company_id);
+
             if ($companyDetail['status'] != 'success') {
                 $error[] = $companyDetail['message'];
                 return $result;
@@ -953,6 +948,7 @@ class userInvoiceController extends Controller
 
             $company_data = $companyDetail['data'];
             $billingDetail = $this->_getBillingDetail($biz_addr_id);
+           
             if ($billingDetail['status'] != 'success') {
                 $error[] = $billingDetail['message'];
                 return $result;
@@ -961,6 +957,7 @@ class userInvoiceController extends Controller
             $billing_data = $billingDetail['data'];
             $companyStateId = $company_data['state_id'];
             $userStateId = $billing_data['state_id'];
+           
             $txnsData = $this->UserInvRepo->getUserInvoiceTxns($userId, $invoiceType, $transId, true);
             if(empty($txnsData) ||  $txnsData->isEmpty()){
                 $error[] = 'No remaining txns found for the invoice.';

@@ -6041,20 +6041,13 @@ if ($err) {
                 $this->lmsRepo->saveChargeTransDeleteLog($attr);
             }
 
+
             \DB::commit();
         } catch (Exception $ex) {
             \DB::rollback();
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex))->withInput();
         }
 
-        // try {
-        //     if(count($creditNoteTransIds)) {
-        //         $creditNoteResults = $controller->generateCreditNote($creditNoteTransIds, $userId, $billType = 'C');
-        //     }
-        //     return response()->json(['status' => 1,'msg' => "Charge cancellation approved successfully."]);
-        // } catch (Exception $ex) {
-        //     return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex))->withInput();
-        // }
     }
 
     public function deleteManagementInfo(Request $request)
