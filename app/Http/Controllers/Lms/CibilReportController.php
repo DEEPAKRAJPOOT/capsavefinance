@@ -328,6 +328,8 @@ class CibilReportController extends Controller
       
         $user = $appBusiness->users;
         $invDisb = $this->cibilRecord->invoice_disbursed;
+        
+
         $curdate = Helper::getSysStartDate();
 		    $curdate = Carbon::parse($curdate)->format('Y-m-d');
         $dueDate = Carbon::parse($invDisb->payment_due_date);
@@ -344,7 +346,6 @@ class CibilReportController extends Controller
           $this->lmsRepo->getMaxDpdTransaction($user->user_id , config('lms.TRANS_TYPE.INTEREST'))->dpd??0,
           $principalDpd??0
         );
-
         $userData = isset($this->userWiseData[$user->user_id]) ? $this->userWiseData[$user->user_id] : null;
         $od_outstanding = NULL;
         if($isOverdue) {
@@ -353,14 +354,13 @@ class CibilReportController extends Controller
         $od_days =  isset($maxDPD) && $isOverdue ? (int)$maxDPD : 0;
         if($maxDPD > 0){
           if($maxDPD == $principalDpd){
-              $graceEnd = Carbon::parse($dueDate)->addDays($maxDPD ?? 0)->format('Y-m-d');
+              $graceEnd = $dueDate->addDays($maxDPD ?? 0)->format('Y-m-d');
               $assetClassificationDate = $graceEnd;
           }else
             $assetClassificationDate = 0;
         }else{
           $assetClassificationDate = 0;
         }
-       
         $data[] = [
             'Ac No' => $this->formatedCustId,
             'Segment Identifier' => 'CR',
