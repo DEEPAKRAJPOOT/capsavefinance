@@ -449,35 +449,35 @@ class FinanceController extends Controller {
     }
 
     public function exportFactPaymentTransactions(Request $request) {
-    try {
-        \DB::beginTransaction();
-        ini_set("memory_limit", "-1");
-        $batch_no = $request->get('batch_no') ?? NULL;
-        $where = [];
-        if (!empty($batch_no)) {
-            $where = ['batch_no' => $batch_no];
-        }
-        $tallyData = \DB::table('tally')->select('is_fact_payment_generated')->where(['batch_no'=> $batch_no])->first();
-        if($tallyData->is_fact_payment_generated == "1"){
-            \DB::rollback();
-            Session::flash('error', 'Fact Payment File is already in process');
-            return redirect()->back();
-        }
-        if($tallyData->is_fact_payment_generated == "0"){
-            $tallyBatch = \DB::table('tally')->where('batch_no',$batch_no)->update(['is_fact_payment_generated'=>1]);
-        }
-        $tallyData = \DB::table('tally')->select('is_fact_payment_generated')->where(['batch_no'=> $batch_no])->first();
-        $result = $this->finRepo->getPaymentFactTxns($where);
-        $records = [];
-        $payment = array();
-        $records['PAYMENT'] = array();
-        $cr_amount_sum = 0;
+        try {
+            \DB::beginTransaction();
+            ini_set("memory_limit", "-1");
+            $batch_no = $request->get('batch_no') ?? NULL;
+            $where = [];
+            if (!empty($batch_no)) {
+                $where = ['batch_no' => $batch_no];
+            }
+            $tallyData = \DB::table('tally')->select('is_fact_payment_generated')->where(['batch_no'=> $batch_no])->first();
+            if($tallyData->is_fact_payment_generated == "1"){
+                \DB::rollback();
+                Session::flash('error', 'Fact Payment File is already in process');
+                return redirect()->back();
+            }
+            if($tallyData->is_fact_payment_generated == "0"){
+                $tallyBatch = \DB::table('tally')->where('batch_no',$batch_no)->update(['is_fact_payment_generated'=>1]);
+            }
+            $tallyData = \DB::table('tally')->select('is_fact_payment_generated')->where(['batch_no'=> $batch_no])->first();
+            $result = $this->finRepo->getPaymentFactTxns($where);
+            $records = [];
+            $payment = array();
+            $records['PAYMENT'] = array();
+            $cr_amount_sum = 0;
 
             $transType = "";
             $voucher_date = "";
             $transDate = "";
             if (!empty($result)) {
-            foreach ($result as $key => $value) {
+                foreach ($result as $key => $value) {
                 
                     $new[] = $fetchedArr = (array)$value;
                     $batchNo = $fetchedArr['batch_no'];
@@ -734,73 +734,75 @@ class FinanceController extends Controller {
                     $creditGlCode = $factTransCredit[strtolower($fetchedArr['trans_type'])] ?? null;
                     $is_first_n_old = (empty($transType) || empty($transDate) || ($transType == $fetchedArr['trans_type'] && $transDate == $trans_date));
                     $transType = strtolower($fetchedArr['trans_type']);
-                    if (strpos($transType, '+') !== false) {
-                        $factGstHand[$fetchedArr['fact_voucher_number']] = isset($factGstHand[$fetchedArr['fact_voucher_number']])?$factGstHand[$fetchedArr['fact_voucher_number']]+1:1;
-                        if($factGstHand[$fetchedArr['fact_voucher_number']] == '1'){
-                            $fetchedArr['trans_type'] = 'SGST';
-                            $creditGlCode = $factTransCredit['sgst'];
-                            $debitGlCode = $factTransDebit['sgst'];
-                        }elseif($factGstHand[$fetchedArr['fact_voucher_number']] == '2'){
-                            $fetchedArr['trans_type'] = 'CGST';
-                            $creditGlCode = $factTransCredit['cgst'];
-                            $debitGlCode = $factTransDebit['cgst'];
-                        }
+
+                    if (strpos($transType, 'sgst - ') !== false) {
+                        $creditGlCode = $factTransCredit['sgst'];
+                        $debitGlCode = $factTransDebit['sgst'];
                     }
+                    if (strpos($transType, 'cgst - ') !== false) {
+                        $creditGlCode = $factTransCredit['cgst'];
+                        $debitGlCode = $factTransDebit['cgst'];
+                    }
+                    if (strpos($transType, 'igst - ') !== false) {
+                        $creditGlCode = $factTransCredit['igst'];
+                        $debitGlCode = $factTransDebit['igst'];
+                    }
+
                     $records['JOURNAL'][] = [
-                            "voucher_no" => $fetchedArr['fact_voucher_number'],
-                            "voucher_date"=> $transaction_date,
-                            "voucher_narration" => ($entry_type == 'credit' ? $fetchedArr['trans_type'] : $fetchedArr['ledger_name']),
-                            "general_ledger_code" => $debitGlCode,
-                            "document_class"=>$documentClass,
-                            "d_/_c" => 'D',
-                            "amount" => $amount,
-                            "description" => $fetchedArr['narration'],
-                            "item_serial_number" => $fetchedArr['trans_type'],
-                            "tax_code" => '',
-                            "name" => '',
-                            "gST_hSN_code" => '',
-                            "sAC_code" => '',
-                            "gST_state_name" => '',
-                            "address_line_1" => '',
-                            "address_line_2" => '',
-                            "address_line_3" => '',
-                            "city" => '',
-                            "country" => '',
-                            "postal_code" => '',
-                            "telephone_number" => '',
-                            "mobile_phone_number" => '',
-                            "fAX" => '',
-                            "email" => '',
-                            "gST_identification_number_(GSTIN)" => '',
-                        ];
-                        
-                        $records['JOURNAL'][] = [
-                            "voucher_no" => $fetchedArr['fact_voucher_number'],
-                            "voucher_date"=> $transaction_date,
-                            "voucher_narration" => ($entry_type == 'credit' ? $fetchedArr['ledger_name'] : $fetchedArr['trans_type']),
-                            "general_ledger_code" => $creditGlCode,
-                            "document_class"=>$documentClass,
-                            "d_/_c" => 'C',
-                            "amount" => $amount,
-                            "description" => $fetchedArr['narration'],
-                            "item_serial_number" => $fetchedArr['trans_type'],
-                            "tax_code" => '',
-                            "name" => '',
-                            "gST_hSN_code" => '',
-                            "sAC_code" => '',
-                            "gST_state_name" => '',
-                            "address_line_1" => '',
-                            "address_line_2" => '',
-                            "address_line_3" => '',
-                            "city" => '',
-                            "country" => '',
-                            "postal_code" => '',
-                            "telephone_number" => '',
-                            "mobile_phone_number" => '',
-                            "fAX" => '',
-                            "email" => '',
-                            "gST_identification_number_(GSTIN)" => '',
-                        ];
+                        "voucher_no" => $fetchedArr['fact_voucher_number'],
+                        "voucher_date"=> $transaction_date,
+                        "voucher_narration" => ($entry_type == 'credit' ? $fetchedArr['trans_type'] : $fetchedArr['ledger_name']),
+                        "general_ledger_code" => $debitGlCode,
+                        "document_class"=>$documentClass,
+                        "d_/_c" => 'D',
+                        "amount" => $amount,
+                        "description" => $fetchedArr['narration'],
+                        "item_serial_number" => $fetchedArr['trans_type'],
+                        "tax_code" => '',
+                        "name" => '',
+                        "gST_hSN_code" => '',
+                        "sAC_code" => '',
+                        "gST_state_name" => '',
+                        "address_line_1" => '',
+                        "address_line_2" => '',
+                        "address_line_3" => '',
+                        "city" => '',
+                        "country" => '',
+                        "postal_code" => '',
+                        "telephone_number" => '',
+                        "mobile_phone_number" => '',
+                        "fAX" => '',
+                        "email" => '',
+                        "gST_identification_number_(GSTIN)" => '',
+                    ];
+                    
+                    $records['JOURNAL'][] = [
+                        "voucher_no" => $fetchedArr['fact_voucher_number'],
+                        "voucher_date"=> $transaction_date,
+                        "voucher_narration" => ($entry_type == 'credit' ? $fetchedArr['ledger_name'] : $fetchedArr['trans_type']),
+                        "general_ledger_code" => $creditGlCode,
+                        "document_class"=>$documentClass,
+                        "d_/_c" => 'C',
+                        "amount" => $amount,
+                        "description" => $fetchedArr['narration'],
+                        "item_serial_number" => $fetchedArr['trans_type'],
+                        "tax_code" => '',
+                        "name" => '',
+                        "gST_hSN_code" => '',
+                        "sAC_code" => '',
+                        "gST_state_name" => '',
+                        "address_line_1" => '',
+                        "address_line_2" => '',
+                        "address_line_3" => '',
+                        "city" => '',
+                        "country" => '',
+                        "postal_code" => '',
+                        "telephone_number" => '',
+                        "mobile_phone_number" => '',
+                        "fAX" => '',
+                        "email" => '',
+                        "gST_identification_number_(GSTIN)" => '',
+                    ];
                 }
             }
 
@@ -877,14 +879,13 @@ class FinanceController extends Controller {
             $transType = "";
             $voucher_date = "";
             $transDate = "";
-            $factGstHand = [];
             if (!empty($result)) {
                 foreach ($result as $key => $value) {
                     
-                        $new[] = $fetchedArr = (array)$value;
-                        $voucherDate = date('d-m-Y',strtotime($fetchedArr['voucher_date']));
-                        $trans_date = date('Y-m-d', strtotime($fetchedArr['voucher_date'])); 
-                        $records['JOURNAL'][] = [
+                    $new[] = $fetchedArr = (array)$value;
+                    $voucherDate = date('d-m-Y',strtotime($fetchedArr['voucher_date']));
+                    $trans_date = date('Y-m-d', strtotime($fetchedArr['voucher_date'])); 
+                    $records['JOURNAL'][] = [
                                 "voucher_no" => $fetchedArr['voucher_no'],
                                 "voucher_date"=> $voucherDate,
                                 "voucher_narration" => ($fetchedArr['voucher_narration']),
