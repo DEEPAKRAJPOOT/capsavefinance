@@ -1714,7 +1714,15 @@ Route::domain(config('proin.backend_uri'))->group(function () {
             Route::get('export_fact_journal_txns', [
                 'as' => 'export_fact_journal_txns',
                 'uses' => 'Backend\FinanceController@exportFactJournalTransactions'
+            ]);
+            Route::get('download_fact_payment_txns', [
+                'as' => 'download_fact_payment_txns',
+                'uses' => 'Backend\FinanceController@downloadFactPaymentTransactions'
             ]);                        
+            Route::get('download_fact_journal_txns', [
+                'as' => 'download_fact_journal_txns',
+                'uses' => 'Backend\FinanceController@downloadFactJournalTransactions'
+            ]);                         
         });
 
         Route::group(['prefix' => 'nach'], function () {
