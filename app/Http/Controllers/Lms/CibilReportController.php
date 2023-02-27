@@ -354,7 +354,7 @@ class CibilReportController extends Controller
         $od_days =  isset($maxDPD) && $isOverdue ? (int)$maxDPD : 0;
         if($maxDPD > 0){
           if($maxDPD == $principalDpd){
-              $graceEnd = $dueDate->addDays($maxDPD ?? 0)->format('Y-m-d');
+              $graceEnd = $dueDate->addDays($invDisb->grace_period ?? 0)->format('Y-m-d');
               $assetClassificationDate = $graceEnd;
           }else
             $assetClassificationDate = 0;
