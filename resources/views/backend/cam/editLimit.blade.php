@@ -31,13 +31,12 @@
 
 @section('jscript')
 <script>
-$(document).on('click', '#submit', function (e) {
+$(document).on('submit', function (e) {
     let prgmLimitTotal = "{{$prgmLimitTotal}}";
     let totalCredit = $('input[name=tot_limit_amt]').val().trim();
-    let flag = true;
     totalCreditAssessed = totalCredit.replace(/,/g, '');
     if(parseInt(totalCreditAssessed) < parseInt(prgmLimitTotal)){
-        setError('input[name=tot_limit_amt]', 'Total Credit Assessed should be greater than total prgm limit');
+        setError('input[name=tot_limit_amt]', 'Total Credit Assessed should be greater than Total Program Limit.');
         flag = false;
     }
 

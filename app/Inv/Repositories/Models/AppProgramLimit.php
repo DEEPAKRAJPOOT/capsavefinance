@@ -97,7 +97,7 @@ class AppProgramLimit extends BaseModel {
         if(!is_array($data)){
             throw new InvalidDataTypeExceptions(trans('error_message.invalid_data_type'));
         }else{
-            return AppProgramLimit::where($data)->get();
+            return AppProgramLimit::where($data)->where('is_active',0)->get();
         }
     }
 
