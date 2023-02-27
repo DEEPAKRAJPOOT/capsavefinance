@@ -50,20 +50,15 @@ class GenerateCreditNote extends Command
         $invoiceType = $this->argument('invoice');
         $controller = \App::make('App\Http\Controllers\Lms\userInvoiceController');
         $curdate = Helpers::getSysStartDate();
-        $cDate = Carbon::parse($curdate)->format('Y-m-d');
         $cancelTransList = Transactions::whereNotNull('parent_trans_id')
         ->whereIn('trans_type',[config('lms.TRANS_TYPE.CANCEL'),config('lms.TRANS_TYPE.WAVED_OFF')])
         ->whereHas('userInvParentTrans.getUserInvoice')
-        ->whereDate('created_at','=',$cDate)
         ->where('entry_type','1')
         ->where('is_invoice_generated','0')
         ->with('userInvParentTrans:trans_id,user_invoice_id','userInvParentTrans.getUserInvoice:user_invoice_id,user_invoice_rel_id');
 
         if($userId){
             $cancelTransList->where('user_id',$userId);
-        }
-        if($apportionmentId){
-            $cancelTransList->where('apportionment_id',$apportionmentId);
         }
         
         $cancelTransList = $cancelTransList->get();
@@ -93,6 +88,6 @@ class GenerateCreditNote extends Command
                 }
             }
         }
-         $this->info('note:generateCreditNote');
+         $this->info('successfully completed.');
     }
 }

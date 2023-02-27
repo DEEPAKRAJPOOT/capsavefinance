@@ -51,14 +51,12 @@ class GenerateDebitNote extends Command
         $controller = \App::make('App\Http\Controllers\Lms\userInvoiceController');
         $billData = [];
         $curdate = Helpers::getSysStartDate();
-        $cDate = Carbon::parse($curdate)->format('Y-m-d');
         $transList = Transactions::whereNull('parent_trans_id')
         ->whereHas('transType', function($query){
             $query->where('chrg_master_id','>','0')
             ->orWhereIn('id',[config('lms.TRANS_TYPE.INTEREST'),config('lms.TRANS_TYPE.INTEREST_OVERDUE')]);
         })
-        ->whereDate('created_at','=',$cDate)
-        // ->whereDate('created_at','>=','2022-04-01')
+        ->whereDate('created_at','>=','2023-01-01')
         ->where('entry_type','0')
         ->where('is_invoice_generated','0')
         ->get();
@@ -86,6 +84,6 @@ class GenerateDebitNote extends Command
                 }
             }
         }
-         $this->info('note:generateDebitNote');
+        $this->info('Successfully completed.');
     }
 }

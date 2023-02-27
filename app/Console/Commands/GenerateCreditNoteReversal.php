@@ -50,14 +50,14 @@ class GenerateCreditNoteReversal extends Command
         $invoiceType = $this->argument('invoice');
         $controller = \App::make('App\Http\Controllers\Lms\userInvoiceController');
         $curdate = Helpers::getSysStartDate();
-        $cDate = Carbon::parse($curdate)->format('Y-m-d');
-        $cancelTransList = Transactions::whereNotNull('link_trans_id')->whereIn('trans_type',[config('lms.TRANS_TYPE.REVERSE')])->whereHas('userInvLinkTrans.getUserInvoice')->where('entry_type','0')->whereDate('created_at','=',$cDate)->where('is_invoice_generated','0');
+        $cancelTransList = Transactions::whereNotNull('link_trans_id')
+            ->whereIn('trans_type',[config('lms.TRANS_TYPE.REVERSE')])
+            ->whereHas('userInvLinkTrans.getUserInvoice')
+            ->where('entry_type','0')
+            ->where('is_invoice_generated','0');
 
         if($userId){
             $cancelTransList->where('user_id',$userId);
-        }
-        if($apportionmentId){
-            $cancelTransList->where('apportionment_id',$apportionmentId);
         }
 
         $cancelTransList = $cancelTransList->with('userInvLinkTrans:trans_id,user_invoice_id','userInvLinkTrans.getUserInvoice:user_invoice_id,user_invoice_rel_id')->get();
@@ -87,6 +87,6 @@ class GenerateCreditNoteReversal extends Command
                 }
             }
         }
-         $this->info('note:generateCreditNoteReversal');
+         $this->info('successfully completed.');
     }
 }
