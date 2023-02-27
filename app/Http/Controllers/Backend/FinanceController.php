@@ -478,7 +478,8 @@ class FinanceController extends Controller {
             $transDate = "";
             if (!empty($result)) {
                 foreach ($result as $key => $value) {
-                
+                    $bankName = '';
+                    $bankAcNo = '';
                     $new[] = $fetchedArr = (array)$value;
                     $batchNo = $fetchedArr['batch_no'];
                     $voucherDate = date('d-m-Y',strtotime($fetchedArr['voucher_date']));
@@ -490,54 +491,71 @@ class FinanceController extends Controller {
                     $GLcode = '54000021';
                     $amount = '';
                     $accNo = '';
+                    $bankCode = null;
+
                     if($fetchedArr['voucher_type'] == 'Payment'){
                         if($entry_type == 'credit'){
                             $amount = $fetchedArr['amount'];
                         }else{
                             $amount = '-'.$fetchedArr['amount'];
                         }  
-                    }else{
+                        $bankName = $fetchedArr['bank'];
+                        $bankAcNo = $fetchedArr['bank_acc_no'];
+                        if($fetchedArr['bank'] == 'IDFC Bank' && $fetchedArr['bank_acc_no'] == '10006748999'){
+                            $bankCode = 4;
+                        }elseif($fetchedArr['bank'] == 'IDFC Bank' && $fetchedArr['bank_acc_no'] == '10062193074'){
+                            $bankCode = 9;
+                        }elseif($fetchedArr['bank'] == 'IDFC Bank' && $fetchedArr['bank_acc_no'] == '10047035004'){
+                            $bankCode = 3;
+                        }elseif($fetchedArr['bank'] == 'HDFC Bank' && $fetchedArr['bank_acc_no'] == '50200030310781'){
+                            $bankCode = 19;
+                        }elseif($fetchedArr['bank'] == 'Yes Bank' && $fetchedArr['bank_acc_no'] == '007884600002532'){
+                            $bankCode = 11;
+                        }
+                    }elseif($fetchedArr['voucher_type'] == 'Receipt'){
                         if($entry_type == 'credit'){
                             $amount = $fetchedArr['amount'];
                         }else{
                             $amount = '-'.$fetchedArr['amount'];
-                        }  
+                        }
+                        $bankName = $fetchedArr['company_bank_name'];
+                        $bankAcNo = $fetchedArr['company_bank_acc'];
+                        if($fetchedArr['company_bank_name'] == 'IDFC Bank' && $fetchedArr['company_bank_acc'] == '10006748999'){
+                            $bankCode = 4;
+                        }elseif($fetchedArr['company_bank_name'] == 'IDFC Bank' && $fetchedArr['company_bank_acc'] == '10062193074'){
+                            $bankCode = 9;
+                        }elseif($fetchedArr['company_bank_name'] == 'IDFC Bank' && $fetchedArr['company_bank_acc'] == '10047035004'){
+                            $bankCode = 3;
+                        }elseif($fetchedArr['company_bank_name'] == 'HDFC Bank' && $fetchedArr['company_bank_acc'] == '50200030310781'){
+                            $bankCode = 19;
+                        }elseif($fetchedArr['company_bank_name'] == 'Yes Bank' && $fetchedArr['company_bank_acc'] == '007884600002532'){
+                            $bankCode = 11;
+                        }
                     }
-                    $bankCode = null;
-                    if($fetchedArr['bank'] == 'IDFC Bank' && $fetchedArr['bank_acc_no'] == '10006748999'){
-                        $bankCode = 4;
-                    }elseif($fetchedArr['bank'] == 'IDFC Bank' && $fetchedArr['bank_acc_no'] == '10062193074'){
-                        $bankCode = 9;
-                    }elseif($fetchedArr['bank'] == 'IDFC Bank' && $fetchedArr['bank_acc_no'] == '10047035004'){
-                        $bankCode = 3;
-                    }elseif($fetchedArr['bank'] == 'HDFC Bank' && $fetchedArr['bank_acc_no'] == '50200030310781'){
-                        $bankCode = 19;
-                    }elseif($fetchedArr['bank'] == 'Yes Bank' && $fetchedArr['bank_acc_no'] == '007884600002532'){
-                        $bankCode = 11;
-                    }
-                        $paymentRow =  [
-                            "voucher" => $fetchedArr['fact_voucher_number'],
-                            "sr"=>'',
-                            "date" => $voucherDate,
-                            "description" => $fetchedArr['trans_type'],
-                            "chq_/_ref_number"=> $fetchedArr['utr_no'],
-                            "dt_value" => $transaction_date,
-                            "fc_amount" => '0',
-                            "amount" => $amount,
-                            "bank_code" => $bankCode,
-                            "bank_name" => $fetchedArr['bank'],
-                            "account_no" => $fetchedArr['bank_acc_no'],
-                            "payment_vendor_name" => $fetchedArr['ledger_name'],
-                            "paid_to_client" => $fetchedArr['ledger_name'],
-                            "code" => $code,
-                            "remarks" => $fetchedArr['narration'],
-                            "type" => '',
-                            "gL_code" => $GLcode,
-                            "remark" => '',
-                            "upload_status" => '',
-                            "vendor_code_exists" => '',
-                        ];
-                        $records['PAYMENT'][] = $paymentRow;
+                   
+                    $paymentRow =  [
+                        "voucher" => $fetchedArr['fact_voucher_number'],
+                        "sr"=>'',
+                        "date" => $voucherDate,
+                        "description" => $fetchedArr['trans_type'],
+                        "chq_/_ref_number"=> $fetchedArr['utr_no'],
+                        "dt_value" => $transaction_date,
+                        "fc_amount" => '0',
+                        "amount" => $amount,
+                        "bank_code" => $bankCode,
+                        "bank_name" => $bankName,
+                        "account_no" => $bankAcNo,
+                        "payment_vendor_name" => $fetchedArr['ledger_name'],
+                        "paid_to_client" => $fetchedArr['ledger_name'],
+                        "code" => $code,
+                        "remarks" => $fetchedArr['narration'],
+                        "type" => '',
+                        "gL_code" => $GLcode,
+                        "remark" => '',
+                        "upload_status" => '',
+                        "vendor_code_exists" => '',
+                    ];
+                    $records['PAYMENT'][] = $paymentRow;
                     
                     $transType = $fetchedArr['trans_type'];
                     $transDate = date('Y-m-d', strtotime($fetchedArr['voucher_date'])); 
