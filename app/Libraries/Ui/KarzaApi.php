@@ -101,8 +101,9 @@ class KarzaApi {
          
         try {
             $api_url = '/v2/pan';
-             $baseUrl = config('proin.karza_auth_api_url');
-             $apiKey = config('proin.karza_auth_api_key');
+            //$baseUrl = config('proin.karza_auth_api_url');
+            $baseUrl = config('proin.karza_auth_api_url_old');
+            $apiKey = config('proin.karza_auth_api_key');
             $options = [
                 'base_uri' => $baseUrl,
                 'json' => [
