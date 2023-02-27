@@ -35,6 +35,7 @@ $(document).on('submit', function (e) {
     let prgmLimitTotal = "{{$prgmLimitTotal}}";
     let totalCredit = $('input[name=tot_limit_amt]').val().trim();
     totalCreditAssessed = totalCredit.replace(/,/g, '');
+    unsetError('input[name=tot_limit_amt]', '');
     if(parseInt(totalCreditAssessed) < parseInt(prgmLimitTotal)){
         setError('input[name=tot_limit_amt]', 'Total Credit Assessed should be greater than Total Program Limit.');
         flag = false;
