@@ -2705,7 +2705,7 @@ class Helper extends PaypalHelper
     }
 
     public static function getlastSacntionedApplication(int $userId){
-       return Application::where('user_id',$userId)->where('curr_status_id',config('common.mst_status_id.APP_SANCTIONED'))->first();
+       return Application::where('user_id',$userId)->where('curr_status_id',config('common.mst_status_id.APP_SANCTIONED'))->orderBy('app_id', 'DESC')->first();
     }
 
     public static function getCustomerSanctionedAmt(int $userId){
