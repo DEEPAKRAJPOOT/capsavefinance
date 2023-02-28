@@ -129,7 +129,7 @@
                                                        <button class="btn btn-success btn-sm add-offer" data-url="{{route('show_limit_offer', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id'), 'app_prgm_limit_id'=>$prgmLimit->app_prgm_limit_id])}}" title="Add Offer"><i class="fa fa-plus"></i></button>
                                                        @endcan
                                                        @can('delete_prgm_limit')
-                                                        @if($userRole->name == 'Credit Manager' &&($appStatus == 56 || $appStatus == 20 || $appStatus == 49) && ($offerRejectStatus != 0))
+                                                        @if(($appStatus == 56 || $appStatus == 20 || $appStatus == 49) && ($offerRejectStatus != 0))
                                                         <a class="btn btn-success btn-sm" href = "{{ route('delete_prgm_limit', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id'), 'app_prgm_limit_id'=>$prgmLimit->app_prgm_limit_id]) }}"
                                                         type="button" title="Delete"><i class="fa fa-trash"></i></a>
                                                         @endif
