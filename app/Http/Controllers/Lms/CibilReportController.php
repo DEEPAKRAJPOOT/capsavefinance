@@ -372,7 +372,7 @@ class CibilReportController extends Controller
             'Drawing Power' => NULL,
             'Current   Balance / Limit Utilized /Mark to Market' => isset($outstanding) ? $outstanding : 0,
             'Notional Amount of Out-standing Restructured Contracts' => NULL,
-            'Loan Expiry / Maturity Date' => !empty($getUserBizLimit->limit_expiration_date) ? date('d M Y', strtotime($getUserBizLimit->limit_expiration_date)) : NULL,
+            'Loan Expiry / Maturity Date' => !empty($getUserBizLimit->end_date) ? date('d M Y', strtotime($getUserBizLimit->end_date)) : NULL,
             'Loan Renewal Date' => NULL,
             'Asset Classification/Days Past Due (DPD)' => $maxDPD,//$od_days,
             'Asset Classification Date' => $assetClassificationDate,
