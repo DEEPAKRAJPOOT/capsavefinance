@@ -1503,7 +1503,6 @@ class ApplicationController extends Controller
 	public function saveBusinessInformation(BusinessInformationRequest $request)
 	{
 		try {
-
 			$arrFileData = $request->all();
 
                         $whereCond=[];

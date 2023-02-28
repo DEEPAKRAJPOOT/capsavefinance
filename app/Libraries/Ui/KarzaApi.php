@@ -80,7 +80,6 @@ class KarzaApi {
                     'x-karza-key' => $apiKey  //env('KARZA_AUTHENTICATION_API_KEY')
                 ]
             ];
-               
             $response = $this->client->post($api_url, $options);
             $response = $response->getBody()->getContents();
         
