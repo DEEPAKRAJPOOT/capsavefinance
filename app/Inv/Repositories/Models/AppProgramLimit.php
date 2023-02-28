@@ -320,7 +320,7 @@ class AppProgramLimit extends BaseModel {
     }
 
     public static function getTotalPrgmLimitByAppId($appId){
-        return AppProgramLimit::where(['app_id'=>$appId])->sum('limit_amt');
+        return AppProgramLimit::where(['app_id'=>$appId,'is_active'=>0])->sum('limit_amt');
     }   
     
    
