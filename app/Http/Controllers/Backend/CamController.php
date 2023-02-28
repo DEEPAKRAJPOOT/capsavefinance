@@ -1667,7 +1667,7 @@ class CamController extends Controller
         $limitData = $this->appRepo->getAppLimit($appId);
         $prgmLimitTotal = $this->appRepo->getTotalPrgmLimitByAppId($appId);
         $tot_offered_limit = $this->appRepo->getTotalOfferedLimit($appId);
-
+        // dd($limitData->tot_limit_amt,$prgmLimitTotal);
         $product_types = $this->mstRepo->getProductDataList();
 
         $offerRejectStatus = $this->appRepo->getOfferStatus(['app_id' => $appId, 'status'=>2]);//to check the offer status
@@ -3106,6 +3106,7 @@ class CamController extends Controller
       $biz_id = (int)$request->get('biz_id');
       $aplid = $request->get('app_prgm_limit_id');
       $limitData = $this->appRepo->getAppLimit($appId);
+      // dd($limitData);
       $appLimitId = $limitData->app_limit_id;
       AppProgramLimit::where(['app_id' => $appId,'app_prgm_limit_id' => $aplid])->update(['is_active' => 1]);
       AppLimit::where(['app_id' => $appId,'app_limit_id' => $appLimitId])->update(['is_active' => 1]);
