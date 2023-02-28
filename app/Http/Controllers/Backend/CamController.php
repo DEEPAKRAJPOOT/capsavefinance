@@ -3105,9 +3105,6 @@ class CamController extends Controller
       $appId = (int)$request->get('app_id');
       $biz_id = (int)$request->get('biz_id');
       $aplid = $request->get('app_prgm_limit_id');
-      // $limitData = $this->appRepo->getAppLimit($appId);
-      // dd($limitData,$appId);
-      // $appLimitId = $limitData->app_limit_id;
       AppProgramLimit::where(['app_id' => $appId,'app_prgm_limit_id' => $aplid])->update(['is_active' => 1]);
       AppLimit::where(['app_id' => $appId])->update(['is_active' => 1]);
       Session::flash('message', 'Product Limit deleted successfully');
