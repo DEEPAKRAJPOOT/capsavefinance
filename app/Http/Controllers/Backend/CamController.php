@@ -3105,13 +3105,13 @@ class CamController extends Controller
       $biz_id = (int)$request->get('biz_id');
       $aplid = $request->get('app_prgm_limit_id');
       $offerRejectStatus = $this->appRepo->getOfferStatus(['app_id' => $appId, 'status'=>2]);
-      if($offerRejectStatus == 0){
+      // if($offerRejectStatus == 0){
         AppProgramLimit::where(['app_id' => $appId,'app_prgm_limit_id' => $aplid])->update(['is_active' => 1]);
         AppLimit::where(['app_id' => $appId])->update(['is_active' => 1]);
         Session::flash('message', 'Product Limit deleted successfully');
-      }else{
-        Session::flash('error', 'Offer already exists');
-      }
+      // }else{
+      //   Session::flash('error', 'Offer already exists');
+      // }
       
       return redirect()->route('limit_assessment', ['app_id' => $appId]);
   }
