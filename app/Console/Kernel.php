@@ -50,7 +50,12 @@ class Kernel extends ConsoleKernel
         }
 
         if(config('lms.LMS_STATUS')){
-            $schedule->command('lms:interestaccrual')->timezone(config('common.timezone'))->dailyAt('23:10');
+            $schedule->command('lms:interestaccrual')->timezone(config('common.timezone'))->dailyAt('23:05')
+            ->onSuccess(function() use($schedule){
+                $this->call('note:generateDebitNote');
+                $this->call('note:generateCreditNote');
+                $this->call('note:generateCreditNoteReversal');
+            });
             $schedule->command('lms:interestaccrual')->dailyAt('00:01');
             $schedule->command('finance:tallyposting')->timezone(config('common.timezone'))->dailyAt('00:01') 
             ->onSuccess(function() use($schedule){

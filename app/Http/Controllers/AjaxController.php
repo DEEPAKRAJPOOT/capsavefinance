@@ -6041,13 +6041,6 @@ if ($err) {
                 $this->lmsRepo->saveChargeTransDeleteLog($attr);
             }
 
-            $controller = app()->make('App\Http\Controllers\Lms\userInvoiceController');
-
-            if (count($debitNoteTransIds)) {
-                $debitNoteResults = $controller->generateDebitNote($debitNoteTransIds, $userId, $billType = 'C');
-            }
-
-            $creditNoteTransIds = Transactions::processChrgTransDeletion($chrgTransactions);
 
             \DB::commit();
         } catch (Exception $ex) {
@@ -6055,14 +6048,6 @@ if ($err) {
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex))->withInput();
         }
 
-        try {
-            if(count($creditNoteTransIds)) {
-                $creditNoteResults = $controller->generateCreditNote($creditNoteTransIds, $userId, $billType = 'C');
-            }
-            return response()->json(['status' => 1,'msg' => "Charge cancellation approved successfully."]);
-        } catch (Exception $ex) {
-            return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex))->withInput();
-        }
     }
 
     public function deleteManagementInfo(Request $request)

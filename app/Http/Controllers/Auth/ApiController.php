@@ -19,7 +19,7 @@ use Carbon\Carbon;
 use DB;
 use App\Inv\Repositories\Models\TallyFactVoucher;
 use App\Inv\Repositories\Models\TransFactVoucher;
-
+use App\Helpers\Helpers;
 /**
  * 
  */
@@ -213,26 +213,26 @@ class ApiController
               $gstData['igst'] = $igst_amt;
           }
           foreach ($gstData as $gst_key => $gst_val) {
-           $gst_trans_amount = $gst_val;
-          switch ($gst_key) {
-            case 'base_amount':
-              $gst_trans_type = $trans_type_name;
-              break;
-            case 'sgst':
-              $gst_trans_type = 'SGST + CGST';
-              break;
-            case 'cgst':
-              $gst_trans_type = 'SGST + CGST';
-              break;
-            case 'igst':
-              $gst_trans_type = 'IGST';
-              break;
+            $gst_trans_amount = $gst_val;
+            switch ($gst_key) {
+              case 'base_amount':
+                $gst_trans_type = $trans_type_name;
+                break;
+              case 'sgst':
+                $gst_trans_type = 'SGST - '.$trans_type_name;
+                break;
+              case 'cgst':
+                $gst_trans_type = 'CGST - '.$trans_type_name;
+                break;
+              case 'igst':
+                $gst_trans_type = 'IGST - '.$trans_type_name;
+                break;
+            }
+            $JournalRow['trans_type'] =  $gst_trans_type;
+            $JournalRow['amount'] =  $gst_trans_amount;
+            $JournalRow['ref_amount'] =  $gst_trans_amount;
+            $journalPayments[] = $JournalRow;
           }
-          $JournalRow['trans_type'] =  $gst_trans_type;
-          $JournalRow['amount'] =  $gst_trans_amount;
-          $JournalRow['ref_amount'] =  $gst_trans_amount;
-          $journalPayments[] = $JournalRow;
-        }
     }else if (!empty($jrnls->userinvoicetrans->getUserInvoice->invoice_no)) {
         $gstData['base_amount'] = $jrnls->userinvoicetrans->base_amount;
         if ($jrnls->userinvoicetrans->sgst_amount != 0) {
@@ -245,19 +245,19 @@ class ApiController
             $gstData['igst'] = $jrnls->userinvoicetrans->igst_amount;
         }
         foreach ($gstData as $gst_key => $gst_val) {
-           $gst_trans_amount = $gst_val;
+          $gst_trans_amount = $gst_val;
           switch ($gst_key) {
             case 'base_amount':
               $gst_trans_type = $trans_type_name;
               break;
             case 'sgst':
-              $gst_trans_type = 'SGST + CGST';
+              $gst_trans_type = 'SGST - '.$trans_type_name;
               break;
             case 'cgst':
-              $gst_trans_type = 'SGST + CGST';
+              $gst_trans_type = 'CGST - '.$trans_type_name;
               break;
             case 'igst':
-              $gst_trans_type = 'IGST';
+              $gst_trans_type = 'IGST - '.$trans_type_name;
               break;
           }
           $JournalRow['trans_type'] =  $gst_trans_type;
