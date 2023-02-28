@@ -918,7 +918,7 @@ class ManualApportionmentHelper{
             $this->intAccrual($invId, NULL);
             $this->transactionPostingAdjustment($invId, NULL);
         }
-        $this->runningIntPosting();
+        //$this->runningIntPosting();
         // Update Invoice Disbursed Accrual Detail
         InvoiceDisbursedDetail::updateDailyInterestAccruedDetails();
         $this->generateDebitNote();
