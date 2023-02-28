@@ -918,7 +918,7 @@ class ManualApportionmentHelper{
             $this->intAccrual($invId, NULL);
             $this->transactionPostingAdjustment($invId, NULL);
         }
-        //$this->runningIntPosting();
+        $this->runningIntPosting();
         // Update Invoice Disbursed Accrual Detail
         InvoiceDisbursedDetail::updateDailyInterestAccruedDetails();
         
@@ -928,8 +928,14 @@ class ManualApportionmentHelper{
     }
 
     public function runningIntPosting(){
-        $curDate = Helpers::getSysStartDate();
-        $curDate = Carbon::parse($curDate)->setTimezone(config('common.timezone'))->format('Y-m-d');
+        $curDate = Helpers::getSysStartDate();  
+        $curDate = Carbon::parse($curDate)->setTimezone(config('common.timezone'));
+        if($curDate->format('His') >= '230000'){
+            $curDate = $curDate->format('Y-m-d');
+        }else{
+            $curDate = $curDate->subDay()->format('Y-m-d');
+        }
+
         $invDisbursedIds = TransactionsRunning::whereDate('trans_date','<=',$curDate)
         ->whereDate('due_date','<',$curDate)
         ->where('is_posted',0)

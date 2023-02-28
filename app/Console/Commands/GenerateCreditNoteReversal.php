@@ -46,6 +46,8 @@ class GenerateCreditNoteReversal extends Command
      */
     public function handle()
     {
+        ini_set("memory_limit", "-1");
+        ini_set('max_execution_time', 10000);
         $userId = $this->argument('user');
         $invoiceType = $this->argument('invoice');
         $controller = \App::make('App\Http\Controllers\Lms\userInvoiceController');

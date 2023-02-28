@@ -139,9 +139,10 @@ class GenerateNotePdf implements ShouldQueue
                 'invoice_type_name' => $invoice_type_name,
             ];
             view()->share($data);
-            $year = date("Y");   
-            $month = date("m");
-            $path ='capsaveInvoice/'.$year.'/'.$month.'/'.str_replace("/","_",strtoupper($data['origin_of_recipient']['invoice_no'])).'.pdf';
+            $path ='capsaveInvoice/'.str_replace("/","_",strtoupper($data['origin_of_recipient']['invoice_no'])).'.pdf';
+            //$year = date("Y");   
+            //$month = date("m");
+            //$path ='capsaveInvoice/'.$year.'/'.$month.'/'.str_replace("/","_",strtoupper($data['origin_of_recipient']['invoice_no'])).'.pdf';
             if(Storage::exists('public/'.$path)){
                 Storage::move('public/'.$path, 'public/'.'capsaveInvoice/'.str_replace("/","_",strtoupper($data['origin_of_recipient']['invoice_no'])).'_'.time().'.pdf');
             }
