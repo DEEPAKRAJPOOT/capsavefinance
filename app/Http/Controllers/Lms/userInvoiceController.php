@@ -1038,11 +1038,10 @@ class userInvoiceController extends Controller
                         'igst_amount' => $txnsRec['igst_amt'],
                         'description' => $txnsRec['desc'],
                         'settle_payment_desc' => $txnsRec['trans_date'],
-                ]; 
-                $totalGst = ($txnsRec['sgst_amt'] + $txnsRec['cgst_amt'] + $txnsRec['igst_amt']);
-                $totalGstRate = ($txnsRec['sgst_rate'] + $txnsRec['cgst_rate'] + $txnsRec['igst_rate']);
-                $data = ['is_invoice_generated' => 1, 'gst_per' => $totalGstRate, 'soa_flag' => 1, 'base_amt' => $txnsRec['base_amt'], 'gst_amt' => $totalGst];
-                if ($invoiceTypeOld == 'C')
+                    ]; 
+                    $totalGst = ($txnsRec['sgst_amt'] + $txnsRec['cgst_amt'] + $txnsRec['igst_amt']);
+                    $totalGstRate = ($txnsRec['sgst_rate'] + $txnsRec['cgst_rate'] + $txnsRec['igst_rate']);
+                    $data = ['is_invoice_generated' => 1, 'gst_per' => $totalGstRate, 'soa_flag' => 1, 'base_amt' => $txnsRec['base_amt'], 'gst_amt' => $totalGst];
                     $isInvoiceGenerated = $this->UserInvRepo->updateIsInvoiceGenerated([$txnsRec['trans_id']], $data);
                 }
                 $UserInvoiceTxns = $this->UserInvRepo->saveUserInvoiceTxns($user_invoice_trans_data);
