@@ -58,13 +58,13 @@ class GenerateCreditNoteReversal extends Command
             ->whereHas('userInvLinkTrans.getUserInvoice')
             ->whereDate('created_at','=',$cDate)
             ->where('entry_type','0')
-            ->where('is_invoice_generated','0');
+            ->where('is_invoice_generated','0')
+            ->with('userInvLinkTrans:trans_id,user_invoice_id','userInvLinkTrans.getUserInvoice:user_invoice_id,user_invoice_rel_id')
+            ->get();
 
-        if($userId){
-            $cancelTransList->where('user_id',$userId);
-        }
-
-        $cancelTransList = $cancelTransList->with('userInvLinkTrans:trans_id,user_invoice_id','userInvLinkTrans.getUserInvoice:user_invoice_id,user_invoice_rel_id')->get();
+        // if($userId){
+        //     $cancelTransList->where('user_id',$userId);
+        // }
 
         $creditData = [];
         foreach($cancelTransList as $trans){

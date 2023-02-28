@@ -59,14 +59,13 @@ class GenerateCreditNote extends Command
         ->whereDate('created_at','=',$cDate)
         ->where('entry_type','1')
         ->where('is_invoice_generated','0')
-        ->with('userInvParentTrans:trans_id,user_invoice_id','userInvParentTrans.getUserInvoice:user_invoice_id,user_invoice_rel_id');
+        ->with('userInvParentTrans:trans_id,user_invoice_id','userInvParentTrans.getUserInvoice:user_invoice_id,user_invoice_rel_id')
+        ->get();
 
-        if($userId){
-            $cancelTransList->where('user_id',$userId);
-        }
+        // if($userId){
+        //     $cancelTransList->where('user_id',$userId);
+        // }
         
-        $cancelTransList = $cancelTransList->get();
-
         $creditData = [];
         foreach($cancelTransList as $trans){
             $billType = null;
