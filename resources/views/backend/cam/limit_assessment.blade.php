@@ -129,7 +129,7 @@
                                                        <button class="btn btn-success btn-sm add-offer" data-url="{{route('show_limit_offer', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id'), 'app_prgm_limit_id'=>$prgmLimit->app_prgm_limit_id])}}" title="Add Offer"><i class="fa fa-plus"></i></button>
                                                        @endcan
                                                        @can('delete_prgm_limit')
-                                                        @if($userRole->name == 'Credit Manager' &&($appStatus == 56 || $appStatus == 20 || $appStatus == 49) && ($offerRejectStatus != 0))
+                                                        @if($userRole->name == 'Credit Manager' &&($appStatus == 56 || $appStatus == 20 || $appStatus == 49) && ($offerRejectStatus >0))
                                                         <a class="btn btn-success btn-sm" href = "{{ route('delete_prgm_limit', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id'), 'app_prgm_limit_id'=>$prgmLimit->app_prgm_limit_id]) }}"
                                                         type="button" title="Delete"><i class="fa fa-trash"></i></a>
                                                         @endif
@@ -249,7 +249,7 @@
                                                        <button class="btn btn-success btn-sm add-offer" data-url="{{route('show_limit_offer', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id'), 'app_prgm_limit_id'=>$prgmLimit->app_prgm_limit_id])}}" title="Add Offer"><i class="fa fa-plus"></i></button>
                                                        @endcan
                                                        @can('delete_prgm_limit')
-                                                       @if($userRole->name == 'Credit Manager' &&($appStatus == 56 || $appStatus == 20 || $appStatus == 49) && ($offerRejectStatus != 0))
+                                                       @if($userRole->name == 'Credit Manager' &&($appStatus == 56 || $appStatus == 20 || $appStatus == 49) && ($offerRejectStatus > 0))
                                                        <a class="btn btn-success btn-sm" href = "{{ route('delete_prgm_limit', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id'), 'app_prgm_limit_id'=>$prgmLimit->app_prgm_limit_id]) }}"
                                                        type="button" title="Delete"><i class="fa fa-trash"></i></a>
                                                        @endif
@@ -385,7 +385,7 @@
                                                        <button class="btn btn-success btn-sm add-offer" data-url="{{route('show_limit_offer', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id'), 'app_prgm_limit_id'=>$prgmLimit->app_prgm_limit_id])}}" title="Add Offer"><i class="fa fa-plus"></i></button>
                                                        @endcan
                                                        @can('delete_prgm_limit')
-                                                       @if($userRole->name == 'Credit Manager' &&($appStatus == 56 || $appStatus == 20 || $appStatus == 49) && ($offerRejectStatus != 0 ))
+                                                       @if($userRole->name == 'Credit Manager' &&($appStatus == 56 || $appStatus == 20 || $appStatus == 49) && ($offerRejectStatus > 0 ))
                                                        <a class="btn btn-success btn-sm" href = "{{ route('delete_prgm_limit', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id'), 'app_prgm_limit_id'=>$prgmLimit->app_prgm_limit_id]) }}"
                                                        type="button" title="Delete"><i class="fa fa-trash"></i></a>
                                                        @endif
@@ -557,7 +557,7 @@ function checkValidation(){
     let tot_limit_amt = $('input[name=tot_limit_amt]').val().trim();
     let prgmLimitTotal = "{{$prgmLimitTotal}}";
     let totalOfferLimitAmnt = "{{$totOfferedLimit}}";
-    console.log(prgmLimitTotal);
+    // console.log(prgmLimitTotal);
     if(tot_limit_amt.length == 0 || parseInt(tot_limit_amt.replace(/,/g, '')) == 0){
         setError('input[name=tot_limit_amt]', 'Please fill total Credit Assessed');
         flag = false;
