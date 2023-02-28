@@ -398,7 +398,7 @@ class AppProgramLimit extends BaseModel {
 
     public static function getUserProgramLimitByBizId($biz_id)
     {
-        return  AppLimit::where(['biz_id'=>$biz_id])->groupBy('app_id')->first();
+        return  AppLimit::where(['biz_id'=>$biz_id])->whereIn('status',[1,2])->groupBy('app_id')->first();
     }
 
 }
