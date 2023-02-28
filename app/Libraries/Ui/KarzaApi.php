@@ -80,6 +80,7 @@ class KarzaApi {
                     'x-karza-key' => $apiKey  //env('KARZA_AUTHENTICATION_API_KEY')
                 ]
             ];
+           // dd($options,$api_url,$baseUrl);
             $response = $this->client->post($api_url, $options);
             $response = $response->getBody()->getContents();
         
@@ -290,6 +291,7 @@ class KarzaApi {
             $api_url = config('proin.get_karza_suffix_url');;
             $baseUrl = config('proin.karza_auth_api_url');
             $apiKey = config('proin.karza_auth_api_key');
+           // dd($api_url,$baseUrl, $apiKey);
             $options = [
                 'base_uri' => $baseUrl,
                 'json' => [
@@ -299,9 +301,11 @@ class KarzaApi {
                 'headers' => [
                     'cache-control' => "no-cache",
                     'Content-Type' => "application/json",
-                    'x-karza-key' => $apiKey  //env('KARZA_AUTHENTICATION_API_KEY')
+                    'x-karza-key' => $apiKey,  
+                    'Authorization' => time()
                 ]
             ];
+           // $headers = ['Authorization' => 'Token 1234567890'];
             $response = $this->client->post($api_url, $options);
             $response = $response->getBody()->getContents();
             return $response;
