@@ -52,9 +52,11 @@ class GenerateCreditNoteReversal extends Command
         $invoiceType = $this->argument('invoice');
         $controller = \App::make('App\Http\Controllers\Lms\userInvoiceController');
         $curdate = Helpers::getSysStartDate();
+        $cDate = Carbon::parse($curdate)->format('Y-m-d');
         $cancelTransList = Transactions::whereNotNull('link_trans_id')
             ->whereIn('trans_type',[config('lms.TRANS_TYPE.REVERSE')])
             ->whereHas('userInvLinkTrans.getUserInvoice')
+            ->whereDate('created_at','=',$cDate)
             ->where('entry_type','0')
             ->where('is_invoice_generated','0');
 
