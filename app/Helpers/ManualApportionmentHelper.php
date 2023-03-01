@@ -757,7 +757,7 @@ class ManualApportionmentHelper{
             $invdisbInN = [];
             $curdate =  Helpers::getSysStartDate();  
             $curdate = Carbon::parse($curdate)->setTimezone(config('common.timezone'));
-            if($curdate->format('His') >= '230000'){
+            if($curdate->format('His') >= '224500'){
                 $curdate = $curdate->format('Y-m-d');
             }else{
                 $curdate = $curdate->subDay()->format('Y-m-d');
@@ -930,7 +930,7 @@ class ManualApportionmentHelper{
     public function runningIntPosting(){
         $curDate = Helpers::getSysStartDate();  
         $curDate = Carbon::parse($curDate)->setTimezone(config('common.timezone'));
-        if($curDate->format('His') >= '230000'){
+        if($curDate->format('His') >= '224500'){
             $curDate = $curDate->format('Y-m-d');
         }else{
             $curDate = $curDate->subDay()->format('Y-m-d');
