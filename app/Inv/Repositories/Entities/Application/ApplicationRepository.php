@@ -1065,7 +1065,7 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
     }
 
     public function getAppLimit($appId){
-        return AppLimit::where(['app_id'=> $appId, 'is_active' => 0])->first();
+        return AppLimit::where(['app_id'=> $appId, 'is_deleted' => 0])->first();
     }
 
     public function saveProgramLimit($arr, $prgm_limit_id=null){

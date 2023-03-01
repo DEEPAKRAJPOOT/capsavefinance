@@ -20,7 +20,7 @@
                                     <label>Total Credit Assessed</label>
                                     <div class="relative">
                                     <a href="javascript:void(0);" class="remaining"><i class="fa fa-inr" aria-hidden="true"></i></a>
-                                    @if($userRole->name == 'Credit Manager' && ($appStatus == 56 || $appStatus == 20 || $appStatus == 49) && !empty($limitData))
+                                    @if($userRole->name == 'Credit Manager' && ($appStatus == 56 || $appStatus == 20 || $appStatus == 23 || $appStatus == 49))
                                     <input type="text" class="form-control number_format" id="tot_limit_amt" name="tot_limit_amt" value="{{ isset($limitData->tot_limit_amt)? number_format($limitData->tot_limit_amt): '' }}" maxlength="15" placeholder="Total Exposure">
                                     @can('edit_total_limit_amnt')
                                         <a title="Edit Total Credit" data-toggle="modal" data-target="#EditTotalCreditAssessed" data-url ="{{ route('edit_total_limit_amnt', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')]) }}" data-height="300px" data-width="100%" data-placement="top" class="float-right" ><i class="fa fa-edit"></i></a>
@@ -129,8 +129,8 @@
                                                        <button class="btn btn-success btn-sm add-offer" data-url="{{route('show_limit_offer', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id'), 'app_prgm_limit_id'=>$prgmLimit->app_prgm_limit_id])}}" title="Add Offer"><i class="fa fa-plus"></i></button>
                                                        @endcan
                                                        @can('delete_prgm_limit')
-                                                        @if($userRole->name == 'Credit Manager' &&($appStatus == 56 || $appStatus == 20 || $appStatus == 49) && ($offerRejectStatus >0))
-                                                        <a class="btn btn-success btn-sm" href = "{{ route('delete_prgm_limit', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id'), 'app_prgm_limit_id'=>$prgmLimit->app_prgm_limit_id]) }}"
+                                                        @if(($appStatus == 56 || $appStatus == 20 || $appStatus == 23 || $appStatus == 49) && ($prgmLimit->offer->count() == 0))
+                                                        <a class="btn btn-success btn-sm deletePrgmLimit" href = "{{ route('delete_prgm_limit', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id'), 'app_prgm_limit_id'=>$prgmLimit->app_prgm_limit_id]) }}"
                                                         type="button" title="Delete"><i class="fa fa-trash"></i></a>
                                                         @endif
                                                        @endcan
@@ -183,10 +183,10 @@
                                                     <a class="btn btn-action-btn btn-sm add-offer" data-url="{{route('show_limit_offer', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id'), 'app_prgm_limit_id'=>$prgmLimit->app_prgm_limit_id, 'prgm_offer_id'=>$prgmOffer->prgm_offer_id])}}" title="Edit Offer"><i class="fa fa-edit"></i></a>
                                                     @endcan
                                                     @can('delete_limit_offer')
-                                                    @if($userRole->name == 'Credit Manager' && ($appStatus == 56 || $appStatus == 20 || $appStatus == 49))
-                                                    <a class="btn btn-btn-success" href = "{{ route('delete_limit_offer', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id'), 'app_prgm_limit_id'=>$prgmLimit->app_prgm_limit_id, 'prgm_offer_id'=>$prgmOffer->prgm_offer_id]) }}"
-                                                    type="button" title="Reject Offer"><i class="fa fa-trash" style="padding-left: 6px;
-                                                    padding-top: 9px;"></i></a>
+                                                    @if($userRole->name == 'Credit Manager' && ($appStatus == 56 || $appStatus == 20 || $appStatus == 23 || $appStatus == 49))
+                                                    <a class="btn btn-btn-success deleteOffer" href = "{{ route('delete_limit_offer', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id'), 'app_prgm_limit_id'=>$prgmLimit->app_prgm_limit_id, 'prgm_offer_id'=>$prgmOffer->prgm_offer_id]) }}"
+                                                    type="button" title="Reject Offer" style="margin-top:-7px;" ><i class="fa fa-trash" style="padding-left: 6px;
+                                                    padding-top: 9px; "></i></a>
                                                     @endif
                                                     @endcan
                                                     @endif
@@ -249,8 +249,8 @@
                                                        <button class="btn btn-success btn-sm add-offer" data-url="{{route('show_limit_offer', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id'), 'app_prgm_limit_id'=>$prgmLimit->app_prgm_limit_id])}}" title="Add Offer"><i class="fa fa-plus"></i></button>
                                                        @endcan
                                                        @can('delete_prgm_limit')
-                                                       @if($userRole->name == 'Credit Manager' &&($appStatus == 56 || $appStatus == 20 || $appStatus == 49) && ($offerRejectStatus > 0))
-                                                       <a class="btn btn-success btn-sm" href = "{{ route('delete_prgm_limit', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id'), 'app_prgm_limit_id'=>$prgmLimit->app_prgm_limit_id]) }}"
+                                                       @if($userRole->name == 'Credit Manager' && ($appStatus == 56 || $appStatus == 20 || $appStatus == 23 || $appStatus == 49) && ($prgmLimit->offer->count() == 0))
+                                                       <a class="btn btn-success btn-sm deletePrgmLimit" href = "{{ route('delete_prgm_limit', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id'), 'app_prgm_limit_id'=>$prgmLimit->app_prgm_limit_id]) }}"
                                                        type="button" title="Delete"><i class="fa fa-trash"></i></a>
                                                        @endif
                                                       @endcan
@@ -320,8 +320,8 @@
                                                     <a class="btn btn-action-btn btn-sm add-offer" data-url="{{route('show_limit_offer', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id'), 'app_prgm_limit_id'=>$prgmLimit->app_prgm_limit_id, 'prgm_offer_id'=>$prgmOffer->prgm_offer_id])}}" title="Edit Offer"><i class="fa fa-edit"></i></a>
                                                     @endcan
                                                     @can('delete_limit_offer')
-                                                    @if($userRole->name == 'Credit Manager' && ($appStatus == 56 || $appStatus == 20 || $appStatus == 49))
-                                                    <a href = "{{ route('delete_limit_offer', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id'), 'app_prgm_limit_id'=>$prgmLimit->app_prgm_limit_id, 'prgm_offer_id'=>$prgmOffer->prgm_offer_id]) }}"
+                                                    @if($userRole->name == 'Credit Manager' && ($appStatus == 56 || $appStatus == 20 || $appStatus == 23 || $appStatus == 49))
+                                                    <a class="btn btn-btn-success deleteOffer" href = "{{ route('delete_limit_offer', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id'), 'app_prgm_limit_id'=>$prgmLimit->app_prgm_limit_id, 'prgm_offer_id'=>$prgmOffer->prgm_offer_id]) }}"
                                                     type="button" title="Reject Offer"><i class="fa fa-trash" style="padding-left: 6px;
                                                     padding-top: 9px;"></i></a>
                                                     @endif
@@ -385,8 +385,8 @@
                                                        <button class="btn btn-success btn-sm add-offer" data-url="{{route('show_limit_offer', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id'), 'app_prgm_limit_id'=>$prgmLimit->app_prgm_limit_id])}}" title="Add Offer"><i class="fa fa-plus"></i></button>
                                                        @endcan
                                                        @can('delete_prgm_limit')
-                                                       @if($userRole->name == 'Credit Manager' &&($appStatus == 56 || $appStatus == 20 || $appStatus == 49) && ($offerRejectStatus > 0 ))
-                                                       <a class="btn btn-success btn-sm" href = "{{ route('delete_prgm_limit', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id'), 'app_prgm_limit_id'=>$prgmLimit->app_prgm_limit_id]) }}"
+                                                       @if($userRole->name == 'Credit Manager' && ($appStatus == 56 || $appStatus == 20 || $appStatus == 23 || $appStatus == 49) && ($prgmLimit->offer->count() == 0))
+                                                       <a class="btn btn-success btn-sm deletePrgmLimit" href = "{{ route('delete_prgm_limit', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id'), 'app_prgm_limit_id'=>$prgmLimit->app_prgm_limit_id]) }}"
                                                        type="button" title="Delete"><i class="fa fa-trash"></i></a>
                                                        @endif
                                                       @endcan
@@ -459,8 +459,8 @@
                                                     <a class="btn btn-action-btn btn-sm add-offer" data-url="{{route('show_limit_offer', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id'), 'app_prgm_limit_id'=>$prgmLimit->app_prgm_limit_id, 'prgm_offer_id'=>$prgmOffer->prgm_offer_id])}}" title="Edit Offer"><i class="fa fa-edit"></i></a>
                                                     @endcan
                                                     @can('delete_limit_offer')
-                                                    @if($userRole->name == 'Credit Manager' &&($appStatus == 56 || $appStatus == 20 || $appStatus == 49))
-                                                    <a href = "{{ route('delete_limit_offer', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id'), 'app_prgm_limit_id'=>$prgmLimit->app_prgm_limit_id, 'prgm_offer_id'=>$prgmOffer->prgm_offer_id]) }}"
+                                                    @if($userRole->name == 'Credit Manager' && ($appStatus == 56 || $appStatus == 20 || $appStatus == 23 || $appStatus == 49))
+                                                    <a class="btn btn-btn-success deleteOffer" href = "{{ route('delete_limit_offer', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id'), 'app_prgm_limit_id'=>$prgmLimit->app_prgm_limit_id, 'prgm_offer_id'=>$prgmOffer->prgm_offer_id]) }}"
                                                     type="button" title="Reject Offer"><i class="fa fa-trash" style="padding-left: 6px;
                                                     padding-top: 9px;"></i></a>
                                                     @endif
@@ -609,6 +609,20 @@ function fillPrograms(programs){
     });
     $('#program_id').html(html);
 }
+$(document).on('click','.deleteOffer', function (e) {
+    if (confirm('Are you sure you want to delete this offer?.')){
+            return true;
+        }else{
+            return false;
+        }
+});
+$(document).on('click','.deletePrgmLimit', function (e) {
+    if (confirm('Are you sure you want to delete this offer?.')){
+            return true;
+        }else{
+            return false;
+        }
+});
 
 </script>
 

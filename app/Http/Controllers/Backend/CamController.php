@@ -1667,17 +1667,13 @@ class CamController extends Controller
         $limitData = $this->appRepo->getAppLimit($appId);
         $prgmLimitTotal = $this->appRepo->getTotalPrgmLimitByAppId($appId);
         $tot_offered_limit = $this->appRepo->getTotalOfferedLimit($appId);
-        // dd($limitData->tot_limit_amt,$prgmLimitTotal);
         $product_types = $this->mstRepo->getProductDataList();
-
-        $offerRejectStatus = $this->appRepo->getOfferStatus(['app_id' => $appId, 'status'=>2]);//to check the offer status
         $offerStatus = $this->appRepo->getAppData($appId)->status;//to check offer is sanctioned or not
         $approveStatus = $this->appRepo->getApproverStatus(['app_id'=>$appId, 'approver_user_id'=>Auth::user()->user_id, 'is_active'=>1]);
         $currStage = Helpers::getCurrentWfStage($appId);
         $currStageCode = isset($currStage->stage_code)? $currStage->stage_code: '';
         $userRole = $this->userRepo->getBackendUser(Auth::user()->user_id);
         $appData = $this->appRepo->getAppData($appId);
-        // dd($appData);
         $appType = $appData->app_type;
         $appStatus = $appData->curr_status_id;
 
@@ -1697,8 +1693,7 @@ class CamController extends Controller
                 ->with('product_types', $product_types)
                 ->with('appType', $appType)
                 ->with('appStatus', $appStatus)
-                ->with('user_id', $user_id)
-                ->with('offerRejectStatus', $offerRejectStatus);
+                ->with('user_id', $user_id);
     }
 
     /**
@@ -3066,7 +3061,12 @@ class CamController extends Controller
       $aplid = $request->get('app_prgm_limit_id');
       $prgmOfferId = $request->has('prgm_offer_id') ? $request->get('prgm_offer_id') : null;
       if($prgmOfferId){
-         AppProgramOffer::where('prgm_offer_id',$prgmOfferId)->update(['status' => 2]);
+         AppProgramOffer::where('prgm_offer_id',$prgmOfferId)->update(['status' => 2,'is_active'=>0]);
+         Session::flash('message', 'Offer deleted successfully');
+      }
+      $offerData = $this->appRepo->getOfferData(['app_id' => $appId]);
+      if(empty($offerData)){
+        Application::where('app_id',$appId)->update(['curr_status_id'=> 23]);
       }
       return redirect()->route('limit_assessment', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')]);
   }
@@ -3104,15 +3104,13 @@ class CamController extends Controller
       $appId = (int)$request->get('app_id');
       $biz_id = (int)$request->get('biz_id');
       $aplid = $request->get('app_prgm_limit_id');
-      $offerRejectStatus = $this->appRepo->getOfferStatus(['app_id' => $appId, 'status'=>2]);
-      // if($offerRejectStatus == 0){
-        AppProgramLimit::where(['app_id' => $appId,'app_prgm_limit_id' => $aplid])->update(['is_active' => 1]);
-        AppLimit::where(['app_id' => $appId])->update(['is_active' => 1]);
-        Session::flash('message', 'Product Limit deleted successfully');
-      // }else{
-      //   Session::flash('error', 'Offer already exists');
-      // }
-      
+      AppProgramLimit::where(['app_id' => $appId,'app_prgm_limit_id' => $aplid])->update(['is_deleted' => 1]);
+      Session::flash('message', 'Product Limit deleted successfully');
+      $prgmLimitData = $this->appRepo->getProgramLimitData($appId);
+      if($prgmLimitData->count() == 0){
+        Application::where('app_id',$appId)->update(['curr_status_id'=> 20]);
+        AppLimit::where(['app_id' => $appId])->update(['is_deleted' => 1]);
+      }
       return redirect()->route('limit_assessment', ['app_id' => $appId]);
   }
 }
