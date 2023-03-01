@@ -335,7 +335,8 @@ class CibilReportController extends Controller
         $dueDate = Carbon::parse($invDisb->payment_due_date);
         $difference = $dueDate->diffInDays($curdate);
         $isOverdue = $difference > $invDisb->grace_period;
-        $outstanding = $this->_getSOAbalanceData($user->user_id)['SOA_Balance'] ?? 0;
+        $this->soaBalance[$user->user_id] = (isset($this->soaBalance[$user->user_id]))?$this->soaBalance[$user->user_id]:$this->_getSOAbalanceData($user->user_id)['SOA_Balance'] ?? 0;
+        $outstanding = $this->soaBalance[$user->user_id];
         $settledAmt = $this->lmsRepo->getSettledTrans($user->user_id)->sum('settled_outstanding');
         $sanctionDate = $appBusiness->sanctionDate->created_at ?? NULL;
         $prgmLimit = Helper::getCustomerSanctionedAmt($user->user_id);
@@ -555,11 +556,11 @@ class CibilReportController extends Controller
     }
 
     private function _getSOAbalanceData($userId){
-      $soaBalance = \DB::select('SELECT soa_outstanding as SOA_Outstanding 
-      FROM (SELECT user_id FROM rta_lms_users WHERE user_id = ? GROUP BY user_id ) AS a 
-      LEFT JOIN(SELECT b.user_id, (SUM(b.debit_amount) - SUM(b.credit_amount)) AS soa_outstanding 
-      FROM rta_customer_transaction_soa AS b LEFT JOIN rta_transactions AS c ON c.trans_id = b.trans_id 
-      WHERE c.soa_flag = 1 AND c.is_transaction = 1 GROUP BY c.user_id) AS d ON a.user_id = d.user_id', [$userId]);
+      $soaBalance = \DB::select('SELECT SUM(IF(entry_type = 0,amount,amount*-1))AS SOA_Outstanding 
+      FROM rta_transactions
+      WHERE soa_flag = 1 
+      AND user_id = ?
+      GROUP BY user_id', [$userId]);
       return !empty($soaBalance) && isset($soaBalance[0]->SOA_Outstanding) ? 
       ['SOA_Balance' => round($soaBalance[0]->SOA_Outstanding, 2)] : 
       ['SOA_Balance' => 0];

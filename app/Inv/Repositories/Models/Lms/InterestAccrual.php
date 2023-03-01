@@ -158,22 +158,12 @@ class InterestAccrual extends BaseModel {
 
     public static function getOverdueData() {
         $data = DB::select('
-            SELECT MAX(cnt) as od_days, SUM(amt) as utilized_amt, (SUM(amt) - SUM(od_settled_amt)) as od_outstanding, supplier_id, SUM(write_off) AS write_off_amt, SUM(settled) AS settled_amt, SUM(total_outstanding) AS total_outstanding_amt
-            FROM (
-            SELECT  a.supplier_id, c.invoice_disbursed_id, (COUNT(c.interest_accrual_id) + b.grace_period) AS cnt, SUM(c.accrued_interest) AS amt,
-            (d.interset_write_off + d.principal_write_off + d.overdue_write_off + d.margin_write_off + d.charge_write_off) AS write_off,
-            (d.principal_repayment + d.principal_waived_off + d.principal_tds  + d.interest_repayment + d.interest_waived_off + d.interest_tds + d.overdue_repayment + d.overdue_waived_off + d.overdue_tds + d.margin_repayment + d.margin_waived_off + d.margin_tds + d.charge_repayment + d.charge_waived_off + d.charge_tds)
-            AS settled,
-            (d.overdue_repayment + d.overdue_waived_off + d.overdue_tds + d.overdue_write_off) AS od_settled_amt,
-            (d.total_outstanding_amount - d.total_repayment_amount) AS total_outstanding
-            FROM rta_interest_accrual AS c
-            JOIN rta_invoice_disbursed AS b ON c.invoice_disbursed_id = b.invoice_disbursed_id
-            JOIN rta_invoice AS a ON a.invoice_id = b.invoice_id AND a.is_repayment = 0
-            JOIN `rta_invoice_disbursed_details` AS d ON d.invoice_id = a.invoice_id
-            WHERE c.overdue_interest_rate IS NOT NULL
-            GROUP BY a.supplier_id, c.invoice_disbursed_id  
-            ) AS temp 
-            GROUP BY temp.supplier_id
+        SELECT 
+        a.user_id AS supplier_id,
+        SUM(IF(a.trans_type = 33 AND a.entry_type = 0, a.outstanding,0)) AS od_outstanding,
+        SUM(IF(a.trans_type = 36, a.settled_outstanding,0)) AS write_off_amt
+        FROM rta_transactions AS a 
+        GROUP BY a.user_id
         ');
         return $data;
     }

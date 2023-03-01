@@ -1902,7 +1902,7 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
 		->join('app_prgm_limit','app_prgm_limit.app_prgm_limit_id', '=', 'app_prgm_offer.app_prgm_limit_id') 
 		->join('app','app.app_id', '=', 'app_prgm_offer.app_id') 
 		->join('app_status_log', 'app_status_log.app_id', '=', 'app.app_id') 
-		->whereIn('app_status_log.status_id',[21, 22, 25, 50]) 
+		->where('app_status_log.status_id',50) 
 		->where('app_prgm_limit.product_id',1) 
 		->where('app_status_log.created_at', '<=', $endDate)
 		->groupBY('app.user_id') 
