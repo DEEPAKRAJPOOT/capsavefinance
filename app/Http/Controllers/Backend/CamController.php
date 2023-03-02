@@ -3068,7 +3068,16 @@ class CamController extends Controller
       $offerData = $this->appRepo->getOfferData(['app_id' => $appId]);
       if(empty($offerData)){
         Application::where('app_id',$appId)->update(['curr_status_id'=> 20]);
-        AppStatusLog::where('app_id',$appId)->update(['status_id'=> 20]);
+        // AppStatusLog::where('app_id',$appId)->update(['status_id'=> 20]);
+        $getAppDetails = $this->appRepo->getAppData($appId);
+        $arrAppStatusLog=[
+          'user_id'=>$getAppDetails['user_id'],
+          'app_id'=>$appId,
+          'status_id'=>config('common.mst_status_id')['COMPLETED'],
+          'created_by'=>Auth::user()->user_id,
+          'created_at'=>\Carbon\Carbon::now(),
+        ];
+        $this->appRepo->saveAppStatusLog($arrAppStatusLog);
       }
       return redirect()->route('limit_assessment', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')]);
   }
