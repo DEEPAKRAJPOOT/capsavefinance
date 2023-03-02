@@ -358,7 +358,7 @@
                                             <th width="5%">Sr. No.</th>
                                             <th width="16%">Product Type</th>
                                             <th width="18%">Product Limit</th>
-                                            <th width="18%">Cosumed Product Limit</th>
+                                            <th width="18%">Consumed Product Limit</th>
                                             <th width="18%">Remaining Product Limit</th>
                                             <th width="25%">Action</th>
                                             </tr>
@@ -610,14 +610,14 @@ function fillPrograms(programs){
     $('#program_id').html(html);
 }
 $(document).on('click','.deleteOffer', function (e) {
-    if (confirm('Are you sure you want to delete this offer?.')){
+    if (confirm('Are you sure you want to delete this offer?')){
             return true;
         }else{
             return false;
         }
 });
 $(document).on('click','.deletePrgmLimit', function (e) {
-    if (confirm('Are you sure you want to delete this offer?.')){
+    if (confirm('Are you sure you want to delete the product limit?')){
             return true;
         }else{
             return false;

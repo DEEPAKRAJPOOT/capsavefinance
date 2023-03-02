@@ -59,6 +59,7 @@ use App\Inv\Repositories\Models\AppSecurityDoc;
 use App\Inv\Repositories\Models\DocumentMaster;
 use App\Inv\Repositories\Models\Application;
 use App\Inv\Repositories\Models\AppLimit;
+use App\Inv\Repositories\Models\AppStatusLog;
 class CamController extends Controller
 {
     use ApplicationTrait;
@@ -3066,7 +3067,8 @@ class CamController extends Controller
       }
       $offerData = $this->appRepo->getOfferData(['app_id' => $appId]);
       if(empty($offerData)){
-        Application::where('app_id',$appId)->update(['curr_status_id'=> 23]);
+        Application::where('app_id',$appId)->update(['curr_status_id'=> 20]);
+        AppStatusLog::where('app_id',$appId)->update(['status_id'=> 20]);
       }
       return redirect()->route('limit_assessment', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')]);
   }
@@ -3108,7 +3110,6 @@ class CamController extends Controller
       Session::flash('message', 'Product Limit deleted successfully');
       $prgmLimitData = $this->appRepo->getProgramLimitData($appId);
       if($prgmLimitData->count() == 0){
-        Application::where('app_id',$appId)->update(['curr_status_id'=> 20]);
         AppLimit::where(['app_id' => $appId])->update(['is_deleted' => 1]);
       }
       return redirect()->route('limit_assessment', ['app_id' => $appId,'biz_id' => $biz_id]);

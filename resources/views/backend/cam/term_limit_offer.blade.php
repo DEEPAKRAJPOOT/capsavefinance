@@ -115,11 +115,6 @@
                 <label for="txtPassword"><b>Margin Money (%)</b> <span style="color: red;"> *</span></label>
                 <input type="text" name="margin" class="form-control" value="{{ isset($offerData->margin) ? $offerData->margin : '' }}" placeholder="Margin Money" maxlength="15">
             </div>
-          <div class="form-group">
-            <label for="txtPassword"><b>Processing Fee (%) @Sanction level</b> <span style="color: red;"> *</span></label>
-            <small><span class="float-right text-success processinFeeAmount"></span></small>
-            <input type="text" name="processing_fee" class="form-control" value="{{isset($offerData->processing_fee)? $offerData->processing_fee: ''}}" placeholder="Processing Fee" maxlength="6">
-          </div>
         </div>
 
         <div class="col-md-6">
@@ -370,7 +365,7 @@
     // let invoice_processingfee_value = $('input[name=invoice_processingfee_value]').val();
     let asset_type_id = $('select[name=asset_type_id]').val();
     let interest_rate = $('input[name=interest_rate]').val();
-
+    console.log(sub_total_balance);
     if(interest_rate == '' || isNaN(interest_rate)){
         setError('input[name=interest_rate]', 'Please fill interest rate');
         flag = false;

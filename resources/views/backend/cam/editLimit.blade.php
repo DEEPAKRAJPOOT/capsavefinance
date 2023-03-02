@@ -37,8 +37,12 @@ $(document).on('submit', function (e) {
     totalCreditAssessed = totalCredit.replace(/,/g, '');
     unsetError('input[name=tot_limit_amt]', '');
     if(parseInt(totalCreditAssessed) < parseInt(prgmLimitTotal)){
-        setError('input[name=tot_limit_amt]', 'Total Credit Assessed should be greater than Total Program Limit.');
+        setError('input[name=tot_limit_amt]', 'Total Credit Assessed should be greater than total product imit.');
+        $(':input[type="submit"]').prop('disabled', false);
         flag = false;
+    }else{
+      $(':input[type="submit"]').prop('disabled', true);
+      flag = true;
     }
 
     if(flag){
