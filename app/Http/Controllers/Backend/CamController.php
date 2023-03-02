@@ -1677,7 +1677,8 @@ class CamController extends Controller
         $appData = $this->appRepo->getAppData($appId);
         $appType = $appData->app_type;
         $appStatus = $appData->curr_status_id;
-
+        $userInfo = Helpers::getAppCurrentAssignee($appId);
+        // dd($userInfo->assignee_role);
         return view('backend.cam.limit_assessment')
                 ->with('appId', $appId)
                 ->with('bizId', $bizId)
@@ -1694,7 +1695,8 @@ class CamController extends Controller
                 ->with('product_types', $product_types)
                 ->with('appType', $appType)
                 ->with('appStatus', $appStatus)
-                ->with('user_id', $user_id);
+                ->with('user_id', $user_id)
+                ->with('userInfo', $userInfo);
     }
 
     /**
