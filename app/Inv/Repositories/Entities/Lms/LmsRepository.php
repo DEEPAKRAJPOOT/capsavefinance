@@ -1912,15 +1912,17 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
 		foreach ($userAppBizDetail as $key => $appBizId) {
 			$supplierAppBiz[$appBizId->user_id] = ['app_id'=>$appBizId->app_id, 'biz_id'=>$appBizId->biz_id];
 		}
-
+		
 		foreach ($invoices as $key => $inv) {
 
 			$r = BizInvoice::with(['invoice_disbursed'])
 			->where('invoice_id',$inv->maxInv)->get();
+			
 			if($r){
 				if(!empty($supplierAppBiz[$appBizId->user_id])){
 					$r[0]->biz_id = $supplierAppBiz[$inv->supplier_id]['biz_id'];
 					$r[0]->app_id = $supplierAppBiz[$inv->supplier_id]['app_id'];
+					unset($supplierAppBiz[$appBizId->user_id]);
 				}
 
 				$r[0]->invCount = $inv->invCnt;
@@ -1931,6 +1933,21 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
 				}
 			}
 		}
+		
+		foreach ($supplierAppBiz as $key => $value) {
+            $r = new \Illuminate\Database\Eloquent\Collection;
+			
+            $r->biz_id = $value['biz_id'];
+            $r->app_id = $value['app_id'];
+			
+            if($collection){
+                $collection = $collection->merge($r);
+            }else{
+                $collection = $r;
+            }
+            unset($supplierAppBiz[$key]);
+        }
+		
 		return $collection;
     }
 
