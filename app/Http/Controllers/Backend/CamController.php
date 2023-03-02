@@ -3111,6 +3111,6 @@ class CamController extends Controller
         Application::where('app_id',$appId)->update(['curr_status_id'=> 20]);
         AppLimit::where(['app_id' => $appId])->update(['is_deleted' => 1]);
       }
-      return redirect()->route('limit_assessment', ['app_id' => $appId]);
+      return redirect()->route('limit_assessment', ['app_id' => $appId,'biz_id' => $biz_id]);
   }
 }
