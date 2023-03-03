@@ -346,6 +346,7 @@ class Transactions extends BaseModel {
                         if($linkTrans->trans_type == 32)
                             $linkTrans->settled_outstanding -= $this->amount;
                     }elseif($linkLinkTrans && !in_array($linkTrans->trans_type, [32])){
+                        $linkTrans->settled_outstanding -= $this->amount;
                         if($linkLinkTrans->entry_type == 0){
                             $linkLinkTrans->actual_outstanding += $this->amount;
                             $linkLinkTrans->outstanding = ($linkLinkTrans->actual_outstanding) > 0 ? ($linkLinkTrans->actual_outstanding) : 0;

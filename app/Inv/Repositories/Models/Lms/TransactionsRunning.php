@@ -50,6 +50,7 @@ class TransactionsRunning extends BaseModel {
         'user_id',
         'from_date',
         'trans_date',
+        'due_date',
         'trans_type',
         'amount',
         'entry_type',
