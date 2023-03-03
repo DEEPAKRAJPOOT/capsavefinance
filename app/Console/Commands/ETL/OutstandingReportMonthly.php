@@ -46,6 +46,9 @@ class OutstandingReportMonthly extends Command
         $outstandingReportLog = OutstandingReportLog::whereNull('user_id')->where('created_by','0')->orderBy('id','desc')->limit(1)->first();
         $filePath = $outstandingReportLog->file_path ?? NULL;
         $reportLogId = $outstandingReportLog->id ?? NULL;
+        $currDate = Carbon::now();
+        $currDate = Helper::utcToIst($currDate);
+        $currDate = Carbon::parse($currDate)->format('d-m-Y H:i:s');
         if(file_exists($filePath)) {
             try {
                 $inputFileType = PHPExcel_IOFactory::identify($filePath);
@@ -143,7 +146,7 @@ class OutstandingReportMonthly extends Command
                     'Balance Interest to be refunded' => (double)$dataRecord['Balance Interest to be refunded'],
                     'Balance Overdue Interest to be refunded' => (double)$dataRecord['Balance Overdue Interest to be refunded'],
                     'Sales Manager' => (double)$dataRecord['Sales Manager'],
-                    'Date' => $dataRecord['currentDate'] ?? NULL,
+                    'Date' => $currDate ?? NULL,
                 ]);
             }
             $this->info("The Outstanding Report Manual sync to database successfully.");

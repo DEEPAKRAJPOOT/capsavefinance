@@ -16,6 +16,7 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use App\Inv\Repositories\Contracts\ReportInterface;
 use App\Inv\Repositories\Models\Master\EmailTemplate;
 use App\Inv\Repositories\Models\Lms\OutstandingReportLog;
+use App\Helpers\Helper;
 
 class OutstandingReportManual implements ShouldQueue
 {
@@ -141,10 +142,9 @@ class OutstandingReportManual implements ShouldQueue
         ->setCellValue('AP'.$rows, 'Balance Margin to be Refunded')
         ->setCellValue('AQ'.$rows, 'Balance Interest to be refunded')
         ->setCellValue('AR'.$rows, 'Balance Overdue Interest to be refunded')
-        ->setCellValue('AS'.$rows, 'Sales Manager')
-        ->setCellValue('AT'.$rows, 'Date');
+        ->setCellValue('AS'.$rows, 'Sales Manager');
         // ->setCellValue('AS'.$rows, 'Grace Period End Date');
-        $sheet->getActiveSheet()->getStyle('A'.$rows.':AT'.$rows)->applyFromArray(['font' => ['bold'  => true]]);
+        $sheet->getActiveSheet()->getStyle('A'.$rows.':AS'.$rows)->applyFromArray(['font' => ['bold'  => true]]);
         $rows++;
         foreach($exceldata as $rowData){
             $sheet->setActiveSheetIndex(0)
@@ -192,8 +192,7 @@ class OutstandingReportManual implements ShouldQueue
             ->setCellValue('AP'.$rows, $rowData['marginToRefunded'])
             ->setCellValue('AQ'.$rows, $rowData['interestToRefunded'])
             ->setCellValue('AR'.$rows, $rowData['overdueToRefunded'])
-            ->setCellValue('AS'.$rows, $rowData['salesManager'])
-            ->setCellValue('AT'.$rows, $rowData['currentDate']);
+            ->setCellValue('AS'.$rows, $rowData['salesManager']);
             $rows++;
         }
 

@@ -981,7 +981,6 @@ class ReportsRepository extends BaseRepositories implements ReportInterface {
 				'overdueToRefunded' => round($overdueinterest_to_refunded,2),
 				'salesManager' => $salesUserDetails->f_name.' '. $salesUserDetails->m_name.' '. $salesUserDetails->l_name,
 				'gracePeriodEndDate' => $graceDate,
-				'currentDate' => $curdate,
 			];
 			$invDisbList->forget($key);
 		}
