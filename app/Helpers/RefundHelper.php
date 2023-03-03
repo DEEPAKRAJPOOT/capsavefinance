@@ -31,60 +31,50 @@ class RefundHelper{
 
         $interestRefundTotal = Transactions::where('trans_type',config('lms.TRANS_TYPE.REFUND'))
         ->where('entry_type',1)
+        ->where('apportionment_id',$apportionmentId)
         ->whereHas('parentTransactions',function($query){
             $query->where('trans_type',config('lms.TRANS_TYPE.INTEREST'));
         })
-        ->whereHas('linkTransactions',function($query) use($paymentId,$apportionmentId){
-            $query->whereIn('trans_type',[config('lms.TRANS_TYPE.TDS'),config('lms.TRANS_TYPE.INTEREST')])
-            ->where('entry_type',1)
-            ->where('payment_id',$paymentId)
-            ->where('apportionment_id',$apportionmentId);
-        })
         ->sum('settled_outstanding');
-
+        
         $interestOverdueTotal = Transactions::where('trans_type',config('lms.TRANS_TYPE.REFUND'))
         ->where('entry_type',1)
+        ->where('apportionment_id',$apportionmentId)
         ->whereHas('parentTransactions',function($query){
             $query->where('trans_type',config('lms.TRANS_TYPE.INTEREST_OVERDUE'));
-        })
-        ->whereHas('linkTransactions',function($query) use($paymentId,$apportionmentId){
-            $query->whereIn('trans_type',[config('lms.TRANS_TYPE.TDS'),config('lms.TRANS_TYPE.INTEREST_OVERDUE')])
-            ->where('entry_type',1)
-            ->where('payment_id',$paymentId)
-            ->where('apportionment_id',$apportionmentId);
         })
         ->sum('settled_outstanding');
 
         $marginTotal = Transactions::where('trans_type',config('lms.TRANS_TYPE.REFUND'))
         ->where('entry_type',1)
+        ->where('apportionment_id',$apportionmentId)
         ->whereHas('linkTransactions',function($query) use($paymentId,$apportionmentId){
             $query->where('trans_type',config('lms.TRANS_TYPE.MARGIN'))
             ->where('entry_type',1)
-            ->where('payment_id',$paymentId)
-            ->where('apportionment_id',$apportionmentId);
+            ->where('payment_id',$paymentId);
         })
         ->sum('settled_outstanding');
 
         $nonFactoredAmount = Transactions::where('trans_type',config('lms.TRANS_TYPE.REFUND'))
         ->where('entry_type',1)
+        ->where('apportionment_id',$apportionmentId)
         ->whereHas('linkTransactions',function($query) use($paymentId,$apportionmentId){
             $query->where('trans_type',config('lms.TRANS_TYPE.NON_FACTORED_AMT'))
             ->where('entry_type',1)
-            ->where('payment_id',$paymentId)
-            ->where('apportionment_id',$apportionmentId);
+            ->where('payment_id',$paymentId);
         })
         ->sum('settled_outstanding');
         
         $chargeRefund = Transactions::where('trans_type',config('lms.TRANS_TYPE.REFUND'))
         ->where('entry_type',1)
+        ->where('apportionment_id',$apportionmentId)
         ->whereHas('parentTransactions.transType',function($query){
             $query->where('chrg_master_id','>',0);
         })
         ->whereHas('linkTransactions',function($query) use($paymentId,$apportionmentId){
             $query->whereIn('trans_type',[config('lms.TRANS_TYPE.TDS')])
             ->where('entry_type',1)
-            ->where('payment_id',$paymentId)
-            ->where('apportionment_id',$apportionmentId);
+            ->where('payment_id',$paymentId);
         })
         ->sum('settled_outstanding');
         
