@@ -43,7 +43,7 @@
                                     <button type="button" class="badge badge-success btn-sm float-right">Inprocess </button>
                                     @elseif($uLimit->status==1) 
                                     <button type="button" class="badge {{ $isLimitExpired ? 'badge-danger' : 'badge-success' }} btn-sm float-right">{{ $isLimitExpired ? 'Limit Expired' : 'Active' }} </button>
-                                    @else
+                                    @elseif($uLimit->is_deleted == 0)
                                     <button type="button" class="badge badge-danger btn-sm float-right">Closed </button>
                                     @endif
                                 @endif 
