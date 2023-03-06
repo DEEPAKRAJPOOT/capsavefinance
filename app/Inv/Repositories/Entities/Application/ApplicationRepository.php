@@ -1792,7 +1792,7 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
 
     public static function getAppLimitIdByUserIdAppId($userId, $appId)
     {
-        return AppLimit::where('user_id',$userId)->where('app_id', $appId)
+        return AppLimit::where('user_id',$userId)->where(['app_id'=> $appId,'is_deleted' => 0])
                 ->pluck('app_limit_id')->first();
     }
 
