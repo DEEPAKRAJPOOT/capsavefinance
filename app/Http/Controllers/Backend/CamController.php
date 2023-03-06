@@ -3117,11 +3117,11 @@ class CamController extends Controller
       $appId = (int)$request->get('app_id');
       $biz_id = (int)$request->get('biz_id');
       $aplid = $request->get('app_prgm_limit_id');
-      AppProgramLimit::where(['app_id' => $appId,'app_prgm_limit_id' => $aplid])->update(['is_deleted' => 1]);
+      AppProgramLimit::where(['app_id' => $appId,'app_prgm_limit_id' => $aplid])->update(['is_deleted' => 1,'status' => 3]);
       Session::flash('message', 'Product Limit deleted successfully');
       $prgmLimitData = $this->appRepo->getProgramLimitData($appId);
       if($prgmLimitData->count() == 0){
-        AppLimit::where(['app_id' => $appId])->update(['is_deleted' => 1]);
+        AppLimit::where(['app_id' => $appId])->update(['is_deleted' => 1,'status' => 3]);
       }
       return redirect()->route('limit_assessment', ['app_id' => $appId,'biz_id' => $biz_id]);
   }
