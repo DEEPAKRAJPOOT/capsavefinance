@@ -328,6 +328,7 @@ class ApportionmentController extends Controller
                     $this->updateInvoiceRepaymentFlag([$TransDetail->disburse->invoice_disbursed_id]);
                 }
 
+                $Obj->generateCreditNote($resp->user_id);
                 $comment = $this->lmsRepo->saveTxnComment($commentData);
 
                 $whereActivi['activity_code'] = 'apport_waiveoff_save';
@@ -486,6 +487,7 @@ class ApportionmentController extends Controller
                     $Obj->intAccrual($TransDetail->invoice_disbursed_id, $TransDetail->trans_date, $apportionment->apportionment_id);
                     $Obj->transactionPostingAdjustment($TransDetail->invoice_disbursed_id, $apportionment->apportionment_id);
                     $this->updateInvoiceRepaymentFlag([$TransDetail->invoice_disbursed_id]);
+                    $Obj->generateCreditNote($TransDetail->user_id, $apportionment->apportionment_id);
                 }
 
                 $whereActivi['activity_code'] = 'apport_reversal_save';
@@ -1004,6 +1006,7 @@ class ApportionmentController extends Controller
                     $Obj->transactionPostingAdjustment($invDisb['invoice_disbursed_id'], $apportionment->apportionment_id);
                     $this->updateInvoiceRepaymentFlag([$invDisb['invoice_disbursed_id']]);
                 }
+                $Obj->generateCreditNote($userId,$apportionment->apportionment_id);
                 
                 if($paymentId){
                     InterestAccrualTemp::where('payment_id',$paymentId)->delete();
@@ -1111,6 +1114,17 @@ class ApportionmentController extends Controller
                 }
             }
             
+            $controller = app()->make('App\Http\Controllers\Lms\userInvoiceController');
+            $billData = [];
+            foreach($transactionList as $trans){
+                $billData[$trans['user_id']][$trans['trans_id']] = $trans['trans_id'];
+            }
+
+            foreach($billData as $userId => $trans){
+                $transIds = array_keys($trans);
+                $controller->generateDebitNote($transIds, $userId, 'I');
+            }
+
             $whereActivi['activity_code'] = 'apport_running_save';
             $activity = $this->master->getActivity($whereActivi);
             if(!empty($activity)) {
@@ -1591,6 +1605,7 @@ class ApportionmentController extends Controller
                 $Obj->transactionPostingAdjustment($invDisb, $apportionment->apportionment_id);
                 $this->updateInvoiceRepaymentFlag([$invDisb]);
             }
+            $Obj->generateCreditNoteReversal($aporTrans->user_id,$apportionment->apportionment_id);
         }
 
         return ['status' => $result, 'error' => $errorMsg];
@@ -1966,6 +1981,7 @@ class ApportionmentController extends Controller
                 $transIds = $transactions->pluck('trans_id');
                 $Obj->transactionUserChargePostingAdjustment($transIds, $paymentId, $apportionment->apportionment_id);
                 $this->updateInvoiceRepaymentFlag(array_keys($invoiceDisbursedList));
+                $Obj->generateCreditNote($userId, $apportionment->apportionment_id);
                 /* Refund Process End */
 
                 $request->session()->forget('apportionment');

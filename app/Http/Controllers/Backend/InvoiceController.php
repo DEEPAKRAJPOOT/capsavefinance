@@ -577,6 +577,37 @@ class InvoiceController extends Controller {
                 }
                 $Obj->intAccrual($value['invoice_disbursed_id'], NULL,NULL,1);
                 $Obj->transactionPostingAdjustment($value['invoice_disbursed_id'], NULL); 
+                $Obj->generateCreditNote($value['disbursal']['user_id']);           
+                     
+                foreach($invDisbs as $userId => $invDisb){
+                    $invDisbIds = array_keys($invDisb);
+
+                    $intList = Transactions::whereIn('invoice_disbursed_id',$invDisbIds)
+                    ->whereIn('trans_type', [config('lms.TRANS_TYPE.INTEREST'),config('lms.TRANS_TYPE.INTEREST_OVERDUE')])
+                    ->where('user_id',$userId)
+                    ->where('entry_type','0')
+                    ->where('is_invoice_generated','0')
+                    ->pluck('trans_id')
+                    ->toArray();
+                
+                    $chrgList = Transactions::whereIn('invoice_disbursed_id',$invDisbIds)
+                    ->whereHas('transType', function($query){ $query->where('chrg_master_id','!=','0'); })
+                    ->where('user_id',$userId)
+                    ->where('entry_type',0)
+                    ->where('is_invoice_generated',0)
+                    ->pluck('trans_id')
+                    ->toArray();
+                
+                    if(!empty($intList)){
+                        $controller = app()->make('App\Http\Controllers\Lms\userInvoiceController');
+                        $controller->generateDebitNote($intList, $userId, 'I');
+                    }
+                
+                    if(!empty($chrgList)){
+                        $controller = app()->make('App\Http\Controllers\Lms\userInvoiceController');
+                        $controller->generateDebitNote($chrgList, $userId, 'C');
+                    }
+                }
                 date_default_timezone_set($oldTimeZone);
             }
         }
