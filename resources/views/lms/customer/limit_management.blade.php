@@ -22,7 +22,7 @@
                 }
                 @endphp          
                 <div class="card-body limit-management"> 
-                    
+                    @if($uLimit->is_deleted ==0)
                     <div class="limit-title"> 
                         <div class="row" style="margin-top:10px;">
                             <div class="col-lg-2 col-md-6 col-sm-6 col-xs-12">
@@ -43,7 +43,7 @@
                                     <button type="button" class="badge badge-success btn-sm float-right">Inprocess </button>
                                     @elseif($uLimit->status==1) 
                                     <button type="button" class="badge {{ $isLimitExpired ? 'badge-danger' : 'badge-success' }} btn-sm float-right">{{ $isLimitExpired ? 'Limit Expired' : 'Active' }} </button>
-                                    @elseif($uLimit->is_deleted == 0)
+                                    @else
                                     <button type="button" class="badge badge-danger btn-sm float-right">Closed </button>
                                     @endif
                                 @endif 
@@ -335,6 +335,7 @@
 
                     @endforeach
                 </div>
+                @endif
 
                 @endforeach 
             </div>
