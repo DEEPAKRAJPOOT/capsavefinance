@@ -96,7 +96,6 @@ class OutstandingReport extends Command
             }
 
             $batchNo = Carbon::now()->setTimezone(config('common.timezone'))->timestamp;
-            dd($batchNo);
             foreach($dataRecords as $dataRecord)
             {  
                 OutstandingReportModel::create([
