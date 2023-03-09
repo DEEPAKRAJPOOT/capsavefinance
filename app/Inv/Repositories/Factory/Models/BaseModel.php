@@ -117,7 +117,7 @@ class BaseModel extends Model
      * @return void
      * @since 0.1
      */
-    protected function updateTimestamps()
+    public function updateTimestamps()
     {
         $this->updateUserstamps();
         $this->updateDeviceTrack();
