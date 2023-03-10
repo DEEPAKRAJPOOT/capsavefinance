@@ -170,7 +170,7 @@ class Apportionment {
         $(".pay").each(function (index, element) {
             var payamt = parseFloat($(this).val()).toFixed(2);
             if($.isNumeric(payamt)){
-                settled_amt = parseFloat(settled_amt + payamt).toFixed(2);
+                settled_amt = (parseFloat(settled_amt) + parseFloat(payamt)).toFixed(2);
             }
         });
         var unapplied_amt = payment_amt-settled_amt;
@@ -222,7 +222,7 @@ class Apportionment {
                             message =  "Please enter value greater than 0 in Pay at row no - "+(index+1);
                             status = false;
                         }else{
-                            totalSettledAmt = parseFloat(totalSettledAmt + value).toFixed(2);
+                            totalSettledAmt = (parseFloat(totalSettledAmt) + parseFloat(value)).toFixed(2);
                         }
                         if(!status){
                             return false;
@@ -300,7 +300,7 @@ class Apportionment {
                             message =  "Please enter value greater than 0 in Pay at row no - "+(index+1);
                             status = false;
                         }else{
-                            totalSettledAmt = parseFloat(totalSettledAmt + value).toFixed(2);
+                            totalSettledAmt = (parseFloat(totalSettledAmt) + parseFloat(value)).toFixed(2);
                         }
                         if(!status){
                             return false;
@@ -334,7 +334,7 @@ class Apportionment {
             status = false;
         } 
         check.filter(':checked').each(function (index, element) {
-            selectAmt = parseFloat(selectAmt + parseFloat($(element).val()).toFixed(2)).toFixed(2);
+            selectAmt = (parseFloat(selectAmt) + parseFloat($(element).val())).toFixed(2);
         });
 
         if(selectAmt>paymentAmt){
