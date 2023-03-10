@@ -53,20 +53,17 @@ class DisbursalReport extends Command
         // consolidated anchors report
         if ($this->needConsolidatedReport) {
             $this->addToJobQueue($needConsolidatedReport = true);
-        }
-
-        $query = Anchor::active()
-                        ->whereNotNull('comp_email');
-
-        if ($this->anchorId == 'all') {
-            // all anchors report
-            $anchorList = $query->get();
-            foreach($anchorList as $anchor) {
-                $this->generateAnchorReport($anchor);
+        }else{
+            if ($this->anchorId == 'all') {
+                // all anchors report
+                $anchorList = Anchor::active()->whereNotNull('comp_email')->get();
+                foreach($anchorList as $anchor) {
+                    $this->generateAnchorReport($anchor);
+                }
+            } else {
+                // single anchor report
+                $this->generateSingleAnchorReport($query);
             }
-        } else {
-            // single anchor report
-            $this->generateSingleAnchorReport($query);
         }
     }
 
