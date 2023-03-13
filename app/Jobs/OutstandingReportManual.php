@@ -16,7 +16,6 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use App\Inv\Repositories\Contracts\ReportInterface;
 use App\Inv\Repositories\Models\Master\EmailTemplate;
 use App\Inv\Repositories\Models\Lms\OutstandingReportLog;
-use App\Helpers\Helper;
 
 class OutstandingReportManual implements ShouldQueue
 {
