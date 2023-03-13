@@ -114,7 +114,7 @@ tr.border_bottom td {
                                                 <tr>
                                                     <td></td>
                                                     <td><b>Invoice Processing Fee: </b></td>
-                                                    <td>{{ ($supplyOffer->BizInvoice->invoice_disbursed->processing_fee ?? 0) + ($supplyOffer->BizInvoice->invoice_disbursed->processing_fee_gst ?? 0) }}</td>
+                                                    <td>{{ ($supplyOffer->invoice_processingfee_value ?? 0) }}</td>
                                                     <td><b>XIRR %:</b></td>
                                                 <td>{{number_format($supplyOffer->xirr,2)}}%</td>
                                                     <td colspan="3"></td>
