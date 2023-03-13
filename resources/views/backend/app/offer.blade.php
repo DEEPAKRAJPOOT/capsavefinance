@@ -578,7 +578,12 @@ tr.border_bottom td {
                                                 </tr>
                                                 @if($leaseOffer->dsa_applicable == '1')
                                                 <tr>
-                                                <td></td>
+                                                    <td><b>Invoice Processing Fee: </b></td>
+                                                    @if($supplyOffer->invoice_processingfee_type == 1)
+                                                    <td>&#8377; {{ (number_format($supplyOffer->invoice_processingfee_value) ?? 0) }}</td>
+                                                    @else
+                                                    <td>{{ ($supplyOffer->invoice_processingfee_value .'%' ?? 0) }}</td>
+                                                    @endif
                                                   <td><b>DSA Applicable: </b></td>
                                                   <td>Yes</td>
                                                   <td><b>DSA Name: </b></td>
