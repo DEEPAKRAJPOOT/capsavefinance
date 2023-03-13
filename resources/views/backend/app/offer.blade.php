@@ -114,8 +114,12 @@ tr.border_bottom td {
                                                 <tr>
                                                     <td></td>
                                                     <td><b>Invoice Processing Fee: </b></td>
-                                                    <td>{{ ($supplyOffer->invoice_processingfee_value ?? 0) }}</td>
-                                                    <td><b>XIRR %:</b></td>
+                                                    @if($supplyOffer->invoice_processingfee_type == 1)
+                                                    <td>&#8377; {{ ($supplyOffer->invoice_processingfee_value ?? 0) }}</td>
+                                                    @else
+                                                    <td>{{ ($supplyOffer->invoice_processingfee_value .'%' ?? 0) }}</td>
+                                                    @endif
+                                                    <td><b>XIRR %:</b></td> 
                                                 <td>{{number_format($supplyOffer->xirr,2)}}%</td>
                                                     <td colspan="3"></td>
                                                 </tr>
