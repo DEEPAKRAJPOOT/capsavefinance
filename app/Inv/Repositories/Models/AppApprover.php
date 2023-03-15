@@ -129,7 +129,7 @@ class AppApprover extends BaseModel
      */
     public static function updateAppApprActiveFlag($app_id)
     {
-        $apprUsers = self::where('app_id', '=', $app_id)            
+        $apprUsers = self::where('app_id', '=', $app_id)->where('is_active', '=', 1)            
             ->update(['is_active' => 0]);
         return $apprUsers;
     } 

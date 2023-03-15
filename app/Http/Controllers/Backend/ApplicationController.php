@@ -1087,7 +1087,6 @@ class ApplicationController extends Controller
 			$attributes = $request->all();
 			$addl_data = [];
 			$addl_data['sharing_comment'] = $sharing_comment;
-
 			if ($curr_role_id && $assign_case) {
 				$currStage = Helpers::getCurrentWfStage($app_id);
 				$selData = explode('-', $sel_assign_role);
@@ -1096,10 +1095,13 @@ class ApplicationController extends Controller
 				$currStage = Helpers::getCurrentWfStage($app_id);
 				$selRoleStage = Helpers::getCurrentWfStagebyRole($selRoleId, $user_journey=2, $wf_start_order_no=$currStage->order_no, $orderBy='DESC');
 				Helpers::updateWfStageManual($app_id, $selRoleStage->order_no, $currStage->order_no, $wf_status = 2, $selUserId, $addl_data);
+			// dd($currStage->stage_code);
+				if($currStage->stage_code == 'reviewer'){
+					$updateStatus = AppApprover::updateAppApprActiveFlag($app_id);
+				}
 			} else {
 
 				$currStage = Helpers::getCurrentWfStage($app_id);
-
 				//Validate the stage
 				if ($currStage->stage_code == 'credit_mgr') {
 					$whereCondition = ['app_id' => $app_id, 'status_is_null_or_accepted' =>1];
