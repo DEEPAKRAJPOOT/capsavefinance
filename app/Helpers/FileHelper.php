@@ -101,7 +101,6 @@ class FileHelper {
     }
 
     public function array_to_excel($toExportData, $file_name = "", $moreDetails = [], $path = null, $isFileSave = false) {
-        // dd($moreDetails);
         $moreDetails = array_chunk(array_filter($moreDetails), 2, true);
         $requiredRowsForDetails = ceil(count($moreDetails) / 2);
         ob_start();
@@ -166,8 +165,8 @@ class FileHelper {
             $objPHPExcel->setActiveSheetIndex($activeSheet);
             $activeSheet++;
             $column = 0;
-            $header_row = $ExtraRow + 1;
-            $start_row = $ExtraRow + 3;
+            $header_row = $ExtraRow - 1;
+            $start_row = $ExtraRow + 0;
             $row = $start_row;
             $column = 0;
             $floor = floor($rec_count/26);
@@ -175,7 +174,19 @@ class FileHelper {
             $char = ($floor > 0 ? chr(ord("A") + $floor-1) : '').chr(ord("A") + $reminder);
             foreach($data as $key => $item) {
               foreach($item as $key1 => $item1) {
-                $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($column, $row, $item1);
+                if($title == 'PAYMENT'){
+                  $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($column, $row, $item1)  ->getStyle('C'.$column)
+                  ->getNumberFormat()
+                  ->setFormatCode('dd-mm-yyyy');
+                  $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($column, $row, $item1)  ->getStyle('F'.$column)
+                  ->getNumberFormat()
+                  ->setFormatCode('dd-mm-yyyy');
+                }else{
+                  $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($column, $row, $item1)  ->getStyle('B'.$column)
+                  ->getNumberFormat()
+                  ->setFormatCode('dd-mm-yyyy');
+                }
+                
                 $column++;
               }
               $argb = "FFFFFFFF";
@@ -194,7 +205,7 @@ class FileHelper {
               $column = 0;
               $row++;
             }
-            $end_row = $row - 1;
+            $end_row = $row - 0;
             $row = $header_row;
             $column = 0;
             foreach($header_cols as $key) {

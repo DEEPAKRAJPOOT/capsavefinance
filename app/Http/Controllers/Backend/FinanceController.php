@@ -536,10 +536,10 @@ class FinanceController extends Controller {
                     $paymentRow =  [
                         "voucher" => $fetchedArr['fact_voucher_number'],
                         "sr"=>'',
-                        "date" => $voucherDate,
+                        "date" => $transaction_date,
                         "description" => $fetchedArr['trans_type'],
                         "chq_/_ref_number"=> $fetchedArr['utr_no'],
-                        "dt_value" => $transaction_date,
+                        "dt_value" => $voucherDate,
                         "fc_amount" => '0',
                         "amount" => $amount,
                         "bank_code" => $bankCode,
@@ -590,7 +590,9 @@ class FinanceController extends Controller {
             $toExportData = $records;
             if($tallyData->is_fact_payment_generated == "1"){
                 $payments = $records['PAYMENT'];
+                if(isset($batchNo)){
                 array_walk($payments,function(&$value,$key) use ($batchNo){ $value['batch_no'] = $batchNo; });
+                }
                 foreach($payments as $key => $payment){
                     $payments[$key]['date'] = date('Y-m-d', strtotime($payment['date']));
                     $payments[$key]['dt_value'] = date('Y-m-d', strtotime($payment['dt_value']));
@@ -634,10 +636,10 @@ class FinanceController extends Controller {
                             $paymentRow =  [
                                 "voucher" => $fetchedArr['voucher'],
                                 "sr"=>$fetchedArr['sr'],
-                                "date" => $voucher_date,
+                                "date" => $transaction_date,
                                 "description" => $fetchedArr['description'],
                                 "chq_/_ref_number"=> $fetchedArr['chq_/_ref_number'],
-                                "dt_value" => $transaction_date,
+                                "dt_value" => $voucher_date,
                                 "fc_amount" => '0',
                                 "amount" => $fetchedArr['amount'],
                                 "bank_code" => $fetchedArr['bank_code'],
