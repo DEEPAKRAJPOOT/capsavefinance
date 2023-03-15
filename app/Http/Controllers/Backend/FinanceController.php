@@ -754,19 +754,48 @@ class FinanceController extends Controller {
                     $creditGlCode = $factTransCredit[strtolower($fetchedArr['trans_type'])] ?? null;
                     $is_first_n_old = (empty($transType) || empty($transDate) || ($transType == $fetchedArr['trans_type'] && $transDate == $trans_date));
                     $transType = strtolower($fetchedArr['trans_type']);
-
-                    if (strpos($transType, 'sgst - ') !== false) {
-                        $creditGlCode = $factTransCredit['sgst'];
-                        $debitGlCode = $factTransDebit['sgst'];
+                    // dd($factTransCredit);
+                    if($fetchedArr['entry_type'] == 0 && $fetchedArr['parent_trans_id'] == null){
+                        if (strpos($transType, 'sgst - ') !== false) {
+                            $creditGlCode = $factTransCredit['sgst'];
+                            $debitGlCode = $factTransDebit['sgst'];
+                        }
+                        if (strpos($transType, 'cgst - ') !== false) {
+                            $creditGlCode = $factTransCredit['cgst'];
+                            $debitGlCode = $factTransDebit['cgst'];
+                        }
+                        if (strpos($transType, 'igst - ') !== false) {
+                            $creditGlCode = $factTransCredit['igst'];
+                            $debitGlCode = $factTransDebit['igst'];
+                        }
+                    }elseif($fetchedArr['entry_type'] == 1 && $fetchedArr['trans_type_id'] == 8){
+                        if (strpos($transType, 'sgst - ') !== false) {
+                            $creditGlCode = $factTransCredit['sgst cancelled'];
+                            $debitGlCode = $factTransDebit['sgst cancelled'];
+                        }
+                        if (strpos($transType, 'cgst - ') !== false) {
+                            $creditGlCode = $factTransCredit['cgst cancelled'];
+                            $debitGlCode = $factTransDebit['cgst cancelled'];
+                        }
+                        if (strpos($transType, 'igst - ') !== false) {
+                            $creditGlCode = $factTransCredit['igst cancelled'];
+                            $debitGlCode = $factTransDebit['igst cancelled'];
+                        } 
+                    }elseif($fetchedArr['entry_type'] == 1 && $fetchedArr['trans_type_id'] == 36){
+                        if (strpos($transType, 'sgst - ') !== false) {
+                            $creditGlCode = $factTransCredit['sgst waived off'];
+                            $debitGlCode = $factTransDebit['sgst waived off'];
+                        }
+                        if (strpos($transType, 'cgst - ') !== false) {
+                            $creditGlCode = $factTransCredit['cgst waived off'];
+                            $debitGlCode = $factTransDebit['cgst waived off'];
+                        }
+                        if (strpos($transType, 'igst - ') !== false) {
+                            $creditGlCode = $factTransCredit['igst waived off'];
+                            $debitGlCode = $factTransDebit['igst waived off'];
+                        }
                     }
-                    if (strpos($transType, 'cgst - ') !== false) {
-                        $creditGlCode = $factTransCredit['cgst'];
-                        $debitGlCode = $factTransDebit['cgst'];
-                    }
-                    if (strpos($transType, 'igst - ') !== false) {
-                        $creditGlCode = $factTransCredit['igst'];
-                        $debitGlCode = $factTransDebit['igst'];
-                    }
+                    
 
                     $records['JOURNAL'][] = [
                         "voucher_no" => $fetchedArr['fact_voucher_number'],

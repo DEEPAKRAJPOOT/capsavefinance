@@ -111,7 +111,7 @@ class FileHelper {
         $lastkey = array_key_last($toExportData);
         $objPHPExcel = new PHPExcel();
 
-        $ExtraRow = 3;
+        $ExtraRow = 0;
           $styleArr2 = $styleArray = array(
               'font' => array(
                 'bold' => true,
@@ -165,8 +165,8 @@ class FileHelper {
             $objPHPExcel->setActiveSheetIndex($activeSheet);
             $activeSheet++;
             $column = 0;
-            $header_row = $ExtraRow - 1;
-            $start_row = $ExtraRow + 0;
+            $header_row = $ExtraRow + 2;
+            $start_row = $ExtraRow + 2;
             $row = $start_row;
             $column = 0;
             $floor = floor($rec_count/26);
