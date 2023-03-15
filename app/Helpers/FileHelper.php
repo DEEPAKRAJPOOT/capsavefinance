@@ -175,14 +175,14 @@ class FileHelper {
             foreach($data as $key => $item) {
               foreach($item as $key1 => $item1) {
                 if($title == 'PAYMENT'){
-                  $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($column, $row, $item1)  ->getStyle('C'.$column)
+                  $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($column, $row, $item1)  ->getStyle('C'.$row)
                   ->getNumberFormat()
                   ->setFormatCode('dd-mm-yyyy');
-                  $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($column, $row, $item1)  ->getStyle('F'.$column)
+                  $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($column, $row, $item1)  ->getStyle('F'.$row)
                   ->getNumberFormat()
                   ->setFormatCode('dd-mm-yyyy');
                 }else{
-                  $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($column, $row, $item1)  ->getStyle('B'.$column)
+                  $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($column, $row, $item1)  ->getStyle('B'.$row)
                   ->getNumberFormat()
                   ->setFormatCode('dd-mm-yyyy');
                 }
