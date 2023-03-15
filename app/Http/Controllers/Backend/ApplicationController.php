@@ -1095,8 +1095,7 @@ class ApplicationController extends Controller
 				$currStage = Helpers::getCurrentWfStage($app_id);
 				$selRoleStage = Helpers::getCurrentWfStagebyRole($selRoleId, $user_journey=2, $wf_start_order_no=$currStage->order_no, $orderBy='DESC');
 				Helpers::updateWfStageManual($app_id, $selRoleStage->order_no, $currStage->order_no, $wf_status = 2, $selUserId, $addl_data);
-			// dd($currStage->stage_code);
-				if($currStage->stage_code == 'reviewer'){
+				if($currStage->stage_code == 'approver'){
 					$updateStatus = AppApprover::updateAppApprActiveFlag($app_id);
 				}
 			} else {
