@@ -88,7 +88,7 @@ class AppApprover extends BaseModel
         $apprUsers = self::where('app_id', '=', $data['app_id'])
             ->where('approver_user_id', '=', $data['approver_user_id'])
             ->where('is_active', '=', 1)
-            ->update(['status' => $data['status']]);
+            ->update(['status' => $data['status'],'is_active' =>0]);
         return ($apprUsers ? $apprUsers : []);
     }    
     
