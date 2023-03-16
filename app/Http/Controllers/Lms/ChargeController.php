@@ -140,7 +140,7 @@ class ChargeController extends Controller
                    }
                    else
                    {
-                        $totalSumAmount  =  $request->amount; 
+                        $totalSumAmount  =  $getAmount; 
                         $cgst = 9;
                         $sgst = 9;
                         $igst =  0;
@@ -151,7 +151,7 @@ class ChargeController extends Controller
                  else
                  {
                     $chrg_applicable_id = $request->chrg_applicable_hidden_id; 
-                    $percent  = $request->amount;
+                    $percent  = $getAmount;
                    if($request->is_gst_applicable==1)
                    {
                        $totalSumAmount  =  $request->charge_amount_gst_new;  
