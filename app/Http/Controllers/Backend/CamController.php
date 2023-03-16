@@ -1928,6 +1928,7 @@ class CamController extends Controller
                 'status' => 2
               ];
             $this->appRepo->saveAppApprovers($appApprData);
+            
 
             $addl_data = [];
             $addl_data['sharing_comment'] = $cmntText;
@@ -1935,6 +1936,9 @@ class CamController extends Controller
             $roles = $this->appRepo->getBackStageUsers($appId, [$selRoleId]);
             $selUserId = $roles[0]->user_id;
             $currStage = Helpers::getCurrentWfStage($appId);
+            if($currStage->stage_code == 'approver'){
+              $updateStatus = AppApprover::updateAppApprActiveFlag($appId);
+            }
             //$selRoleStage = Helpers::getCurrentWfStagebyRole($selRoleId);
             $selRoleStage = Helpers::getCurrentWfStagebyRole($selRoleId, $user_journey=2, $wf_start_order_no=$currStage->order_no, $orderBy='DESC');
             Helpers::updateWfStageManual($appId, $selRoleStage->order_no, $currStage->order_no, $wf_status = 2, $selUserId, $addl_data);
