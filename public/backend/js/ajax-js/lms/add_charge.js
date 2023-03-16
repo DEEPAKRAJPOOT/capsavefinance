@@ -411,5 +411,4 @@ $(document).on('click','.chrgT',function(){
 
 $(document).on('propertychange change click keyup input paste','.amount',function(){
   this.value = this.value.replace(/[^0-9\.]/g,'');
-  apport.onPaymentChange($(this).attr('id'));
 });
