@@ -165,7 +165,7 @@ class FileHelper {
             $objPHPExcel->setActiveSheetIndex($activeSheet);
             $activeSheet++;
             $column = 0;
-            $header_row = $ExtraRow + 2;
+            $header_row = $ExtraRow + 1;
             $start_row = $ExtraRow + 2;
             $row = $start_row;
             $column = 0;
@@ -174,19 +174,7 @@ class FileHelper {
             $char = ($floor > 0 ? chr(ord("A") + $floor-1) : '').chr(ord("A") + $reminder);
             foreach($data as $key => $item) {
               foreach($item as $key1 => $item1) {
-                if($title == 'PAYMENT'){
-                  $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($column, $row, $item1)  ->getStyle('C'.$row)
-                  ->getNumberFormat()
-                  ->setFormatCode('dd-mm-yyyy');
-                  $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($column, $row, $item1)  ->getStyle('F'.$row)
-                  ->getNumberFormat()
-                  ->setFormatCode('dd-mm-yyyy');
-                }else{
-                  $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($column, $row, $item1)  ->getStyle('B'.$row)
-                  ->getNumberFormat()
-                  ->setFormatCode('dd-mm-yyyy');
-                }
-                
+                $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($column, $row, $item1);
                 $column++;
               }
               $argb = "FFFFFFFF";
@@ -205,7 +193,7 @@ class FileHelper {
               $column = 0;
               $row++;
             }
-            $end_row = $row - 0;
+            $end_row = $row - 1;
             $row = $header_row;
             $column = 0;
             foreach($header_cols as $key) {
@@ -236,11 +224,7 @@ class FileHelper {
                   ),
               ),
             );
-     
-            $objPHPExcel->getActiveSheet()->mergeCells('A1:' . $char . '1');
-            $objPHPExcel->getActiveSheet()->setCellValue('A1', $file_name);
-            $objPHPExcel->getActiveSheet()->getStyle('A1')->applyFromArray($styleArray);
-     
+
             $styleArray = array(
               'font' => array(
                 'bold' => true,
