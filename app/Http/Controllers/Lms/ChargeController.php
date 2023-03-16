@@ -126,9 +126,15 @@ class ChargeController extends Controller
             $getAmount =  str_replace(',', '', $request->amount);
             if($request->is_gst_applicable == 1 && !is_numeric($request->charge_amount_gst_new)){
                 \DB::rollback();
-                Session::flash('error', 'Charge Amount with GST is non numeric value !');
+                Session::flash('error', 'Charge amount with GST is non numeric value !');
                 return redirect()->route('manage_charge', ['user_id' => $request->user_id]);
             }
+            if($getAmount <= 0){
+                \DB::rollback();
+                Session::flash('error', 'Charge amount should be greater than zero!');
+                return redirect()->route('manage_charge', ['user_id' => $request->user_id]);
+            }
+
            $getTransType  =  DB::table('mst_trans_type')->where(['chrg_master_id' => $request->chrg_name])->first();
            $totalSumAmount = 0;
            if($getTransType)
