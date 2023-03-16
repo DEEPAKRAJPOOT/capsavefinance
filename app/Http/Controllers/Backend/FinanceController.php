@@ -636,10 +636,10 @@ class FinanceController extends Controller {
                             $paymentRow =  [
                                 "voucher" => $fetchedArr['voucher'],
                                 "sr"=>$fetchedArr['sr'],
-                                "date" => $transaction_date,
+                                "date" => $voucher_date,
                                 "description" => $fetchedArr['description'],
                                 "chq_/_ref_number"=> $fetchedArr['chq_/_ref_number'],
-                                "dt_value" => $voucher_date,
+                                "dt_value" => $transaction_date,
                                 "fc_amount" => '0',
                                 "amount" => $fetchedArr['amount'],
                                 "bank_code" => $fetchedArr['bank_code'],
