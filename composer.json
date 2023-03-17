@@ -23,6 +23,7 @@
         "league/flysystem-aws-s3-v3": "^1.0",
         "paypal/rest-api-sdk-php": "^1.14",
         "phpoffice/phpexcel": "^1.8",
+        "phpoffice/phpspreadsheet": "^1.19",
         "phpseclib/phpseclib": "^2.0",
         "yajra/laravel-datatables-oracle": "^9.6",
         "zanysoft/laravel-zip": "^1.0"

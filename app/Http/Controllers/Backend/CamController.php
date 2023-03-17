@@ -60,6 +60,7 @@ use App\Inv\Repositories\Models\AppProgramOfferDsa;
 use App\Inv\Repositories\Models\AppSecurityDoc;
 use App\Inv\Repositories\Models\DocumentMaster;
 use App\Inv\Repositories\Models\Application;
+use PhpOffice\PhpSpreadsheet\IOFactory;
 class CamController extends Controller
 {
     use ApplicationTrait;
@@ -664,12 +665,13 @@ class CamController extends Controller
      if (!file_exists($inputFileName)) {
        return ['', ''];
      }
-     $objPHPExcel = PHPExcel_IOFactory::load($inputFileName);
-     $objWriter = PHPExcel_IOFactory::createWriter($objPHPExcel, 'HTML');
+
+     $objPHPExcel = IOFactory::load($inputFileName);
+     $objWriter = IOFactory::createWriter($objPHPExcel, 'Html');
      $allsheets = $objPHPExcel->getSheetNames();
      $pagination = $this->_getPaginate($allsheets, $sheet_no);
      $objWriter->setSheetIndex($sheet_no);
-     $html =  $objWriter->dump();
+     $html = $objWriter->generateHtmlAll();
      return [$html, $pagination];
     }
 
