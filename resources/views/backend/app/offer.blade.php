@@ -114,8 +114,12 @@ tr.border_bottom td {
                                                 <tr>
                                                     <td></td>
                                                     <td><b>Invoice Processing Fee: </b></td>
-                                                    <td>{{ ($supplyOffer->BizInvoice->invoice_disbursed->processing_fee ?? 0) + ($supplyOffer->BizInvoice->invoice_disbursed->processing_fee_gst ?? 0) }}</td>
-                                                    <td><b>XIRR %:</b></td>
+                                                    @if($supplyOffer->invoice_processingfee_type == 1)
+                                                    <td>&#8377; {{ (number_format($supplyOffer->invoice_processingfee_value) ?? 0) }}</td>
+                                                    @else
+                                                    <td>{{ ($supplyOffer->invoice_processingfee_value .'%' ?? 0) }}</td>
+                                                    @endif
+                                                    <td><b>XIRR %:</b></td> 
                                                 <td>{{number_format($supplyOffer->xirr,2)}}%</td>
                                                     <td colspan="3"></td>
                                                 </tr>
@@ -569,12 +573,22 @@ tr.border_bottom td {
                                                         @endphp 
                                                         {!! trim($add_sec_arr,', ') !!}
                                                     </td>
+                                                    <td></td>
+                                                </tr>
+                                                <tr>
+                                                    <td></td>
                                                     <td><b>XIRR %:</b></td>
                                                 <td>{{number_format($leaseOffer->xirr,2)}}%</td>
+                                                <td><b>Invoice Processing Fee: </b></td>
+                                                    @if($leaseOffer->invoice_processingfee_type == 1)
+                                                    <td>&#8377; {{ (number_format($leaseOffer->invoice_processingfee_value) ?? 0) }}</td>
+                                                    @else
+                                                    <td>{{ ($leaseOffer->invoice_processingfee_value .'%' ?? 0) }}</td>
+                                                    @endif
+                                                    <td></td>
                                                 </tr>
                                                 @if($leaseOffer->dsa_applicable == '1')
                                                 <tr>
-                                                <td></td>
                                                   <td><b>DSA Applicable: </b></td>
                                                   <td>Yes</td>
                                                   <td><b>DSA Name: </b></td>
@@ -599,7 +613,10 @@ tr.border_bottom td {
                                                 <tr>
                                                     <td></td>
                                                     <td><b>DSA Applicable: </b></td>
-                                                    <td>No</td>       
+                                                    <td>No</td>   
+                                                    <td></td>
+                                                    <td></td>    
+                                                    <td></td>    
                                                 </tr>
                                                 @endif
                                                 @if($loop->last)
