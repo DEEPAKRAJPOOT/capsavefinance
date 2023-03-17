@@ -1970,6 +1970,10 @@ class CamController extends Controller
       $facilityTypeList= $this->mstRepo->getFacilityTypeList();
       $limitData= $this->appRepo->getLimit($aplid);
       $offerData= $this->appRepo->getOfferData(['prgm_offer_id' => $prgmOfferId]);
+      $userRole = $this->userRepo->getBackendUser(Auth::user()->user_id);
+      $userInfo = Helpers::getAppCurrentAssignee($appId);
+      $appData = $this->appRepo->getAppData($appId);
+      $appStatus = $appData->curr_status_id;
       $invUtilizedAmt = 0;
       if ($limitData->product_id == 1) {
         $appData = $this->appRepo->getAppData($appId);
@@ -2042,7 +2046,7 @@ class CamController extends Controller
       }
       //dd($parent_pf_amt);
       $page = ($limitData->product_id == 1)? 'supply_limit_offer': (($limitData->product_id == 2)? 'term_limit_offer': 'leasing_limit_offer');
-      return view('backend.cam.'.$page, ['offerData'=>$offerData, 'limitData'=>$limitData, 'totalOfferedAmount'=>$totalOfferedAmount, 'programOfferedAmount'=>$prgmOfferedAmount, 'totalLimit'=> $totalLimit->tot_limit_amt, 'currentOfferAmount'=> $currentOfferAmount, 'programLimit'=> $prgmLimit, 'equips'=> $equips, 'facilityTypeList'=>$facilityTypeList, 'subTotalAmount'=>$totalSubLmtAmt, 'anchors'=>$anchors, 'anchorPrgms'=>$anchorPrgms, 'bizOwners'=>$bizOwners, 'appType'=>$appType,'parent_pf_amt' =>$parent_pf_amt, 'assets' => $assets, 'invUtilizedAmt' => $invUtilizedAmt]);
+      return view('backend.cam.'.$page, ['offerData'=>$offerData, 'limitData'=>$limitData, 'totalOfferedAmount'=>$totalOfferedAmount, 'programOfferedAmount'=>$prgmOfferedAmount, 'totalLimit'=> $totalLimit->tot_limit_amt, 'currentOfferAmount'=> $currentOfferAmount, 'programLimit'=> $prgmLimit, 'equips'=> $equips, 'facilityTypeList'=>$facilityTypeList, 'subTotalAmount'=>$totalSubLmtAmt, 'anchors'=>$anchors, 'anchorPrgms'=>$anchorPrgms, 'bizOwners'=>$bizOwners, 'appType'=>$appType,'parent_pf_amt' =>$parent_pf_amt, 'assets' => $assets, 'invUtilizedAmt' => $invUtilizedAmt,'userRole'=>$userRole,'userInfo'=>$userInfo,'appStatus'=>$appStatus]);
     }
 
     /*function for updating offer data*/
