@@ -1254,7 +1254,7 @@
         }else if(parseFloat(xirr) > 100){
             setError('input[name=xirr]', 'XIRR value should be in between 1-100% only');
             flag = false;
-        }else if(parseFloat(xirr) < 1){
+        }else if(parseFloat(xirr) < 0){
             setError('input[name=xirr]', 'XIRR value should be in between 1-100% only');
             flag = false;
         }
@@ -1281,7 +1281,7 @@
         }else if(parseFloat(payout) > 100){
             setError('input[name=payout]', 'Payout value should be in between 1-100% only');
             flag = false;
-        }else if(parseFloat(payout) < 1){
+        }else if(parseFloat(payout) < 0){
             setError('input[name=payout]', 'Payout value should be in between 1-100% only');
             flag = false;
         }
