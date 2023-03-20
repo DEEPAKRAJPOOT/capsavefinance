@@ -58,7 +58,7 @@
                             @php 
                                 $sDate  = $obj->convertDateTimeFormat($uLimit->start_date, $fromDateFormat='Y-m-d', $toDateFormat='d-m-Y');
                                 $eDate  = $obj->convertDateTimeFormat($uLimit->end_date, $fromDateFormat='Y-m-d', $toDateFormat='d-m-Y');
-                                $limitExpDate = '';
+                                $limitExpDate = $limitExpDateCheck = '';
                                 if ($uLimit->limit_expiration_date != null){
                                     $limitExpDate  = $obj->convertDateTimeFormat($uLimit->limit_expiration_date, $fromDateFormat='Y-m-d', $toDateFormat='d-m-Y');
                                     $limitExpDateCheck  = date('Y-m-d', strtotime($limitExpDate));
