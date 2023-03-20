@@ -414,13 +414,17 @@ trait InvoiceTrait
      /* check the user app limit  */
     /* Use  app_limit table */
     /* Created by gajendra chahan  */ 
-   public static  function limitExpire($cid)
+   public static  function limitExpire($cid, $app_id = null)
    {
         $mytime = Carbon::now();
         $cDate   =  $mytime->toDateTimeString();
         $CFrom =  Carbon::createFromFormat('Y-m-d H:i:s', $cDate)->format('Y-m-d');
-        $app_id =    AppLimit::where('user_id',$cid)->where('status',1)->first();
-       return self::twoDateDiff($CFrom,$app_id['end_date']);
+        $appLimitQuery =    AppLimit::where('user_id',$cid)->where('status',1);
+                            if(isset($app_id) && !empty($app_id)){
+                              $appLimitQuery->where('app_id',$app_id);
+                            }
+        $appLimit = $appLimitQuery->first();
+       return self::twoDateDiff($CFrom,$appLimit['end_date']);
    }
 
     public static function invoiceApproveLimit($attr)
@@ -538,7 +542,7 @@ trait InvoiceTrait
             $sum = Helper::anchorSupplierUtilizedLimitByInvoice($attr['user_id'], $attr['anchor_id']);
             $limit   =  self::ProgramLimit($inv_details);
             $getMargin =  self::invoiceMargin($inv_details);
-            $dueDateGreaterCurrentdate =  self::limitExpire($cid); /* get App limit by user_id*/
+            $dueDateGreaterCurrentdate =  self::limitExpire($cid, $attr['app_id']); /* get App limit by user_id*/
             $isOverDue     =  self::isOverDue($cid); /* get overdue by user_id*/
 
             $anchorData = Anchor::getAnchorById($attr['anchor_id']);
@@ -689,7 +693,7 @@ trait InvoiceTrait
             $mytime = Carbon::now();
             $cDate   =  $mytime->toDateTimeString();
             $uid = Auth::user()->user_id;
-            $dueDateGreaterCurrentdate =  self::limitExpire($attr['supplier_id']); /* get App limit by user_id*/
+            $dueDateGreaterCurrentdate =  self::limitExpire($attr['supplier_id'], $attr['app_id']); /* get App limit by user_id*/
             $isOverDue     =  self::isOverDue($attr['supplier_id']); /* get overdue by user_id*/
             $adhocData  = self::checkUserAdhoc($attr);
             $limit   = $adhocData['amount'];
@@ -755,7 +759,7 @@ trait InvoiceTrait
             $mytime = Carbon::now();
             $cDate   =  $mytime->toDateTimeString();
             $uid = Auth::user()->user_id;
-            $dueDateGreaterCurrentdate =  self::limitExpire($attr['supplier_id']); /* get App limit by user_id*/
+            $dueDateGreaterCurrentdate =  self::limitExpire($attr['supplier_id'], $attr['app_id']); /* get App limit by user_id*/
             $isOverDue     =  self::isOverDue($attr['supplier_id']); /* get overdue by user_id*/
             $adhocData  = self::checkUserAdhoc($attr);
             $limit   = $adhocData['amount'];
@@ -827,7 +831,7 @@ trait InvoiceTrait
                 $inv_details['app_id']   =   $inv_details['app_id'];
                 return self::updateAdhocApproveStatus($inv_details);
             }
-            $dueDateGreaterCurrentdate =  self::limitExpire($inv_details['supplier_id']);
+            $dueDateGreaterCurrentdate =  self::limitExpire($inv_details['supplier_id'], $inv_details['app_id']);
             $attr['user_id']   =   $inv_details['supplier_id'];
             $attr['anchor_id'] =   $inv_details['anchor_id'];
             $attr['prgm_id']   =   $inv_details['program_id'];
@@ -837,7 +841,7 @@ trait InvoiceTrait
             // $sum = Helper::anchorSupplierUtilizedLimitByInvoice($inv_details['supplier_id'], $inv_details['anchor_id']);
             $sum = Helper::anchorSupplierPrgmUtilizedLimitByInvoice($attr);
             $limit   =  self::ProgramLimit($inv_details);
-            $dueDateGreaterCurrentdate =  self::limitExpire($inv_details['supplier_id']); /* get App limit by user_id*/
+            $dueDateGreaterCurrentdate =  self::limitExpire($inv_details['supplier_id'], $inv_details['app_id']); /* get App limit by user_id*/
             $isOverDue     =  self::isOverDue($inv_details['supplier_id']); /* get overdue by user_id*/
             $isAnchorLimitExceeded = self::isAnchorLimitExceeded($attr['anchor_id'], $inv_details['invoice_approve_amount']);
 
@@ -982,7 +986,7 @@ trait InvoiceTrait
         // $sum  = self::invoiceApproveLimit($attribute);
         // $sum = Helper::anchorSupplierUtilizedLimitByInvoice($attribute['user_id'], $attribute['anchor_id']);
         $sum = Helper::anchorSupplierPrgmUtilizedLimitByInvoice($attribute);
-        $dueDateGreaterCurrentdate =  self::limitExpire($cid); /* get App limit by user_id*/
+        $dueDateGreaterCurrentdate =  self::limitExpire($cid, $attr['app_id']); /* get App limit by user_id*/
         $isOverDue     =  self::isOverDue($cid); /* get overdue by user_id*/
         $invoiceMargin  = self::invoiceMargin($attr);  ////*********Invoice Margin **********//////
         $uid = Auth::user()->user_id;
@@ -1271,7 +1275,7 @@ trait InvoiceTrait
                 $inv_details['app_id']   =   $inv_details['app_id'];
                 return self::updateAdhocApproveStatus($inv_details);
             }
-            $dueDateGreaterCurrentdate =  self::limitExpire($inv_details['supplier_id']);
+            $dueDateGreaterCurrentdate =  self::limitExpire($inv_details['supplier_id'], $inv_details['app_id']);
             $attr['user_id']   =   $inv_details['supplier_id'];
             $attr['anchor_id'] =   $inv_details['anchor_id'];
             $attr['prgm_id']   =   $inv_details['program_id'];
@@ -1281,7 +1285,7 @@ trait InvoiceTrait
             // $sum = Helper::anchorSupplierUtilizedLimitByInvoice($inv_details['supplier_id'], $inv_details['anchor_id']);
             $sum = Helper::anchorSupplierPrgmUtilizedLimitByInvoice($attr);
             $limit   =  self::ProgramLimit($inv_details);
-            $dueDateGreaterCurrentdate =  self::limitExpire($inv_details['supplier_id']); /* get App limit by user_id*/
+            $dueDateGreaterCurrentdate =  self::limitExpire($inv_details['supplier_id'], $inv_details['app_id']); /* get App limit by user_id*/
             $isOverDue     =  self::isOverDue($inv_details['supplier_id']); /* get overdue by user_id*/
             $isAnchorLimitExceeded = self::isAnchorLimitExceeded($attr['anchor_id'], $inv_details['invoice_approve_amount']);
 
