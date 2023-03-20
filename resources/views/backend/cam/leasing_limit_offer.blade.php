@@ -304,9 +304,11 @@
     </div>
     <div class="row">
     @can('update_limit_offer')
+    @if(($userRole->name == 'Credit Manager' || $userRole->name == 'Super Admin') && ($userInfo->assignee_role == 'Credit Manager' || $userInfo->assignee_role == 'Super Admin') &&($appStatus == 56 || $appStatus == 20 || $appStatus == 23 || $appStatus == 49 || $appStatus == 55))
       <div class="col-md-12">
         <button type="submit" class="btn btn-success btn-sm float-right">Submit</button>
       </div>
+    @endif
     @endcan
     </div>   
   </form>

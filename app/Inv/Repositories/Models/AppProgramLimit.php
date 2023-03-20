@@ -63,6 +63,7 @@ class AppProgramLimit extends BaseModel {
         'start_date',
         'end_date',
         'actual_end_date',        
+        'is_deleted',        
         'created_at',
         'created_by',
         'updated_at',        
@@ -96,7 +97,7 @@ class AppProgramLimit extends BaseModel {
         if(!is_array($data)){
             throw new InvalidDataTypeExceptions(trans('error_message.invalid_data_type'));
         }else{
-            return AppProgramLimit::where($data)->get();
+            return AppProgramLimit::where($data)->where('is_deleted',0)->get();
         }
     }
 
@@ -107,9 +108,9 @@ class AppProgramLimit extends BaseModel {
             throw new InvalidDataTypeExceptions(trans('error_message.invalid_data_type'));
         }else{
             if($type != null)
-                return AppProgramLimit::where('app_id', $appId)->where('product_id', $type)->get();
+                return AppProgramLimit::where(['app_id'=> $appId, 'is_deleted' => 0])->where('product_id', $type)->get();
             else
-                return AppProgramLimit::where('app_id', $appId)->get();
+                return AppProgramLimit::where(['app_id'=> $appId,'is_deleted' => 0])->get();
             
         }
     }
@@ -319,7 +320,7 @@ class AppProgramLimit extends BaseModel {
     }
 
     public static function getTotalPrgmLimitByAppId($appId){
-        return AppProgramLimit::where(['app_id'=>$appId])->sum('limit_amt');
+        return AppProgramLimit::where(['app_id'=>$appId,'is_deleted'=>0])->sum('limit_amt');
     }   
     
    
@@ -342,7 +343,7 @@ class AppProgramLimit extends BaseModel {
        if (!isset($attr)) {
            return 0;
        }
-       return self::where(['app_limit_id' => $attr['app_limit_id'],'app_id' => $attr['app_id'],'biz_id' => $attr['biz_id']])->sum('limit_amt');
+       return self::where(['app_limit_id' => $attr['app_limit_id'],'app_id' => $attr['app_id'],'biz_id' => $attr['biz_id'],'is_deleted' => 0])->sum('limit_amt');
    }
  
     

@@ -108,11 +108,6 @@
                 <label for="txtPassword"><b>Security Deposit (%)</b> <span style="color: red;"> *</span></label>
                 <input type="text" name="security_deposit" class="form-control" value="{{ isset($offerData->security_deposit) ? $offerData->security_deposit : '' }}" placeholder="Security Deposit" maxlength="15">
             </div>
-            <div class="form-group">
-            <label for="txtPassword"><b>Processing Fee (%) @Sanction level</b> <span style="color: red;"> *</span></label>
-            <small><span class="float-right text-success processinFeeAmount"></span></small>
-            <input type="text" name="processing_fee" class="form-control" value="{{isset($offerData->processing_fee)? $offerData->processing_fee: ''}}" placeholder="Processing Fee" maxlength="6">
-          </div>
         </div>
 
         <div class="col-md-6">
@@ -338,9 +333,11 @@
     </div>
     <div class="row">
     @can('update_limit_offer')
+    @if(($userRole->name == 'Credit Manager' || $userRole->name == 'Super Admin') && ($userInfo->assignee_role == 'Credit Manager' || $userInfo->assignee_role == 'Super Admin') &&($appStatus == 56 || $appStatus == 20 || $appStatus == 23 || $appStatus == 49 || $appStatus == 55))
       <div class="col-md-12">
         <button type="submit" class="btn btn-success btn-sm float-right">Submit</button>
       </div>
+    @endif
     @endcan
     </div>   
   </form>

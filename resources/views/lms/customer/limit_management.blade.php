@@ -22,7 +22,7 @@
                 }
                 @endphp          
                 <div class="card-body limit-management"> 
-                    
+                    @if($uLimit->is_deleted ==0)
                     <div class="limit-title"> 
                         <div class="row" style="margin-top:10px;">
                             <div class="col-lg-2 col-md-6 col-sm-6 col-xs-12">
@@ -335,6 +335,7 @@
 
                     @endforeach
                 </div>
+                @endif
 
                 @endforeach 
             </div>
