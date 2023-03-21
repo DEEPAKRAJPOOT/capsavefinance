@@ -435,6 +435,7 @@
         flag = false;
     }
     var decimalregex = /^[a-zA-Z\s]+$/;
+    
         if(xirr == ''){
             setError('input[name=xirr]', 'Please fill XIRR');
             flag = false;
