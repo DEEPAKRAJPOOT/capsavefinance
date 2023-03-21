@@ -529,10 +529,10 @@
             setError('input[name=xirr]', 'Please enter valid data only');
             flag = false;
         }else if(parseFloat(xirr) > 100){
-            setError('input[name=xirr]', 'XIRR value should be in between 1-100% only');
+            setError('input[name=xirr]', 'XIRR value should be in between 0-100% only');
             flag = false;
         }else if(parseFloat(xirr) < 0){
-            setError('input[name=xirr]', 'XIRR value should be in between 1-100% only');
+            setError('input[name=xirr]', 'XIRR value should be in between 0-100% only');
             flag = false;
         }
     if(dsa_applicable == 1){
@@ -553,10 +553,10 @@
             setError('input[name=payout]', 'Please enter valid data only');
             flag = false;
         }else if(parseFloat(payout) > 100){
-            setError('input[name=payout]', 'Payout value should be in between 1-100% only');
+            setError('input[name=payout]', 'Payout value should be in between 0-100% only');
             flag = false;
         }else if(parseFloat(payout) < 0){
-            setError('input[name=payout]', 'Payout value should be in between 1-100% only');
+            setError('input[name=payout]', 'Payout value should be in between 0-100% only');
             flag = false;
         }
 
