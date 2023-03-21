@@ -46,7 +46,9 @@ class OutstandingReport extends Command
         $outstandingReportLog = OutstandingReportLog::whereNull('user_id')->where('created_by','0')->orderBy('id','desc')->limit(1)->first();
         $filePath = $outstandingReportLog->file_path;
         $reportLogId = $outstandingReportLog->id;
+        $currDate = NULL;
         if(file_exists($filePath)) {
+            $currDate = Helper::utcToIst($outstandingReportLog->created_at);
             try {
                 $inputFileType = PHPExcel_IOFactory::identify($filePath);
                 $objReader = PHPExcel_IOFactory::createReader($inputFileType);
@@ -142,7 +144,8 @@ class OutstandingReport extends Command
                     'Balance Margin to be Refunded' => (double)$dataRecord['Balance Margin to be Refunded'],
                     'Balance Interest to be refunded' => (double)$dataRecord['Balance Interest to be refunded'],
                     'Balance Overdue Interest to be refunded' => (double)$dataRecord['Balance Overdue Interest to be refunded'],
-                    'Sales Manager' => (double)$dataRecord['Sales Manager']
+                    'Sales Manager' => (double)$dataRecord['Sales Manager'],
+                    'Report Date' => $currDate ?? NULL,
                 ]);
             }
             $this->info("The Outstanding Report sync to database successfully.");
