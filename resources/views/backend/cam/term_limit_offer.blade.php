@@ -521,7 +521,7 @@
         setError('select[name=rental_frequency_type]', 'Please select frequency type');
         flag = false;
     }
-    var regex = /^[a-zA-Z\s]+$/;
+    var decimalregex = /^[a-zA-Z\s]+$/;
         if(xirr == ''){
             setError('input[name=xirr]', 'Please fill XIRR');
             flag = false;
