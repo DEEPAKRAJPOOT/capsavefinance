@@ -423,7 +423,7 @@ trait InvoiceTrait
                             if(isset($app_id) && !empty($app_id)){
                               $appLimitQuery->where('app_id',$app_id);
                             }
-        $appLimit = $appLimitQuery->first();
+        $appLimit = $appLimitQuery->latest()->first();
        return self::twoDateDiff($CFrom,$appLimit['end_date']);
    }
 
