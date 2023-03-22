@@ -538,10 +538,11 @@
         if(dsa_name == ''){
             setError('input[name=dsa_name]', 'Please fill DSA name');
             flag = false;
-        }else if(!isValid){
-            setError('input[name=dsa_name]', 'Please enter valid data only');
-            flag = false;
         }
+        // else if(!isValid){
+        //     setError('input[name=dsa_name]', 'Please enter valid data only');
+        //     flag = false;
+        // }
         var decimalregex = /^\d+(\.\d{0,2})?$/g;
         if(payout == ''){
             setError('input[name=payout]', 'Please fill payout');
@@ -561,10 +562,11 @@
         if(payout_event == ''){
             setError('input[name=payout_event]', 'Please fill payout event');
             flag = false;
-        }else if(!eventValid){
-            setError('input[name=payout_event]', 'Please enter valid data only');
-            flag = false;
         }
+        // else if(!eventValid){
+        //     setError('input[name=payout_event]', 'Please enter valid data only');
+        //     flag = false;
+        // }
         
 
     }

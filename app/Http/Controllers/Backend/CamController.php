@@ -2154,6 +2154,7 @@ class CamController extends Controller
         //if($checkApprovalStatus->count()){
         $whereCondition = ['app_id' => $appId, 'is_approve' => 1, 'status_is_null_or_accepted' =>1];
         $offerData = $this->appRepo->getOfferData($whereCondition);
+        $currentOfferAmount = isset($offerData->prgm_limit_amt)? $offerData->prgm_limit_amt: 0;
         if ($offerData && isset($offerData->prgm_offer_id) ) {
           Session::flash('message', trans('backend_messages.under_approval'));
           return redirect()->route('limit_assessment',['app_id' =>  $appId, 'biz_id' => $bizId]);
