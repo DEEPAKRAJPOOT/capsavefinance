@@ -2169,6 +2169,13 @@ class CamController extends Controller
             Helpers::updateAppCurrentStatus($appId, config('common.mst_status_id.OFFER_GENERATED'));
             //} 
             $requestData =  $request->all();
+            $totalSubLmtAmt = $this->appRepo->getTotalByPrgmLimitId($aplid);
+            $limitAmt = $limitData->limit_amt;
+            $sub_total_balance = $limitAmt - ($totalSubLmtAmt - $currentOfferAmount);
+            if($requestData['prgm_limit_amt'] > $sub_total_balance){
+              Session::flash('error', 'Limit can\'t exceed from '.$sub_total_balance.' balance limit amount');
+              return redirect()->route('limit_assessment',['app_id' =>  $appId, 'biz_id' => $bizId]);
+            }
             if($requestData['dsa_applicable'] == '1'){
               $dsaData['dsa_name'] = $requestData['dsa_name'];
               $dsaData['payout']   = number_format($requestData['payout'],2);
