@@ -1039,7 +1039,7 @@
                window.open(result['value']['file_url'], '_blank');
             }else if(result['status'] == 0){
                  // call the function to start checking status
-                 checkFsaStatus();
+                 checkFsaStatus('getAnalysis_button');
             }
          },
          error:function(error) {
@@ -1110,8 +1110,10 @@
        })
     }
 
-    function checkFsaStatus(buttonType) {
-      data = {appId, _token};
+    function checkFsaStatus(buttonType, retries = 20) {
+      var data = {appId, _token};
+      var processStmt = $('.process_stmt');
+      var getAnalysis = $('.getAnalysis');
       $.ajax({
          url  : checkFSAStatus,
          type :'POST',
@@ -1119,48 +1121,55 @@
          beforeSend: function() {
            $(".isloader").show();
            if (buttonType == 'process_button'){
-               $('.process_stmt').removeAttr('onclick').addClass('process_stmt').removeClass('disabled').text('Please wait...');
+            processStmt.removeAttr('onclick').addClass('process_stmt').addClass('disabled').html('<i class="fa fa-spinner" aria-hidden="true"></i> Please wait...');
            }else {
-               $('.getAnalysis').removeAttr('onclick').addClass('getAnalysis').removeClass('disabled').text('Please wait...');
+            getAnalysis.removeAttr('onclick').addClass('getAnalysis').addClass('disabled').html('<i class="fa fa-spinner" aria-hidden="true"></i> Please wait...');
            }
          },
          dataType : 'json',
          success: function(response) {
             if (response.status === 0) {
                if (buttonType == 'process_button'){
-                     $('.process_stmt').addClass('disabled').text('Please wait...');
+                  processStmt.addClass('disabled').html('<i class="fa fa-spinner" aria-hidden="true"></i> Please wait...');
                }else {
-                     $('.getAnalysis').addClass('disabled').text('Please wait...');
+                  getAnalysis.addClass('disabled').html('<i class="fa fa-spinner" aria-hidden="true"></i> Please wait...');
                }
-               setTimeout(function() {
-                  checkFsaStatus(buttonType);
-               }, 5000); // wait 5 second and call again
+               if (retries > 0) {
+                  setTimeout(function() {
+                     checkFsaStatus(buttonType, retries - 1);
+                  }, 5000);
+               } else {
+                  console.log("Maximum retries reached(20).");
+               } // retry after a delay // wait 5 second and call again
             } else {
                // do something when status is 1
                if (response.status) {
                   $(".isloader").hide();
-                  console.log(response.value.file_url);
+                  //console.log(response.value.file_url);
                   if (response.response_status == 1){
                      if (buttonType == 'process_button'){
-                           $('.process_stmt').removeClass('disabled').text('Refresh');
-                           $('.process_stmt').attr('onclick', 'window.location.reload()').removeClass('process_stmt');
+                        processStmt.removeClass('disabled').html('<i class="fa fa-refresh" aria-hidden="true"></i> Refresh');
+                        processStmt.attr('onclick', 'window.location.reload()').removeClass('process_stmt');
                      }else {
-                           $('.getAnalysis').removeClass('disabled').text('Refresh');
-                           $('.getAnalysis').attr('onclick', 'window.location.reload()').removeClass('getAnalysis');
+                        getAnalysis.removeClass('disabled').html('<i class="fa fa-refresh" aria-hidden="true"></i> Refresh');
+                        getAnalysis.attr('onclick', 'window.location.reload()').removeClass('getAnalysis');
                      }
                      window.open(response.value.file_url, '_blank');
                   }else{
                      if (buttonType == 'process_button'){
-                           $('.process_stmt').removeAttr('onclick').addClass('process_stmt').removeClass('disabled').text('Process');
+                        processStmt.removeAttr('onclick').addClass('process_stmt').removeClass('disabled').text('Process');
                      }else {
-                           $('.getAnalysis').removeAttr('onclick').addClass('getAnalysis').removeClass('disabled').text('Get Analysis');
+                        getAnalysis.removeAttr('onclick').addClass('getAnalysis').removeClass('disabled').text('Get Analysis');
                      }
                   }
                }
             }
          },
-         error: function(error) {
-            // handle error
+         error: function(jqXHR, textStatus, errorThrown) {
+            console.log("Error during AJAX call: " + textStatus + " - " + errorThrown);
+            // display an error message or take appropriate action
+            $("#pullMsg").html("Error during AJAX call: " + textStatus + " - " + errorThrown);
+            $(".isloader").hide();
          }
       });
    }
