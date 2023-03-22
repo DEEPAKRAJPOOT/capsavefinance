@@ -154,7 +154,7 @@
                  <div class="col-md-3">
                     <div class="form-group">
                         <label for="txtPassword">Payout Event <span style="color: red;"> *</span></label> 
-                        <input type="text" name="payout_event" id="payout_event" class="form-control" value="{{ (isset($offerData->programOfferDsa) && !empty($offerData->programOfferDsa->payout_event))  ? $offerData->programOfferDsa->payout_event : '' }}" placeholder="Payout Event">
+                        <input type="text" name="payout_event" id="payout_event" class="form-control" value="{{ (isset($offerData->programOfferDsa) && !empty($offerData->programOfferDsa->payout_event))  ? $offerData->programOfferDsa->payout_event : '' }}" placeholder="Payout Event" maxlength="100">
                     </div>
                  </div>
                 
