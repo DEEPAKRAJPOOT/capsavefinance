@@ -1001,6 +1001,7 @@
    appurl = '{{URL::route("financeAnalysis") }}';
    process_url = '{{URL::route("process_financial_statement") }}';
    _token = "{{ csrf_token() }}";
+   checkFSAStatus = '{{URL::route("check_fsa_status") }}';
 </script>
 <script type="text/javascript">
     $("tr").each(function(){
@@ -1036,6 +1037,9 @@
             $(".isloader").hide();
             if (result['status']) {
                window.open(result['value']['file_url'], '_blank');
+            }else if(result['status'] == 0){
+                 // call the function to start checking status
+                 checkFsaStatus();
             }
          },
          error:function(error) {
@@ -1066,6 +1070,9 @@
             $(".isloader").hide();
             if (result['status']) {
                window.open(result['value']['file_url'], '_blank');
+            }else if(result['status'] == 0){
+                 // call the function to start checking status
+                 checkFsaStatus('process_button');
             }
          },
          error:function(error) {
@@ -1102,6 +1109,61 @@
           },
        })
     }
+
+    function checkFsaStatus(buttonType) {
+      data = {appId, _token};
+      $.ajax({
+         url  : checkFSAStatus,
+         type :'POST',
+         data : data,
+         beforeSend: function() {
+           $(".isloader").show();
+           if (buttonType == 'process_button'){
+               $('.process_stmt').removeAttr('onclick').addClass('process_stmt').removeClass('disabled').text('Please wait...');
+           }else {
+               $('.getAnalysis').removeAttr('onclick').addClass('getAnalysis').removeClass('disabled').text('Please wait...');
+           }
+         },
+         dataType : 'json',
+         success: function(response) {
+            if (response.status === 0) {
+               if (buttonType == 'process_button'){
+                     $('.process_stmt').addClass('disabled').text('Please wait...');
+               }else {
+                     $('.getAnalysis').addClass('disabled').text('Please wait...');
+               }
+               setTimeout(function() {
+                  checkFsaStatus(buttonType);
+               }, 5000); // wait 5 second and call again
+            } else {
+               // do something when status is 1
+               if (response.status) {
+                  $(".isloader").hide();
+                  console.log(response.value.file_url);
+                  if (response.response_status == 1){
+                     if (buttonType == 'process_button'){
+                           $('.process_stmt').removeClass('disabled').text('Refresh');
+                           $('.process_stmt').attr('onclick', 'window.location.reload()').removeClass('process_stmt');
+                     }else {
+                           $('.getAnalysis').removeClass('disabled').text('Refresh');
+                           $('.getAnalysis').attr('onclick', 'window.location.reload()').removeClass('getAnalysis');
+                     }
+                     window.open(response.value.file_url, '_blank');
+                  }else{
+                     if (buttonType == 'process_button'){
+                           $('.process_stmt').removeAttr('onclick').addClass('process_stmt').removeClass('disabled').text('Process');
+                     }else {
+                           $('.getAnalysis').removeAttr('onclick').addClass('getAnalysis').removeClass('disabled').text('Get Analysis');
+                     }
+                  }
+               }
+            }
+         },
+         error: function(error) {
+            // handle error
+         }
+      });
+   }
 
 </script>
 <script>

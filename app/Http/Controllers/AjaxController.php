@@ -6467,4 +6467,70 @@ if ($err) {
         $overdueReportLogs = ReconReportLog::orderBy('id','desc')->get();
         return $dataProvider->getReconReportLogs($this->request, $overdueReportLogs);
     }
+
+    //CHECKING BANKING STATEMENT API STATUS
+    public function checkBankingStatementStatus(Request $request) {
+        $appId =  (int) $this->request->get('appId');
+        $perfios_log_id =  $this->request->get('perfios_log_id');
+        $pending_rec = $this->finRepo->getBsaFsaData($appId,'1007', 1);
+        if($pending_rec)
+        {
+            $perfiosLogId = $pending_rec->perfios_log_id ?? NULL;
+            $callBackMessage = '';
+            if (isset($perfiosLogId)) {
+                $callbackResp = $this->finRepo->getBsaFsaCallBackResponse($perfiosLogId);
+                if (!empty($callbackResp)) {
+                    $callBackMessage = base64_decode($callbackResp->res_file);
+                }
+            }
+            if (($pending_rec->status == 'success' || $pending_rec->status == 'fail') && !empty($callBackMessage)){
+                $resStatus =($pending_rec->status == 'success')  ? 1 : 0;
+                $controller = app()->make('App\Http\Controllers\Backend\CamController');
+                $nameArr = $controller->getLatestFileName($appId, 'banking', 'xlsx');
+                $file_name = $nameArr['new_file'];
+                $file= url("storage/user/docs/$appId/banking/". $file_name);
+                $final_res['file_url'] = $file;
+                return response()->json(['status' => 1, 'value'=>$final_res, 'response_status'=>$resStatus]);
+            }else{
+                return response()->json(['status' => 0]);
+            } 
+        }
+        else
+        {
+            return response()->json(['status' => 0]); 
+        }
+     }
+
+     //CHECKING Financial STATEMENT API STATUS
+    public function checkFinancialStatementStatus(Request $request) {
+        $appId =  (int) $this->request->get('appId');
+        $perfios_log_id =  $this->request->get('perfios_log_id');
+        $pending_rec = $this->finRepo->getBsaFsaData($appId,'1005', 2);
+        if($pending_rec)
+        {
+            $perfiosLogId = $pending_rec->perfios_log_id ?? NULL;
+            $callBackMessage = '';
+            if (isset($perfiosLogId)) {
+                $callbackResp = $this->finRepo->getBsaFsaCallBackResponse($perfiosLogId);
+                if (!empty($callbackResp)) {
+                    $callBackMessage = base64_decode($callbackResp->res_file);
+                }
+            }
+            if (($pending_rec->status == 'success' || $pending_rec->status == 'fail') && !empty($callBackMessage)){
+                $resStatus =($pending_rec->status == 'success')  ? 1 : 0;
+                $controller = app()->make('App\Http\Controllers\Backend\CamController');
+                $nameArr = $controller->getLatestFileName($appId, 'finance', 'xlsx');
+                $file_name = $nameArr['new_file'];
+                $file= url("storage/user/docs/$appId/finance/". $file_name);
+                $final_res['file_url'] = $file;
+                return response()->json(['status' => 1, 'value'=>$final_res, 'response_status'=>$resStatus]);
+            }else{
+                return response()->json(['status' => 0]);
+            } 
+        }
+        else
+        {
+            return response()->json(['status' => 0]); 
+        }
+     }
 }

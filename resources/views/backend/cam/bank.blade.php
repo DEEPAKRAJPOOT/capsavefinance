@@ -59,7 +59,7 @@
                     @can('getAnalysis')
                      <a href="javascript:void(0)" class="btn btn-success btn-sm <?php echo $class_enable ?>">Get Analysis</a>
                      @endcan
-                  @endif   
+                  @endif  
                   </div> 
                   <div class="clearfix"></div>
                   <br/>
@@ -366,6 +366,7 @@
    appurl = '{{URL::route("getAnalysis") }}';
    process_url = '{{URL::route("process_banking_statement") }}';
    _token = "{{ csrf_token() }}";
+   checkBSAStatus = '{{URL::route("check_bsa_status") }}';
 </script>
 <script type="text/javascript">
     function maxPercent(input) {
@@ -411,6 +412,9 @@
             }
             if (result['status']) {
                window.open(result['value']['file_url'], '_blank');
+            } else if(result['status'] == 0){
+                 // call the function to start checking status
+                 checkBsaStatus();
             }
             
          },
@@ -452,6 +456,9 @@
             $(".isloader").hide();
             if (result['status']) {
              window.open(result['value']['file_url'], '_blank');
+            }else if(result['status'] == 0){
+                 // call the function to start checking status
+                 checkBsaStatus('process_button');
             }
          },
          error:function(error) {
@@ -492,6 +499,61 @@
           },
        })
     }
+   
+   function checkBsaStatus(buttonType) {
+      data = {appId, _token};
+      $.ajax({
+         url  : checkBSAStatus,
+         type :'POST',
+         data : data,
+         beforeSend: function() {
+           $(".isloader").show();
+           if (buttonType == 'process_button'){
+               $('.process_stmt').removeAttr('onclick').addClass('process_stmt').removeClass('disabled').text('Please wait...');
+           }else {
+               $('.getAnalysis').removeAttr('onclick').addClass('getAnalysis').removeClass('disabled').text('Please wait...');
+           }
+         },
+         dataType : 'json',
+         success: function(response) {
+               if (response.status === 0) {
+                  if (buttonType == 'process_button'){
+                        $('.process_stmt').addClass('disabled').text('Please wait...');
+                  }else {
+                        $('.getAnalysis').addClass('disabled').text('Please wait...');
+                  }
+               setTimeout(function() {
+                  checkBsaStatus(buttonType);
+               }, 5000); // wait 5 second and call again
+            } else {
+               // do something when status is 1
+               if (response.status) {
+                  $(".isloader").hide();
+                  console.log(response.value.file_url);
+                  if (response.response_status == 1){
+                     if (buttonType == 'process_button'){
+                           $('.process_stmt').removeClass('disabled').text('Refresh');
+                           $('.process_stmt').attr('onclick', 'window.location.reload()').removeClass('process_stmt');
+                     }else {
+                           $('.getAnalysis').removeClass('disabled').text('Refresh');
+                           $('.getAnalysis').attr('onclick', 'window.location.reload()').removeClass('getAnalysis');
+                     }
+                     window.open(response.value.file_url, '_blank');
+                  }else{
+                     if (buttonType == 'process_button'){
+                           $('.process_stmt').removeAttr('onclick').addClass('process_stmt').removeClass('disabled').text('Process');
+                     }else {
+                           $('.getAnalysis').removeAttr('onclick').addClass('getAnalysis').removeClass('disabled').text('Get Analysis');
+                     }
+                  }
+               }
+            }
+         },
+         error: function(error) {
+            // handle error
+         }
+      });
+   }
 </script>
 <script>
       var ckeditorOptions =  {

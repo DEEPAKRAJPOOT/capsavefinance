@@ -353,4 +353,14 @@ class FinanceModel extends BaseModel
                 ->first();
        return ($result ?? null);
     }
+
+    public static function getBsaFsaData($app_id, $api_name, $type){
+        $result = self::select('*')
+                 ->from('biz_perfios')
+                 ->where('app_id', $app_id)
+                 ->where('api_name', $api_name)
+                 ->where('type', $type)
+                 ->latest()->first();
+         return ($result ?? null);
+     }
 }

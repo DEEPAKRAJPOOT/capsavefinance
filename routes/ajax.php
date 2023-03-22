@@ -1592,4 +1592,14 @@ Route::group(
         'as' => 'lms_get_recon_report',
         'uses' => 'AjaxController@getReconReportByMail'
     ]);
+
+    Route::post('check-bsa-status', [
+        'as' => 'check_bsa_status',
+        'uses' => 'AjaxController@checkBankingStatementStatus'
+    ]);
+    
+    Route::post('check-fsa-status', [
+        'as' => 'check_fsa_status',
+        'uses' => 'AjaxController@checkFinancialStatementStatus'
+    ]);
 });

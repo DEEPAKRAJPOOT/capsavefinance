@@ -223,4 +223,13 @@ class FinanceRepository extends BaseRepositories implements FinanceInterface
         $this->result = FinancialJournalItems::getPaymentReportData($where);
         return $this->result;
     }
+    
+    public function getBsaFsaData($app_id, $api_name, $type) {
+        return FinanceModel::getBsaFsaData($app_id, $api_name, $type);
+    }
+
+    public function getBsaFsaCallBackResponse($perfiosLogId) {
+        return FinanceModel::getCallBackResponse($perfiosLogId);
+    }
+
 }
