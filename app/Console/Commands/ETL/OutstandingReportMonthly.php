@@ -3,6 +3,7 @@
 namespace App\Console\Commands\ETL;
 
 use Carbon\Carbon;
+use App\Helpers\Helper;
 use PHPExcel_IOFactory;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Storage;
@@ -121,8 +122,8 @@ class OutstandingReportMonthly extends Command
                     'Invoice Due Date' => implode("-", array_reverse(explode("-", $dataRecord['Invoice Due Date']))),
                     'Virtual Account No' => $dataRecord['Virtual Account No'],
                     'Tenure' => (int)$dataRecord['Tenure'],
-                    'ROI' => (float)$dataRecord['ROI Rate'],
-                    'ODI Interest' => (float)$dataRecord['ODI Interest Rate'],
+                    'ROI' => $dataRecord['ROI Rate'],
+                    'ODI Interest' => $dataRecord['ODI Interest Rate'],
                     'Principal Outstanding' => (double)$dataRecord['Principal Outstanding'],
                     'Margin O/S' => (double)$dataRecord['Margin Outstanding'],
                     'Interest' => (double)$dataRecord['Interest Outstanding'],
@@ -132,8 +133,8 @@ class OutstandingReportMonthly extends Command
                     'Total Outstanding' => (double)$dataRecord['Total Outstanding'],
                     'Grace Days Interest' => (int)$dataRecord['Grace Days Interest'],
                     'Grace Days Principal' => (int)$dataRecord['Grace Days Principal'],
-                    'Grace Period End Date' => (int)$dataRecord['Grace Period End Date'],
-                    'Principal Overdue' => (double)$dataRecord['Principal Overdue'],
+                    'Grace Period End Date' => implode("-", array_reverse(explode("-", $dataRecord['Invoice Due Date After Grace']))) ?? NULL,
+                    'Principal Overdue' => $dataRecord['Principal Overdue'],
                     'Principal Overdue Category' => $dataRecord['Principal Overdue Category'],
                     'Principal DPD' => (int)$dataRecord['Principal DPD'],
                     'Interest DPD' => (int)$dataRecord['Interest DPD'],
@@ -144,7 +145,7 @@ class OutstandingReportMonthly extends Command
                     'Balance Margin to be Refunded' => (double)$dataRecord['Balance Margin to be Refunded'],
                     'Balance Interest to be refunded' => (double)$dataRecord['Balance Interest to be refunded'],
                     'Balance Overdue Interest to be refunded' => (double)$dataRecord['Balance Overdue Interest to be refunded'],
-                    'Sales Manager' => (double)$dataRecord['Sales Manager'],
+                    'Sales Manager' => $dataRecord['Sales Manager'],
                     'Report Date' => $currDate ?? NULL,
                 ]);
             }

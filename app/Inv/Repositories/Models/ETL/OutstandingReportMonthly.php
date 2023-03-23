@@ -15,9 +15,11 @@ class OutstandingReportMonthly extends BaseModel
     protected $fillable = [
         'report_log_id',
         'Batch No',
+        'UCIC ID',
         'Customer Name',
         'Customer ID',
         'Anchor Name',
+        'Sub Program Name',
         'Invoice No',
         'Date of Disbursement',
         'Invoice Amount',
@@ -45,6 +47,7 @@ class OutstandingReportMonthly extends BaseModel
         'Total Outstanding',
         'Grace Days Interest',
         'Grace Days Principal',
+        'Grace Period End Date',
         'Principal Overdue',
         'Principal Overdue Category',
         'Principal DPD',
@@ -55,6 +58,8 @@ class OutstandingReportMonthly extends BaseModel
         'Maturity Bucket',
         'Balance Margin to be Refunded',
         'Balance Interest to be refunded',
-        'Balance Overdue Interest to be refunded'
+        'Balance Overdue Interest to be refunded',
+        'Sales Manager',
+        'Report Date'
     ];
 }

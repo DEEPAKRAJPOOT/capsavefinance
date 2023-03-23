@@ -3,6 +3,7 @@
 namespace App\Console\Commands\ETL;
 
 use Carbon\Carbon;
+use App\Helpers\Helper;
 use PHPExcel_IOFactory;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Storage;
@@ -132,7 +133,7 @@ class OutstandingReport extends Command
                     'Total Outstanding' => (double)$dataRecord['Total Outstanding'],
                     'Grace Days Interest' => (int)$dataRecord['Grace Days Interest'],
                     'Grace Days Principal' => (int)$dataRecord['Grace Days Principal'],
-                    'Grace Period End Date' => $dataRecord['Grace Period End Date'] ?? NULL,
+                    'Grace Period End Date' => implode("-", array_reverse(explode("-", $dataRecord['Invoice Due Date After Grace']))) ?? NULL,
                     'Principal Overdue' => $dataRecord['Principal Overdue'],
                     'Principal Overdue Category' => $dataRecord['Principal Overdue Category'],
                     'Principal DPD' => (int)$dataRecord['Principal DPD'],
@@ -144,7 +145,7 @@ class OutstandingReport extends Command
                     'Balance Margin to be Refunded' => (double)$dataRecord['Balance Margin to be Refunded'],
                     'Balance Interest to be refunded' => (double)$dataRecord['Balance Interest to be refunded'],
                     'Balance Overdue Interest to be refunded' => (double)$dataRecord['Balance Overdue Interest to be refunded'],
-                    'Sales Manager' => (double)$dataRecord['Sales Manager'],
+                    'Sales Manager' => $dataRecord['Sales Manager'],
                     'Report Date' => $currDate ?? NULL,
                 ]);
             }
