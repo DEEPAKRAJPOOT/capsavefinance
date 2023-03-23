@@ -91,17 +91,16 @@ class OnEodCheckData extends Command
                                             config('lms.TRANS_TYPE.INTEREST'),
                                             config('lms.TRANS_TYPE.INTEREST_OVERDUE'),
                                             config('lms.TRANS_TYPE.PAYMENT_DISBURSED'),
+                                            config('lms.TRANS_TYPE.REVERSE'),
                                         ]);
-                                        $query1->orWhere('trans_type', '>', 49);
+                                        $query1->orWhere('trans_type', '>', 49);                                        
                                     });
 
                                     $query->orWhere(function ($query1) {
                                         $query1->where('entry_type', 1)
                                             ->whereIn('trans_type', [
                                                 config('lms.TRANS_TYPE.CANCEL'),
-                                                config('lms.TRANS_TYPE.REVERSE'), 
                                                 config('lms.TRANS_TYPE.TDS'), 
-                                                config('lms.TRANS_TYPE.REFUND'), 
                                                 config('lms.TRANS_TYPE.WAVED_OFF'),
                                                 config('lms.TRANS_TYPE.WRITE_OFF'),
                                             ]);
@@ -109,7 +108,7 @@ class OnEodCheckData extends Command
                                 })
                                 ->pluck('trans_id')
                                 ->toArray();
-
+                                
         $bankingData = Transactions::where($where)
                                 ->where(function($query){
                                     $query->where(function($query1){
