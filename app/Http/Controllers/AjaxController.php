@@ -6487,17 +6487,21 @@ if ($err) {
                 $resStatus =($pending_rec->status == 'success')  ? 1 : 0;
                 $controller = app()->make('App\Http\Controllers\Backend\CamController');
                 $nameArr = $controller->getLatestFileName($appId, 'banking', 'xlsx');
-                $file_name = $nameArr['new_file'];
-                $file= url("storage/user/docs/$appId/banking/". $file_name);
-                $final_res['file_url'] = $file;
-                return response()->json(['status' => 1, 'value'=>$final_res, 'response_status'=>$resStatus]);
+                $file_name = $nameArr['curr_file'];
+                //$file_path = "storage/user/docs/$appId/banking/$file_name";
+                if(!empty($file_name) && file_exists(storage_path("app/public/user/docs/$appId/banking/".$file_name))) {
+                    $final_res['file_url'] = Storage::url('user/docs/'.$appId.'/banking/'.$file_name);
+                    return response()->json(['status' => 1, 'value'=>$final_res, 'response_status'=>$resStatus]);
+                } else {
+                    return response()->json(['status' => 0,'value'=>'File is not generated yet.','response_status'=>'404']);
+                }
             }else{
-                return response()->json(['status' => 0]);
+                return response()->json(['status' => 0,'value'=>'Perfios response is empty.','response_status'=>'404']);
             } 
         }
         else
         {
-            return response()->json(['status' => 0]); 
+            return response()->json(['status' => 0,'value'=>'Perfios data is not found.','response_status'=>'404']); 
         }
      }
 
@@ -6520,17 +6524,21 @@ if ($err) {
                 $resStatus =($pending_rec->status == 'success')  ? 1 : 0;
                 $controller = app()->make('App\Http\Controllers\Backend\CamController');
                 $nameArr = $controller->getLatestFileName($appId, 'finance', 'xlsx');
-                $file_name = $nameArr['new_file'];
-                $file= url("storage/user/docs/$appId/finance/". $file_name);
-                $final_res['file_url'] = $file;
-                return response()->json(['status' => 1, 'value'=>$final_res, 'response_status'=>$resStatus]);
+                $file_name = $nameArr['curr_file'];
+                //$file_path = "storage/user/docs/$appId/finance/$file_name";
+                if(!empty($file_name) && file_exists(storage_path("app/public/user/docs/$appId/finance/".$file_name))) {
+                    $final_res['file_url'] = Storage::url('user/docs/'.$appId.'/finance/'.$file_name);
+                    return response()->json(['status' => 1, 'value'=>$final_res, 'response_status'=>$resStatus]);
+                } else {
+                    return response()->json(['status' => 0,'value'=>'File is not generated yet.','response_status'=>'404']);
+                }
             }else{
-                return response()->json(['status' => 0]);
+                return response()->json(['status' => 0,'value'=>'Perfios response is empty.','response_status'=>'404']);
             } 
         }
         else
         {
-            return response()->json(['status' => 0]); 
+            return response()->json(['status' => 0,'value'=>'Perfios data is not found.','response_status'=>'404']); 
         }
      }
 }
