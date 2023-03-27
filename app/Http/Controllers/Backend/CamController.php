@@ -1333,7 +1333,7 @@ class CamController extends Controller
 
 
 
-        $nameArr = $this->getLatestFileName($appId, 'banking', 'xlsx');
+        /*$nameArr = $this->getLatestFileName($appId, 'banking', 'xlsx');
         $file_name = $nameArr['new_file'];
         $req_arr = array(
           'perfiosTransactionId' => $init_txn['perfiostransactionid'],
@@ -1368,7 +1368,12 @@ class CamController extends Controller
         $final_res['api_type'] = Bsa_lib::GET_REP;
         $final_res['file_url'] = $file;
         $final_res['prolitusTransactionId'] = $prolitus_txn;
-        $final_res['perfiosTransactionId'] = $init_txn['perfiostransactionid'];
+        $final_res['perfiosTransactionId'] = $init_txn['perfiostransactionid'];*/
+        $log_data = array(
+          'status' => $final_res['status'],
+          'updated_by' => Auth::user()->user_id,
+        );
+        FinanceModel::updatePerfios($log_data,'biz_perfios',$init_txn['perfiostransactionid'],'biz_perfios_id');
         return $final_res;
     }
 
@@ -1520,8 +1525,8 @@ class CamController extends Controller
         'status' => $final_res['status'],
         'updated_by' => Auth::user()->user_id,
       );
-       FinanceModel::updatePerfios($log_data,'biz_perfios',$start_txn['perfiostransactionid'],'biz_perfios_id');
-        return $final_res;
+      FinanceModel::updatePerfios($log_data,'biz_perfios',$start_txn['perfiostransactionid'],'biz_perfios_id');
+      return $final_res;
     }
 
     public function getFinanceReport(Request $request) {

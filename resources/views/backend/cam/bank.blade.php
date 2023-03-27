@@ -411,7 +411,8 @@
                });
             }
             if (result['status']) {
-               window.open(result['value']['file_url'], '_blank');
+               //window.open(result['value']['file_url'], '_blank');
+               checkBsaStatus('getAnalysis_button');
             } else if(result['status'] == 0){
                  // call the function to start checking status
                  checkBsaStatus('getAnalysis_button');
@@ -436,7 +437,8 @@
 
     $(document).on('click', '.process_stmt', function(argument) {
       var biz_perfios_id = $(this).attr('pending');
-      getReport(biz_perfios_id);
+      //getReport(biz_perfios_id);
+      checkBsaStatus('process_button');
    })
 
     function getReport(biz_perfios_id) {
@@ -500,7 +502,7 @@
        })
     }
    
-   async function checkBsaStatus(buttonType, retries = 20) {
+   async function checkBsaStatus(buttonType, retries = 30) {
       const data = {appId, _token};
       const processStmt = $('.process_stmt');
       const getAnalysis = $('.getAnalysis');

@@ -358,7 +358,7 @@ class FinanceModel extends BaseModel
         $result = self::select('*')
                  ->from('biz_perfios')
                  ->where('app_id', $app_id)
-                 ->where('api_name', $api_name)
+                 //->where('api_name', $api_name)
                  ->where('type', $type)
                  ->latest()->first();
          return ($result ?? null);
