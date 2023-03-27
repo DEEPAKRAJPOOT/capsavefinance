@@ -1476,7 +1476,7 @@ class CamController extends Controller
            return $final_res;
         }
 
-        $nameArr = $this->getLatestFileName($appId, 'finance', 'xlsx');
+       /* $nameArr = $this->getLatestFileName($appId, 'finance', 'xlsx');
         $file_name = $nameArr['new_file'];
         $req_arr = array(
             'apiVersion' => $apiVersion,
@@ -1511,11 +1511,16 @@ class CamController extends Controller
             'updated_by' => Auth::user()->user_id,
           );
           FinanceModel::updatePerfios($log_data,'biz_perfios',$start_txn['perfiostransactionid'],'biz_perfios_id');
-        }
-        $final_res['api_type'] = Perfios_lib::GET_STMT;
-        $final_res['file_url'] = $file;
-        $final_res['prolitusTransactionId'] = $prolitus_txn;
-        $final_res['perfiosTransactionId'] = $start_txn['perfiostransactionid'];
+        } */
+       // $final_res['api_type'] = Perfios_lib::GET_STMT;
+      //  $final_res['file_url'] = $file;
+      //  $final_res['prolitusTransactionId'] = $prolitus_txn;
+       // $final_res['perfiosTransactionId'] = $start_txn['perfiostransactionid'];
+       $log_data = array(
+        'status' => $final_res['status'],
+        'updated_by' => Auth::user()->user_id,
+      );
+       FinanceModel::updatePerfios($log_data,'biz_perfios',$start_txn['perfiostransactionid'],'biz_perfios_id');
         return $final_res;
     }
 
