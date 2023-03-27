@@ -49,7 +49,7 @@
                   @if(!empty($pending_rec) && $pending_rec['status'] == 'fail')
                      @php $class_enable="disabled"; @endphp
                      @can('process_banking_statement')
-                     <a class="btn btn-success btn-sm process_stmt" pending="{{ $pending_rec['biz_perfios_id'] }}" href="javascript:void(0)">Process</a>
+                     <a class="btn btn-success btn-sm process_stmt" pending="{{ $pending_rec['biz_perfios_id'] }}" href="javascript:void(0)"><i class="fa fa-refresh" aria-hidden="true"></i> Refresh</a>
                      @endcan
                   @endif
                   @can('process_banking_statement')
@@ -391,12 +391,14 @@
     });
    $(document).on('click', '.getAnalysis', function() {
       data = {appId, _token};
+      const getAnalysis = $('.getAnalysis');
       $.ajax({
          url  : appurl,
          type :'POST',
          data : data,
          beforeSend: function() {
            $(".isloader").show();
+           getAnalysis.removeAttr('onclick').addClass('getAnalysis').addClass('disabled').html('<i class="fa fa-spinner" aria-hidden="true"></i> Please wait...');
          },
          dataType : 'json',
          success:function(result) {
@@ -412,11 +414,15 @@
             }
             if (result['status']) {
                //window.open(result['value']['file_url'], '_blank');
-               checkBsaStatus('getAnalysis_button');
+               //checkBsaStatus('getAnalysis_button');
+
             } else if(result['status'] == 0){
                  // call the function to start checking status
-                 checkBsaStatus('getAnalysis_button');
+                 //checkBsaStatus('getAnalysis_button');
             }
+
+            getAnalysis.removeClass('disabled').html('<i class="fa fa-refresh" aria-hidden="true"></i> Refresh');
+            getAnalysis.attr('onclick', 'window.location.reload()').removeClass('getAnalysis');
             
          },
          error:function(error) {
@@ -438,7 +444,8 @@
     $(document).on('click', '.process_stmt', function(argument) {
       var biz_perfios_id = $(this).attr('pending');
       //getReport(biz_perfios_id);
-      checkBsaStatus('process_button');
+      //checkBsaStatus('process_button');
+      window.location.reload();
    })
 
     function getReport(biz_perfios_id) {
@@ -507,7 +514,7 @@
       const processStmt = $('.process_stmt');
       const getAnalysis = $('.getAnalysis');
       try {
-         $(".isloader").show();
+         //$(".isloader").show();
          if (buttonType == 'process_button') {
             processStmt.removeAttr('onclick').addClass('process_stmt').addClass('disabled').html('<i class="fa fa-spinner" aria-hidden="true"></i> Please wait...');
          } else {

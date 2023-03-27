@@ -56,7 +56,7 @@
                          @endif
                          @if(request()->get('view_only') && empty($message) && !empty($pending_rec) && $pending_rec['status'] == 'fail')
                          @php $class_enable="disabled"; @endphp
-                               <a class="btn btn-success btn-sm process_stmt" pending="{{ $pending_rec['biz_perfios_id'] }}" href="javascript:void(0)">Process</a>
+                               <a class="btn btn-success btn-sm process_stmt" pending="{{ $pending_rec['biz_perfios_id'] }}" href="javascript:void(0)"><i class="fa fa-refresh" aria-hidden="true"></i> Refresh</a>
                          @endif 
                          @if(request()->get('view_only') && $financedocs->count() > 0)
                            @can('financeAnalysis')
@@ -1021,12 +1021,14 @@
 <script type="text/javascript">
    $(document).on('click', '.getAnalysis', function() {
       data = {appId, _token};
+      const getAnalysis = $('.getAnalysis');
       $.ajax({
          url  : appurl,
          type :'POST',
          data : data,
          beforeSend: function() {
            $(".isloader").show();
+           getAnalysis.removeAttr('onclick').addClass('getAnalysis').addClass('disabled').html('<i class="fa fa-spinner" aria-hidden="true"></i> Please wait...');
          },
          dataType : 'json',
          success:function(result) {
@@ -1037,11 +1039,13 @@
             $(".isloader").hide();
             if (result['status']) {
                //window.open(result['value']['file_url'], '_blank');
-               checkFsaStatus('getAnalysis_button');
+               //checkFsaStatus('getAnalysis_button');
             }else if(result['status'] == 0){
                  // call the function to start checking status
-                 checkFsaStatus('getAnalysis_button');
+                // checkFsaStatus('getAnalysis_button');
             }
+            getAnalysis.removeClass('disabled').html('<i class="fa fa-refresh" aria-hidden="true"></i> Refresh');
+            getAnalysis.attr('onclick', 'window.location.reload()').removeClass('getAnalysis');
          },
          error:function(error) {
             // body...
@@ -1054,7 +1058,8 @@
 
    $(document).on('click', '.process_stmt', function() {
       biz_perfios_id = $(this).attr('pending');
-      checkFsaStatus('process_button');
+      //checkFsaStatus('process_button');
+      window.location.reload();
       // data = {appId, _token, biz_perfios_id};
       // $.ajax({
       //    url  : process_url,
@@ -1117,7 +1122,7 @@
       const processStmt = $('.process_stmt');
       const getAnalysis = $('.getAnalysis');
       try {
-         $(".isloader").show();
+         //$(".isloader").show();
          if (buttonType == 'process_button') {
             processStmt.removeAttr('onclick').addClass('process_stmt').addClass('disabled').html('<i class="fa fa-spinner" aria-hidden="true"></i> Please wait...');
          } else {
