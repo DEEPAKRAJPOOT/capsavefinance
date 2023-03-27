@@ -155,16 +155,4 @@ class InterestAccrual extends BaseModel {
          $result = $query->count();
          return $result;
     }
-
-    public static function getOverdueData() {
-        $data = DB::select('
-        SELECT 
-        a.user_id AS supplier_id,
-        SUM(IF(a.trans_type = 33 AND a.entry_type = 0, a.outstanding,0)) AS od_outstanding,
-        SUM(IF(a.trans_type = 36, a.settled_outstanding,0)) AS write_off_amt
-        FROM rta_transactions AS a 
-        GROUP BY a.user_id
-        ');
-        return $data;
-    }
 }
