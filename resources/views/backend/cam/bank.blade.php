@@ -427,6 +427,7 @@
          },
          error:function(error) {
             // body...
+            getAnalysis.removeAttr('onclick').addClass('getAnalysis').removeClass('disabled').text('Get Analysis');
          },
          complete: function() {
             $(".isloader").hide();
@@ -443,19 +444,21 @@
 
     $(document).on('click', '.process_stmt', function(argument) {
       var biz_perfios_id = $(this).attr('pending');
-      //getReport(biz_perfios_id);
+      getReport(biz_perfios_id);
       //checkBsaStatus('process_button');
-      window.location.reload();
+      //window.location.reload();
    })
 
     function getReport(biz_perfios_id) {
        data = {appId, _token, biz_perfios_id};
+       const processStmt = $('.process_stmt');
       $.ajax({
          url  : process_url,
          type :'POST',
          data : data,
          beforeSend: function() {
            $(".isloader").show();
+           processStmt.removeAttr('onclick').addClass('process_stmt').addClass('disabled').html('<i class="fa fa-spinner" aria-hidden="true"></i> Please wait...');
          },
          dataType : 'json',
          success:function(result) {
@@ -467,11 +470,13 @@
              window.open(result['value']['file_url'], '_blank');
             }else if(result['status'] == 0){
                  // call the function to start checking status
-                 checkBsaStatus('process_button');
+                 //checkBsaStatus('process_button');
             }
+            processStmt.removeClass('disabled').html('<i class="fa fa-refresh" aria-hidden="true"></i> Refresh');
+            processStmt.attr('onclick', 'window.location.reload()').removeClass('process_stmt');
          },
          error:function(error) {
-
+            processStmt.removeAttr('onclick').addClass('process_stmt').removeClass('disabled').text('Process');
          },
          complete: function() {
             $(".isloader").hide();

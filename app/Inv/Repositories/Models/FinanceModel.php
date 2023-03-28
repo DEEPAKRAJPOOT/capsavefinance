@@ -314,7 +314,8 @@ class FinanceModel extends BaseModel
        $result = self::select('*')
                 ->from('biz_perfios')
                 ->where('app_id', $app_id)
-                ->where('api_name', '1005')
+                //->where('api_name', '1005')
+                ->where('type', '2')
                 ->latest()->first();
         return ($result ?? null);
     }
@@ -331,7 +332,8 @@ class FinanceModel extends BaseModel
        $result = self::select('*')
                 ->from('biz_perfios')
                 ->where('app_id', $app_id)
-                ->where('api_name', '1007')
+                //->where('api_name', '1007')
+                ->where('type', '1')
                 ->latest()->first();
         return ($result ?? null);
     }

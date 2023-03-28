@@ -56,7 +56,7 @@
                          @endif
                          @if(request()->get('view_only') && empty($message) && !empty($pending_rec) && $pending_rec['status'] == 'fail')
                          @php $class_enable="disabled"; @endphp
-                               <a class="btn btn-success btn-sm process_stmt" pending="{{ $pending_rec['biz_perfios_id'] }}" href="javascript:void(0)"><i class="fa fa-refresh" aria-hidden="true"></i> Refresh</a>
+                               <a class="btn btn-success btn-sm process_stmt" pending="{{ $pending_rec['biz_perfios_id'] }}" href="javascript:void(0)">Process</a>
                          @endif 
                          @if(request()->get('view_only') && $financedocs->count() > 0)
                            @can('financeAnalysis')
@@ -1049,6 +1049,7 @@
          },
          error:function(error) {
             // body...
+            getAnalysis.removeAttr('onclick').addClass('getAnalysis').removeClass('disabled').text('Get Analysis');
          },
          complete: function() {
             $(".isloader").hide();
@@ -1059,36 +1060,40 @@
    $(document).on('click', '.process_stmt', function() {
       biz_perfios_id = $(this).attr('pending');
       //checkFsaStatus('process_button');
-      window.location.reload();
-      // data = {appId, _token, biz_perfios_id};
-      // $.ajax({
-      //    url  : process_url,
-      //    type :'POST',
-      //    data : data,
-      //    beforeSend: function() {
-      //      $(".isloader").show();
-      //    },
-      //    dataType : 'json',
-      //    success:function(result) {
-      //       console.log(result);
-      //       let mclass = result['status'] ? 'success' : 'danger';
-      //       var html = '<div class="alert-'+ mclass +' alert" role="alert"> <span><i class="fa fa-bell fa-lg" aria-hidden="true"></i></span><button type="button" class="close" data-dismiss="alert" aria-label="Close"> <span aria-hidden="true">×</span> </button>'+result['message']+'</div>';
-      //       $("#pullMsg").html(html);
-      //       $(".isloader").hide();
-      //       if (result['status']) {
-      //          window.open(result['value']['file_url'], '_blank');
-      //       }else if(result['status'] == 0){
-      //            // call the function to start checking status
-      //            checkFsaStatus('process_button');
-      //       }
-      //    },
-      //    error:function(error) {
-
-      //    },
-      //    complete: function() {
-      //       $(".isloader").hide();
-      //    },
-      // })
+      //window.location.reload();
+      const processStmt = $('.process_stmt');
+      data = {appId, _token, biz_perfios_id};
+      $.ajax({
+         url  : process_url,
+         type :'POST',
+         data : data,
+         beforeSend: function() {
+           $(".isloader").show();
+           processStmt.removeAttr('onclick').addClass('process_stmt').addClass('disabled').html('<i class="fa fa-spinner" aria-hidden="true"></i> Please wait...');
+         },
+         dataType : 'json',
+         success:function(result) {
+            console.log(result);
+            let mclass = result['status'] ? 'success' : 'danger';
+            var html = '<div class="alert-'+ mclass +' alert" role="alert"> <span><i class="fa fa-bell fa-lg" aria-hidden="true"></i></span><button type="button" class="close" data-dismiss="alert" aria-label="Close"> <span aria-hidden="true">×</span> </button>'+result['message']+'</div>';
+            $("#pullMsg").html(html);
+            $(".isloader").hide();
+            if (result['status']) {
+               window.open(result['value']['file_url'], '_blank');
+            }else if(result['status'] == 0){
+                 // call the function to start checking status
+                 //checkFsaStatus('process_button');
+            }
+            processStmt.removeClass('disabled').html('<i class="fa fa-refresh" aria-hidden="true"></i> Refresh');
+            processStmt.attr('onclick', 'window.location.reload()').removeClass('process_stmt');
+         },
+         error:function(error) {
+            processStmt.removeAttr('onclick').addClass('process_stmt').removeClass('disabled').text('Process');
+         },
+         complete: function() {
+            $(".isloader").hide();
+         },
+      })
    })
 
 
