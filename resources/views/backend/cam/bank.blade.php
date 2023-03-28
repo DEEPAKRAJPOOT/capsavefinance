@@ -49,7 +49,7 @@
                   @if(!empty($pending_rec) && $pending_rec['status'] == 'fail')
                      @php $class_enable="disabled"; @endphp
                      @can('process_banking_statement')
-                     <a class="btn btn-success btn-sm process_stmt" pending="{{ $pending_rec['biz_perfios_id'] }}" href="javascript:void(0)"><i class="fa fa-refresh" aria-hidden="true"></i> Refresh</a>
+                     <a class="btn btn-success btn-sm process_stmt" pending="{{ $pending_rec['biz_perfios_id'] }}" href="javascript:void(0)">Process</a>
                      @endcan
                   @endif
                   @can('process_banking_statement')
