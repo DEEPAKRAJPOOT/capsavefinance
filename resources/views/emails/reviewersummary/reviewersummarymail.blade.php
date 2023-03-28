@@ -138,7 +138,7 @@
                     <td style="padding:8px 10px;font-size: 0.917rem; font-family: Calibri !important;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;"><b>DSA Name: </b></td>
                     <td style="padding:8px 10px;font-size: 0.917rem; font-family: Calibri !important;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;">{{$leaseOffer->programOfferDsa->dsa_name}}</td>
                     <td style="padding:8px 10px;font-size: 0.917rem; font-family: Calibri !important;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;"><b>Payout %:</b></td>
-                    <td style="padding:8px 10px;font-size: 0.917rem; font-family: Calibri !important;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;">{{$leaseOffer->programOfferDsa->payout}}</td>
+                    <td style="padding:8px 10px;font-size: 0.917rem; font-family: Calibri !important;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;">{{number_format($leaseOffer->programOfferDsa->payout,2)}}</td>
                 </tr>
                 <tr>
                     <td style="padding:8px 10px;font-size: 0.917rem; font-family: Calibri !important;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;"><b>Payout Event: </b></td>
@@ -223,7 +223,7 @@
                                 <td style="padding:8px 10px;font-size: 0.917rem; font-family: Calibri !important;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;"><b>DSA Name: </b></td>
                                 <td style="padding:8px 10px;font-size: 0.917rem; font-family: Calibri !important;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;">{{$supplyOffer->programOfferDsa->dsa_name}}</td>
                                 <td style="padding:8px 10px;font-size: 0.917rem; font-family: Calibri !important;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;"><b>Payout %: </b></td>
-                                <td style="padding:8px 10px;font-size: 0.917rem; font-family: Calibri !important;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;">{{$supplyOffer->programOfferDsa->payout}}</td>
+                                <td style="padding:8px 10px;font-size: 0.917rem; font-family: Calibri !important;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;">{{number_format($supplyOffer->programOfferDsa->payout,2)}}</td>
                             </tr>
                             <tr>
                                 <td style="padding:8px 10px;font-size: 0.917rem; font-family: Calibri !important;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;"><b>Payout Event: </b></td>
