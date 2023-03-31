@@ -449,8 +449,8 @@ class CamController extends Controller
       }
 
       $is_shown = $this->appRepo->getOfferStatus([['app_id', $appId], ['is_approve', 1], ['status', 1],['is_active', 1]]);
-      $borrowerLimitData['single_limit'] = config('common.DEFAULT_BORROWER_LIMIT.Single_limit');
-      $borrowerLimitData['multiple_limit'] = config('common.DEFAULT_BORROWER_LIMIT.multiple_limit');
+      $borrowerLimitData['single_limit'] = 0;
+      $borrowerLimitData['multiple_limit'] = 0;
       if($is_shown){
        $Limitdata =  $this->appRepo->getAppBorrowerLimit($appId);
        if($Limitdata){
@@ -464,7 +464,6 @@ class CamController extends Controller
         $borrowerLimitData['multiple_limit'] = $Limitdata['multiple_limit'];
         }
       }
-      
       $roleData =  Helpers::getUserRole()->first();
       $is_editable = ($roleData->id == config('common.user_role.APPROVER'))?0:1;
       $securityDocumentList = $this->mstRepo->getAllSecurityDocument()->where('is_active', 1)->get();
