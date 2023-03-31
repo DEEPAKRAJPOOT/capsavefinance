@@ -356,6 +356,7 @@ class CibilReportController extends Controller
         $settledAmt = $this->userWiseData[$user->user_id]['writeOff']->write_off_amount ?? null;
         $wrireOffAmt = $this->userWiseData[$user->user_id]['settled']->settled_amount ?? null;
         $assetClassificationDate =  Carbon::parse($curdate)->subDays($maxDPD ?? 0)->format('Y-m-d');
+        $getUserBizLimit = $this->appRepo->getUserProgramLimitByBizId($appBusiness->biz_id);
         
         $data[] = [
             'Ac No' => $this->formatedCustId,
