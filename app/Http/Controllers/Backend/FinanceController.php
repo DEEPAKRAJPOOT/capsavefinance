@@ -603,7 +603,7 @@ class FinanceController extends Controller {
                 }
             }
             \DB::commit();
-            return $this->fileHelper->factFileExcel($toExportData, "Fact-Payment-$batch_no.xlsx");
+            return $this->fileHelper->facPaymentFileExcel($toExportData, "Fact-Payment-$batch_no.xlsx");
         }catch (Exception $ex) {
             \DB::rollback();
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
@@ -685,7 +685,7 @@ class FinanceController extends Controller {
             }
 
             $toExportData = $records;
-            return $this->fileHelper->factFileExcel($toExportData, "Fact-Payment-$batch_no.xlsx");
+            return $this->fileHelper->facPaymentFileExcel($toExportData, "Fact-Payment-$batch_no.xlsx");
         }catch (Exception $ex) {
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
         }
@@ -899,7 +899,7 @@ class FinanceController extends Controller {
                 }
             }
             \DB::commit();
-            return $this->fileHelper->factFileExcel($toExportData, "Fact-Journal-$batch_no.xlsx");
+            return $this->fileHelper->facJournalFileExcel($toExportData, "Fact-Journal-$batch_no.xlsx");
         }catch (Exception $ex) {
             \DB::rollback();
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
@@ -996,7 +996,7 @@ class FinanceController extends Controller {
             }
 
             $toExportData = $records;
-            return $this->fileHelper->factFileExcel($toExportData, "Fact-Journal-$batch_no.xlsx");
+            return $this->fileHelper->facJournalFileExcel($toExportData, "Fact-Journal-$batch_no.xlsx");
         }catch (Exception $ex) {
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
         }
