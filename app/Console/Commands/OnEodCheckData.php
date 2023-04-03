@@ -305,10 +305,10 @@ class OnEodCheckData extends Command
                    $data2['tally_gst1_amount'] = round($tallyGstRecord['tally_gst_amount'], 2);
                    array_push($tallyGstRecordsArray, $data2);
                 }elseif(strpos($tallyGstRecord['trans_name'],'IGST - ') !==false) {
-                   $data3['tally_gst2_amount'] = round($tallyGstRecord['tally_gst_amount'], 2);
+                   $data3['tally_gst3_amount'] = round($tallyGstRecord['tally_gst_amount'], 2);
                    array_push($tallyGstRecordsArray, $data3);
                 }elseif(strpos($tallyGstRecord['trans_name'],'CGST - ') !==false){
-                   $data6['tally_gst3_amount'] = round($tallyGstRecord['tally_gst_amount'], 2);
+                   $data6['tally_gst2_amount'] = round($tallyGstRecord['tally_gst_amount'], 2);
                    array_push($tallyGstRecordsArray, $data6);
                 }
             }
