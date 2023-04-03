@@ -1124,7 +1124,7 @@ class FinanceController extends Controller {
             ->getNumberFormat()
             ->setFormatCode('dd-mm-yyyy');
         }
-        $objPHPExcel->getActiveSheet()->getStyle('A2:Y'.$key+1)->applyFromArray($dataStyle);
+        $objPHPExcel->getActiveSheet()->getStyle('A2:Y'.($key+1))->applyFromArray($dataStyle);
       }
       header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
       header('Content-Disposition: attachment;filename="' . $file_name . '"');
@@ -1256,7 +1256,7 @@ class FinanceController extends Controller {
             ->setFormatCode('dd-mm-yyyy');
         }
       
-        $objPHPExcel->getActiveSheet()->getStyle('A2:T'.$key+1)->applyFromArray($dataStyle);
+        $objPHPExcel->getActiveSheet()->getStyle('A2:T'.($key+1))->applyFromArray($dataStyle);
       }
       header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
       header('Content-Disposition: attachment;filename="' . $file_name . '"');
