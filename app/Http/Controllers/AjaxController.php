@@ -6427,8 +6427,7 @@ if ($err) {
      }
 
      public function getCustAndCapsLocApp(DataProviderInterface $dataProvider) {
-        $appData = $this->application->getAppDataByAppId($this->request->get('app_id'));
-        $user_id = $appData->user_id;
+        $user_id =  (int) $this->request->get('user_id');
         $cusCapLoc = $this->UserInvRepo->getCustAndCapsLocApp($user_id);
         $data = $dataProvider->getCustAndCapsLocApp($this->request, $cusCapLoc);
         return $data;

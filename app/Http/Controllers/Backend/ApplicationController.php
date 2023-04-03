@@ -1725,7 +1725,7 @@ class ApplicationController extends Controller
 			if ($savedOfferData) {
 				Session::flash('message', $message);
 				//return redirect()->route('gen_sanction_letter', ['app_id' => $appId, 'biz_id' => $bizId, 'offer_id' => $offerId ]);
-				return redirect()->route('view_offer', ['app_id' => $appId, 'biz_id' => $bizId ]);
+				return redirect()->route('view_offer', ['app_id' => $appId, 'biz_id' => $bizId,'user_id' => $userId ]);
 			}
 
 		} catch (Exception $ex) {
@@ -3073,7 +3073,6 @@ class ApplicationController extends Controller
             $user_id = $request->get('user_id');
 			$biz_id = $request->get('biz_id');
 			$app_id = $request->get('app_id');
-			// dd($user_id,$biz_id,$app_id);
             $where = ['user_id' => $user_id];
             $allApps = $this->UserInvRepo->getAllAppData($where);
 					$userAddresswithbiz = BusinessAddress::getAddressforCustomerApp($biz_id);
