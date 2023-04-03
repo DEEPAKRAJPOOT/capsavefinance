@@ -17,6 +17,14 @@ use App\Inv\Repositories\Models\Master\FactTransType;
 use App\Inv\Repositories\Models\Master\FactJournalEntry;
 use App\Inv\Repositories\Models\Master\FactPaymentEntry;
 use App\Helpers\Helper;
+use PHPExcel;
+use PHPExcel_IOFactory;
+use PHPExcel_Style_Fill;
+use PHPExcel_Cell_DataType;
+use PHPExcel_Style_Alignment;
+use PHPExcel_Style_Border;
+use PHPExcel_Shared_Date;
+use Illuminate\Support\Facades\DB;
 
 class FinanceController extends Controller {
 
@@ -603,7 +611,7 @@ class FinanceController extends Controller {
                 }
             }
             \DB::commit();
-            return $this->fileHelper->facPaymentFileExcel($toExportData, "Fact-Payment-$batch_no.xlsx");
+            return $this->facPaymentFileExcel($toExportData['PAYMENT'], "Fact-Payment-$batch_no.xlsx");
         }catch (Exception $ex) {
             \DB::rollback();
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
@@ -685,7 +693,7 @@ class FinanceController extends Controller {
             }
 
             $toExportData = $records;
-            return $this->fileHelper->facPaymentFileExcel($toExportData, "Fact-Payment-$batch_no.xlsx");
+            return $this->facPaymentFileExcel($toExportData['PAYMENT'], "Fact-Payment-$batch_no.xlsx");
         }catch (Exception $ex) {
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
         }
@@ -899,7 +907,7 @@ class FinanceController extends Controller {
                 }
             }
             \DB::commit();
-            return $this->fileHelper->facJournalFileExcel($toExportData, "Fact-Journal-$batch_no.xlsx");
+            return $this->facJournalFileExcel($toExportData['JOURNAL'], "Fact-Journal-$batch_no.xlsx");
         }catch (Exception $ex) {
             \DB::rollback();
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
@@ -996,10 +1004,274 @@ class FinanceController extends Controller {
             }
 
             $toExportData = $records;
-            return $this->fileHelper->facJournalFileExcel($toExportData, "Fact-Journal-$batch_no.xlsx");
+            return $this->facJournalFileExcel($toExportData['JOURNAL'], "Fact-Journal-$batch_no.xlsx");
         }catch (Exception $ex) {
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
         }
-        
+    }
+
+    public function facJournalFileExcel($data, $file_name = ""){
+      $objPHPExcel = new PHPExcel();
+
+      // Set document properties
+      $objPHPExcel->getProperties()->setCreator("Capsave Finance")
+      ->setLastModifiedBy("Capsave Finance")
+      ->setTitle($file_name)
+      ->setSubject($file_name)
+      ->setDescription($file_name)
+      ->setKeywords($file_name)
+      ->setCategory("Fact file Report");
+      
+      $headerStyle = array(
+        'font' => array(
+          'bold' => true,
+        ),
+        'alignment' => array(
+          'horizontal' => PHPExcel_Style_Alignment::HORIZONTAL_CENTER,
+        ),
+        'borders' => array(
+            'top' => array(
+              'style' => PHPExcel_Style_Border::BORDER_THIN,
+            ),
+        ),
+        'fill' => array(
+          'type' => PHPExcel_Style_Fill::FILL_SOLID,
+          'rotation' => 90,
+          'startcolor' => array(
+              'argb' => 'FFA0A0A0',
+          ),
+          'endcolor' => array(
+              'argb' => 'FFFFFFFF',
+          ),
+        ),
+      );
+
+      // Set header 
+      $objPHPExcel->getActiveSheet()
+        ->setCellValue('A1', 'Voucher No')
+        ->setCellValue('B1', 'Voucher Date')
+        ->setCellValue('C1', 'Voucher Narration')
+        ->setCellValue('D1', 'General Ledger Code')
+        ->setCellValue('E1', 'Document Class')
+        ->setCellValue('F1', 'D / C')
+        ->setCellValue('G1', 'Amount')
+        ->setCellValue('H1', 'Description')
+        ->setCellValue('I1', 'Item Serial Number')
+        ->setCellValue('J1', 'Tax Code')
+        ->setCellValue('K1', 'Name')
+        ->setCellValue('L1', 'GST HSN Code')
+        ->setCellValue('M1', 'SAC Code')
+        ->setCellValue('N1', 'GST State Name')
+        ->setCellValue('O1', 'Address Line 1')
+        ->setCellValue('P1', 'Address Line 2')
+        ->setCellValue('Q1', 'Address Line 3')
+        ->setCellValue('R1', 'City')
+        ->setCellValue('S1', 'Country')
+        ->setCellValue('T1', 'Postal Code')
+        ->setCellValue('U1', 'Telephone Number')
+        ->setCellValue('V1', 'Mobile Phone Number')
+        ->setCellValue('W1', 'FAX')
+        ->setCellValue('X1', 'Email')
+        ->setCellValue('Y1', 'GST Identification Number (GSTIN)')
+        ->getStyle('A1:Y1')->applyFromArray($headerStyle);
+
+      foreach(range('A','Y') as $columnID){
+        $objPHPExcel->getActiveSheet()->getColumnDimension($columnID)->setAutoSize(true);
+      }
+
+      // Set Data
+      if(isset($data)){
+        $dataStyle = array(
+          'alignment' => array(
+            'horizontal' => PHPExcel_Style_Alignment::HORIZONTAL_JUSTIFY,
+          ),
+          'borders' => array(
+            'allborders' => array(
+              'style' => PHPExcel_Style_Border::BORDER_THIN,
+            ),
+          ),
+        );
+
+        foreach($data as $key => $item){
+          $excel_row = $key+2;
+          $objPHPExcel->getActiveSheet()
+            ->setCellValue('A' . $excel_row, $item['voucher_no'])
+            ->setCellValue('B' . $excel_row, PHPExcel_Shared_Date::PHPToExcel($item['voucher_date']))
+            ->setCellValue('C' . $excel_row, $item['voucher_narration'])
+            ->setCellValue('D' . $excel_row, $item['general_ledger_code'])
+            ->setCellValue('E' . $excel_row, $item['document_class'])
+            ->setCellValue('F' . $excel_row, $item['d_/_c'])
+            ->setCellValue('G' . $excel_row, $item['amount'])
+            ->setCellValue('H' . $excel_row, $item['description'])
+            ->setCellValue('I' . $excel_row, $item['item_serial_number'])
+            ->setCellValue('J' . $excel_row, $item['tax_code'])
+            ->setCellValue('K' . $excel_row, $item['name'])
+            ->setCellValue('L' . $excel_row, $item['gST_hSN_code'])
+            ->setCellValue('M' . $excel_row, $item['sAC_code'])
+            ->setCellValue('N' . $excel_row, $item['gST_state_name'])
+            ->setCellValue('O' . $excel_row, $item['address_line_1'])
+            ->setCellValue('P' . $excel_row, $item['address_line_2'])
+            ->setCellValue('Q' . $excel_row, $item['address_line_3'])
+            ->setCellValue('R' . $excel_row, $item['city'])
+            ->setCellValue('S' . $excel_row, $item['country'])
+            ->setCellValue('T' . $excel_row, $item['postal_code'])
+            ->setCellValue('U' . $excel_row, $item['telephone_number'])
+            ->setCellValue('V' . $excel_row, $item['mobile_phone_number'])
+            ->setCellValue('W' . $excel_row, $item['fAX'])
+            ->setCellValue('X' . $excel_row, $item['email'])
+            ->setCellValue('Y' . $excel_row, $item['gST_identification_number_(GSTIN)'])
+            ->getStyle('B'.$excel_row)
+            ->getNumberFormat()
+            ->setFormatCode('dd-mm-yyyy');
+        }
+        $objPHPExcel->getActiveSheet()->getStyle('A2:Y'.$key)->applyFromArray($dataStyle);
+      }
+      header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+      header('Content-Disposition: attachment;filename="' . $file_name . '"');
+      header('Cache-Control: max-age=0');
+      // If you're serving to IE 9, then the following may be needed
+      header('Cache-Control: max-age=1');
+
+      // If you're serving to IE over SSL, then the following may be needed
+      header ('Expires: Mon, 26 Jul 1997 05:00:00 GMT'); // Date in the past
+      header ('Last-Modified: '.gmdate('D, d M Y H:i:s').' GMT'); // always modified
+      header ('Cache-Control: cache, must-revalidate'); // HTTP/1.1
+      header ('Pragma: public'); // HTTP/1.0
+
+      $objWriter = PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel2007');
+      $objWriter->save('php://output');
+      exit;
+    }
+
+    public function facPaymentFileExcel($data, $file_name = ""){
+      $objPHPExcel = new PHPExcel();
+
+      // Set document properties
+      $objPHPExcel->getProperties()->setCreator("Capsave Finance")
+      ->setLastModifiedBy("Capsave Finance")
+      ->setTitle($file_name)
+      ->setSubject($file_name)
+      ->setDescription($file_name)
+      ->setKeywords($file_name)
+      ->setCategory("Fact file Report");
+
+      $headerStyle = array(
+        'font' => array(
+          'bold' => true,
+        ),
+        'alignment' => array(
+          'horizontal' => PHPExcel_Style_Alignment::HORIZONTAL_CENTER,
+        ),
+        'borders' => array(
+            'top' => array(
+              'style' => PHPExcel_Style_Border::BORDER_THIN,
+            ),
+        ),
+        'fill' => array(
+          'type' => PHPExcel_Style_Fill::FILL_SOLID,
+          'rotation' => 90,
+          'startcolor' => array(
+              'argb' => 'FFA0A0A0',
+          ),
+          'endcolor' => array(
+              'argb' => 'FFFFFFFF',
+          ),
+        ),
+      );
+
+      // Set header 
+      $objPHPExcel->getActiveSheet()
+        ->setCellValue('A1','Voucher')
+        ->setCellValue('B1','Sr')
+        ->setCellValue('C1','Date')
+        ->setCellValue('D1','Description')
+        ->setCellValue('E1','Chq / Ref Number')
+        ->setCellValue('F1','Dt Value')
+        ->setCellValue('G1','Fc Amount')
+        ->setCellValue('H1','Amount')
+        ->setCellValue('I1','Bank Code')
+        ->setCellValue('J1','Bank Name')
+        ->setCellValue('K1','Account No')
+        ->setCellValue('L1','Payment Vendor Name')
+        ->setCellValue('M1','Paid To Client')
+        ->setCellValue('N1','Code')
+        ->setCellValue('O1','Remarks')
+        ->setCellValue('P1','Type')
+        ->setCellValue('Q1','GL Code')
+        ->setCellValue('R1','Remark')
+        ->setCellValue('S1','Upload Status')
+        ->setCellValue('T1','Vendor Code Exists')
+        ->getStyle('A1:T1')->applyFromArray($headerStyle);
+
+      // Set Header Style
+      foreach(range('A','T') as $columnID){
+        $objPHPExcel->getActiveSheet()->getColumnDimension($columnID)->setAutoSize(true);
+      }
+
+      // Set Data
+      if(isset($data)){
+        $dataStyle = array(
+          'alignment' => array(
+            'horizontal' => PHPExcel_Style_Alignment::HORIZONTAL_JUSTIFY,
+          ),
+          'borders' => array(
+            'allborders' => array(
+              'style' => PHPExcel_Style_Border::BORDER_THIN,
+            ),
+          ),
+        );
+
+        foreach($data as $key => $item) {
+          $excel_row = $key + 2;
+          $objPHPExcel->getActiveSheet()
+            ->setCellValue('A' . $excel_row, $item['voucher'])
+            ->setCellValue('B' . $excel_row, $item['sr'])
+            ->setCellValue('C' . $excel_row, PHPExcel_Shared_Date::PHPToExcel($item['date']))
+            ->setCellValue('D' . $excel_row, $item['description'])
+            ->setCellValue('E' . $excel_row, $item['chq_/_ref_number'])
+            ->setCellValue('F' . $excel_row, PHPExcel_Shared_Date::PHPToExcel($item['dt_value']))
+            ->setCellValue('G' . $excel_row, $item['fc_amount'])
+            ->setCellValue('H' . $excel_row, $item['amount'])
+            ->setCellValue('I' . $excel_row, $item['bank_code'])
+            ->setCellValue('J' . $excel_row, $item['bank_name'])
+            ->setCellValue('K' . $excel_row, $item['account_no'])
+            ->setCellValue('L' . $excel_row, $item['payment_vendor_name'])
+            ->setCellValue('M' . $excel_row, $item['paid_to_client'])
+            ->setCellValue('N' . $excel_row, $item['code'])
+            ->setCellValue('O' . $excel_row, $item['remarks'])
+            ->setCellValue('P' . $excel_row, $item['type'])
+            ->setCellValue('Q' . $excel_row, $item['gL_code'])
+            ->setCellValue('R' . $excel_row, $item['remark'])
+            ->setCellValue('S' . $excel_row, $item['upload_status'])
+            ->setCellValue('T' . $excel_row, $item['vendor_code_exists']);
+            
+            $objPHPExcel->getActiveSheet()
+            ->getStyle('C'.$excel_row)
+            ->getNumberFormat()
+            ->setFormatCode('dd-mm-yyyy');
+
+            $objPHPExcel->getActiveSheet()
+            ->getStyle('F'.$excel_row)
+            ->getNumberFormat()
+            ->setFormatCode('dd-mm-yyyy');
+        }
+      
+        $objPHPExcel->getActiveSheet()->getStyle('A2:T'.$key)->applyFromArray($dataStyle);
+      }
+      header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+      header('Content-Disposition: attachment;filename="' . $file_name . '"');
+      header('Cache-Control: max-age=0');
+      // If you're serving to IE 9, then the following may be needed
+      header('Cache-Control: max-age=1');
+
+      // If you're serving to IE over SSL, then the following may be needed
+      header ('Expires: Mon, 26 Jul 1997 05:00:00 GMT'); // Date in the past
+      header ('Last-Modified: '.gmdate('D, d M Y H:i:s').' GMT'); // always modified
+      header ('Cache-Control: cache, must-revalidate'); // HTTP/1.1
+      header ('Pragma: public'); // HTTP/1.0
+
+      $objWriter = PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel2007');
+      $objWriter->save('php://output');
+      exit;
     }
 }
