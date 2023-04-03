@@ -108,7 +108,7 @@ class OnEodCheckData extends Command
                                 })
                                 ->pluck('trans_id')
                                 ->toArray();
-                                
+                                // dd($journalData);
         $bankingData = Transactions::where($where)
                                 ->where(function($query){
                                     $query->where(function($query1){
@@ -175,7 +175,7 @@ class OnEodCheckData extends Command
                                     ->groupBy('transactions.trans_id')
                                     ->get()
                                     ->toArray();
-
+            
             $this->tallyData[$tallyBatch->batch_no] = [
                 'start_date' => \Helpers::convertDateTimeFormat($tallyBatch->start_date, 'Y-m-d H:i:s', 'd-m-Y h:i A'),
                 'end_date' => \Helpers::convertDateTimeFormat($tallyBatch->end_date, 'Y-m-d H:i:s', 'd-m-Y h:i A'),
@@ -194,12 +194,10 @@ class OnEodCheckData extends Command
                                             })
                                             ->orWhere(function($query2) {
                                                 $query2->where('trans_type', config('lms.TRANS_TYPE.WAVED_OFF'))
-                                                ->where('entry_type', 1)
-                                                ->doesntHave('userInvTrans');
+                                                ->where('entry_type', 1);
                                             });
                                         })
                                         ->get();
-
             $tallyGstRecords = TallyEntry::select('tally_entry.trans_type as trans_name', DB::raw('sum(rta_tally_entry.amount) as tally_gst_amount'))
                         ->where('tally_entry.batch_no', $tallyBatch->batch_no)
                         ->whereNotNull('tally_entry.transactions_id')
@@ -208,7 +206,8 @@ class OnEodCheckData extends Command
                         ->get()
                         ->toArray();
             $gstData = $this->formatGstData($transGstRecords, $tallyGstRecords);
-            $this->tallyData[$tallyBatch->batch_no]['trans_wise_data']['SGST + CGST'] = $gstData['gst_type_1'];
+            $this->tallyData[$tallyBatch->batch_no]['trans_wise_data']['SGST'] = $gstData['gst_type_1'];
+            $this->tallyData[$tallyBatch->batch_no]['trans_wise_data']['CGST'] = $gstData['gst_type_3'];
             $this->tallyData[$tallyBatch->batch_no]['trans_wise_data']['IGST'] = $gstData['gst_type_2'];
 
             $tally_data = Transactions::select(DB::raw('COUNT(*) as transCount, rta_customer_transaction_soa.trans_name as transaction_name, GROUP_CONCAT(rta_transactions.trans_id) as trans_ids'))
@@ -274,9 +273,11 @@ class OnEodCheckData extends Command
         if(count($transGstRecords)) {
             foreach($transGstRecords as $transGstRecord) {
                 $userInvTrans = $transGstRecord->userInvTrans;
-                if ($userInvTrans && $userInvTrans->sgst_amount > 0 && $userInvTrans->cgst_amount > 0) {
-                   $data['trans_gst1_amount'] = round(($userInvTrans->sgst_amount + $userInvTrans->cgst_amount), 2);
+                if ($userInvTrans && ($userInvTrans->sgst_amount > 0 || $userInvTrans->cgst_amount > 0)) {
+                   $data['trans_gst1_amount'] = round(($userInvTrans->sgst_amount), 2);
+                   $data['trans_gst3_amount'] = round(($userInvTrans->cgst_amount), 2);
                    array_push($transGstRecordsArray, $data);
+                   
                 }elseif($userInvTrans && $userInvTrans->igst_amount > 0) {
                    $data1['trans_gst2_amount'] = round($userInvTrans->igst_amount, 2);
                    array_push($transGstRecordsArray, $data1);
@@ -286,8 +287,9 @@ class OnEodCheckData extends Command
                         $sgstAmt = round((($transGstRecord->base_amt * $parentUserInvTrans->sgst_rate) / 100), 2);
                         $cgstAmt = round((($transGstRecord->base_amt * $parentUserInvTrans->cgst_rate) / 100), 2);
                         $igstAmt = round((($transGstRecord->base_amt * $parentUserInvTrans->igst_rate) / 100), 2);
-                        if ($sgstAmt > 0 && $cgstAmt > 0) {
-                            $data4['trans_gst1_amount'] = round(($sgstAmt + $cgstAmt), 2);
+                        if ($sgstAmt > 0 || $cgstAmt > 0) {
+                            $data4['trans_gst1_amount'] = round(($sgstAmt), 2);
+                            $data4['trans_gst3_amount'] = round(($cgstAmt), 2);
                             array_push($transGstRecordsArray, $data4);
                         }elseif($igstAmt > 0) {
                             $data5['trans_gst2_amount'] = $igstAmt;
@@ -299,19 +301,24 @@ class OnEodCheckData extends Command
         }
         if(count($tallyGstRecords)) {
             foreach($tallyGstRecords as $tallyGstRecord) {
-                if ($tallyGstRecord['trans_name'] == 'SGST + CGST') {
+                if (strpos($tallyGstRecord['trans_name'],'SGST - ') !==false) {
                    $data2['tally_gst1_amount'] = round($tallyGstRecord['tally_gst_amount'], 2);
                    array_push($tallyGstRecordsArray, $data2);
-                }elseif($tallyGstRecord['trans_name'] == 'IGST') {
+                }elseif(strpos($tallyGstRecord['trans_name'],'IGST - ') !==false) {
                    $data3['tally_gst2_amount'] = round($tallyGstRecord['tally_gst_amount'], 2);
                    array_push($tallyGstRecordsArray, $data3);
+                }elseif(strpos($tallyGstRecord['trans_name'],'CGST - ') !==false){
+                   $data6['tally_gst3_amount'] = round($tallyGstRecord['tally_gst_amount'], 2);
+                   array_push($tallyGstRecordsArray, $data6);
                 }
             }
         }
         $totalTransGst1Amt = array_sum(array_column($transGstRecordsArray, 'trans_gst1_amount'));
         $totalTransGst2Amt = array_sum(array_column($transGstRecordsArray, 'trans_gst2_amount'));
+        $totalTransGst3Amt = array_sum(array_column($transGstRecordsArray, 'trans_gst3_amount'));
         $totalTallyGst1Amt = array_sum(array_column($tallyGstRecordsArray, 'tally_gst1_amount'));
         $totalTallyGst2Amt = array_sum(array_column($tallyGstRecordsArray, 'tally_gst2_amount'));
+        $totalTallyGst3Amt = array_sum(array_column($tallyGstRecordsArray, 'tally_gst3_amount'));
         return [
             'gst_type_1' => [
                 'transCount' => count(array_column($transGstRecordsArray, 'trans_gst1_amount')),
@@ -324,6 +331,12 @@ class OnEodCheckData extends Command
                 'transAmt' => $totalTransGst2Amt,
                 'tallyCount' => count(array_column($tallyGstRecordsArray, 'tally_gst2_amount')),
                 'tallyAmt' => $totalTallyGst2Amt,
+            ],
+            'gst_type_3' => [
+                'transCount' => count(array_column($transGstRecordsArray, 'trans_gst3_amount')),
+                'transAmt' => $totalTransGst3Amt,
+                'tallyCount' => count(array_column($tallyGstRecordsArray, 'tally_gst3_amount')),
+                'tallyAmt' => $totalTallyGst3Amt,
             ],
         ];
     }
