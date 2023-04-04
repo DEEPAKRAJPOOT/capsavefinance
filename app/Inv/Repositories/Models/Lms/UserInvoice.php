@@ -108,13 +108,13 @@ class UserInvoice extends BaseModel {
         } elseif (!isset($invoices[0])) {
             $invoiceSerialNo = self::where(['invoice_type'=> $invoices['invoice_type'],'invoice_cat' => $invoices['invoice_cat']])->orderBy('user_invoice_id','desc')->limit(1)->value('inv_serial_no');
             $invoiceSerialNo = sprintf('%04d', (($invoiceSerialNo ?? 0) + 1) ?? rand(0, 9999));
-            $invoices['invoice_no'] = $invoices['invoice_no']. '/' . $invoiceSerialNo;
+            $invoices['invoice_no'] =  str_replace("/","",($invoices['invoice_no']. '/' . $invoiceSerialNo));
             $invoices['inv_serial_no'] = $invoiceSerialNo;
             return self::create($invoices);
         } else {
             $invoiceSerialNo = self::where(['invoice_type'=> $invoices['invoice_type'],'invoice_cat' => $invoices['invoice_cat']])->orderBy('user_invoice_id','desc')->limit(1)->value('inv_serial_no');
             $invoiceSerialNo = sprintf('%04d', (($invoiceSerialNo ?? 0) + 1) ?? rand(0, 9999));
-            $invoices['invoice_no'] = $invoices['invoice_no']. '/' . $invoiceSerialNo;
+            $invoices['invoice_no'] = str_replace("/","",($invoices['invoice_no']. '/' . $invoiceSerialNo));
             $invoices['inv_serial_no'] = $invoiceSerialNo;        
             return self::insert($invoices);
         }
