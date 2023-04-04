@@ -124,7 +124,7 @@ class ReviewerSummary extends Mailable
         $borrowerLimitData['multiple_limit'] = 0;
         $status_log = [21,22,25,50,51];
         $appData = Application::getAppData($appId);
-        $currDate = Carbon::parse('2023-04-04')->format('Y-m-d');
+        $currDate = Carbon::parse('2023-04-03')->format('Y-m-d');
         $appCreated = Carbon::parse($appData->created_at)->format('Y-m-d');
         if(in_array($appData->curr_status_id,$status_log) && ($appCreated < $currDate)){
             $borrowerLimitData['single_limit'] = 150;
