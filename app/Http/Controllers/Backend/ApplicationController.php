@@ -1660,8 +1660,6 @@ class ApplicationController extends Controller
 
 				  $applimitData['single_limit'] = $limitData['single_limit'];
 				  $applimitData['multiple_limit'] = $limitData['multiple_limit'];
-				  $applimitData['start_date']  = $limitData['start_date'];
-				  $applimitData['end_date']  = $limitData['end_date'];
 				  $applimitData['app_id'] = $appId;
 				  $createdLimited = $this->appRepo->createBorrowerLimit($applimitData);
 					
