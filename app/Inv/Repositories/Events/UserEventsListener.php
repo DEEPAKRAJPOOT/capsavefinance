@@ -11,6 +11,7 @@ use Storage;
 use App\Inv\Repositories\Contracts\MasterInterface as InvMasterRepoInterface;
 use App\Mail\ReviewerSummary;
 use Carbon\Carbon;
+use App\Jobs\SendMail as SendMailJob;
 
 class UserEventsListener extends BaseEvent
 {
@@ -82,6 +83,17 @@ class UserEventsListener extends BaseEvent
                 [ucwords($user['name']),$user['otp']],
                 $email_content->message
             );
+            // function(($message) use ($user, $email_content, $mail_body)){
+            //     if( env('SEND_MAIL_ACTIVE') == 1){
+            //         $email = explode(',', env('SEND_MAIL'));
+            //         $bcc = $message->bcc(explode(',', env('SEND_MAIL_BCC')));
+            //         $cc = $message->cc(explode(',', env('SEND_MAIL_CC')));
+            //     }else{
+            //         $email = $user["email"];
+            //     }
+            //     $message->from(config('common.FRONTEND_FROM_EMAIL'),config('common.FRONTEND_FROM_EMAIL_NAME'));
+            //     $to = $message->to($email, $user["name"])->subject($email_content->subject);
+            // }
             Mail::send('email', ['baseUrl'=>env('REDIRECT_URL',''),'varContent' => $mail_body,
                 ],
                 function ($message) use ($user, $email_content, $mail_body) {
@@ -1616,34 +1628,44 @@ class UserEventsListener extends BaseEvent
                 [$userData['approver_name'], $rowData],
                 $email_content->message
             );
-            Mail::send('email', ['baseUrl'=> env('HTTP_APPURL',''), 'varContent' => $mail_body],
-                function ($message) use ($data, $mail_subject, $mail_body, $email_content) {
-                    $cc = array_filter(explode(',', $email_content->cc));
-                    $bcc = array_filter(explode(',', $email_content->bcc));
-                    if (!empty($bcc)) {
-                        $message->bcc($bcc);
-                    }
-                    if (!empty($cc)) {
-                        $message->cc($cc);
-                    }
-                $message->from(config('common.FRONTEND_FROM_EMAIL'), config('common.FRONTEND_FROM_EMAIL_NAME'));
-                $message->to($data["email"], $data["approver_name"]);
-                $message->subject($mail_subject);
-                $mailContent = [
-                    'email_from' => config('common.FRONTEND_FROM_EMAIL'),
-                    'email_to' => $data["email"],
-                    'email_cc' => $cc ?? NULL,
-                    'email_bcc' => $bcc ?? NULL,
-                    'email_type' => $this->func_name,
-                    'user_name' => $data['approver_name'],
-                    'name' => $email_content->name,
-                    'subject' => $mail_subject,
-                    'body' => $mail_body,
-                    // 'att_name' => $att_name ?? NULL,
-                    // 'attachment' => $data['attachment'] ?? NULL,
-                ];
-                FinanceModel::logEmail($mailContent);
-            }); 
+            $cc = array_filter(explode(',', $email_content->cc));
+            $bcc = array_filter(explode(',', $email_content->bcc));
+            $to[$data["email"]] = $data["approver_name"];
+            // $from[config('common.FRONTEND_FROM_EMAIL')] = config('common.FRONTEND_FROM_EMAIL_NAME');
+            $funcName = $this->func_name;
+            // dd($funcName);
+            // dd($mail_subject);
+            SendMailJob::dispatch($to, $bcc, $cc, $mail_subject, $mail_body,$funcName,$data,$email_content)
+                        ->delay(now()->addSeconds(10));
+            // Mail::send('email', ['baseUrl'=> env('HTTP_APPURL',''), 'varContent' => $mail_body],
+            //     function ($message) use ($data, $mail_subject, $mail_body, $email_content) {
+            //         dd($message->to($data["email"], $data["approver_name"]));
+            //         $cc = array_filter(explode(',', $email_content->cc));
+            //         $bcc = array_filter(explode(',', $email_content->bcc));
+            //         if (!empty($bcc)) {
+            //             $message->bcc($bcc);
+            //         }
+            //         if (!empty($cc)) {
+            //             $message->cc($cc);
+            //         }
+            //     $message->from(config('common.FRONTEND_FROM_EMAIL'), config('common.FRONTEND_FROM_EMAIL_NAME'));
+            //     $message->to($data["email"], $data["approver_name"]);
+            //     $message->subject($mail_subject);
+            //     $mailContent = [
+            //         'email_from' => config('common.FRONTEND_FROM_EMAIL'),
+            //         'email_to' => $data["email"],
+            //         'email_cc' => $cc ?? NULL,
+            //         'email_bcc' => $bcc ?? NULL,
+            //         'email_type' => $this->func_name,
+            //         'user_name' => $data['approver_name'],
+            //         'name' => $email_content->name,
+            //         'subject' => $mail_subject,
+            //         'body' => $mail_body,
+            //         // 'att_name' => $att_name ?? NULL,
+            //         // 'attachment' => $data['attachment'] ?? NULL,
+            //     ];
+            //     FinanceModel::logEmail($mailContent);
+            // }); 
         }
     }
 
