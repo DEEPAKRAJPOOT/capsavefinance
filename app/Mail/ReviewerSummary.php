@@ -122,17 +122,19 @@ class ReviewerSummary extends Mailable
         $is_shown = $appRepo->getOfferStatus([['app_id', $appId], ['is_approve', 1], ['status', 1],['is_active', 1]]);
         $borrowerLimitData['single_limit'] = 0;
         $borrowerLimitData['multiple_limit'] = 0;
+        //Below code is hardcoded from line no.451 to 461 as we need to display single limit and multiple limit basis on the fix date. 
         $status_log = [21,22,25,50,51];
         $appData = Application::getAppData($appId);
-        $currDate = Carbon::parse('2023-04-03')->format('Y-m-d');
-        $appCreated = Carbon::parse($appData->created_at)->format('Y-m-d');
-        if(in_array($appData->curr_status_id,$status_log) && ($appCreated < $currDate)){
-            $borrowerLimitData['single_limit'] = 150;
-            $borrowerLimitData['multiple_limit'] = 250;
-        }else{
-            $borrowerLimitData['single_limit'] = 0;
-            $borrowerLimitData['multiple_limit'] = 0;
-        }
+        $implementDate = Carbon::parse('2023-04-03')->format('Y-m-d');
+        $appCreated = Carbon::parse($appData->curr_status_updated_at)->format('Y-m-d');
+        if (in_array($appData->curr_status_id,$status_log) && 
+        (strtotime($appCreated) <= strtotime($implementDate))) {
+          $borrowerLimitData['single_limit'] = 150;
+          $borrowerLimitData['multiple_limit'] = 250;
+        } else {
+          $borrowerLimitData['single_limit'] = 0;
+          $borrowerLimitData['multiple_limit'] = 0;
+        } 
         /*if($is_shown){
         $Limitdata =  $appRepo->getAppBorrowerLimit($appId);
         if($Limitdata){
