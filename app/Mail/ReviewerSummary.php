@@ -7,6 +7,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Http\Request;
+use Carbon\Carbon;
 use App\Inv\Repositories\Models\CamReviewerSummary;
 use App\Inv\Repositories\Models\AppProgramLimit;
 use App\Inv\Repositories\Models\AppDocumentFile;
@@ -19,6 +20,7 @@ use App\Inv\Repositories\Models\AppProgramOffer;
 use App\Inv\Repositories\Models\Business;
 use App\Inv\Repositories\Models\CamReviewSummRiskCmnt;
 use App\Inv\Repositories\Models\AppSecurityDoc;
+use App\Inv\Repositories\Models\Application;
 
 class ReviewerSummary extends Mailable
 {
@@ -120,8 +122,18 @@ class ReviewerSummary extends Mailable
         $is_shown = $appRepo->getOfferStatus([['app_id', $appId], ['is_approve', 1], ['status', 1],['is_active', 1]]);
         $borrowerLimitData['single_limit'] = 0;
         $borrowerLimitData['multiple_limit'] = 0;
-        
-        if($is_shown){
+        $status_log = [21,22,25,50,51];
+        $appData = Application::getAppData($appId);
+        $currDate = Carbon::parse('2023-04-04')->format('Y-m-d');
+        $appCreated = Carbon::parse($appData->created_at)->format('Y-m-d');
+        if(in_array($appData->curr_status_id,$status_log) && ($appCreated < $currDate)){
+            $borrowerLimitData['single_limit'] = 150;
+            $borrowerLimitData['multiple_limit'] = 250;
+        }else{
+            $borrowerLimitData['single_limit'] = 0;
+            $borrowerLimitData['multiple_limit'] = 0;
+        }
+        /*if($is_shown){
         $Limitdata =  $appRepo->getAppBorrowerLimit($appId);
         if($Limitdata){
             $borrowerLimitData['single_limit'] = $Limitdata['single_limit'];
@@ -133,7 +145,7 @@ class ReviewerSummary extends Mailable
             $borrowerLimitData['single_limit'] = $Limitdata['single_limit'];
             $borrowerLimitData['multiple_limit'] = $Limitdata['multiple_limit'];
             }
-        }
+        }*/
 
         $email = $this->view('emails.reviewersummary.reviewersummarymail', [
             'limitOfferData'=> $limitOfferData,
