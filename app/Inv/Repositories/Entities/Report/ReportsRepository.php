@@ -759,7 +759,6 @@ class ReportsRepository extends BaseRepositories implements ReportInterface {
 			'invoice.program_offer',
 			'invoice.business', 
 			'disbursal',
-			'transactions',
 			'disburseDetails'
 		])
 		->whereIn('status_id', [12,13,15,47])
@@ -772,7 +771,7 @@ class ReportsRepository extends BaseRepositories implements ReportInterface {
 			}
 		})
 		->whereDate('int_accrual_start_dt','<=',$curdate)
-		->get();
+		->cursor();
 		$outstandingData = self::getOutstandingData($curdate);
 		$sendMail = ($invDisbList->count() > 0)?true:false;
 		$result = [];
@@ -884,9 +883,13 @@ class ReportsRepository extends BaseRepositories implements ReportInterface {
 
 			$interestDPD = $invDisb->transactions->where('trans_type','9')->where('entry_type',0)->where('outstanding', '>', 0)->whereNull('payment_id')->whereNull('parent_trans_id')->max('dpd');
 			
+			$overdueDPD = $invDisb->transactions->where('trans_type','33')->where('entry_type',0)->where('outstanding', '>', 0)->whereNull('payment_id')->whereNull('parent_trans_id')->max('dpd');
+
 			$principalDPD = (round($principalOutstanding,2) > 0) ? ($principalDPD > 0 ? $principalDPD : 0) : 0;
 
 			$interestDPD = (round($interestOutstanding,2) > 0) ? ($interestDPD > 0 ? $interestDPD : 0) : 0;
+
+			$overdueDPD = (round($overdueOutstanding,2) > 0) ? ($overdueDPD > 0 ? $overdueDPD : 0) : 0;
 
 			$maxDPD = $principalDPD > $interestDPD ? $principalDPD : $interestDPD;
 			$outstanding_max_bucket = "Not Outstanding";
@@ -972,6 +975,7 @@ class ReportsRepository extends BaseRepositories implements ReportInterface {
 				'principalOverdueCategory'=> $principalOverdueCategory,
 				'principalDPD' => ($principalDPD > 0) ? $principalDPD : 0,
 				'interestDPD' => ($interestDPD > 0) ? $interestDPD : 0,
+				'overdueDPD' => ($overdueDPD > 0) ? $overdueDPD : 0,
 				'finalDPD' => $maxDPD,
 				'outstandingMaxBucket' => $outstanding_max_bucket,
 				'maturityDays' => $maturityDays,
