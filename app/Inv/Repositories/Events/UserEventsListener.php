@@ -12,6 +12,7 @@ use App\Inv\Repositories\Contracts\MasterInterface as InvMasterRepoInterface;
 use App\Mail\ReviewerSummary;
 use Carbon\Carbon;
 use App\Jobs\SendMail as SendMailJob;
+use App\Mail\SendEmail;
 
 class UserEventsListener extends BaseEvent
 {
@@ -1630,13 +1631,22 @@ class UserEventsListener extends BaseEvent
             );
             $cc = array_filter(explode(',', $email_content->cc));
             $bcc = array_filter(explode(',', $email_content->bcc));
-            $to[$data["email"]] = $data["approver_name"];
+            // $to[$data["email"]] = $data["approver_name"];
+            $to = [
+                [
+                    'email' => $data["email"], 
+                    'name' => $data["approver_name"],
+                ]
+            ];
+            // $to = $data["email"];
             // $from[config('common.FRONTEND_FROM_EMAIL')] = config('common.FRONTEND_FROM_EMAIL_NAME');
             $funcName = $this->func_name;
             // dd($funcName);
             // dd($mail_subject);
-            SendMailJob::dispatch($to, $bcc, $cc, $mail_subject, $mail_body,$funcName,$data,$email_content)
-                        ->delay(now()->addSeconds(10));
+            Mail::to($to)->cc($cc)
+            ->bcc($bcc)->queue(new SendEmail($mail_subject,$data));
+            // SendMailJob::dispatch($to, $bcc, $cc, $mail_subject, $mail_body,$funcName,$data,$email_content)
+            //             ->delay(now()->addSeconds(10));
             // Mail::send('email', ['baseUrl'=> env('HTTP_APPURL',''), 'varContent' => $mail_body],
             //     function ($message) use ($data, $mail_subject, $mail_body, $email_content) {
             //         dd($message->to($data["email"], $data["approver_name"]));
