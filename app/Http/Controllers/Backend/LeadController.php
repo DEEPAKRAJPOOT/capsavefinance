@@ -18,8 +18,7 @@ use App\Inv\Repositories\Contracts\UserInterface as InvUserRepoInterface;
 use App\Inv\Repositories\Contracts\ApplicationInterface as InvAppRepoInterface;
 use App\Inv\Repositories\Contracts\DocumentInterface as InvDocumentRepoInterface;
 use Event;
-use PHPExcel;
-use PHPExcel_IOFactory;
+
 use Illuminate\Support\Facades\Storage;
 use App\Http\Requests\Backend\CreateLeadRequest;
 use App\Inv\Repositories\Models\UserAppDoc;

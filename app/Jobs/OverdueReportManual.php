@@ -2,9 +2,9 @@
 
 namespace App\Jobs;
 use Helpers;
-use PHPExcel;
 use Carbon\Carbon;
-use PHPExcel_IOFactory;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\IOFactory;
 use Illuminate\Bus\Queueable;
 use Illuminate\Support\Facades\App;
 use Illuminate\Queue\SerializesModels;
@@ -75,7 +75,7 @@ class OverdueReportManual implements ShouldQueue
         ini_set("memory_limit", "-1");
         ini_set('max_execution_time', 10000);
         $rows = 5;
-        $sheet =  new PHPExcel();
+        $sheet =  new Spreadsheet();
         $sheet->setActiveSheetIndex(0)
         ->setCellValue('A'.$rows, 'Customer Name')
         ->setCellValue('B'.$rows, 'Customer ID')
@@ -142,7 +142,7 @@ class OverdueReportManual implements ShouldQueue
             $rows++;
         }
 
-        $objWriter = PHPExcel_IOFactory::createWriter($sheet, 'Excel2007');
+        $objWriter = IOFactory::createWriter($sheet, 'Xlsx');
         $objWriter->setPreCalculateFormulas(true);
 
         $dirPath = 'public/report/temp/overdueReport/manual/console';

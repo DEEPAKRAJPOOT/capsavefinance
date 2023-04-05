@@ -753,11 +753,8 @@
                     "library/HTMLPurifier.composer.php"
                 ],
                 "psr-0": {
-                    "HTMLPurifier": "library/"
-                },
-                "exclude-from-classmap": [
-                    "/library/HTMLPurifier/Language/"
-                ]
+                    "SimpleExcel\\": "src/"
+                }
             },
             "notification-url": "https://packagist.org/downloads/",
             "license": [

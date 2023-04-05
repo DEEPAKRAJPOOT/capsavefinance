@@ -7,11 +7,11 @@ use Auth;
 use Session;
 use Helpers;
 use DateTime;
-use PHPExcel; 
 use PDF as DPDF;
 use Carbon\Carbon;
 use App\Libraries\Pdf;
-use PHPExcel_IOFactory;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\IOFactory;
 use App\Helpers\FileHelper;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
@@ -429,7 +429,7 @@ class NACHController extends Controller {
 
 	public function export($data, $filename = 'nach_demo') {
         ob_start();
-        $sheet =  new PHPExcel();
+        $sheet =  new Spreadsheet();
         $sheet->getProperties()
                 ->setCreator("Capsave")
                 ->setLastModifiedBy("Capsave")
@@ -481,7 +481,7 @@ class NACHController extends Controller {
         // $filePath = $storage_path.'/'.$filename.'.xlsx';
         $fileUrl = Storage::url($commonUrl);
 
-        $objWriter = PHPExcel_IOFactory::createWriter($sheet, 'Excel2007');
+        $objWriter = IOFactory::createWriter($sheet, 'Xlsx');
         $objWriter->save($filePath);
         $objWriter->save("php://output");
         

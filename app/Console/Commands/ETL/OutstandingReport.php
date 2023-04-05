@@ -3,7 +3,7 @@
 namespace App\Console\Commands\ETL;
 
 use Carbon\Carbon;
-use PHPExcel_IOFactory;
+use PhpOffice\PhpSpreadsheet\IOFactory;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Storage;
 use App\Inv\Repositories\Models\Lms\OutstandingReportLog;
@@ -48,8 +48,8 @@ class OutstandingReport extends Command
         $reportLogId = $outstandingReportLog->id;
         if(file_exists($filePath)) {
             try {
-                $inputFileType = PHPExcel_IOFactory::identify($filePath);
-                $objReader = PHPExcel_IOFactory::createReader($inputFileType);
+                $inputFileType = IOFactory::identify($filePath);
+                $objReader = IOFactory::createReader($inputFileType);
                 $objPHPExcel = $objReader->load($filePath);
             } catch (\Exception $e) {
                 $this->error('Error loading file "'.pathinfo($filePath,PATHINFO_BASENAME).'": '.$e->getMessage());

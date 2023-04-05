@@ -5,7 +5,7 @@ namespace App\Console\Commands\ETL;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Storage;
 use App\Inv\Repositories\Models\ETL\MaturityReport as MaturityReportModel;
-use PHPExcel_IOFactory;
+use PhpOffice\PhpSpreadsheet\IOFactory;
 use Carbon\Carbon;
 
 class MaturityReport extends Command
@@ -52,8 +52,8 @@ class MaturityReport extends Command
                 $filePath = storage_path('app/'.$file);
                 if (file_exists($filePath) && $file == $dirPath."/Consolidated Report.xlsx") {
                     try {
-                        $inputFileType = PHPExcel_IOFactory::identify($filePath);
-                        $objReader = PHPExcel_IOFactory::createReader($inputFileType);
+                        $inputFileType = IOFactory::identify($filePath);
+                        $objReader = IOFactory::createReader($inputFileType);
                         $objPHPExcel = $objReader->load($filePath);
                     } catch (\Exception $e) {
                         die('Error loading file "'.pathinfo($filePath,PATHINFO_BASENAME).'": '.$e->getMessage());

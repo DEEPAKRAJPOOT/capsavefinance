@@ -19,8 +19,8 @@ use DB;
 use Intervention\Image\File;
 use App\Libraries\Pdf;
 use Carbon\Carbon;
-use PHPExcel; 
-use PHPExcel_IOFactory;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\IOFactory;
 use App\Inv\Repositories\Contracts\Traits\ApplicationTrait;
 use App\Inv\Repositories\Contracts\Traits\LmsTrait;
 use App\Inv\Repositories\Contracts\Traits\InvoiceTrait;
@@ -940,7 +940,7 @@ class InvoiceController extends Controller {
 
             foreach ($supplierIds as $userid) {
                 $refNo = _getRand(12);
-                $disburseAmount = 0;
+                $disburseAmount = 0;            
                 foreach ($allinvoices as $invoice) {
                     if($invoice['supplier_id'] == $userid) {
                         
@@ -1502,7 +1502,7 @@ public function disburseTableInsert($exportData = [], $supplierIds = [], $allinv
 
 
     public function export($data, $filename) {
-        $sheet =  new PHPExcel();
+        $sheet =  new Spreadsheet();
         $sheet->getProperties()
                 ->setCreator("Capsave")
                 ->setLastModifiedBy("Capsave")
@@ -1594,7 +1594,7 @@ public function disburseTableInsert($exportData = [], $supplierIds = [], $allinv
         $storage_path = storage_path('app/public/docs/bank_excel');
         $filePath = $storage_path.'/'.$filename.'.xlsx';
 
-        $objWriter = PHPExcel_IOFactory::createWriter($sheet, 'Excel2007');
+        $objWriter = IOFactory::createWriter($sheet, 'Xlsx');
         $objWriter->save($filePath);
 
         return [ 'status' => 1,
@@ -1619,7 +1619,7 @@ public function disburseTableInsert($exportData = [], $supplierIds = [], $allinv
         $batchId = $request->get('batch_id');
 
         $data = $this->userRepo->lmsGetSentToBankInvToExcel($custCode, $selectDate, $batchId)->toArray();
-        $sheet =  new PHPExcel();
+        $sheet =  new Spreadsheet();
         $sheet->getProperties()
                 ->setCreator("Capsave")
                 ->setLastModifiedBy("Capsave")
@@ -1741,7 +1741,7 @@ public function disburseTableInsert($exportData = [], $supplierIds = [], $allinv
         header ('Cache-Control: cache, must-revalidate'); // HTTP/1.1
         header ('Pragma: public'); // HTTP/1.0
         
-        $objWriter = PHPExcel_IOFactory::createWriter($sheet, 'Excel2007');
+        $objWriter = IOFactory::createWriter($sheet, 'Xlsx');
         $objWriter->save('php://output');
     }
     
