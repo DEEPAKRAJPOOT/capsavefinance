@@ -6427,7 +6427,6 @@ if ($err) {
      }
 
      public function getCustAndCapsLocApp(DataProviderInterface $dataProvider) {
-        // dd($this->request->all(),$this->request->get('user_id'));
         $user_id =  (int) $this->request->get('user_id');
         $cusCapLoc = $this->UserInvRepo->getCustAndCapsLocApp($user_id);
         $data = $dataProvider->getCustAndCapsLocApp($this->request, $cusCapLoc);
