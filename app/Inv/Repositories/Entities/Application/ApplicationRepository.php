@@ -1877,6 +1877,18 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
        }
        
    } 
+
+   public function getUserProgramLimitByBizId($biz_id)
+   {
+       try
+       {
+           return AppProgramLimit::getUserProgramLimitByBizId($biz_id);
+       } catch (Exception $ex) {
+             return $ex;
+       }
+       
+   } 
+
    
      /** get the get Avaliable User Limit   **/
    public function getAvaliableUserLimit($attr)
