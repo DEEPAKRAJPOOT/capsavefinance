@@ -541,15 +541,24 @@ class Transactions extends BaseModel {
         if($this->entry_type == 0){
             $from = Carbon::parse($this->paymentduedate)->format('Y-m-d');
             $graceEnd = Carbon::parse($from)->addDays($this->invoiceDisbursed->grace_period ?? 0)->format('Y-m-d');
-
-            if($this->trans_type == config('lms.TRANS_TYPE.PAYMENT_DISBURSED')){
-                if(strtotime($to) >= strtotime($graceEnd) && $this->outstanding > 0){
-                    $number_days = (strtotime($to) - strtotime($graceEnd)) / (60 * 60 * 24);
-                }
-            }
-            if($this->trans_type == config('lms.TRANS_TYPE.INTEREST')){
-                if(strtotime($to) > strtotime($from) && $this->outstanding > 0 ){
-                    $number_days = (strtotime($to) - strtotime($from)) / (60 * 60 * 24);
+            
+            if($this->outstanding > 0){
+                switch ($this->trans_type) {
+                    case config('lms.TRANS_TYPE.PAYMENT_DISBURSED'):
+                        if(strtotime($to) >= strtotime($graceEnd)){
+                            $number_days = (strtotime($to) - strtotime($graceEnd)) / (60 * 60 * 24);
+                        }
+                    break;
+                    case config('lms.TRANS_TYPE.INTEREST'):
+                        if(strtotime($to) > strtotime($from)){
+                            $number_days = (strtotime($to) - strtotime($from)) / (60 * 60 * 24);
+                        }
+                    break;
+                    case config('lms.TRANS_TYPE.INTEREST_OVERDUE'):
+                        if(strtotime($to) > strtotime($from)){
+                            $number_days = (strtotime($to) - strtotime($from)) / (60 * 60 * 24);
+                        }
+                    break;
                 }
             }
         }

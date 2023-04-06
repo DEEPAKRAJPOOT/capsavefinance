@@ -52,6 +52,7 @@ class OutstandingReportMonthly extends BaseModel
         'Principal Overdue Category',
         'Principal DPD',
         'Interest DPD',
+        'Overdue DPD',
         'Final DPD',
         'Outstanding Max Bucket',
         'Maturity Days',

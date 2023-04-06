@@ -70,7 +70,7 @@ class OutstandingReportManual implements ShouldQueue
             //     $data = $this->reportsRepo->getBackDateOutstandingReportManual(['user_id' => $this->userId, 'to_date' => $this->toDate], $this->sendMail);
             // }
             $filePath = $this->downloadOutstandingReport($data);
-            
+            unset($data);
             if($this->toDate && $this->logId){
                 $this->createOutstandingReportLog($this->toDate, $this->userId, $filePath, $this->logId);
             }
@@ -134,18 +134,19 @@ class OutstandingReportManual implements ShouldQueue
         ->setCellValue('AI'.$rows, 'Principal Overdue Category')
         ->setCellValue('AJ'.$rows, 'Principal DPD')
         ->setCellValue('AK'.$rows, 'Interest DPD')
-        ->setCellValue('AL'.$rows, 'Final DPD')
-        ->setCellValue('AM'.$rows, 'Outstanding Max Bucket')
-        ->setCellValue('AN'.$rows, 'Maturity Days')
-        ->setCellValue('AO'.$rows, 'Maturity Bucket')
-        ->setCellValue('AP'.$rows, 'Balance Margin to be Refunded')
-        ->setCellValue('AQ'.$rows, 'Balance Interest to be refunded')
-        ->setCellValue('AR'.$rows, 'Balance Overdue Interest to be refunded')
-        ->setCellValue('AS'.$rows, 'Sales Manager');
+        ->setCellValue('AL'.$rows, 'Overdue DPD')
+        ->setCellValue('AM'.$rows, 'Final DPD')
+        ->setCellValue('AN'.$rows, 'Outstanding Max Bucket')
+        ->setCellValue('AO'.$rows, 'Maturity Days')
+        ->setCellValue('AP'.$rows, 'Maturity Bucket')
+        ->setCellValue('AQ'.$rows, 'Balance Margin to be Refunded')
+        ->setCellValue('AR'.$rows, 'Balance Interest to be refunded')
+        ->setCellValue('AS'.$rows, 'Balance Overdue Interest to be refunded')
+        ->setCellValue('AT'.$rows, 'Sales Manager');
         // ->setCellValue('AS'.$rows, 'Grace Period End Date');
         $sheet->getActiveSheet()->getStyle('A'.$rows.':AS'.$rows)->applyFromArray(['font' => ['bold'  => true]]);
         $rows++;
-        foreach($exceldata as $rowData){
+        foreach($exceldata as $key => $rowData){
             $sheet->setActiveSheetIndex(0)
             ->setCellValue('A'.$rows, '')
             ->setCellValue('B'.$rows, $rowData['custName'])
@@ -184,15 +185,17 @@ class OutstandingReportManual implements ShouldQueue
             ->setCellValue('AI'.$rows, $rowData['principalOverdueCategory'])
             ->setCellValue('AJ'.$rows, $rowData['principalDPD'])
             ->setCellValue('AK'.$rows, $rowData['interestDPD'])
-            ->setCellValue('AL'.$rows, $rowData['finalDPD'])
-            ->setCellValue('AM'.$rows, $rowData['outstandingMaxBucket'])
-            ->setCellValue('AN'.$rows, $rowData['maturityDays'])
-            ->setCellValue('AO'.$rows, $rowData['maturityBucket'])
-            ->setCellValue('AP'.$rows, $rowData['marginToRefunded'])
-            ->setCellValue('AQ'.$rows, $rowData['interestToRefunded'])
-            ->setCellValue('AR'.$rows, $rowData['overdueToRefunded'])
-            ->setCellValue('AS'.$rows, $rowData['salesManager']);
+            ->setCellValue('AL'.$rows, $rowData['overdueDPD'])
+            ->setCellValue('AM'.$rows, $rowData['finalDPD'])
+            ->setCellValue('AN'.$rows, $rowData['outstandingMaxBucket'])
+            ->setCellValue('AO'.$rows, $rowData['maturityDays'])
+            ->setCellValue('AP'.$rows, $rowData['maturityBucket'])
+            ->setCellValue('AQ'.$rows, $rowData['marginToRefunded'])
+            ->setCellValue('AR'.$rows, $rowData['interestToRefunded'])
+            ->setCellValue('AS'.$rows, $rowData['overdueToRefunded'])
+            ->setCellValue('AT'.$rows, $rowData['salesManager']);
             $rows++;
+            unset($exceldata[$key]);
         }
 
         $dirPath = 'public/report/temp/OutstandingReport/manual/console';
