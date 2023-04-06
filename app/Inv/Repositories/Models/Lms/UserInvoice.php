@@ -63,6 +63,7 @@ class UserInvoice extends BaseModel {
         'invoice_type_name',
         'invoice_no',
         'inv_serial_no',
+        'inv_financial_year',
         'invoice_date',
         'due_date',
         'invoice_state_code',
@@ -106,7 +107,7 @@ class UserInvoice extends BaseModel {
         if (!empty($whereCondition)) {
             return self::where($whereCondition)->update($invoices);
         } elseif (!isset($invoices[0])) {
-            $invoiceSerialNo = self::where(['invoice_type'=> $invoices['invoice_type'],'invoice_cat' => $invoices['invoice_cat']])->orderBy('user_invoice_id','desc')->limit(1)->value('inv_serial_no');
+            $invoiceSerialNo = self::where(['invoice_type'=> $invoices['invoice_type'],'invoice_cat' => $invoices['invoice_cat'],'inv_financial_year' => $invoices['inv_financial_year']])->orderBy('user_invoice_id','desc')->limit(1)->value('inv_serial_no');
             $invoiceSerialNo = sprintf('%04d', (($invoiceSerialNo ?? 0) + 1) ?? rand(0, 9999));
             $invoices['invoice_no'] =  str_replace("/","",($invoices['invoice_no']. '/' . $invoiceSerialNo));
             $invoices['inv_serial_no'] = $invoiceSerialNo;
