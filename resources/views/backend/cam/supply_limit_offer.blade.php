@@ -1723,7 +1723,7 @@
                 calProcesingFee  = '<small><span class="float-right text-success processinFeeAmount"></span></small>';
                 if (currentAppType == 3){
                     calProcesingFee  = '<small><span class="float-right text-success processinFeeAmount">PF Amount: <i class="fa fa-inr"></i>0</span></small>';
-                    readonly = 'readonly';
+                    //readonly = 'readonly';
                 }
             }
             html += '<div class="col-md-6">'+
