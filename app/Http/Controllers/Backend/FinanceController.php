@@ -25,6 +25,8 @@ use PHPExcel_Style_Alignment;
 use PHPExcel_Style_Border;
 use PHPExcel_Shared_Date;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\App;
 
 class FinanceController extends Controller {
 
@@ -456,11 +458,15 @@ class FinanceController extends Controller {
         return view('backend.finance.batches');
     }
 
-    public function exportFactPaymentTransactions(Request $request) {
+    public function exportFactPaymentTransactions(Request $request){
+        self::processFactPaymentTransactions($request->get('batch_no'));
+    }
+
+    public function processFactPaymentTransactions($batch_no) {
         try {
             \DB::beginTransaction();
             ini_set("memory_limit", "-1");
-            $batch_no = $request->get('batch_no') ?? NULL;
+            $batch_no = $batch_no ?? NULL;
             $where = [];
             if (!empty($batch_no)) {
                 $where = ['batch_no' => $batch_no];
@@ -474,6 +480,8 @@ class FinanceController extends Controller {
             if($tallyData->is_fact_payment_generated == "0"){
                 $tallyBatch = \DB::table('tally')->where('batch_no',$batch_no)->update(['is_fact_payment_generated'=>1]);
             }
+            \DB::commit();
+            \DB::beginTransaction();
             $tallyData = \DB::table('tally')->select('is_fact_payment_generated')->where(['batch_no'=> $batch_no])->first();
             $result = $this->finRepo->getPaymentFactTxns($where);
             $records = [];
@@ -611,7 +619,9 @@ class FinanceController extends Controller {
                 }
             }
             \DB::commit();
-            return $this->facPaymentFileExcel($toExportData['PAYMENT'], "Fact-Payment-$batch_no.xlsx");
+            $isFileSave = true;
+            $dirPath = '/public/factDocument/tally_'.$batch_no;
+            return $this->facPaymentFileExcel($toExportData['PAYMENT'], "Fact-Payment-$batch_no.xlsx",$isFileSave,$dirPath);
         }catch (Exception $ex) {
             \DB::rollback();
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
@@ -700,11 +710,15 @@ class FinanceController extends Controller {
         
     }
 
-    public function exportFactJournalTransactions(Request $request) {
+    public function exportFactJournalTransactions(Request $request){
+        self::processFactJournalTransactions($request->get('batch_no'));
+    }
+
+    public function processFactJournalTransactions($batch_no) {
         try {
             \DB::beginTransaction();
             ini_set("memory_limit", "-1");
-            $batch_no = $request->get('batch_no') ?? NULL;
+            $batch_no = $batch_no ?? NULL;
             $where = [];
             if (!empty($batch_no)) {
                 $where = ['batch_no' => $batch_no,'voucher_type' => 'Journal'];
@@ -718,6 +732,8 @@ class FinanceController extends Controller {
             if($tallyData->is_fact_journal_generated == "0"){
                 $tallyBatch = \DB::table('tally')->where('batch_no',$batch_no)->update(['is_fact_journal_generated'=>1]);
             }
+            \DB::commit();
+            \DB::beginTransaction();
             $tallyData = \DB::table('tally')->select('is_fact_journal_generated')->where(['batch_no'=> $batch_no])->first();
             $result = $this->finRepo->getTallyTxns($where);
             $factTransDebit = $factTransCredit = [];
@@ -726,7 +742,6 @@ class FinanceController extends Controller {
                 $factTransDebit[strtolower($code['trans_type'])] = $code['debit_gl_code'];
                 $factTransCredit[strtolower($code['trans_type'])] = $code['credit_gl_code'];
             }
-            // dd($factTransDebit,$factTransCredit);
             $records = [];
             $records['JOURNAL'] = array();
             $cr_amount_sum = 0;
@@ -762,7 +777,6 @@ class FinanceController extends Controller {
                     $creditGlCode = $factTransCredit[strtolower($fetchedArr['trans_type'])] ?? null;
                     $is_first_n_old = (empty($transType) || empty($transDate) || ($transType == $fetchedArr['trans_type'] && $transDate == $trans_date));
                     $transType = strtolower($fetchedArr['trans_type']);
-                    // dd($factTransCredit);
                     if($fetchedArr['entry_type'] == 0 && $fetchedArr['parent_trans_id'] == null){
                         if (strpos($transType, 'sgst - ') !== false) {
                             $creditGlCode = $factTransCredit['sgst'];
@@ -897,7 +911,6 @@ class FinanceController extends Controller {
             if($tallyData->is_fact_journal_generated == "1"){
                 $journals = $records['JOURNAL'];
                 array_walk($journals,function(&$value,$key) use ($batchNo){ $value['batch_no'] = $batchNo; });
-                // dd($journals);
                 foreach($journals as $key => $journal){
                     $journals[$key]['voucher_date'] = date('Y-m-d', strtotime($journal['voucher_date']));
                 }
@@ -907,7 +920,9 @@ class FinanceController extends Controller {
                 }
             }
             \DB::commit();
-            return $this->facJournalFileExcel($toExportData['JOURNAL'], "Fact-Journal-$batch_no.xlsx");
+            $isFileSave = true;
+            $dirPath = '/public/factDocument/tally_'.$batch_no;
+            return $this->facJournalFileExcel($toExportData['JOURNAL'], "Fact-Journal-$batch_no.xlsx",$isFileSave,$dirPath);
         }catch (Exception $ex) {
             \DB::rollback();
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
@@ -915,6 +930,7 @@ class FinanceController extends Controller {
     }
 
     public function downloadFactJournalTransactions(Request $request) {
+       
         try {
             ini_set("memory_limit", "-1");
             $batch_no = $request->get('batch_no') ?? NULL;
@@ -1010,7 +1026,7 @@ class FinanceController extends Controller {
         }
     }
 
-    public function facJournalFileExcel($data, $file_name = ""){
+    public function facJournalFileExcel($data, $file_name = "", $isFileSave = false, $dirPath = null){
       $objPHPExcel = new PHPExcel();
 
       // Set document properties
@@ -1124,8 +1140,9 @@ class FinanceController extends Controller {
             ->getNumberFormat()
             ->setFormatCode('dd-mm-yyyy');
         }
-        $objPHPExcel->getActiveSheet()->getStyle('A2:Y'.($key+1))->applyFromArray($dataStyle);
+        $objPHPExcel->getActiveSheet()->getStyle('A2:Y'.($key+2))->applyFromArray($dataStyle);
       }
+      
       header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
       header('Content-Disposition: attachment;filename="' . $file_name . '"');
       header('Cache-Control: max-age=0');
@@ -1138,12 +1155,26 @@ class FinanceController extends Controller {
       header ('Cache-Control: cache, must-revalidate'); // HTTP/1.1
       header ('Pragma: public'); // HTTP/1.0
 
-      $objWriter = PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel2007');
-      $objWriter->save('php://output');
-      exit;
+      if ($isFileSave == true) {
+        if (!Storage::exists($dirPath)) {
+            Storage::makeDirectory($dirPath);
+        }
+        $filePath = '';
+        $fileData = [];
+        $storage_path = storage_path('app'.$dirPath);
+        $filePath = $storage_path.'/'.$file_name;
+        $objWriter = PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel2007');
+        $objWriter->save($filePath); 
+        
+      }
+      if(!App::runningInConsole()){
+        $objWriter = PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel2007');
+        $objWriter->save('php://output');
+        exit;
+      }
     }
 
-    public function facPaymentFileExcel($data, $file_name = ""){
+    public function facPaymentFileExcel($data, $file_name = "", $isFileSave = false, $dirPath = null){
       $objPHPExcel = new PHPExcel();
 
       // Set document properties
@@ -1256,8 +1287,9 @@ class FinanceController extends Controller {
             ->setFormatCode('dd-mm-yyyy');
         }
       
-        $objPHPExcel->getActiveSheet()->getStyle('A2:T'.($key+1))->applyFromArray($dataStyle);
+        $objPHPExcel->getActiveSheet()->getStyle('A2:T'.($key+2))->applyFromArray($dataStyle);
       }
+    
       header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
       header('Content-Disposition: attachment;filename="' . $file_name . '"');
       header('Cache-Control: max-age=0');
@@ -1270,8 +1302,23 @@ class FinanceController extends Controller {
       header ('Cache-Control: cache, must-revalidate'); // HTTP/1.1
       header ('Pragma: public'); // HTTP/1.0
 
-      $objWriter = PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel2007');
-      $objWriter->save('php://output');
-      exit;
+      if ($isFileSave == true) {
+        if (!Storage::exists($dirPath)) {
+            Storage::makeDirectory($dirPath);
+        }
+        $filePath = '';
+        $fileData = [];
+        $storage_path = storage_path('app'.$dirPath);
+        $filePath = $storage_path.'/'.$file_name;
+        $objWriter = PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel2007');
+        $objWriter->save($filePath); 
+        
+      }
+      if(!App::runningInConsole()){
+        $objWriter = PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel2007');
+        $objWriter->save('php://output');
+        exit;
+      }
     }
+    
 }
