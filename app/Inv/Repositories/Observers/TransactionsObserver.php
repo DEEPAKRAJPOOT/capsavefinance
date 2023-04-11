@@ -21,7 +21,7 @@ class TransactionsObserver
         CustomerTransactionSOA::createTransactionSOADetails($transaction);
         if($transaction->entry_type == 0 &&  is_null($transaction->parent_trans_id)){
             // Temporarily prevented for overdue interest by sudesh
-            if($transaction->transType->chrg_master_id > 0 && !in_array($transaction->trans_type,[33,62])){
+            if($transaction->transType->chrg_master_id > 0 && !in_array($transaction->trans_type,[config('lms.TRANS_TYPE.INTEREST_OVERDUE'), config('lms.TRANS_TYPE.INVOICE_PROCESSING_FEE')])){
                 $controller = app()->make('App\Http\Controllers\Lms\userInvoiceController');
                 $invType = 'C';
                 $appId = $transaction->ChargesTransactions->app_id ?? null;
