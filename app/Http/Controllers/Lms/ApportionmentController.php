@@ -6,7 +6,9 @@ use Auth;
 use Helpers;
 use Session;
 use Exception;
+use PhpOffice\PhpSpreadsheet\Spreadsheet; 
 use Carbon\Carbon;
+use PhpOffice\PhpSpreadsheet\IOFactory; 
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
@@ -756,10 +758,10 @@ class ApportionmentController extends Controller
                     'invoice_no' => ($trans->invoice_disbursed_id && $trans->invoiceDisbursed->invoice_id)?$trans->invoiceDisbursed->invoice->invoice_no:'',
                     'trans_type' => $trans->trans_type,
                     'trans_name' =>  $trans->transName,
-                    'total_repay_amt' => (float)$trans->amount,
-                    'outstanding_amt' => (float)$trans->outstanding,
+                    'total_repay_amt' => round($trans->amount,2),
+                    'outstanding_amt' => round($trans->outstanding,2),
                     'payment_date' =>  $paymentDetails['date_of_payment'],
-                    'pay' => ($payments[$trans->trans_id])?(float)$payments[$trans->trans_id]:null,
+                    'pay' => ($payments[$trans->trans_id])?round($payments[$trans->trans_id],2):null,
                     'is_valid' => $isValid?1:0
                 ];
                 if($isValid)
@@ -868,7 +870,7 @@ class ApportionmentController extends Controller
                     DB::rollback();
                     return redirect()->route('unsettled_payments')->withErrors('Apportionment is not possible for the selected Payment. Please select valid payment!.');
                 }
-                $repaymentAmt = (float) $paymentDetails['amount']; 
+                $repaymentAmt = round($paymentDetails['amount'],2); 
                 $invoiceList = [];
                 $transactionList = [];
 
@@ -945,8 +947,7 @@ class ApportionmentController extends Controller
                             'entry_type' => 1,
                             'soa_flag' => 1,
                             'trans_type' => $trans->trans_type,
-                            'trans_mode' => 2,
-                            'is_transaction'=>$trans->is_transaction
+                            'trans_mode' => 2
                         ];
                         $amtToSettle += $payments[$trans->trans_id];
                     }
@@ -971,7 +972,7 @@ class ApportionmentController extends Controller
                     ];
                     $amtToSettle += $unAppliedAmt;
                 }
-                if((float) round($amtToSettle,2) > (float) round($repaymentAmt,2)){
+                if(round($amtToSettle,2) > round($repaymentAmt,2)){
                     Session::flash('error', trans('error_messages.apport_invalid_unapplied_amt'));
                     DB::rollback();
                     return redirect()->route('unsettled_payments');
@@ -1251,8 +1252,8 @@ class ApportionmentController extends Controller
                     'invoice_no' =>($trans->invoice_disbursed_id && $trans->invoiceDisbursed->invoice_id)?$trans->invoiceDisbursed->invoice->invoice_no:'',
                     'trans_type' => $trans->trans_type,
                     'trans_name' =>  $trans->transName,
-                    'total_repay_amt' => (float)$trans->amount,
-                    'outstanding_amt' => (float)$trans->outstanding,
+                    'total_repay_amt' => round($trans->amount,2),
+                    'outstanding_amt' => round($trans->outstanding,2),
                     'is_valid' => 1
                 ];
                 $amtToWriteOff += $trans->outstanding;
@@ -1404,9 +1405,9 @@ class ApportionmentController extends Controller
                     'invoice_no' => ($trans->invoice_disbursed_id && $trans->invoiceDisbursed->invoice_id)?$trans->invoiceDisbursed->invoice->invoice_no:'',
                     'trans_type' => $trans->trans_type,
                     'trans_name' =>  $trans->transName,
-                    'total_repay_amt' => (float)$trans->amount,
-                    'outstanding_amt' => (float)$trans->refundoutstanding,
-                    'refund' => ($refunds[$trans->trans_id])?(float)$refunds[$trans->trans_id]:null,
+                    'total_repay_amt' => round($trans->amount,2),
+                    'outstanding_amt' => round($trans->refundoutstanding,2),
+                    'refund' => ($refunds[$trans->trans_id])?round($refunds[$trans->trans_id],2):null,
                     'is_valid' => (round($refunds[$trans->trans_id],2) <= round($trans->refundoutstanding,2))?1:0
                 ];
                 $amtToSettle += $refunds[$trans->trans_id];
@@ -1774,7 +1775,7 @@ class ApportionmentController extends Controller
                     return redirect()->route('unsettled_payments')->withInput()->withErrors('Apportionment is not possible for the selected Payment. Please select valid payment!.');
                 }
             }
-            $repaymentAmt = (float) round($paymentDetails['amount'],2); 
+            $repaymentAmt = round($paymentDetails['amount'],2); 
             
             foreach ($checks as $Ckey => $Cval) {
                 if($Cval === 'on' && round($payments[$Ckey],2) > 0){
@@ -1792,7 +1793,7 @@ class ApportionmentController extends Controller
             $totalOutstanding = 0;
 
             foreach ($transactions as $trans){
-                $totalOutstanding += (float)$trans->TDSAmount;
+                $totalOutstanding = round(($trans->TDSAmount + $totalOutstanding),2);
                 $invoiceList[$trans->invoice_disbursed_id] = [
                     'invoice_disbursed_id'=>$trans->invoice_disbursed_id,
                     'date_of_payment'=>$paymentDetails['date_of_payment']
@@ -1806,19 +1807,19 @@ class ApportionmentController extends Controller
                     'invoice_no' => $trans->invoice_no,
                     'trans_type' => $trans->trans_type,
                     'trans_name' =>  $trans->transName,
-                    'total_repay_amt' => (float)$trans->amount,
-                    'outstanding_amt' => (float)$trans->TDSAmount,
+                    'total_repay_amt' => round($trans->amount,2),
+                    'outstanding_amt' => round($trans->TDSAmount,2),
                     'payment_date' =>  $paymentDetails['date_of_payment'],
-                    'pay' => ($payments[$trans->trans_id])?(float)$payments[$trans->trans_id]:null,
+                    'pay' => ($payments[$trans->trans_id])?round($payments[$trans->trans_id],2):null,
                     'is_valid' => (round($payments[$trans->trans_id],2) <= round($trans->TDSAmount,2))?1:0
                 ];
                 $amtToSettle += $payments[$trans->trans_id];
             }
 
-            $amtToSettle = (float) round($amtToSettle,2);
-            $unAppliedAmt = (float) round(($repaymentAmt - $amtToSettle),2);
+            $amtToSettle = round($amtToSettle,2);
+            $unAppliedAmt = round(($repaymentAmt - $amtToSettle),2);
 
-            $totalOutstanding = (float) round($totalOutstanding,2);
+            $totalOutstanding = round($totalOutstanding,2);
             //dd($paymentDetails);
             if($paymentDetails['action_type'] == '3' &&  $paymentDetails['trans_type'] == '7'){
                 if($unAppliedAmt > 0 && $totalOutstanding > 0){
@@ -1866,7 +1867,7 @@ class ApportionmentController extends Controller
             $payment = Payment::find($request->payment_id);
 
             if (!$this->verifyUnSettleTransInitiator($payment)) {
-                DB::rollback();
+                DB::rollback();                
                 return redirect()->route('unsettled_payments')->withErrors('Someone is already trying to settle transactions');
             }
 
@@ -1902,7 +1903,7 @@ class ApportionmentController extends Controller
                 $checks = $request->session()->get('apportionment.check');
 
                 $paymentDetails = $this->getPaymentDetails($paymentId,$userId);
-                $repaymentAmt = (float) $paymentDetails['amount']; 
+                $repaymentAmt = round($paymentDetails['amount'],2); 
                 
                 $invoiceDisbursedList = [];
                 $transactionList = [];
@@ -1943,16 +1944,16 @@ class ApportionmentController extends Controller
                     $amtToSettle += $amount;
                 }
 
-                if( (float) $repaymentAmt > (float) $amtToSettle){
+                if(round($repaymentAmt,2) > round($amtToSettle,2)){
                     Session::flash('error', trans('Please use whole unapplied amount.'));
                     DB::rollback();
-                    return redirect()->back()->withInput();
+                    return redirect()->route('apport_mark_settle_confirmation_tds',[ 'user_id' => $userId , 'payment_id' => $paymentId, 'settlement' => 'TDS' ])->withInput();
                 }
 
                 if(round($amtToSettle, 2) > round($repaymentAmt, 2)){
                     Session::flash('error', trans('error_messages.apport_invalid_unapplied_amt'));
                     DB::rollback();
-                    return redirect()->back()->withInput();
+                    return redirect()->route('apport_mark_settle_confirmation_tds',[ 'user_id' => $userId , 'payment_id' => $paymentId, 'settlement' => 'TDS' ])->withInput();
                 }
 
                 if(!empty($transactionList)){
@@ -1992,7 +1993,7 @@ class ApportionmentController extends Controller
             $payment = Payment::find($request->payment_id);
             if ($payment)
                 $payment->update(['is_settled' => Payment::PAYMENT_SETTLED_PROCESSING]);
-            return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex))->withInput();
+            return redirect()->route('unsettled_payments')->withErrors(Helpers::getExceptionMessage($ex))->withInput();
         }
     }
 

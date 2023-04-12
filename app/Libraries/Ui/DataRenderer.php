@@ -6148,14 +6148,14 @@ class DataRenderer implements DataProviderInterface
                         }elseif($dataRecords->is_fact_payment_generated == 1){
                             $btn .= '<button class="btn btn-primary" style="width: 153px;" disabled> <span class="spinner-grow spinner-grow-sm"></span> Loading.. </button>';
                         }elseif($dataRecords->is_fact_payment_generated == 2){
-                            $btn .= '<a class="btn btn-success btn-sm" href="'.route('export_fact_payment_txns', ['batch_no' => $dataRecords->batch_no]).'"><i class="fa fa-file-excel-o" style="color:white" aria-hidden="true"></i> Download Fact Payment</a>';
+                            $btn .= '<a class="btn btn-success btn-sm" href="'.route('download_fact_payment_txns', ['batch_no' => $dataRecords->batch_no]).'"><i class="fa fa-file-excel-o" style="color:white" aria-hidden="true"></i> Download Fact Payment</a>';
                         }
                         if($dataRecords->is_fact_journal_generated == 0){
                             $btn .= '<a class="btn btn-success btn-sm journal_button" href="'.route('export_fact_journal_txns', ['batch_no' => $dataRecords->batch_no]).'"><i class="fa fa-file-excel-o" style="color:white" aria-hidden="true"></i> Generate Fact Journal</a>';
                         }elseif($dataRecords->is_fact_journal_generated == 1){
                             $btn .= '<button class="btn btn-primary" style="width: 153px;" disabled> <span class="spinner-grow spinner-grow-sm"></span> Loading.. </button>';
                         }elseif($dataRecords->is_fact_journal_generated == 2){
-                            $btn .= '<a class="btn btn-success btn-sm" href="'.route('export_fact_journal_txns', ['batch_no' => $dataRecords->batch_no]).'"><i class="fa fa-file-excel-o" style="color:white" aria-hidden="true"></i> Download Fact Journal</a>';
+                            $btn .= '<a class="btn btn-success btn-sm" href="'.route('download_fact_journal_txns', ['batch_no' => $dataRecords->batch_no]).'"><i class="fa fa-file-excel-o" style="color:white" aria-hidden="true"></i> Download Fact Journal</a>';
                         }
                         
                         return $btn;

@@ -320,7 +320,6 @@ class ManualApportionmentHelper{
         $charges = Transactions::whereHas('transType',function($query){
             $query->where('chrg_master_id','!=','0');
         })->whereNull('parent_trans_id')
-        ->whereNull('invoice_disbursed_id')
         ->where('actual_outstanding', '<', 0)
         ->where('entry_type',0)
         ->whereIn('trans_id',$transIds)
@@ -352,6 +351,7 @@ class ManualApportionmentHelper{
                             'payment_id' => $paymentId,
                             'link_trans_id' => $settleTrans->trans_id,
                             'parent_trans_id' => $charge->trans_id,
+                            'invoice_disbursed_id' => $settleTrans->invoice_disbursed_id ?? NULL,
                             'user_id' => $charge->user_id,
                             'trans_date' => $currentdate,
                             'amount' => $refAmt,
@@ -372,6 +372,7 @@ class ManualApportionmentHelper{
                             'payment_id' => NULL,
                             'link_trans_id' => $toBeRefTrans->trans_id,
                             'parent_trans_id' => $charge->trans_id,
+                            'invoice_disbursed_id' => $toBeRefTrans->invoice_disbursed_id ?? NULL,
                             'user_id' => $charge->user_id,
                             'trans_date' => $currentdate,
                             'amount' => abs($revAmt),
@@ -756,7 +757,7 @@ class ManualApportionmentHelper{
             $invdisbInN = [];
             $curdate =  Helpers::getSysStartDate();  
             $curdate = Carbon::parse($curdate)->setTimezone(config('common.timezone'));
-            if($curdate->format('His') >= '230000'){
+            if($curdate->format('His') >= '224500'){
                 $curdate = $curdate->format('Y-m-d');
             }else{
                 $curdate = $curdate->subDay()->format('Y-m-d');
@@ -920,8 +921,6 @@ class ManualApportionmentHelper{
         $this->runningIntPosting();
         // Update Invoice Disbursed Accrual Detail
         InvoiceDisbursedDetail::updateDailyInterestAccruedDetails();
-        $this->generateDebitNote();
-        $this->generateCreditNote();
         
         if($cLogDetails){
             Helper::cronLogEnd('1',$cLogDetails->cron_log_id);
@@ -1061,8 +1060,14 @@ class ManualApportionmentHelper{
     }
 
     public function runningIntPosting(){
-        $curDate = Helpers::getSysStartDate();
-        $curDate = Carbon::parse($curDate)->setTimezone(config('common.timezone'))->format('Y-m-d');
+        $curDate = Helpers::getSysStartDate();  
+        $curDate = Carbon::parse($curDate)->setTimezone(config('common.timezone'));
+        if($curDate->format('His') >= '224500'){
+            $curDate = $curDate->format('Y-m-d');
+        }else{
+            $curDate = $curDate->subDay()->format('Y-m-d');
+        }
+
         $invDisbursedIds = TransactionsRunning::whereDate('trans_date','<=',$curDate)
         ->whereDate('due_date','<',$curDate)
         ->where('is_posted',0)

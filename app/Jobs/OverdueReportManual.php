@@ -138,7 +138,7 @@ class OverdueReportManual implements ShouldQueue
             ->setCellValue('Z'.$rows, '= IF(AND(R'.$rows.'>100,Y'.$rows.'>0), IF(Y'.$rows.'<7,"01 - 07 Days", IF(Y'.$rows.'<15,"08 - 15 Days", IF(Y'.$rows.'<30,"16 - 30 Days", IF(Y'.$rows.'<60,"31-60 Days", IF(Y'.$rows.'<90,"61 - 90 Days","90 + Days"))))),"Not Outstanding")')
             ->setCellValue('AA'.$rows, $rowData['maturityDays'])
             ->setCellValue('AB'.$rows, '= IF(AND(R'.$rows.'>100,AA'.$rows.'>0), IF(AA'.$rows.'<7,"01 - 07 Days", IF(AA'.$rows.'<15,"08 - 15 Days", IF(AA'.$rows.'<30,"16 - 30 Days", IF(AA'.$rows.'<60,"31-60 Days", IF(AA'.$rows.'<90,"61 - 90 Days","90 + Days"))))),"Not Outstanding")');
-            //->setCellValue('AC'.$rows, $rowData['sales_person_name'], \PHPExcel_Cell_DataType::TYPE_STRING);
+            //->setCellValue('AC'.$rows, $rowData['sales_person_name'], \DataType::TYPE_STRING);
             $rows++;
         }
 

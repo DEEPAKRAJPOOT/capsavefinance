@@ -8,8 +8,8 @@ use PDF as DPDF;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Style\Fill;
-use PhpOffice\PhpSpreadsheet\Style\Alignment;
 use PhpOffice\PhpSpreadsheet\Cell\DataType;
+use PhpOffice\PhpSpreadsheet\Style\Alignment;
 use Carbon\Carbon;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
@@ -282,9 +282,7 @@ class SoaController extends Controller
                     $query->where('customer_id', '=', "$customer_id");
                 });
 
-                $soaRecord = $this->prepareDataForRendering($transactionList->whereHas('transaction', function ($q) {
-                    $q->where('is_transaction', true);
-                })->get()->chunk(25));
+                $soaRecord = $this->prepareDataForRendering($transactionList->get()->chunk(25));
             } 
             ini_set('memory_limit', -1);
             DPDF::setOptions(['isHtml5ParserEnabled'=> true]);
@@ -338,9 +336,7 @@ class SoaController extends Controller
             });
         
         }
-        $exceldata = $this->prepareDataForRendering($transactionList->whereHas('transaction', function ($q) {
-            $q->where('is_transaction', true);
-        })->get()->chunk(1));
+        $exceldata = $this->prepareDataForRendering($transactionList->get()->chunk(1));
         $sheet =  new Spreadsheet();
         $sheet->getActiveSheet()->mergeCells('A2:K2');
         $sheet->getActiveSheet()->mergeCells('A3:K3');
@@ -394,8 +390,8 @@ class SoaController extends Controller
                 ->setCellValue('L'.$rows, 'Credit')
                 ->setCellValue('M'.$rows, 'Balance');
         
-        $sheet->getActiveSheet()->getStyle('A'.$rows.':M'.$rows)->getFill()->applyFromArray(array(
-            'type' => Fill::FILL_SOLID,
+        $sheet->getActiveSheet()->getStyle('A'.$rows.':M'.$rows)->applyFromArray(array(
+            'fillType' => Fill::FILL_SOLID,
             'startcolor' => [ 'rgb' => "CAD7D3" ],
             'font' => [ 'bold'  => true ]
         ));
@@ -433,8 +429,8 @@ class SoaController extends Controller
                     $color = trim($rowData['soabackgroundcolor'],'#');
                 }
                 
-                $sheet->getActiveSheet()->getStyle('A'.$rows.':M'.$rows)->getFill()->applyFromArray(array(
-                    'type' => Fill::FILL_SOLID,
+                $sheet->getActiveSheet()->getStyle('A'.$rows.':M'.$rows)->applyFromArray(array(
+                    'fillType' => Fill::FILL_SOLID,
                     'startcolor' => array( 'rgb' => $color)
                 ));
                 $rows++;

@@ -78,6 +78,10 @@
                 <td>{{ number_format($marginTotal,2) }}</td>
             </tr>
             <tr role="row" >
+                <td colspan="6">Charge Refund</td>
+                <td>{{ number_format($chargeRefund,2) }}</td>
+            </tr>
+            <tr role="row" >
                 <td colspan="6" style="font-weight:bold; font-size: 15px"><b>Total Refundable Amount</b></td>
                 <td>{{  number_format($refundableAmount,2) }}</td>
             </tr>

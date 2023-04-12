@@ -22,7 +22,7 @@
                 }
                 @endphp          
                 <div class="card-body limit-management"> 
-                    
+                    @if($uLimit->is_deleted ==0)
                     <div class="limit-title"> 
                         <div class="row" style="margin-top:10px;">
                             <div class="col-lg-2 col-md-6 col-sm-6 col-xs-12">
@@ -58,7 +58,7 @@
                             @php 
                                 $sDate  = $obj->convertDateTimeFormat($uLimit->start_date, $fromDateFormat='Y-m-d', $toDateFormat='d-m-Y');
                                 $eDate  = $obj->convertDateTimeFormat($uLimit->end_date, $fromDateFormat='Y-m-d', $toDateFormat='d-m-Y');
-                                $limitExpDate = '';
+                                $limitExpDate = $limitExpDateCheck = '';
                                 if ($uLimit->limit_expiration_date != null){
                                     $limitExpDate  = $obj->convertDateTimeFormat($uLimit->limit_expiration_date, $fromDateFormat='Y-m-d', $toDateFormat='d-m-Y');
                                     $limitExpDateCheck  = date('Y-m-d', strtotime($limitExpDate));
@@ -335,6 +335,7 @@
 
                     @endforeach
                 </div>
+                @endif
 
                 @endforeach 
             </div>

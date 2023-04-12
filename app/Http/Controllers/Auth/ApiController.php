@@ -19,7 +19,7 @@ use Carbon\Carbon;
 use DB;
 use App\Inv\Repositories\Models\TallyFactVoucher;
 use App\Inv\Repositories\Models\TransFactVoucher;
-
+use App\Helpers\Helpers;
 /**
  * 
  */
@@ -213,26 +213,26 @@ class ApiController
               $gstData['igst'] = $igst_amt;
           }
           foreach ($gstData as $gst_key => $gst_val) {
-           $gst_trans_amount = $gst_val;
-          switch ($gst_key) {
-            case 'base_amount':
-              $gst_trans_type = $trans_type_name;
-              break;
-            case 'sgst':
-              $gst_trans_type = 'SGST + CGST';
-              break;
-            case 'cgst':
-              $gst_trans_type = 'SGST + CGST';
-              break;
-            case 'igst':
-              $gst_trans_type = 'IGST';
-              break;
+            $gst_trans_amount = $gst_val;
+            switch ($gst_key) {
+              case 'base_amount':
+                $gst_trans_type = $trans_type_name;
+                break;
+              case 'sgst':
+                $gst_trans_type = 'SGST - '.$trans_type_name;
+                break;
+              case 'cgst':
+                $gst_trans_type = 'CGST - '.$trans_type_name;
+                break;
+              case 'igst':
+                $gst_trans_type = 'IGST - '.$trans_type_name;
+                break;
+            }
+            $JournalRow['trans_type'] =  $gst_trans_type;
+            $JournalRow['amount'] =  $gst_trans_amount;
+            $JournalRow['ref_amount'] =  $gst_trans_amount;
+            $journalPayments[] = $JournalRow;
           }
-          $JournalRow['trans_type'] =  $gst_trans_type;
-          $JournalRow['amount'] =  $gst_trans_amount;
-          $JournalRow['ref_amount'] =  $gst_trans_amount;
-          $journalPayments[] = $JournalRow;
-        }
     }else if (!empty($jrnls->userinvoicetrans->getUserInvoice->invoice_no)) {
         $gstData['base_amount'] = $jrnls->userinvoicetrans->base_amount;
         if ($jrnls->userinvoicetrans->sgst_amount != 0) {
@@ -245,19 +245,19 @@ class ApiController
             $gstData['igst'] = $jrnls->userinvoicetrans->igst_amount;
         }
         foreach ($gstData as $gst_key => $gst_val) {
-           $gst_trans_amount = $gst_val;
+          $gst_trans_amount = $gst_val;
           switch ($gst_key) {
             case 'base_amount':
               $gst_trans_type = $trans_type_name;
               break;
             case 'sgst':
-              $gst_trans_type = 'SGST + CGST';
+              $gst_trans_type = 'SGST - '.$trans_type_name;
               break;
             case 'cgst':
-              $gst_trans_type = 'SGST + CGST';
+              $gst_trans_type = 'CGST - '.$trans_type_name;
               break;
             case 'igst':
-              $gst_trans_type = 'IGST';
+              $gst_trans_type = 'IGST - '.$trans_type_name;
               break;
           }
           $JournalRow['trans_type'] =  $gst_trans_type;
@@ -278,7 +278,7 @@ class ApiController
 
   private function createReversalData($rvrslRow, $batch_no) {
     $reversalPayment = [];
-    $where = [['is_posted_in_tally', '=', '0'],['soa_flag', '=', '1'],['is_transaction','=',true]];
+    $where = [['is_posted_in_tally', '=', '0'],['soa_flag', '=', '1']];
     $settledTransactoionsFromReversal = $rvrslRow->getReversalParent ? $rvrslRow->getReversalParent->getSettledTxns()->where($where)?? []:[];
     if (!empty($settledTransactoionsFromReversal)) {
       foreach ($settledTransactoionsFromReversal as  $rvrsl) {
@@ -518,7 +518,6 @@ class ApiController
       $invoice_date = $dsbrsl->invoiceDisbursed->invoice->invoice_date ?? NULL;
       $disburse_amt = $dsbrsl->invoiceDisbursed->disburse_amt;
       $total_interest = $dsbrsl->invoiceDisbursed->total_interest;
-      $cheque_amount = round($disburse_amt - $total_interest, 2);
       $this->selectedTxnData[] = $dsbrsl->trans_id;
       $CustomerRow = [
               'batch_no' =>  $batch_no,
@@ -551,59 +550,63 @@ class ApiController
               'remarks' => '',
               'generated_by' => '0',
               'narration' => 'Being  Payment Disbursed towards UserId ' . $user_id . ', Invoice No '. $invoice_no .' & Batch no '. $batch_no .$payment_id,
-     ];
-     $disbursalPayment[] = $CustomerRow;
-     $BankRow = [
-              'batch_no' =>  $batch_no,
-              'transactions_id' =>  NULL,
-              'voucher_no' => $this->voucherNo,
-              'fact_voucher_number'=>$factvoucherNumber,
-              'voucher_type' => 'Payment',
-              'voucher_date' => $dsbrsl->trans_date, //code by new add old NULL
-              'transaction_date'=>$dsbrsl->created_at,
-              'is_debit_credit' =>  'Credit',
-              'trans_type' =>  ($accountDetails->bank->bank_name ?? ''). ' - Disbursement',//BY DJ
-              'invoice_no' =>   $invoice_no,
-              'invoice_date' =>  $invoice_date,
-              'ledger_name' =>  $accountDetails->bank->bank_name ?? '',
-              'amount' =>  $cheque_amount,
-              'ref_no' =>  $invoice_no,
-              'ref_amount' =>  $cheque_amount,
-              'acc_no' =>  $accountDetails->acc_no ?? '',
-              'ifsc_code' =>  $accountDetails->ifsc_code ?? '',
-              'bank_name' =>  $accountDetails->bank->bank_name ?? '',
-              'cheque_amount' =>  $cheque_amount,
-              'cross_using' => '',
-              'mode_of_pay' => 'e-Fund-Transfer',
-              'inst_no' =>  $dsbrsl->invoiceDisbursed->disbursal->tran_id ?? NULL,
-              'utr_no'  => $dsbrsl->invoiceDisbursed->disbursal->tran_id ?? NULL, //New Code add old NULL
-              'inst_date' =>  $dsbrsl->invoiceDisbursed->disbursal->funded_date ?? NULL,
-              'favoring_name' =>  $userName,
-              'remarks' => '',
-              'company_bank_name'=>'',
-              'company_bank_acc'=>'',
-              'generated_by' => '1',
-              'narration' => 'Being  Payment Disbursed towards UserId ' . $user_id . ', Invoice No '. $invoice_no .' & Batch no '. $batch_no .$payment_id,
-     ];
-     $disbursalPayment[] = $BankRow;
+      ];
+      $disbursalPayment[] = $CustomerRow;
+
+      // Actual Disbursement in Bank
+      $BankRow = [
+        'batch_no' =>  $batch_no,
+        'transactions_id' =>  NULL,
+        'voucher_no' => $this->voucherNo,
+        'fact_voucher_number'=>$factvoucherNumber,
+        'voucher_type' => 'Payment',
+        'voucher_date' => $dsbrsl->trans_date, //code by new add old NULL
+        'transaction_date'=>$dsbrsl->created_at,
+        'is_debit_credit' =>  'Credit',
+        'trans_type' =>  ($accountDetails->bank->bank_name ?? ''). ' - Disbursement',//BY DJ
+        'invoice_no' =>   $invoice_no,
+        'invoice_date' =>  $invoice_date,
+        'ledger_name' =>  $accountDetails->bank->bank_name ?? '',
+        'amount' =>  $disburse_amt,
+        'ref_no' =>  $invoice_no,
+        'ref_amount' =>  $disburse_amt,
+        'acc_no' =>  $accountDetails->acc_no ?? '',
+        'ifsc_code' =>  $accountDetails->ifsc_code ?? '',
+        'bank_name' =>  $accountDetails->bank->bank_name ?? '',
+        'cheque_amount' =>  $disburse_amt,
+        'cross_using' => '',
+        'mode_of_pay' => 'e-Fund-Transfer',
+        'inst_no' =>  $dsbrsl->invoiceDisbursed->disbursal->tran_id ?? NULL,
+        'utr_no'  => $dsbrsl->invoiceDisbursed->disbursal->tran_id ?? NULL, //New Code add old NULL
+        'inst_date' =>  $dsbrsl->invoiceDisbursed->disbursal->funded_date ?? NULL,
+        'favoring_name' =>  $userName,
+        'remarks' => '',
+        'company_bank_name'=>'',
+        'company_bank_acc'=>'',
+        'generated_by' => '1',
+        'narration' => 'Being  Payment Disbursed towards UserId ' . $user_id . ', Invoice No '. $invoice_no .' & Batch no '. $batch_no .$payment_id,
+      ];
+      
       $disbursalDate = $dsbrsl->trans_date;
-      // change interest entry type for dirbursement in case of upfront for born by customer case
+
+      // Upfront Interest Deduction
       $where = ['trans_date' => $disbursalDate, 'payment_id' => NULL, 'trans_type' => config('lms.TRANS_TYPE.INTEREST'), 'entry_type' => 1];
-      $interestBooked = $dsbrsl->getInterestForDisbursal($where);
-      if(isset($interestBooked)){
-        $interestTransId = $interestBooked->trans_id;
+      $interestDeduction = $dsbrsl->getInterestForDisbursal($where);
+      if(isset($interestDeduction)){
+        $interestTransId = $interestDeduction->trans_id;
         $getTransfactVoucherNumber = Helper::getTransfactVoucherNumber($interestTransId);
         if($getTransfactVoucherNumber){
           $factvoucherNumber = $getTransfactVoucherNumber->fact_voucher_no;
         }else{
           $transfactvoucherData = [
-            'trans_id'=>$interestBooked->trans_id,
+            'trans_id'=>$interestTransId,
             'fact_voucher_no'=>$factvoucherNumber,
             'created_at'=>\Carbon\Carbon::now()->setTimezone(config('app.timezone'))->format('Y-m-d H:i:s')
           ];
           $this->disbursalTransFactVoucher[] = $transfactvoucherData;
         }
-        $this->selectedTxnData[] = $interestBooked->trans_id;
+        $this->selectedTxnData[] = $interestTransId;
+        $disburse_amt = round($disburse_amt - $interestDeduction->amount,2);
         $InterestRow = [
                 'batch_no' =>  $batch_no,
                 'transactions_id' =>  $interestTransId,
@@ -617,9 +620,9 @@ class ApiController
                 'invoice_no' =>   $invoice_no,
                 'invoice_date' =>  $invoice_date,
                 'ledger_name' =>  'Interest',
-                'amount' =>  $interestBooked->amount,
+                'amount' =>  $interestDeduction->amount,
                 'ref_no' =>  $invoice_no,
-                'ref_amount' =>  $interestBooked->amount,
+                'ref_amount' =>  $interestDeduction->amount,
                 'acc_no' =>  '',
                 'ifsc_code' =>  '',
                 'bank_name' =>  '',
@@ -638,6 +641,63 @@ class ApiController
         ];
         $disbursalPayment[] = $InterestRow;
       }
+      
+      // Invoice Level Processing Fee Deduction
+      $where = ['trans_date' => $disbursalDate, 'payment_id' => NULL, 'trans_type' => config('lms.TRANS_TYPE.INVOICE_PROCESSING_FEE'), 'entry_type' => 1];
+      $feeDeduction = $dsbrsl->getInterestForDisbursal($where);
+      if(isset($feeDeduction)){
+        $interestTransId = $feeDeduction->trans_id;
+        $getTransfactVoucherNumber = Helper::getTransfactVoucherNumber($interestTransId);
+        if($getTransfactVoucherNumber){
+          $factvoucherNumber = $getTransfactVoucherNumber->fact_voucher_no;
+        }else{
+          $transfactvoucherData = [
+            'trans_id'=>$interestTransId,
+            'fact_voucher_no'=>$factvoucherNumber,
+            'created_at'=>\Carbon\Carbon::now()->setTimezone(config('app.timezone'))->format('Y-m-d H:i:s')
+          ];
+          $this->disbursalTransFactVoucher[] = $transfactvoucherData;
+        }
+        $this->selectedTxnData[] = $interestTransId;
+        $disburse_amt = round($disburse_amt - $feeDeduction->amount,2);
+        $chargeRow = [
+                'batch_no' =>  $batch_no,
+                'transactions_id' =>  $interestTransId,
+                'voucher_no' => $this->voucherNo,
+                'fact_voucher_number'=>$factvoucherNumber,
+                'voucher_type' => 'Payment',
+                'voucher_date' => $dsbrsl->trans_date,
+                'transaction_date'=>$dsbrsl->created_at,
+                'is_debit_credit' =>  'Credit',
+                'trans_type' =>  'Invoice Processing Fee Payment',
+                'invoice_no' =>   $invoice_no,
+                'invoice_date' =>  $invoice_date,
+                'ledger_name' =>  'Invoice Processing Fee Payment',
+                'amount' =>  $feeDeduction->amount,
+                'ref_no' =>  $invoice_no,
+                'ref_amount' =>  $feeDeduction->amount,
+                'acc_no' =>  '',
+                'ifsc_code' =>  '',
+                'bank_name' =>  '',
+                'cheque_amount' =>  '',
+                'cross_using' => '',
+                'mode_of_pay' => '',
+                'inst_no' =>  NULL,
+                'utr_no'  => $dsbrsl->invoiceDisbursed->disbursal->tran_id ?? NULL, //New Code add old NULL
+                'inst_date' =>  NULL,
+                'favoring_name' =>  '',
+                'company_bank_name'=>'',
+                'company_bank_acc'=>'',
+                'remarks' => '',
+                'generated_by' => '1',
+                'narration' => 'Being Invoice Processing Fee Payment towards UserId ' . $user_id . ', Invoice No '. $invoice_no .' & Batch no '. $batch_no .$payment_id,
+        ];
+        $disbursalPayment[] = $chargeRow;
+      }
+      $BankRow['amount'] =  $disburse_amt;
+      $BankRow['ref_amount'] =  $disburse_amt;
+      $BankRow['cheque_amount'] =  $disburse_amt;
+      $disbursalPayment[] = $BankRow;
     }
     return $disbursalPayment;
   }
@@ -996,7 +1056,7 @@ class ApiController
     $this->journalFactStartVoucherNumber = 'SJV'.$this->voucherFormat.sprintf('%06d',$this->journalFactVoucherSeq+1);
     $this->paymentFactStartVoucherNumber = 'SRP'.$this->voucherFormat.sprintf('%06d',$this->paymentFactVoucherSeq+1);
     $batch_no = _getRand(15);
-    $where = [['is_posted_in_tally', '=', '0'], ['created_at', '>=', $startDate],['created_at', '<=', $endDate],['soa_flag', '=', '1'],['is_transaction','=',true]];
+    $where = [['is_posted_in_tally', '=', '0'], ['created_at', '>=', $startDate],['created_at', '<=', $endDate],['soa_flag', '=', '1']];
     $journalData = Transactions::getJournalTxnTally($where);
     $disbursalData = Transactions::getDisbursalTxnTally($where);
     $refundData = Transactions::getRefundTxnTally($where);

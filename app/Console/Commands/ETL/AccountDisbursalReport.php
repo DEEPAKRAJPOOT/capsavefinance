@@ -54,12 +54,12 @@ class AccountDisbursalReport extends Command
                     try {
                         $inputFileType = IOFactory::identify($filePath);
                         $objReader = IOFactory::createReader($inputFileType);
-                        $objPHPExcel = $objReader->load($filePath);
+                        $objSpreadsheet = $objReader->load($filePath);
                     } catch (\Exception $e) {
                         die('Error loading file "'.pathinfo($filePath,PATHINFO_BASENAME).'": '.$e->getMessage());
                     }
                     //  Get worksheet dimensions
-                    $sheet = $objPHPExcel->getSheet(0);
+                    $sheet = $objSpreadsheet->getSheet(0);
                     $highestRow = $sheet->getHighestRow(); 
                     $highestColumn = $sheet->getHighestColumn();
 

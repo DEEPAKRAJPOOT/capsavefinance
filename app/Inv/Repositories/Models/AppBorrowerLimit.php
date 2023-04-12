@@ -51,10 +51,10 @@ class AppBorrowerLimit extends BaseModel
      *
      * @var array
      */
-    protected $dates = ['deleted_at'];
+    // protected $dates = ['deleted_at'];
 
 
-    protected $softDelete = true; 
+    // protected $softDelete = true; 
 
     /**
      * The attributes that are mass assignable.
@@ -67,15 +67,10 @@ class AppBorrowerLimit extends BaseModel
         'app_id',
         'single_limit',
         'multiple_limit',
-        'start_date',
-        'end_date',
         'created_by',
         'created_at',
         'updated_at',
         'updated_by',
-        'is_deleted',
-        'deleted_at',
-        'deleted_by'
     ];
 
      /*

@@ -29,7 +29,9 @@ class KarzaApi {
 
         try {
             $api_url = '/v2/pan-authentication';
-            $baseUrl = config('proin.karza_auth_api_url');
+           // $baseUrl = config('proin.karza_auth_api_url');
+            $baseUrl = config('proin.karza_auth_api_url_old');
+            
             $apiKey = config('proin.karza_auth_api_key');
 
             $options = [
@@ -45,7 +47,6 @@ class KarzaApi {
                     'x-karza-key' => $apiKey  //env('KARZA_AUTHENTICATION_API_KEY')
                 ]
             ];
-           
             $response = $this->client->post($api_url, $options);
             $response = $response->getBody()->getContents();
             return $response;
@@ -62,7 +63,9 @@ class KarzaApi {
     public function getPromoterDetailsByCin($promoter) {
        
         try {
-             $api_url = '/v1/corp/profile';
+            // $api_url = '/v1/corp/profile';
+            // $api_url = '/kscan/test/v3/corp/profile';
+             $api_url = config('proin.get_promoter_url_by_cin');
              $baseUrl = config('proin.get_promoter_url');
              $apiKey = config('proin.get_promoter_key');
              $options = [
@@ -77,7 +80,7 @@ class KarzaApi {
                     'x-karza-key' => $apiKey  //env('KARZA_AUTHENTICATION_API_KEY')
                 ]
             ];
-               
+           // dd($options,$api_url,$baseUrl);
             $response = $this->client->post($api_url, $options);
             $response = $response->getBody()->getContents();
         
@@ -98,8 +101,9 @@ class KarzaApi {
          
         try {
             $api_url = '/v2/pan';
-             $baseUrl = config('proin.karza_auth_api_url');
-             $apiKey = config('proin.karza_auth_api_key');
+            //$baseUrl = config('proin.karza_auth_api_url');
+            $baseUrl = config('proin.karza_auth_api_url_old');
+            $apiKey = config('proin.karza_auth_api_key');
             $options = [
                 'base_uri' => $baseUrl,
                 'json' => [
@@ -280,9 +284,14 @@ class KarzaApi {
      */
     public function checkBizPanToGst($request) {
         try {
-            $api_url = '/prod/v1/search';
-            $baseUrl = 'https://gst.karza.in'; //config('proin.karza_auth_api_url');
+           // $api_url = '/prod/v1/search';
+            //$baseUrl = 'https://gst.karza.in'; //config('proin.karza_auth_api_url');
+           // $apiKey = config('proin.karza_auth_api_key');
+
+            $api_url = config('proin.get_karza_suffix_url');;
+            $baseUrl = config('proin.karza_auth_api_url');
             $apiKey = config('proin.karza_auth_api_key');
+           // dd($api_url,$baseUrl, $apiKey);
             $options = [
                 'base_uri' => $baseUrl,
                 'json' => [
@@ -292,9 +301,11 @@ class KarzaApi {
                 'headers' => [
                     'cache-control' => "no-cache",
                     'Content-Type' => "application/json",
-                    'x-karza-key' => $apiKey  //env('KARZA_AUTHENTICATION_API_KEY')
+                    'x-karza-key' => $apiKey,  
+                    'Authorization' => time()
                 ]
             ];
+           // $headers = ['Authorization' => 'Token 1234567890'];
             $response = $this->client->post($api_url, $options);
             $response = $response->getBody()->getContents();
             return $response;
@@ -310,9 +321,10 @@ class KarzaApi {
      */
     public function checkBizGstToEntity($request) {
         try {
-            $api_url = '/prod/v1/gst-verification';
-            $baseUrl = 'https://gst.karza.in'; //config('proin.karza_auth_api_url');
-            $apiKey = config('proin.karza_auth_api_key');
+            //$api_url = '/prod/v1/gst-verification';
+            $api_url = config('proin.get_karza_gst_verification_suffix_url');
+            $baseUrl = config('proin.karza_auth_api_url');
+            $apiKey  = config('proin.karza_auth_api_key');
             $options = [
                 'base_uri' => $baseUrl,
                 'json' => [
@@ -342,7 +354,8 @@ class KarzaApi {
         try {
             //$api_url = '/v2/compsearch-lite';
             $api_url = '/v2/compsearch';
-            $baseUrl = 'https://api.karza.in'; //config('proin.karza_auth_api_url');
+            //$baseUrl = 'https://api.karza.in'; //config('proin.karza_auth_api_url_old');
+            $baseUrl = config('proin.karza_auth_api_url_old');
             $apiKey = config('proin.karza_auth_api_key');
             $options = [
                 'base_uri' => $baseUrl,

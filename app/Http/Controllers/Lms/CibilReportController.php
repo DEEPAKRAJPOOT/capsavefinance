@@ -7,6 +7,7 @@ use Carbon\Carbon;
 use App\Http\Controllers\Controller;
 use App\Inv\Repositories\Models\FinanceModel;
 use App\Inv\Repositories\Models\Lms\Transactions;
+use App\Inv\Repositories\Contracts\ApplicationInterface as InvAppRepoInterface;
 use Illuminate\Http\Request;
 use App\Helpers\FileHelper;
 use App\Inv\Repositories\Contracts\LmsInterface as InvLmsRepoInterface;
@@ -15,10 +16,12 @@ use App\Inv\Repositories\Models\Business;
 class CibilReportController extends Controller
 {   
     protected $selectedDisbursedData = [];
+    protected $appRepo;
 
-	  public function __construct(FileHelper $file_helper, InvLmsRepoInterface $lms_repo){
-		 $this->fileHelper = $file_helper;
-		 $this->lmsRepo = $lms_repo;
+	  public function __construct(InvAppRepoInterface $app_repo, FileHelper $file_helper, InvLmsRepoInterface $lms_repo){
+		  $this->appRepo = $app_repo;
+      $this->fileHelper = $file_helper;
+		  $this->lmsRepo = $lms_repo;
 	  }
 
 	
@@ -103,13 +106,21 @@ class CibilReportController extends Controller
       $this->batch_no = _getRand(15);
       $cibilReportData['hd'] = $this->_getHDData();
       $cibilReportData['ts'] = $this->_getTSData();
-      $countBucketData = $this->lmsRepo->getOverdueData();
+      $userWiseBucketOs = $this->lmsRepo->getUserWiseBucketOs();
+      $userWiseWriteOff = $this->lmsRepo->getUserWiseWriteOffAmt();
+      $userWiseSettled = $this->lmsRepo->getUserWiseSettledAmt();
+
       $this->userWiseData = [];
-      foreach ($countBucketData as $key => $bucketData) {
-        $this->userWiseData[$bucketData->supplier_id] = $bucketData; 
-      };
+      foreach ($userWiseBucketOs as $buckOs) {
+        $this->userWiseData[$buckOs->supplier_id]['bucket'] = $buckOs;
+      }
+      foreach ($userWiseWriteOff as $writeOff) {
+        $this->userWiseData[$buckOs->supplier_id]['writeOff'] = $writeOff;
+      }
+      foreach ($userWiseSettled as $settled) {
+        $this->userWiseData[$buckOs->supplier_id]['settled'] = $settled;
+      }
       
-      // $date = "2021-10-31 23:59:59";
       $whereCond = ['date' => $date, 'status_ids' => [12,13,15]];
       $cibilRecords = $this->lmsRepo->getAllBusinessForSheet($whereCond);
       if($cibilRecords){   
@@ -122,7 +133,7 @@ class CibilReportController extends Controller
             $capId = sprintf('%09d', $userId);
             $customerId = 'CAP'.$capId;
             $this->selectedDisbursedData[] = $cibilRecord->invCount;
-            $this->formatedCustId = $customerId; /* Helper::formatIdWithPrefix($userId, 'CUSTID') */
+            $this->formatedCustId = $customerId;
             $this->business_category = isset($appBusiness->msme_type) && array_search(config('common.MSMETYPE')[$appBusiness->msme_type], config('common.MSMETYPE')) ? config('common.MSMETYPE')[$appBusiness->msme_type] : NULL;
             $this->constitutionName = (isset($appBusiness->constitution) && !empty($appBusiness->constitution)) ? $appBusiness->constitution->name : ''; //config('common.LEGAL_CONSTITUTION')[$appBusiness->biz_constitution]
             $this->account_status = $this->lmsRepo->getAccountStatus($userId); 
@@ -320,30 +331,33 @@ class CibilReportController extends Controller
         return $data;
     }
 
-
     private function _getCRData($appBusiness, $date) {
-      
         $user = $appBusiness->users;
         $invDisb = $this->cibilRecord->invoice_disbursed;
+        $assetClassificationDate = 0;
+
         $curdate = Helper::getSysStartDate();
 		    $curdate = Carbon::parse($curdate)->format('Y-m-d');
         $dueDate = Carbon::parse($invDisb->payment_due_date);
         $difference = $dueDate->diffInDays($curdate);
         $isOverdue = $difference > $invDisb->grace_period;
-        $outstanding = $this->_getSOAbalanceData($user->user_id)['SOA_Balance'] ?? 0;
-        $settledAmt = $this->lmsRepo->getSettledTrans($user->user_id)->sum('settled_outstanding');
+        $this->soaBalance[$user->user_id] = (isset($this->soaBalance[$user->user_id]))?$this->soaBalance[$user->user_id]:$this->_getSOAbalanceData($user->user_id)['SOA_Balance'] ?? 0;
+        $outstanding = $this->soaBalance[$user->user_id];
         $sanctionDate = $appBusiness->sanctionDate->created_at ?? NULL;
         $prgmLimit = Helper::getCustomerSanctionedAmt($user->user_id);
-        $maxDPD = max(
-          $this->lmsRepo->getMaxDpdTransaction($user->user_id , config('lms.TRANS_TYPE.INTEREST'))->dpd??0,
-          $this->lmsRepo->getMaxDpdTransaction($user->user_id , config('lms.TRANS_TYPE.PAYMENT_DISBURSED'))->dpd??0
-        );
-        $userData = isset($this->userWiseData[$user->user_id]) ? $this->userWiseData[$user->user_id] : null;
-        $od_outstanding = NULL;
-        if($isOverdue) {
-          $od_outstanding = isset($userData) ? round($userData->od_outstanding, 2) : 0;
-        }
-        $od_days =  isset($maxDPD) && $isOverdue ? (int)$maxDPD : 0;
+        $userData = isset($this->userWiseData[$user->user_id]['bucket']) ? $this->userWiseData[$user->user_id]['bucket'] : null;
+        $maxDPD = isset($userData) ? round($userData->max_dpd, 2) : 0;
+        $OdOutstanding = isset($userData) ? round($userData->outstanding, 2) : 0;
+        $bucket1 = isset($userData) ? round($userData->buk0_30, 2) : 0;
+        $bucket2 = isset($userData) ? round($userData->buk31_60, 2) : 0;
+        $bucket3 = isset($userData) ? round($userData->buk61_90, 2) : 0;
+        $bucket4 = isset($userData) ? round($userData->buk91_180, 2) : 0;
+        $bucket5 = isset($userData) ? round($userData->bukabov, 2) : 0;
+        $settledAmt = $this->userWiseData[$user->user_id]['writeOff']->write_off_amount ?? null;
+        $wrireOffAmt = $this->userWiseData[$user->user_id]['settled']->settled_amount ?? null;
+        $assetClassificationDate =  Carbon::parse($curdate)->subDays($maxDPD ?? 0)->format('Y-m-d');
+        $getUserBizLimit = $this->appRepo->getUserProgramLimitByBizId($appBusiness->biz_id);
+        
         $data[] = [
             'Ac No' => $this->formatedCustId,
             'Segment Identifier' => 'CR',
@@ -358,23 +372,23 @@ class CibilReportController extends Controller
             'Drawing Power' => NULL,
             'Current   Balance / Limit Utilized /Mark to Market' => isset($outstanding) ? $outstanding : 0,
             'Notional Amount of Out-standing Restructured Contracts' => NULL,
-            'Loan Expiry / Maturity Date' => NULL,
+            'Loan Expiry / Maturity Date' => !empty($getUserBizLimit->end_date) ? date('d M Y', strtotime($getUserBizLimit->end_date)) : NULL,
             'Loan Renewal Date' => NULL,
-            'Asset Classification/Days Past Due (DPD)' => $maxDPD,//$od_days,
-            'Asset Classification Date' => NULL,
-            'Amount Overdue / Limit Overdue' => $od_outstanding,
-            'Overdue Bucket 01 ( 1 – 30 days)' => ($od_days >= 1 && $od_days <= 30 ? $od_outstanding : 0),
-            'Overdue Bucket 02 ( 31 – 60 days)' => ($od_days >= 31 && $od_days <= 60 ? $od_outstanding : 0),
-            'Overdue Bucket 03 ( 61 – 90 days)' => ($od_days >= 61 && $od_days <= 90 ? $od_outstanding : 0),
-            'Overdue Bucket 04 (91 – 180 days)' => ($od_days >= 91 && $od_days <= 180 ? $od_outstanding : 0),
-            'Overdue Bucket 05 (Above 180 days)' => ($od_days > 180 ? $od_outstanding : 0),
+            'Asset Classification/Days Past Due (DPD)' => $maxDPD,
+            'Asset Classification Date' => $assetClassificationDate,
+            'Amount Overdue / Limit Overdue' => $OdOutstanding,
+            'Overdue Bucket 01 ( 1 - 30 days)' => $bucket1,
+            'Overdue Bucket 02 ( 31 - 60 days)' => $bucket2,
+            'Overdue Bucket 03 ( 61 - 90 days)' => $bucket3,
+            'Overdue Bucket 04 (91 - 180 days)' => $bucket4,
+            'Overdue Bucket 05 (Above 180 days)' => $bucket5,
             'High Credit' => NULL,
             'Installment Amount' => NULL,
             'Last Repaid Amount' => NULL,
             'Account Status' => !empty($this->account_status->status_name) ? '01' : '02',
             'Account Status Date' => !empty($this->account_status->created_at) ? date('d M Y', strtotime($this->account_status->created_at)) : NULL,
-            'Written Off Amount' => isset($userData) ? (int)$userData->write_off_amt : 0,
-            'Settled Amount' => isset($settledAmt) ? (int)$settledAmt : 0,
+            'Written Off Amount' => isset($wrireOffAmt) ? $wrireOffAmt : 0,
+            'Settled Amount' => isset($settledAmt) ? $settledAmt : 0,
             'Major reasons for Restructuring' => NULL,
             'Amount of Contracts Classified as NPA' => NULL,
             'Asset based Security coverage' => NULL,
@@ -392,6 +406,7 @@ class CibilReportController extends Controller
             'UFCE (Amount)' => NULL,
             'UFCE Date' => NULL,
         ];
+        
         return $data;
     }
 
@@ -540,11 +555,14 @@ class CibilReportController extends Controller
     }
 
     private function _getSOAbalanceData($userId){
-      $soaBalance = \DB::select('SELECT soa_outstanding as SOA_Outstanding 
-      FROM (SELECT user_id FROM rta_lms_users WHERE user_id = ? GROUP BY user_id ) AS a 
-      LEFT JOIN(SELECT b.user_id, (SUM(b.debit_amount) - SUM(b.credit_amount)) AS soa_outstanding 
-      FROM rta_customer_transaction_soa AS b LEFT JOIN rta_transactions AS c ON c.trans_id = b.trans_id 
-      WHERE c.soa_flag = 1 AND c.is_transaction = 1 GROUP BY c.user_id) AS d ON a.user_id = d.user_id', [$userId]);
-      return ['SOA_Balance' => round($soaBalance[0]->SOA_Outstanding, 2)];
+      $soaBalance = \DB::select('SELECT SUM(IF(entry_type = 0,amount,amount*-1))AS SOA_Outstanding 
+      FROM rta_transactions
+      WHERE soa_flag = 1 
+      AND user_id = ?
+      GROUP BY user_id', [$userId]);
+      return !empty($soaBalance) && isset($soaBalance[0]->SOA_Outstanding) ? 
+      ['SOA_Balance' => round($soaBalance[0]->SOA_Outstanding, 2)] : 
+      ['SOA_Balance' => 0];
     }
+
 }

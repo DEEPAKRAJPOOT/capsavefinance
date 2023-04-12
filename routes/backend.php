@@ -719,6 +719,16 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                     'uses' => 'Backend\CamController@saveLimitAssessment'
                 ]);
 
+                Route::get('edit-total-limit-amnt', [
+                    'as' => 'edit_total_limit_amnt',
+                    'uses' => 'Backend\CamController@totalCreditAssessed'
+                ]); 
+
+                Route::post('update-total-limit-amnt', [
+                    'as' => 'update_total_limit_amnt',
+                    'uses' => 'Backend\CamController@updateTotalCreditAssessed'
+                ]);
+
                 Route::get('anchor-view', [
                     'as' => 'anchor_view',
                     'uses' => 'Backend\CamController@anchorViewForm'
@@ -743,6 +753,15 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 Route::get('show-limit-offer', [
                     'as' => 'show_limit_offer',
                     'uses' => 'Backend\CamController@showLimitOffer'
+                ]);
+                Route::get('delete-limit-offer', [
+                    'as' => 'delete_limit_offer',
+                    'uses' => 'Backend\CamController@deleteLimitOffer'
+                ]);
+
+                Route::get('delete-prgm-limit', [
+                    'as' => 'delete_prgm_limit',
+                    'uses' => 'Backend\CamController@deletePrgmLimit'
                 ]);
 
                 Route::get('approve-adhoc-limit', [
@@ -1714,7 +1733,15 @@ Route::domain(config('proin.backend_uri'))->group(function () {
             Route::get('export_fact_journal_txns', [
                 'as' => 'export_fact_journal_txns',
                 'uses' => 'Backend\FinanceController@exportFactJournalTransactions'
+            ]);
+            Route::get('download_fact_payment_txns', [
+                'as' => 'download_fact_payment_txns',
+                'uses' => 'Backend\FinanceController@downloadFactPaymentTransactions'
             ]);                        
+            Route::get('download_fact_journal_txns', [
+                'as' => 'download_fact_journal_txns',
+                'uses' => 'Backend\FinanceController@downloadFactJournalTransactions'
+            ]);                         
         });
 
         Route::group(['prefix' => 'nach'], function () {

@@ -213,4 +213,14 @@ class FinanceRepository extends BaseRepositories implements FinanceInterface
         $this->result = FinancialJournalItems::getPaymentFactTxns($where);
         return $this->result;
     }
+
+    public function getJournalReportData(array $where = array()) {
+        $this->result = FinancialJournalItems::getJournalReportData($where);
+        return $this->result;
+    }
+
+    public function getPaymentReportData(array $where = array()) {
+        $this->result = FinancialJournalItems::getPaymentReportData($where);
+        return $this->result;
+    }
 }

@@ -6,7 +6,6 @@ use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Storage;
 use App\Inv\Repositories\Models\ETL\DisbursalReport as DisbursalReportModel;
 use PhpOffice\PhpSpreadsheet\IOFactory;
-
 use Carbon\Carbon;
 
 class DisbursalReport extends Command
@@ -55,12 +54,12 @@ class DisbursalReport extends Command
                     try {
                         $inputFileType = IOFactory::identify($filePath);
                         $objReader = IOFactory::createReader($inputFileType);
-                        $objPHPExcel = $objReader->load($filePath);
+                        $objSpreadsheet = $objReader->load($filePath);
                     } catch (\Exception $e) {
                         die('Error loading file "'.pathinfo($filePath,PATHINFO_BASENAME).'": '.$e->getMessage());
                     }
                     //  Get worksheet dimensions
-                    $sheet = $objPHPExcel->getSheet(0);
+                    $sheet = $objSpreadsheet->getSheet(0);
                     $highestRow = $sheet->getHighestRow(); 
                     $highestColumn = $sheet->getHighestColumn();
 

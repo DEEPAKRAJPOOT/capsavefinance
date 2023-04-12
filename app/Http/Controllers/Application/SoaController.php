@@ -8,14 +8,11 @@ use App\Http\Controllers\Controller;
 use App\Inv\Repositories\Contracts\ApplicationInterface as AppRepoInterface;
 use App\Inv\Repositories\Contracts\LmsInterface as InvLmsRepoInterface;
 use App\Inv\Repositories\Contracts\UserInterface as InvUserRepoInterface;
-
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Style\Fill;
-use PhpOffice\PhpSpreadsheet\Style\Alignment;
 use PhpOffice\PhpSpreadsheet\Cell\DataType;
-
-
+use PhpOffice\PhpSpreadsheet\Style\Alignment;
 use Carbon\Carbon;
 
 class SoaController extends Controller {
@@ -230,7 +227,7 @@ class SoaController extends Controller {
             });        
         }
         $exceldata = $this->prepareDataForRendering($transactionList->get()->chunk(1));
-        $sheet = new Spreadsheet();
+        $sheet =  new Spreadsheet();
         $sheet->getActiveSheet()->mergeCells('A2:K2');
         $sheet->getActiveSheet()->mergeCells('A3:K3');
         $sheet->getActiveSheet()
@@ -282,8 +279,8 @@ class SoaController extends Controller {
                 ->setCellValue('L'.$rows, 'Credit')
                 ->setCellValue('M'.$rows, 'Balance');
         
-        $sheet->getActiveSheet()->getStyle('A'.$rows.':M'.$rows)->getFill()->applyFromArray(array(
-            'type' => Fill::FILL_SOLID,
+        $sheet->getActiveSheet()->getStyle('A'.$rows.':M'.$rows)->applyFromArray(array(
+            'fillType' => Fill::FILL_SOLID,
             'startcolor' => [ 'rgb' => "CAD7D3" ],
             'font' => [ 'bold'  => true ]
         ));
@@ -321,8 +318,8 @@ class SoaController extends Controller {
                     $color = trim($rowData['soabackgroundcolor'],'#');
                 }
                 
-                $sheet->getActiveSheet()->getStyle('A'.$rows.':M'.$rows)->getFill()->applyFromArray(array(
-                    'type' => Fill::FILL_SOLID,
+                $sheet->getActiveSheet()->getStyle('A'.$rows.':M'.$rows)->applyFromArray(array(
+                    'fillType' => Fill::FILL_SOLID,
                     'startcolor' => array( 'rgb' => $color)
                 ));
                 $rows++;

@@ -22,6 +22,7 @@ use DB;
 use App\Libraries\Pdf;
 use Carbon\Carbon;
 use App\Inv\Repositories\Contracts\ApplicationInterface;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use App\Inv\Repositories\Models\Lms\Disbursal;
 use App\Inv\Repositories\Models\Lms\Transactions;
@@ -544,7 +545,7 @@ class PaymentController extends Controller {
 	$totalMarginAmount -= $overdueInterest;
 	
 	// $counter +=1;
-	// $objPHPExcel->setActiveSheetIndex(0)
+	// $objSpreadsheet->setActiveSheetIndex(0)
 	//             ->setCellValue('A'.$counter, 'Interest Sept')
 	//             ->setCellValue('E'.$counter, '');
 
@@ -566,12 +567,12 @@ class PaymentController extends Controller {
 				->setCellValue('F'.$counter, $totalMarginAmount);
 	
     /*  $counter +=1;
-	$objPHPExcel->setActiveSheetIndex(0)
+	$objSpreadsheet->setActiveSheetIndex(0)
 				->setCellValue('A'.$counter, 'Overdue')
 				->setCellValue('E'.$counter, '');
 	
 	$counter +=1;
-	$objPHPExcel->setActiveSheetIndex(0)
+	$objSpreadsheet->setActiveSheetIndex(0)
 				->setCellValue('A'.$counter, 'Int Type')
 				->setCellValue('E'.$counter, '');
 	*/

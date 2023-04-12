@@ -119,10 +119,22 @@ class ChargeController extends Controller
       
     public function saveManualCharges(Request $request)
        { 
+        DB::beginTransaction();
         try { 
-           $getUserState = $this->lmsRepo->getUserAddress($request->app_id);
-           $comAddrState = $this->lmsRepo->companyAdress();
-           $getAmount =  str_replace(',', '', $request->amount);
+            $getUserState = $this->lmsRepo->getUserAddress($request->app_id);
+            $comAddrState = $this->lmsRepo->companyAdress();
+            $getAmount =  str_replace(',', '', $request->amount);
+            if($request->is_gst_applicable == 1 && !is_numeric($request->charge_amount_gst_new)){
+                \DB::rollback();
+                Session::flash('error', 'Charge amount with GST is non numeric value !');
+                return redirect()->route('manage_charge', ['user_id' => $request->user_id]);
+            }
+            if($getAmount <= 0){
+                \DB::rollback();
+                Session::flash('error', 'Charge amount should be greater than zero!');
+                return redirect()->route('manage_charge', ['user_id' => $request->user_id]);
+            }
+
            $getTransType  =  DB::table('mst_trans_type')->where(['chrg_master_id' => $request->chrg_name])->first();
            $totalSumAmount = 0;
            if($getTransType)
@@ -140,7 +152,7 @@ class ChargeController extends Controller
                    }
                    else
                    {
-                        $totalSumAmount  =  $request->amount; 
+                        $totalSumAmount  =  $getAmount; 
                         $cgst = 9;
                         $sgst = 9;
                         $igst =  0;
@@ -151,7 +163,7 @@ class ChargeController extends Controller
                  else
                  {
                     $chrg_applicable_id = $request->chrg_applicable_hidden_id; 
-                    $percent  = $request->amount;
+                    $percent  = $getAmount;
                    if($request->is_gst_applicable==1)
                    {
                        $totalSumAmount  =  $request->charge_amount_gst_new;  
@@ -185,7 +197,7 @@ class ChargeController extends Controller
                     $paymentId = null;
                     if(in_array($request->chrg_name,[config('lms.CHARGE_TYPE.CHEQUE_BOUNCE'),config('lms.CHARGE_TYPE.NACH_BOUNCE')])){
                         if(!$request->has('payment')){
-                            Session::flash('message', 'Payment Detail missing, Please try again');
+                            Session::flash('error', 'Payment Detail missing, Please try again');
                             return redirect()->route('manage_charge', ['user_id' => $request->user_id]);
                         }else{
                             $payments = [];
@@ -284,21 +296,21 @@ class ChargeController extends Controller
                         else
                         {
                             \DB::rollback();
-                            Session::flash('message', 'Something went wrong, Please try again');
+                            Session::flash('error', 'Something went wrong, Please try again');
                             return redirect()->route('manage_charge', ['user_id' => $request->user_id]);
                         }
                   }
                    else
                         {
                             \DB::rollback();
-                            Session::flash('message', 'Something went wrong1, Please try again');
+                            Session::flash('error', 'Something went wrong1, Please try again');
                             return redirect()->route('manage_charge', ['user_id' => $request->user_id]);
                         }
                  
                  }
                         else {
                             \DB::rollback();
-                            Session::flash('message', 'Something went wrong2, Please try again');
+                            Session::flash('error', 'Something went wrong2, Please try again');
                             return redirect()->route('manage_charge', ['user_id' => $request->user_id]);
                       }
 

@@ -3,6 +3,7 @@
 namespace App\Console\Commands\ETL;
 
 use Carbon\Carbon;
+use App\Helpers\Helper;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Storage;
@@ -46,17 +47,19 @@ class OutstandingReport extends Command
         $outstandingReportLog = OutstandingReportLog::whereNull('user_id')->where('created_by','0')->orderBy('id','desc')->limit(1)->first();
         $filePath = $outstandingReportLog->file_path;
         $reportLogId = $outstandingReportLog->id;
+        $currDate = NULL;
         if(file_exists($filePath)) {
+            $currDate = Helper::utcToIst($outstandingReportLog->created_at);
             try {
                 $inputFileType = IOFactory::identify($filePath);
                 $objReader = IOFactory::createReader($inputFileType);
-                $objPHPExcel = $objReader->load($filePath);
+                $objSpreadsheet = $objReader->load($filePath);
             } catch (\Exception $e) {
                 $this->error('Error loading file "'.pathinfo($filePath,PATHINFO_BASENAME).'": '.$e->getMessage());
                 die();
             }
             //  Get worksheet dimensions
-            $sheet = $objPHPExcel->getSheet(0);
+            $sheet = $objSpreadsheet->getSheet(0);
             $highestRow = $sheet->getHighestRow(); 
             $highestColumn = $sheet->getHighestColumn();
 
@@ -130,7 +133,7 @@ class OutstandingReport extends Command
                     'Total Outstanding' => (double)$dataRecord['Total Outstanding'],
                     'Grace Days Interest' => (int)$dataRecord['Grace Days Interest'],
                     'Grace Days Principal' => (int)$dataRecord['Grace Days Principal'],
-                    'Grace Period End Date' => $dataRecord['Grace Period End Date'] ?? NULL,
+                    'Grace Period End Date' => implode("-", array_reverse(explode("-", $dataRecord['Invoice Due Date After Grace']))) ?? NULL,
                     'Principal Overdue' => $dataRecord['Principal Overdue'],
                     'Principal Overdue Category' => $dataRecord['Principal Overdue Category'],
                     'Principal DPD' => (int)$dataRecord['Principal DPD'],
@@ -142,7 +145,8 @@ class OutstandingReport extends Command
                     'Balance Margin to be Refunded' => (double)$dataRecord['Balance Margin to be Refunded'],
                     'Balance Interest to be refunded' => (double)$dataRecord['Balance Interest to be refunded'],
                     'Balance Overdue Interest to be refunded' => (double)$dataRecord['Balance Overdue Interest to be refunded'],
-                    'Sales Manager' => (double)$dataRecord['Sales Manager']
+                    'Sales Manager' => $dataRecord['Sales Manager'],
+                    'Report Date' => $currDate ?? NULL,
                 ]);
             }
             $this->info("The Outstanding Report sync to database successfully.");

@@ -1118,7 +1118,7 @@ class Helper extends PaypalHelper
                       }
                     
                 } else {
-                    if (isset($roleData[0]) && $roleData[0]->id == 6 && in_array(request()->route()->getName(), ['share_to_colender', 'save_share_to_colender'])) {
+                    if (isset($roleData[0]) && $roleData[0]->id == 6 && in_array(request()->route()->getName(), ['share_to_colender', 'save_share_to_colender','update_total_limit_amnt'])) {
                         $isViewOnly = 1;
                     } else if (isset($roleData[0]) && $roleData[0]->id == 11 && in_array(request()->route()->getName(), ['reject_app', 'save_app_rejection'])) {
                         $isViewOnly = 1;
@@ -2705,7 +2705,7 @@ class Helper extends PaypalHelper
     }
 
     public static function getlastSacntionedApplication(int $userId){
-       return Application::where('user_id',$userId)->where('curr_status_id',config('common.mst_status_id.APP_SANCTIONED'))->first();
+       return Application::where('user_id',$userId)->whereIn('curr_status_id',[config('common.mst_status_id.APP_SANCTIONED'),config('common.mst_status_id.APP_CLOSED')])->orderBy('app_id', 'DESC')->first();
     }
 
     public static function getCustomerSanctionedAmt(int $userId){
@@ -2848,17 +2848,17 @@ class Helper extends PaypalHelper
         $startDate = Helper::utcToIst($startDate,'Y-m-d H:i:s', 'Y-m-d H:i:s');
         
         $month =  Carbon::parse($startDate)->format('M');
-        $year =  Carbon::parse($startDate)->format('Y');
-        $year2 = Carbon::parse($startDate)->format('y');
+        $fYear = explode('-',getFinancialYear($startDate));
+        $year1 =  $fYear[0];
+        $year2 = $fYear[1];
         $factResult = array(
-            'year1'=>$year,
-            'year2'=>($year+1),
+            'year1'=>$year1,
+            'year2'=>$year2,
             'month'=>$month,
             'fact_srp_seq_number'=>0,
             'fact_sjv_seq_number'=>0,
-            'voucher_format'=> $year2.($year2+1).'/'.mb_substr($month, 0, 1)
+            'voucher_format'=> substr($year1,-2).substr($year2,-2).'/'.mb_substr($month, 0, 1)
         );
-
         $factvoucherData = TallyFactVoucher::getfactVoucherNumber();
         if($factvoucherData){
             if(!($factvoucherData->fact_month == $month)){
@@ -2866,12 +2866,12 @@ class Helper extends PaypalHelper
                 $factvoucherData->fact_sjv_seq_number = 0;
             }
             $factResult = array(
-                'year1'=>$year,
-                'year2'=>($year+1),
+                'year1'=>$year1,
+                'year2'=>$year2,
                 'month'=>$month,
                 'fact_srp_seq_number'=>$factvoucherData->fact_srp_seq_number,
                 'fact_sjv_seq_number'=>$factvoucherData->fact_sjv_seq_number,
-                'voucher_format'=> $year2.($year2+1).'/'.mb_substr($month, 0, 1)
+                'voucher_format'=> substr($year1,-2).substr($year2,-2).'/'.mb_substr($month, 0, 1)
             );
         }
         return $factResult;

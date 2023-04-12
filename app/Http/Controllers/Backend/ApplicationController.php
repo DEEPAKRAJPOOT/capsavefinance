@@ -1087,7 +1087,6 @@ class ApplicationController extends Controller
 			$attributes = $request->all();
 			$addl_data = [];
 			$addl_data['sharing_comment'] = $sharing_comment;
-
 			if ($curr_role_id && $assign_case) {
 				$currStage = Helpers::getCurrentWfStage($app_id);
 				$selData = explode('-', $sel_assign_role);
@@ -1096,10 +1095,27 @@ class ApplicationController extends Controller
 				$currStage = Helpers::getCurrentWfStage($app_id);
 				$selRoleStage = Helpers::getCurrentWfStagebyRole($selRoleId, $user_journey=2, $wf_start_order_no=$currStage->order_no, $orderBy='DESC');
 				Helpers::updateWfStageManual($app_id, $selRoleStage->order_no, $currStage->order_no, $wf_status = 2, $selUserId, $addl_data);
+				if($currStage->stage_code == 'approver'){
+					$updateStatus = AppApprover::updateAppApprActiveFlag($app_id);
+				}
 			} else {
 
 				$currStage = Helpers::getCurrentWfStage($app_id);
 
+				if($currStage->stage_code == 'cpa_desk'){
+					
+					$fiWhere = [];
+					$fiWhere['app.app_id'] = $app_id;
+					$fiWhere['fi_addr.is_active'] = 1;
+					$fiWhere['fi_addr.cm_fi_status_id'] = 3;
+					$fiWhere['fi_addr.fi_status_id'] = 3;
+					$fiAddr = $this->appRepo->getFiAddressData($fiWhere);
+					if (count($fiAddr) == 0)  {
+						Session::flash('error_code', 'validate_fi_status');
+						return redirect()->back();
+					} 
+				}
+				
 				//Validate the stage
 				if ($currStage->stage_code == 'credit_mgr') {
 					$whereCondition = ['app_id' => $app_id, 'status_is_null_or_accepted' =>1];
@@ -1114,7 +1130,7 @@ class ApplicationController extends Controller
 						Session::flash('error_code', 'limit_rejected');
 						return redirect()->back();
 					}  
-					$fiWhere = [];
+					/*$fiWhere = [];
 					$fiWhere['app.app_id'] = $app_id;
 					$fiWhere['fi_addr.is_active'] = 1;
 					$fiWhere['fi_addr.cm_fi_status_id'] = 3;
@@ -1123,7 +1139,7 @@ class ApplicationController extends Controller
 					if (count($fiAddr) == 0)  {
 						Session::flash('error_code', 'validate_fi_status');
 						return redirect()->back();
-					}                                      
+					}*/                                      
 				} else if ($currStage->stage_code == 'approver') {
 
 					if ($request->has('is_app_pull_back') && $request->is_app_pull_back) {
@@ -1503,7 +1519,6 @@ class ApplicationController extends Controller
 	public function saveBusinessInformation(BusinessInformationRequest $request)
 	{
 		try {
-
 			$arrFileData = $request->all();
 
                         $whereCond=[];
@@ -1640,17 +1655,15 @@ class ApplicationController extends Controller
 				$appData = $this->appRepo->getAppDataByAppId($appId);
 				$userId = $appData ? $appData->user_id : null;
 				$reqdDocs = $this->createAppRequiredDocs($prgmDocsWhere, $userId, $appId);
-				$limitData = $this->masterRepo->getCurrentBorrowerLimitData();
+				/*$limitData = $this->masterRepo->getCurrentBorrowerLimitData();
 				if($limitData){
 
 				  $applimitData['single_limit'] = $limitData['single_limit'];
 				  $applimitData['multiple_limit'] = $limitData['multiple_limit'];
-				  $applimitData['start_date']  = $limitData['start_date'];
-				  $applimitData['end_date']  = $limitData['end_date'];
 				  $applimitData['app_id'] = $appId;
 				  $createdLimited = $this->appRepo->createBorrowerLimit($applimitData);
 					
-				}
+				}*/
 				
 
 				Helpers::updateAppCurrentStatus($appId, config('common.mst_status_id.OFFER_ACCEPTED'));
@@ -1710,7 +1723,7 @@ class ApplicationController extends Controller
 			if ($savedOfferData) {
 				Session::flash('message', $message);
 				//return redirect()->route('gen_sanction_letter', ['app_id' => $appId, 'biz_id' => $bizId, 'offer_id' => $offerId ]);
-				return redirect()->route('view_offer', ['app_id' => $appId, 'biz_id' => $bizId ]);
+				return redirect()->route('view_offer', ['app_id' => $appId, 'biz_id' => $bizId,'user_id' => $userId ]);
 			}
 
 		} catch (Exception $ex) {
@@ -3058,7 +3071,6 @@ class ApplicationController extends Controller
             $user_id = $request->get('user_id');
 			$biz_id = $request->get('biz_id');
 			$app_id = $request->get('app_id');
-			// dd($user_id,$biz_id,$app_id);
             $where = ['user_id' => $user_id];
             $allApps = $this->UserInvRepo->getAllAppData($where);
 					$userAddresswithbiz = BusinessAddress::getAddressforCustomerApp($biz_id);

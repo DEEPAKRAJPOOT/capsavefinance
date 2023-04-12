@@ -7,10 +7,10 @@ use Auth;
 use Session;
 use Helpers;
 use DateTime;
+use PhpOffice\PhpSpreadsheet\Spreadsheet; 
 use PDF as DPDF;
 use Carbon\Carbon;
 use App\Libraries\Pdf;
-use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use App\Helpers\FileHelper;
 use Illuminate\Http\Request;
@@ -485,8 +485,8 @@ class NACHController extends Controller {
         $objWriter->save($filePath);
         $objWriter->save("php://output");
         
-        // $objReader = PHPExcel_IOFactory::createReader($fileType); 
-        // $objPHPExcel = $objReader->load($fileName);
+        // $objReader = IOFactory::createReader($fileType); 
+        // $objSpreadsheet = $objReader->load($fileName);
         ob_end_flush();
 
         return [ 'status' => 1,

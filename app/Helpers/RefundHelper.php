@@ -31,51 +31,54 @@ class RefundHelper{
 
         $interestRefundTotal = Transactions::where('trans_type',config('lms.TRANS_TYPE.REFUND'))
         ->where('entry_type',1)
+        ->where('apportionment_id',$apportionmentId)
         ->whereHas('parentTransactions',function($query){
             $query->where('trans_type',config('lms.TRANS_TYPE.INTEREST'));
         })
-        ->whereHas('linkTransactions',function($query) use($paymentId,$apportionmentId){
-            $query->whereIn('trans_type',[config('lms.TRANS_TYPE.TDS'),config('lms.TRANS_TYPE.INTEREST')])
-            ->where('entry_type',1)
-            ->where('payment_id',$paymentId)
-            ->where('apportionment_id',$apportionmentId);
-        })
         ->sum('settled_outstanding');
-
+        
         $interestOverdueTotal = Transactions::where('trans_type',config('lms.TRANS_TYPE.REFUND'))
         ->where('entry_type',1)
+        ->where('apportionment_id',$apportionmentId)
         ->whereHas('parentTransactions',function($query){
             $query->where('trans_type',config('lms.TRANS_TYPE.INTEREST_OVERDUE'));
-        })
-        ->whereHas('linkTransactions',function($query) use($paymentId,$apportionmentId){
-            $query->whereIn('trans_type',[config('lms.TRANS_TYPE.TDS'),config('lms.TRANS_TYPE.INTEREST_OVERDUE')])
-            ->where('entry_type',1)
-            ->where('payment_id',$paymentId)
-            ->where('apportionment_id',$apportionmentId);
         })
         ->sum('settled_outstanding');
 
         $marginTotal = Transactions::where('trans_type',config('lms.TRANS_TYPE.REFUND'))
         ->where('entry_type',1)
+        ->where('apportionment_id',$apportionmentId)
         ->whereHas('linkTransactions',function($query) use($paymentId,$apportionmentId){
             $query->where('trans_type',config('lms.TRANS_TYPE.MARGIN'))
             ->where('entry_type',1)
-            ->where('payment_id',$paymentId)
-            ->where('apportionment_id',$apportionmentId);
+            ->where('payment_id',$paymentId);
         })
         ->sum('settled_outstanding');
 
         $nonFactoredAmount = Transactions::where('trans_type',config('lms.TRANS_TYPE.REFUND'))
         ->where('entry_type',1)
+        ->where('apportionment_id',$apportionmentId)
         ->whereHas('linkTransactions',function($query) use($paymentId,$apportionmentId){
             $query->where('trans_type',config('lms.TRANS_TYPE.NON_FACTORED_AMT'))
             ->where('entry_type',1)
-            ->where('payment_id',$paymentId)
-            ->where('apportionment_id',$apportionmentId);
+            ->where('payment_id',$paymentId);
         })
         ->sum('settled_outstanding');
         
-        $refundableAmount = $nonFactoredAmount+$marginTotal+$interestRefundTotal+$interestOverdueTotal;
+        $chargeRefund = Transactions::where('trans_type',config('lms.TRANS_TYPE.REFUND'))
+        ->where('entry_type',1)
+        ->where('apportionment_id',$apportionmentId)
+        ->whereHas('parentTransactions.transType',function($query){
+            $query->where('chrg_master_id','>',0);
+        })
+        ->whereHas('linkTransactions',function($query) use($paymentId,$apportionmentId){
+            $query->whereIn('trans_type',[config('lms.TRANS_TYPE.TDS')])
+            ->where('entry_type',1)
+            ->where('payment_id',$paymentId);
+        })
+        ->sum('settled_outstanding');
+        
+        $refundableAmount = $nonFactoredAmount+$marginTotal+$interestRefundTotal+$interestOverdueTotal+$chargeRefund;
 
         return [
         'repaymentTrails' => $repaymentTrails, 
@@ -85,6 +88,7 @@ class RefundHelper{
         'interestRefund'=>$interestRefundTotal,
         'interestOverdue'=>$interestOverdueTotal,
         'marginTotal'=>$marginTotal,
+        'chargeRefund'=>$chargeRefund,
         'refundableAmount'=>$refundableAmount,
         'paymentId' => $paymentId,
         'apportionmentId' => $apportionmentId,
@@ -107,6 +111,7 @@ class RefundHelper{
                     'OVERDUE_INTEREST'=>$data['interestOverdue'],
                     'INTEREST_REFUND'=>$data['interestRefund'],
                     'MARGIN_RELEASED'=>$data['marginTotal'],
+                    'CHARGE_REFUND'=>$data['chargeRefund'],
                     'TOTAL_REFUNDABLE_AMT'=>$data['refundableAmount'],
                 ];
                 $logData = [
@@ -197,6 +202,7 @@ class RefundHelper{
             'interestRefund'=>$refundTypeAmt['INTEREST_REFUND'] ?? 0,
             'interestOverdue'=>$refundTypeAmt['OVERDUE_INTEREST'] ?? 0,
             'marginTotal'=>$refundTypeAmt['MARGIN_RELEASED'] ?? 0,
+            'chargeRefund'=>$refundTypeAmt['CHARGE_REFUND'] ?? 0,
             'refundableAmount'=>$refundTypeAmt['TOTAL_REFUNDABLE_AMT'] ?? 0,
             'paymentId' => $refundReq->payment_id
         ]; 

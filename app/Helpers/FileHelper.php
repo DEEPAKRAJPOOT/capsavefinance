@@ -5,14 +5,12 @@ namespace App\Helpers;
 use Auth;
 use Illuminate\Support\Facades\Storage;
 use PDF as DPDF;
-
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Style\Fill;
+use PhpOffice\PhpSpreadsheet\Cell\DataType;
 use PhpOffice\PhpSpreadsheet\Style\Alignment;
 use PhpOffice\PhpSpreadsheet\Style\Border;
-use PhpOffice\PhpSpreadsheet\Cell\DataType;
-
 use App\Inv\Repositories\Models\UserFile;
 use App\Inv\Repositories\Contracts\ApplicationInterface as InvAppRepoInterface;
 
@@ -103,7 +101,6 @@ class FileHelper {
     }
 
     public function array_to_excel($toExportData, $file_name = "", $moreDetails = [], $path = null, $isFileSave = false) {
-        // dd($moreDetails);
         $moreDetails = array_chunk(array_filter($moreDetails), 2, true);
         $requiredRowsForDetails = ceil(count($moreDetails) / 2);
         ob_start();
@@ -114,7 +111,7 @@ class FileHelper {
         $lastkey = array_key_last($toExportData);
         $objSpreadsheet = new Spreadsheet();
 
-        $ExtraRow = 3;
+        $ExtraRow = 0;
           $styleArr2 = $styleArray = array(
               'font' => array(
                 'bold' => true,
@@ -169,15 +166,47 @@ class FileHelper {
             $activeSheet++;
             $column = 0;
             $header_row = $ExtraRow + 1;
-            $start_row = $ExtraRow + 3;
+            $start_row = $ExtraRow + 2;
             $row = $start_row;
             $column = 0;
             $floor = floor($rec_count/26);
             $reminder = $rec_count % 26;
             $char = ($floor > 0 ? chr(ord("A") + $floor-1) : '').chr(ord("A") + $reminder);
+            
+            //Fact Payment File Name sub string
+            $factDateFormatFlag = 0;
+            switch (strtolower(substr(trim($file_name),0,12))) {
+              case 'fact-payment':
+                $factDateFormatFlag = 1;
+                break;
+              case 'fact-journal':
+                $factDateFormatFlag = 2;
+                break;
+            }
+
             foreach($data as $key => $item) {
               foreach($item as $key1 => $item1) {
-                $objSpreadsheet->getActiveSheet()->setCellValueByColumnAndRow($column, $row, $item1);
+                if($factDateFormatFlag == 1){
+                  $objSpreadsheet->getActiveSheet()
+                  ->setCellValueByColumnAndRow($column, $row, $item1)  
+                  ->getStyle('C'.$row)
+                  ->getNumberFormat()
+                  ->setFormatCode('dd-mm-yyyy');
+                  $objSpreadsheet->getActiveSheet()
+                  ->setCellValueByColumnAndRow($column, $row, $item1)  
+                  ->getStyle('F'.$row)
+                  ->getNumberFormat()
+                  ->setFormatCode('dd-mm-yyyy');
+                }elseif($factDateFormatFlag == 2){
+                  $objSpreadsheet->getActiveSheet()
+                  ->setCellValueByColumnAndRow($column, $row, $item1)  
+                  ->getStyle('B'.$row)
+                  ->getNumberFormat()
+                  ->setFormatCode('dd-mm-yyyy');
+                }else{
+                  $objSpreadsheet->getActiveSheet()->setCellValueByColumnAndRow($column, $row, $item1);
+                }
+                
                 $column++;
               }
               $argb = "FFFFFFFF";
@@ -186,7 +215,7 @@ class FileHelper {
               }
               $styleArray = array(
                 'fill' => array(
-                  'type' => Fill::FILL_SOLID,
+                  'fillType' => Fill::FILL_SOLID,
                   'startcolor' => array(
                     'argb' => $argb,
                   ),
@@ -227,11 +256,7 @@ class FileHelper {
                   ),
               ),
             );
-     
-            $objSpreadsheet->getActiveSheet()->mergeCells('A1:' . $char . '1');
-            $objSpreadsheet->getActiveSheet()->setCellValue('A1', $file_name);
-            $objSpreadsheet->getActiveSheet()->getStyle('A1')->applyFromArray($styleArray);
-     
+
             $styleArray = array(
               'font' => array(
                 'bold' => true,
@@ -245,7 +270,7 @@ class FileHelper {
                   ),
               ),
               'fill' => array(
-                'type' => Fill::FILL_SOLID,
+                'fillType' => Fill::FILL_SOLID,
                 'rotation' => 90,
                 'startcolor' => array(
                     'argb' => 'FFA0A0A0',
@@ -255,14 +280,13 @@ class FileHelper {
                 ),
               ),
             );
-
             $objSpreadsheet->getActiveSheet()->getStyle('A'. $header_row .':' . $char . $header_row)->applyFromArray($styleArray);
             foreach($header_cols as $key => $el) {
                  $floor = floor(($key)/26);
                  $reminder = ($key) % 26;
                  $char = ($floor > 0 ? chr(ord("A") + $floor-1) : '').chr(ord("A") + $reminder);
                  $objSpreadsheet->getActiveSheet()->getColumnDimension($char)->setAutoSize(true);
-            } 
+            }
             $styleArray = array(
               'alignment' => array(
                 'horizontal' => Alignment::HORIZONTAL_JUSTIFY,
@@ -276,7 +300,7 @@ class FileHelper {
             );
             $objSpreadsheet->getActiveSheet()->getStyle('A'. $start_row .':' . $char . $end_row)->applyFromArray($styleArray);
             $objSpreadsheet->getActiveSheet()->setTitle($sheetTitle);
-        } 
+        }
         header('Content-Type: application/vnd.ms-excel');
         header('Content-Disposition: attachment;filename="' . $file_name . '"');
         header('Cache-Control: max-age=0');

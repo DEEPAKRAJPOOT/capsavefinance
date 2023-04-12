@@ -121,6 +121,30 @@
                     </td>
                 </tr>
                 @endif
+                <tr>
+                    <td style="padding:8px 10px;font-size: 0.917rem; font-family: Calibri !important;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;"><b>XIRR %: </b></td>
+                    <td style="padding:8px 10px;font-size: 0.917rem; font-family: Calibri !important;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;">{{round($leaseOffer->xirr,2)}}%</td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td style="padding:8px 10px;font-size: 0.917rem; font-family: Calibri !important;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;"><b>DSA Applicable: </b></td>
+                    <td style="padding:8px 10px;font-size: 0.917rem; font-family: Calibri !important;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;">{{($leaseOffer->dsa_applicable == '1')?'Yes':'No'}}</td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                @if($leaseOffer->dsa_applicable == '1')
+                <tr>
+                    <td style="padding:8px 10px;font-size: 0.917rem; font-family: Calibri !important;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;"><b>DSA Name: </b></td>
+                    <td style="padding:8px 10px;font-size: 0.917rem; font-family: Calibri !important;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;">{{$leaseOffer->programOfferDsa->dsa_name}}</td>
+                    <td style="padding:8px 10px;font-size: 0.917rem; font-family: Calibri !important;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;"><b>Payout %:</b></td>
+                    <td style="padding:8px 10px;font-size: 0.917rem; font-family: Calibri !important;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;">{{number_format($leaseOffer->programOfferDsa->payout,2)}}</td>
+                </tr>
+                <tr>
+                    <td style="padding:8px 10px;font-size: 0.917rem; font-family: Calibri !important;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;"><b>Payout Event: </b></td>
+                    <td style="padding:8px 10px;font-size: 0.917rem; font-family: Calibri !important;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;">{{$leaseOffer->programOfferDsa->payout_event}}</td>
+                </tr>
+                @endif
                 @empty
                     <tr class="">
                         <td colspan="4" style="padding:8px 10px;font-size: 14px;border-bottom: #ccc solid 1px;">No Offer Found</td>
@@ -179,9 +203,33 @@
                           <tr>
                               <td style="padding:8px 10px;font-size: 0.917rem; font-family: Calibri !important;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;"><b>Grace Period (Days): </b></td>
                               <td style="padding:8px 10px;font-size: 0.917rem; font-family: Calibri !important;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;">{{$supplyOffer->grace_period}}</td>
-                              <td style="padding:8px 10px;font-size: 0.917rem; font-family: Calibri !important;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;"><b>{{ isset($fee['1']) ? $fee['1']['chrg_name'] : ''}}{{ isset($fee['1']) ? ($fee['1']['chrg_type'] == 2 ? '(%)' : '(₹)') : ''}}: </b></td>
+                              <td style="padding:8px 10px;font-size: 0.917rem; font-family: Calibri !important;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;"><b>{{ isset($fee['1']) ? $fee['1']['chrg_name'].'' : ''}}{{ isset($fee['1']) ? ($fee['1']['chrg_type'] == 2 ? '(%):' : '(₹):') : ''}} </b></td>
                               <td style="padding:8px 10px;font-size: 0.917rem; font-family: Calibri !important;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;">{{ isset($fee['1']) ? $fee['1']['chrg_value'] : ''}}</td>
                           </tr>
+                          <tr>
+                            <td style="padding:8px 10px;font-size: 0.917rem; font-family: Calibri !important;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;"><b>XIRR %: </b></td>
+                            <td style="padding:8px 10px;font-size: 0.917rem; font-family: Calibri !important;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;">{{round($supplyOffer->xirr,2)}}%</td>
+                            <td></td>
+                            <td></td>
+                          </tr>
+                            <tr>
+                                <td style="padding:8px 10px;font-size: 0.917rem; font-family: Calibri !important;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;"><b>DSA Applicable: </b></td>
+                                <td style="padding:8px 10px;font-size: 0.917rem; font-family: Calibri !important;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;">{{($supplyOffer->dsa_applicable == '1')?'Yes':'No'}}</td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                            @if($supplyOffer->dsa_applicable == '1')
+                            <tr>
+                                <td style="padding:8px 10px;font-size: 0.917rem; font-family: Calibri !important;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;"><b>DSA Name: </b></td>
+                                <td style="padding:8px 10px;font-size: 0.917rem; font-family: Calibri !important;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;">{{$supplyOffer->programOfferDsa->dsa_name}}</td>
+                                <td style="padding:8px 10px;font-size: 0.917rem; font-family: Calibri !important;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;"><b>Payout %: </b></td>
+                                <td style="padding:8px 10px;font-size: 0.917rem; font-family: Calibri !important;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;">{{number_format($supplyOffer->programOfferDsa->payout,2)}}</td>
+                            </tr>
+                            <tr>
+                                <td style="padding:8px 10px;font-size: 0.917rem; font-family: Calibri !important;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;"><b>Payout Event: </b></td>
+                                <td style="padding:8px 10px;font-size: 0.917rem; font-family: Calibri !important;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;">{{$supplyOffer->programOfferDsa->payout_event}}</td>
+                            </tr>
+                          @endif
                           <tr>
                               <td style="padding:8px 10px;font-size: 0.917rem; font-family: Calibri !important;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;"><b>Comment: </b></td>
                               <td style="padding:8px 10px;font-size: 0.917rem; font-family: Calibri !important;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;" colspan="3">{{$supplyOffer->comment}}</td>
@@ -474,7 +522,7 @@
                         Single Borrower Limit
                     </td>
                     <td style="padding:8px 10px;font-size: 13px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;">
-                        Max 15% of Net owned funds (Rs {{$borrowerLimitData['single_limit']}} Mn)
+                        Max 15% of Net owned funds @if($borrowerLimitData['single_limit'] !== 0) (Rs {{$borrowerLimitData['single_limit']}} Mn) @endif
                     </td>
                     <td style="padding:8px 10px;font-size: 0.917rem;font-family: Calibri !important;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;">
                         {{isset($reviewerSummaryData->criteria_sing_borr_limit) ? $reviewerSummaryData->criteria_sing_borr_limit : ''}}
@@ -488,7 +536,7 @@
                         Borrower Group Limit 
                     </td>
                     <td style="padding:8px 10px;font-size: 13px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;">
-                        Max 25% of Net owned funds (Rs {{$borrowerLimitData['multiple_limit']}} Mn)
+                        Max 25% of Net owned funds @if($borrowerLimitData['multiple_limit'] !== 0) (Rs {{$borrowerLimitData['multiple_limit']}} Mn) @endif
                     </td>
                     <td style="padding:8px 10px;font-size: 0.917rem;font-family: Calibri !important;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;">
                         {{isset($reviewerSummaryData->criteria_borr_grp_limit) ? $reviewerSummaryData->criteria_borr_grp_limit : ''}}
