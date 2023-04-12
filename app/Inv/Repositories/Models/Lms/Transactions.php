@@ -536,15 +536,14 @@ class Transactions extends BaseModel {
     // }
 
     public function getDpdAttribute(){
-        $to = Carbon::parse(Helpers::getSysStartDate())->format('Y-m-d');
+        $to = Carbon::parse(Helpers::getSysStartDate())->subDay()->format('Y-m-d');
         $number_days = 0;
         if($this->entry_type == 0){
             $from = Carbon::parse($this->paymentduedate)->format('Y-m-d');
-            $graceEnd = Carbon::parse($from)->addDays($this->invoiceDisbursed->grace_period ?? 0)->format('Y-m-d');
-            
             if($this->outstanding > 0){
                 switch ($this->trans_type) {
                     case config('lms.TRANS_TYPE.PAYMENT_DISBURSED'):
+                        $graceEnd = Carbon::parse($from)->addDays($this->invoiceDisbursed->grace_period ?? 0)->format('Y-m-d');
                         if(strtotime($to) >= strtotime($graceEnd)){
                             $number_days = (strtotime($to) - strtotime($graceEnd)) / (60 * 60 * 24);
                         }
