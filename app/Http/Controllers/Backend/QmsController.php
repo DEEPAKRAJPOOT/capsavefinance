@@ -40,7 +40,7 @@ class QmsController extends Controller {
         $arrData = [];
         $arrRole = $this->userRepo->getAllRole();
         $arrData = $this->qmsRepo->showQueryList($app_id);
-        return view('backend.qms.queryList', compact('arrData', 'app_id', 'arrRole','user_id', $user_id));
+        return view('backend.qms.queryList', compact('arrData', 'app_id', 'arrRole','user_id'));
     }
 
 

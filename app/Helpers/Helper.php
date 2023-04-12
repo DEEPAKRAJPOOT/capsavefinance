@@ -306,7 +306,7 @@ class Helper extends PaypalHelper
         }
         $inputArr['file_type'] = !empty($attributes['doc_file']) ? $attributes['doc_file']->getClientMimeType() : '';
         $inputArr['file_name'] = !empty($attributes['doc_file']) ? $attributes['doc_file']->getClientOriginalName() : '';
-        $inputArr['file_size'] = !empty($attributes['doc_file']) ? $attributes['doc_file']->getClientSize() : '';
+        $inputArr['file_size'] = !empty($attributes['doc_file']) ? $attributes['doc_file']->getSize() : '';
         $inputArr['file_encp_key'] =  md5('2');
         $inputArr['created_by'] = 1;
         $inputArr['updated_by'] = 1;
@@ -326,7 +326,7 @@ class Helper extends PaypalHelper
 
         $inputArr['file_type'] = $attributes['doc_file']->getClientMimeType();
         $inputArr['file_name'] = $attributes['doc_file']->getClientOriginalName();
-        $inputArr['file_size'] = $attributes['doc_file']->getClientSize();
+        $inputArr['file_size'] = $attributes['doc_file']->getSize();
         $inputArr['file_encp_key'] =  md5('2');
         $inputArr['created_by'] = 1;
         $inputArr['updated_by'] = 1;
@@ -346,7 +346,7 @@ class Helper extends PaypalHelper
              $attr['message']= 'You can not upload more than 50 records in csv file.';
              return  $attr;   
        } 
-      else if($attributes['file_id']->getClientSize() > 1000000)
+      else if($attributes['file_id']->getSize() > 1000000)
        {
              $attr['status'] =0;
              $attr['message']= 'File size should be upload Only 1 Mb.';
@@ -374,7 +374,7 @@ class Helper extends PaypalHelper
 
         $inputArr['file_type'] = $attributes['file_id']->getClientMimeType();
         $inputArr['file_name'] = $attributes['file_id']->getClientOriginalName();
-        $inputArr['file_size'] = $attributes['file_id']->getClientSize();
+        $inputArr['file_size'] = $attributes['file_id']->getSize();
         $inputArr['file_encp_key'] =  md5('2');
         $inputArr['status'] =1;
        return $inputArr;
@@ -387,7 +387,7 @@ class Helper extends PaypalHelper
        $inputArr = []; 
        $attr[] = "";   
         if(!empty($attributes['file_image_id'])) {
-            if($attributes['file_image_id']->getClientSize() > 30000000)
+            if($attributes['file_image_id']->getSize() > 30000000)
             {
                     $attr['status'] =0;
                     $attr['message']= 'File size should be upload Only 30 Mb.';
@@ -429,7 +429,7 @@ class Helper extends PaypalHelper
                     dd($countFile); */
             $inputArr['file_type'] = $attributes['file_image_id']->getClientMimeType();
             $inputArr['file_name'] = $attributes['file_image_id']->getClientOriginalName();
-            $inputArr['file_size'] = $attributes['file_image_id']->getClientSize();
+            $inputArr['file_size'] = $attributes['file_image_id']->getSize();
             $inputArr['file_encp_key'] =  md5('2');
             $inputArr['created_by'] = 1;
             $inputArr['updated_by'] = 1;
@@ -492,7 +492,7 @@ class Helper extends PaypalHelper
 
         $inputArr['file_type'] = $attributes['doc_file']->getClientMimeType();
         $inputArr['file_name'] = $attributes['doc_file']->getClientOriginalName();
-        $inputArr['file_size'] = $attributes['doc_file']->getClientSize();
+        $inputArr['file_size'] = $attributes['doc_file']->getSize();
         $inputArr['file_encp_key'] =  md5('2');
         $inputArr['created_by'] = 1;
         $inputArr['updated_by'] = 1;
@@ -557,7 +557,7 @@ class Helper extends PaypalHelper
 
         $inputArr['file_type'] = $attributes['doc_file']->getClientMimeType();
         $inputArr['file_name'] = $attributes['doc_file']->getClientOriginalName();
-        $inputArr['file_size'] = $attributes['doc_file']->getClientSize();
+        $inputArr['file_size'] = $attributes['doc_file']->getSize();
         $inputArr['file_encp_key'] =  md5('2');
         $inputArr['created_by'] = 1;
         $inputArr['updated_by'] = 1;
@@ -587,7 +587,7 @@ class Helper extends PaypalHelper
 
             $inputArr[$i]['file_type'] = $attributes['doc_file'][$i]->getClientMimeType();
             $inputArr[$i]['file_name'] = $attributes['doc_file'][$i]->getClientOriginalName();
-            $inputArr[$i]['file_size'] = $attributes['doc_file'][$i]->getClientSize();
+            $inputArr[$i]['file_size'] = $attributes['doc_file'][$i]->getSize();
             $inputArr[$i]['file_encp_key'] =  md5('2');
             $inputArr[$i]['created_by'] = 1;
             $inputArr[$i]['updated_by'] = 1;
@@ -2237,7 +2237,7 @@ class Helper extends PaypalHelper
 
         $inputArr['file_type'] = $attributes['doc_file']->getClientMimeType();
         $inputArr['file_name'] = $attributes['doc_file']->getClientOriginalName();
-        $inputArr['file_size'] = $attributes['doc_file']->getClientSize();
+        $inputArr['file_size'] = $attributes['doc_file']->getSize();
         $inputArr['file_encp_key'] =  md5('2');
         $inputArr['created_by'] = 1;
         $inputArr['updated_by'] = 1;
@@ -2274,7 +2274,7 @@ class Helper extends PaypalHelper
 
         $inputArr['file_type'] = $attributes['doc_file']->getClientMimeType();
         $inputArr['file_name'] = $attributes['doc_file']->getClientOriginalName();
-        $inputArr['file_size'] = $attributes['doc_file']->getClientSize();
+        $inputArr['file_size'] = $attributes['doc_file']->getSize();
         $inputArr['file_encp_key'] =  md5('2');
         $inputArr['created_by'] = 1;
         $inputArr['updated_by'] = 1;
@@ -2643,7 +2643,7 @@ class Helper extends PaypalHelper
 
         $inputArr['file_type'] = $attributes['doc_file']->getClientMimeType();
         $inputArr['file_name'] = $attributes['doc_file']->getClientOriginalName();
-        $inputArr['file_size'] = $attributes['doc_file']->getClientSize();
+        $inputArr['file_size'] = $attributes['doc_file']->getSize();
         $inputArr['file_encp_key'] =  md5('2');
         $inputArr['created_by'] = 1;
         $inputArr['updated_by'] = 1;
@@ -2696,7 +2696,7 @@ class Helper extends PaypalHelper
 
         $inputArr['file_type'] = $attributes['approval_doc_file']->getClientMimeType();
         $inputArr['file_name'] = $attributes['approval_doc_file']->getClientOriginalName();
-        $inputArr['file_size'] = $attributes['approval_doc_file']->getClientSize();
+        $inputArr['file_size'] = $attributes['approval_doc_file']->getSize();
         $inputArr['file_encp_key'] =  md5('2');
         $inputArr['created_by'] = \Auth::user()->user_id;
         $inputArr['updated_by'] = \Auth::user()->user_id;
@@ -2757,7 +2757,7 @@ class Helper extends PaypalHelper
         }
         $inputArr['file_type'] = !empty($docFile) ? $docFile->getClientMimeType() : '';
         $inputArr['file_name'] = !empty($docFile) ? $docFile->getClientOriginalName() : '';
-        $inputArr['file_size'] = !empty($docFile) ? $docFile->getClientSize() : '';
+        $inputArr['file_size'] = !empty($docFile) ? $docFile->getSize() : '';
         $inputArr['file_encp_key'] =  md5('2');
         $inputArr['created_by'] = Auth::user()->user_id;
         $inputArr['updated_by'] = Auth::user()->user_id;
@@ -2776,7 +2776,7 @@ class Helper extends PaypalHelper
 
         $inputArr['file_type'] = $attributes['doc_file']->getClientMimeType();
         $inputArr['file_name'] = $attributes['doc_file']->getClientOriginalName();
-        $inputArr['file_size'] = $attributes['doc_file']->getClientSize();
+        $inputArr['file_size'] = $attributes['doc_file']->getSize();
         $inputArr['file_encp_key'] =  md5('2');
         $inputArr['created_by'] = \Auth::user()->user_id;
         $inputArr['updated_by'] = \Auth::user()->user_id;
