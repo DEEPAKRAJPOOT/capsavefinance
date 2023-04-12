@@ -486,7 +486,7 @@ public function exportCsv($data=[],$columns=[],$fileName='',$extraDataArray=[])
         }
         $inputArr['file_type'] = $data['upload_unsettled_trans']->getClientMimeType();
         $inputArr['file_name'] = $data['upload_unsettled_trans']->getClientOriginalName();
-        $inputArr['file_size'] = $data['upload_unsettled_trans']->getClientSize();
+        $inputArr['file_size'] = $data['upload_unsettled_trans']->getSize();
         $inputArr['file_encp_key'] =  md5('2');
         }
         $inputArr['created_by'] = 1;
