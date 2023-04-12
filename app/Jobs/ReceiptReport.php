@@ -10,9 +10,9 @@ use Illuminate\Queue\SerializesModels;
 use App\Inv\Repositories\Models\Master\EmailTemplate;
 use App\Inv\Repositories\Contracts\ReportInterface;
 use Illuminate\Support\Facades\Storage;
-use PHPExcel_IOFactory;
+use PhpOffice\PhpSpreadsheet\IOFactory;
 use Carbon\Carbon;
-use PHPExcel;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use Helpers;
 
 class ReceiptReport implements ShouldQueue
@@ -58,7 +58,7 @@ class ReceiptReport implements ShouldQueue
     private function downloadReceiptReport($exceldata)
     {
         $rows = 5;
-        $sheet =  new PHPExcel();
+        $sheet =  new Spreadsheet();
         $sheet->setActiveSheetIndex(0)
             ->setCellValue('A'.$rows, 'Receipt Date')
             ->setCellValue('B'.$rows, 'Receipt Account #')
@@ -94,7 +94,7 @@ class ReceiptReport implements ShouldQueue
             $rows++;
         }
 
-        $objWriter = PHPExcel_IOFactory::createWriter($sheet, 'Excel2007');
+        $objWriter = IOFactory::createWriter($sheet, 'Excel2007');
 
         $dirPath = 'public/report/temp/receiptReport/'.date('Ymd');
         if (!Storage::exists($dirPath)) {

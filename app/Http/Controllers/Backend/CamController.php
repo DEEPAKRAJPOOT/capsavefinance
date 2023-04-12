@@ -8,9 +8,9 @@ use Helpers;
 use Session;
 use Storage;
 use PDF as DPDF;
-use PHPExcel;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use DB;
-use PHPExcel_IOFactory;
+use PhpOffice\PhpSpreadsheet\IOFactory;
 use Carbon\Carbon;
 use App\Mail\ReviewerSummary;
 use App\Libraries\Pdf;
@@ -668,7 +668,7 @@ class CamController extends Controller
     }
 
     private function _getXLSXTable($appId, $fileType = 'finance', $sheet_no = 0){
-     $objPHPExcel =  new PHPExcel();
+     $objSpreadsheet =  new Spreadsheet();
      $files = $this->getLatestFileName($appId, $fileType, 'xlsx');
      $file_name = $files['curr_file'];
      if (empty($file_name)) {
@@ -678,9 +678,9 @@ class CamController extends Controller
      if (!file_exists($inputFileName)) {
        return ['', ''];
      }
-     $objPHPExcel = PHPExcel_IOFactory::load($inputFileName);
-     $objWriter = PHPExcel_IOFactory::createWriter($objPHPExcel, 'HTML');
-     $allsheets = $objPHPExcel->getSheetNames();
+     $objSpreadsheet = IOFactory::load($inputFileName);
+     $objWriter = IOFactory::createWriter($objSpreadsheet, 'HTML');
+     $allsheets = $objSpreadsheet->getSheetNames();
      $pagination = $this->_getPaginate($allsheets, $sheet_no);
      $objWriter->setSheetIndex($sheet_no);
      $html =  $objWriter->dump();

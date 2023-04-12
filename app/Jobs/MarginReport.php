@@ -11,9 +11,9 @@ use Illuminate\Queue\SerializesModels;
 use App\Inv\Repositories\Models\Master\EmailTemplate;
 use App\Inv\Repositories\Contracts\ReportInterface;
 use Illuminate\Support\Facades\Storage;
-use PHPExcel_IOFactory;
+use PhpOffice\PhpSpreadsheet\IOFactory;
 use Carbon\Carbon;
-use PHPExcel;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use Helpers;
 
 class MarginReport implements ShouldQueue
@@ -60,7 +60,7 @@ class MarginReport implements ShouldQueue
     private function downloadMarginReport($exceldata)
     {
         $rows = 5;
-        $sheet =  new PHPExcel();
+        $sheet =  new Spreadsheet();
         $sheet->setActiveSheetIndex(0)
             ->setCellValue('A'.$rows, 'Anchor')
             ->setCellValue('B'.$rows, 'Client')
@@ -91,7 +91,7 @@ class MarginReport implements ShouldQueue
             $rows++;
         }
 
-        $objWriter = PHPExcel_IOFactory::createWriter($sheet, 'Excel2007');
+        $objWriter = IOFactory::createWriter($sheet, 'Excel2007');
 
         $dirPath = 'public/report/temp/marginReport/'.date('Ymd');
         if (!Storage::exists($dirPath)) {

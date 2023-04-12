@@ -5,12 +5,12 @@ namespace App\Helpers;
 use Auth;
 use Illuminate\Support\Facades\Storage;
 use PDF as DPDF;
-use PHPExcel;
-use PHPExcel_IOFactory;
-use PHPExcel_Style_Fill;
-use PHPExcel_Cell_DataType;
-use PHPExcel_Style_Alignment;
-use PHPExcel_Style_Border;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\IOFactory;
+use PhpOffice\PhpSpreadsheet\Style\Fill;
+use PhpOffice\PhpSpreadsheet\Cell\DataType;
+use PhpOffice\PhpSpreadsheet\Style\Alignment;
+use PhpOffice\PhpSpreadsheet\Style\Border;
 use App\Inv\Repositories\Models\UserFile;
 use App\Inv\Repositories\Contracts\ApplicationInterface as InvAppRepoInterface;
 
@@ -109,7 +109,7 @@ class FileHelper {
         }
         $activeSheet = 0;
         $lastkey = array_key_last($toExportData);
-        $objPHPExcel = new PHPExcel();
+        $objSpreadsheet = new Spreadsheet();
 
         $ExtraRow = 0;
           $styleArr2 = $styleArray = array(
@@ -117,11 +117,11 @@ class FileHelper {
                 'bold' => true,
               ),
               'alignment' => array(
-                    'horizontal' => PHPExcel_Style_Alignment::HORIZONTAL_LEFT,
+                    'horizontal' => Alignment::HORIZONTAL_LEFT,
               ),
               'borders' => array(
                   'top' => array(
-                    'style' => PHPExcel_Style_Border::BORDER_THIN,
+                    'style' => Border::BORDER_THIN,
                   ),
               ),
               'fill' => array(
@@ -135,24 +135,24 @@ class FileHelper {
               ),
             );
         foreach ($moreDetails as $kk => $vv) {
-          $objPHPExcel->setActiveSheetIndex($activeSheet);
+          $objSpreadsheet->setActiveSheetIndex($activeSheet);
           $coll = 0;
           foreach ($vv as $moreIndex => $moreValue) {
               $chrr = chr(ord('A') + $coll);
-              $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($coll, $ExtraRow, $moreIndex);
-              $objPHPExcel->getActiveSheet()->getStyle($chrr. $ExtraRow)->applyFromArray($styleArray);
+              $objSpreadsheet->getActiveSheet()->setCellValueByColumnAndRow($coll, $ExtraRow, $moreIndex);
+              $objSpreadsheet->getActiveSheet()->getStyle($chrr. $ExtraRow)->applyFromArray($styleArray);
               unset($styleArr2['font']);
               $coll++;
               $chrr = chr(ord('A') + $coll);
-              $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($coll, $ExtraRow, $moreValue);
-              $objPHPExcel->getActiveSheet()->getStyle($chrr. $ExtraRow)->applyFromArray($styleArr2);
+              $objSpreadsheet->getActiveSheet()->setCellValueByColumnAndRow($coll, $ExtraRow, $moreValue);
+              $objSpreadsheet->getActiveSheet()->getStyle($chrr. $ExtraRow)->applyFromArray($styleArr2);
               $coll = $coll+2;
           }
           $ExtraRow++;
         }
         foreach ($toExportData as $title => $data) {
             if ($title != $lastkey) {
-                $objPHPExcel->createSheet();
+                $objSpreadsheet->createSheet();
             }
             if (empty($data) || !isset($data[0])) {
               $data[0] = [
@@ -162,7 +162,7 @@ class FileHelper {
             $rec_count = count($data[0]);
             $header_cols = array_keys($data[0]);
             $sheetTitle = $title;
-            $objPHPExcel->setActiveSheetIndex($activeSheet);
+            $objSpreadsheet->setActiveSheetIndex($activeSheet);
             $activeSheet++;
             $column = 0;
             $header_row = $ExtraRow + 1;
@@ -187,24 +187,24 @@ class FileHelper {
             foreach($data as $key => $item) {
               foreach($item as $key1 => $item1) {
                 if($factDateFormatFlag == 1){
-                  $objPHPExcel->getActiveSheet()
+                  $objSpreadsheet->getActiveSheet()
                   ->setCellValueByColumnAndRow($column, $row, $item1)  
                   ->getStyle('C'.$row)
                   ->getNumberFormat()
                   ->setFormatCode('dd-mm-yyyy');
-                  $objPHPExcel->getActiveSheet()
+                  $objSpreadsheet->getActiveSheet()
                   ->setCellValueByColumnAndRow($column, $row, $item1)  
                   ->getStyle('F'.$row)
                   ->getNumberFormat()
                   ->setFormatCode('dd-mm-yyyy');
                 }elseif($factDateFormatFlag == 2){
-                  $objPHPExcel->getActiveSheet()
+                  $objSpreadsheet->getActiveSheet()
                   ->setCellValueByColumnAndRow($column, $row, $item1)  
                   ->getStyle('B'.$row)
                   ->getNumberFormat()
                   ->setFormatCode('dd-mm-yyyy');
                 }else{
-                  $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($column, $row, $item1);
+                  $objSpreadsheet->getActiveSheet()->setCellValueByColumnAndRow($column, $row, $item1);
                 }
                 
                 $column++;
@@ -215,13 +215,13 @@ class FileHelper {
               }
               $styleArray = array(
                 'fill' => array(
-                  'type' => PHPExcel_Style_Fill::FILL_SOLID,
+                  'fillType' => Fill::FILL_SOLID,
                   'startcolor' => array(
                     'argb' => $argb,
                   ),
                 ),
               );
-              $objPHPExcel->getActiveSheet()->getStyle('A'. $row .':' . $char . $row)->applyFromArray($styleArray);
+              $objSpreadsheet->getActiveSheet()->getStyle('A'. $row .':' . $char . $row)->applyFromArray($styleArray);
               $column = 0;
               $row++;
             }
@@ -230,7 +230,7 @@ class FileHelper {
             $column = 0;
             foreach($header_cols as $key) {
                $key = ucwords(str_replace('_', ' ', $key));
-               $objPHPExcel->getActiveSheet()->getCellByColumnAndRow($column, $row)->setValueExplicit($key, PHPExcel_Cell_DataType::TYPE_STRING);
+               $objSpreadsheet->getActiveSheet()->getCellByColumnAndRow($column, $row)->setValueExplicit($key, DataType::TYPE_STRING);
                   $column++;
             }
             $styleArray = array(
@@ -238,15 +238,15 @@ class FileHelper {
                 'bold' => true,
               ),
               'alignment' => array(
-                    'horizontal' => PHPExcel_Style_Alignment::HORIZONTAL_CENTER,
+                    'horizontal' => Alignment::HORIZONTAL_CENTER,
               ),
               'borders' => array(
                   'top' => array(
-                    'style' => PHPExcel_Style_Border::BORDER_THIN,
+                    'style' => Border::BORDER_THIN,
                   ),
               ),
               'fill' => array(
-                  'type' => PHPExcel_Style_Fill::FILL_GRADIENT_LINEAR,
+                  'type' => Fill::FILL_GRADIENT_LINEAR,
                   'rotation' => 90,
                   'startcolor' => array(
                     'argb' => 'FFA0A0A0',
@@ -262,15 +262,15 @@ class FileHelper {
                 'bold' => true,
               ),
               'alignment' => array(
-                'horizontal' => PHPExcel_Style_Alignment::HORIZONTAL_CENTER,
+                'horizontal' => Alignment::HORIZONTAL_CENTER,
               ),
               'borders' => array(
                   'top' => array(
-                    'style' => PHPExcel_Style_Border::BORDER_THIN,
+                    'style' => Border::BORDER_THIN,
                   ),
               ),
               'fill' => array(
-                'type' => PHPExcel_Style_Fill::FILL_SOLID,
+                'fillType' => Fill::FILL_SOLID,
                 'rotation' => 90,
                 'startcolor' => array(
                     'argb' => 'FFA0A0A0',
@@ -280,26 +280,26 @@ class FileHelper {
                 ),
               ),
             );
-            $objPHPExcel->getActiveSheet()->getStyle('A'. $header_row .':' . $char . $header_row)->applyFromArray($styleArray);
+            $objSpreadsheet->getActiveSheet()->getStyle('A'. $header_row .':' . $char . $header_row)->applyFromArray($styleArray);
             foreach($header_cols as $key => $el) {
                  $floor = floor(($key)/26);
                  $reminder = ($key) % 26;
                  $char = ($floor > 0 ? chr(ord("A") + $floor-1) : '').chr(ord("A") + $reminder);
-                 $objPHPExcel->getActiveSheet()->getColumnDimension($char)->setAutoSize(true);
+                 $objSpreadsheet->getActiveSheet()->getColumnDimension($char)->setAutoSize(true);
             }
             $styleArray = array(
               'alignment' => array(
-                'horizontal' => PHPExcel_Style_Alignment::HORIZONTAL_JUSTIFY,
+                'horizontal' => Alignment::HORIZONTAL_JUSTIFY,
               ),
               'borders' => array(
                 'allborders' => array(
-                  'style' => PHPExcel_Style_Border::BORDER_THIN,
+                  'style' => Border::BORDER_THIN,
                   // 'color' => array('argb' => 'FFFF0000'),
                 ),
               ),
             );
-            $objPHPExcel->getActiveSheet()->getStyle('A'. $start_row .':' . $char . $end_row)->applyFromArray($styleArray);
-            $objPHPExcel->getActiveSheet()->setTitle($sheetTitle);
+            $objSpreadsheet->getActiveSheet()->getStyle('A'. $start_row .':' . $char . $end_row)->applyFromArray($styleArray);
+            $objSpreadsheet->getActiveSheet()->setTitle($sheetTitle);
         }
         header('Content-Type: application/vnd.ms-excel');
         header('Content-Disposition: attachment;filename="' . $file_name . '"');
@@ -312,7 +312,7 @@ class FileHelper {
             $fileData = [];
             $storage_path = storage_path('app/public/nach/request');
             $filePath = $storage_path.'/'.$file_name;
-            $objWriter = PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel2007');
+            $objWriter = IOFactory::createWriter($objSpreadsheet, 'Excel2007');
             $objWriter->save($filePath); 
             $fileContent = $this->readFileContent($filePath);
             $fileData = $this->uploadFileWithContent($filePath, $fileContent);
@@ -322,7 +322,7 @@ class FileHelper {
             $nachBatchData['batch_id'] = $batchId;
             $this->appRepo->saveNachBatch($nachBatchData, null);
         }
-        $objWriter = PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel2007');
+        $objWriter = IOFactory::createWriter($objSpreadsheet, 'Excel2007');
         $objWriter->save('php://output');
         ob_end_flush();
         exit; 
@@ -366,10 +366,10 @@ class FileHelper {
         'data' => [],
       ];
       try{
-          $inputFileType  =   PHPExcel_IOFactory::identify($inputFileName);
-          $objReader      =   PHPExcel_IOFactory::createReader($inputFileType);
-          $objPHPExcel    =   $objReader->load($inputFileName);
-          $sheet = $objPHPExcel->getActiveSheet();
+          $inputFileType  =   IOFactory::identify($inputFileName);
+          $objReader      =   IOFactory::createReader($inputFileType);
+          $objSpreadsheet    =   $objReader->load($inputFileName);
+          $sheet = $objSpreadsheet->getActiveSheet();
           // $sheet = $sheet->removeColumnByIndex(15);
           $highestRow = $sheet->getHighestRow(); 
           $highestColumn = $sheet->getHighestDataColumn();

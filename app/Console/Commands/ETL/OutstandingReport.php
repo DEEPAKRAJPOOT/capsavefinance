@@ -4,7 +4,7 @@ namespace App\Console\Commands\ETL;
 
 use Carbon\Carbon;
 use App\Helpers\Helper;
-use PHPExcel_IOFactory;
+use PhpOffice\PhpSpreadsheet\IOFactory;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Storage;
 use App\Inv\Repositories\Models\Lms\OutstandingReportLog;
@@ -51,15 +51,15 @@ class OutstandingReport extends Command
         if(file_exists($filePath)) {
             $currDate = Helper::utcToIst($outstandingReportLog->created_at);
             try {
-                $inputFileType = PHPExcel_IOFactory::identify($filePath);
-                $objReader = PHPExcel_IOFactory::createReader($inputFileType);
-                $objPHPExcel = $objReader->load($filePath);
+                $inputFileType = IOFactory::identify($filePath);
+                $objReader = IOFactory::createReader($inputFileType);
+                $objSpreadsheet = $objReader->load($filePath);
             } catch (\Exception $e) {
                 $this->error('Error loading file "'.pathinfo($filePath,PATHINFO_BASENAME).'": '.$e->getMessage());
                 die();
             }
             //  Get worksheet dimensions
-            $sheet = $objPHPExcel->getSheet(0);
+            $sheet = $objSpreadsheet->getSheet(0);
             $highestRow = $sheet->getHighestRow(); 
             $highestColumn = $sheet->getHighestColumn();
 

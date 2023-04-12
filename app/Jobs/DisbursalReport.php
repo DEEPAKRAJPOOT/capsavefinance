@@ -11,9 +11,9 @@ use Illuminate\Queue\SerializesModels;
 use App\Inv\Repositories\Models\Master\EmailTemplate;
 use App\Inv\Repositories\Contracts\ReportInterface;
 use Illuminate\Support\Facades\Storage;
-use PHPExcel_IOFactory;
+use PhpOffice\PhpSpreadsheet\IOFactory;
 use Carbon\Carbon;
-use PHPExcel;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use Helpers;
 
 class DisbursalReport implements ShouldQueue
@@ -92,7 +92,7 @@ class DisbursalReport implements ShouldQueue
     private function downloadDailyDisbursalReport($exceldata, $reportName)
     {
         $rows = 5;
-        $sheet =  new PHPExcel();
+        $sheet =  new Spreadsheet();
 
         $sheet->setActiveSheetIndex(0)
             ->setCellValue('A'.$rows, 'Borrower name')
@@ -150,60 +150,60 @@ class DisbursalReport implements ShouldQueue
         foreach($exceldata as $rowData){
 			
             $sheet->setActiveSheetIndex(0)
-            ->setCellValueExplicit('A'.$rows, $rowData['cust_name'], \PHPExcel_Cell_DataType::TYPE_STRING)
-            ->setCellValueExplicit('B'.$rows, $rowData['rm_sales'], \PHPExcel_Cell_DataType::TYPE_STRING)
-            ->setCellValueExplicit('C'.$rows,$rowData['anchor_name'], \PHPExcel_Cell_DataType::TYPE_STRING)
-            ->setCellValueExplicit('D'.$rows, $rowData['anchor_prgm_name'], \PHPExcel_Cell_DataType::TYPE_STRING)
-            ->setCellValueExplicit('E'.$rows, $rowData['vendor_ben_name'], \PHPExcel_Cell_DataType::TYPE_STRING)
-            ->setCellValueExplicit('F'.$rows, $rowData['region'], \PHPExcel_Cell_DataType::TYPE_STRING)
-            ->setCellValueExplicit('G'.$rows, $rowData['sanction_number'], \PHPExcel_Cell_DataType::TYPE_STRING)
-            ->setCellValueExplicit('H'.$rows, Carbon::parse($rowData['sanction_date'])->format('d-m-Y') ?? NULL, \PHPExcel_Cell_DataType::TYPE_STRING)
-            ->setCellValueExplicit('I'.$rows, number_format($rowData['sanction_amount'],2), \PHPExcel_Cell_DataType::TYPE_STRING)
-            ->setCellValueExplicit('J'.$rows, !empty($rowData['status']) ? $rowData['status'] : '---', \PHPExcel_Cell_DataType::TYPE_STRING)
-            ->setCellValueExplicit('K'.$rows, Carbon::parse($rowData['disbursal_month'])->format('F') ?? NULL, \PHPExcel_Cell_DataType::TYPE_STRING)
-            ->setCellValueExplicit('L'.$rows, !empty($rowData['disburse_amount']) ? number_format($rowData['disburse_amount'],2) : '', \PHPExcel_Cell_DataType::TYPE_STRING)
-            ->setCellValueExplicit('M'.$rows, Carbon::parse($rowData['disbursement_date'])->format('d-m-Y') ?? NULL, \PHPExcel_Cell_DataType::TYPE_STRING)
-            ->setCellValueExplicit('N'.$rows, $rowData['disbursal_utr'], \PHPExcel_Cell_DataType::TYPE_STRING)
-            ->setCellValueExplicit('O'.$rows, $rowData['disbursal_act_no'], \PHPExcel_Cell_DataType::TYPE_STRING)
-            ->setCellValueExplicit('P'.$rows, $rowData['disbursal_ifc'], \PHPExcel_Cell_DataType::TYPE_STRING)
-            ->setCellValueExplicit('Q'.$rows, $rowData['type_finance'], \PHPExcel_Cell_DataType::TYPE_STRING)
-            ->setCellValueExplicit('R'.$rows, $rowData['supl_chan_type'], \PHPExcel_Cell_DataType::TYPE_STRING)
-            ->setCellValueExplicit('S'.$rows, $rowData['tenor'], \PHPExcel_Cell_DataType::TYPE_STRING)
-            ->setCellValueExplicit('T'.$rows, $rowData['interest_rate'], \PHPExcel_Cell_DataType::TYPE_STRING)
-            ->setCellValueExplicit('U'.$rows, number_format($rowData['interest_amt'],2), \PHPExcel_Cell_DataType::TYPE_STRING)
-            ->setCellValueExplicit('V'.$rows, Carbon::parse($rowData['from'])->format('d-m-Y') ?? NULL, \PHPExcel_Cell_DataType::TYPE_STRING)
-            ->setCellValueExplicit('W'.$rows, Carbon::parse($rowData['to'])->format('d-m-Y') ?? NULL, \PHPExcel_Cell_DataType::TYPE_STRING)
-            ->setCellValueExplicit('X'.$rows, number_format($rowData['tds_intrst'],2), \PHPExcel_Cell_DataType::TYPE_STRING)
-            ->setCellValueExplicit('Y'.$rows, number_format($rowData['net_intrst'],2), \PHPExcel_Cell_DataType::TYPE_STRING)
-            ->setCellValueExplicit('Z'.$rows, !empty($rowData['intrst_rec_date']) ? Carbon::parse($rowData['intrst_rec_date'])->format('d-m-Y') : '---', \PHPExcel_Cell_DataType::TYPE_STRING)
-            ->setCellValueExplicit('AA'.$rows, number_format($rowData['proce_fee'],2), \PHPExcel_Cell_DataType::TYPE_STRING)
-            ->setCellValueExplicit('AB'.$rows, number_format($rowData['proce_amt'],2), \PHPExcel_Cell_DataType::TYPE_STRING)
-            ->setCellValueExplicit('AC'.$rows, number_format($rowData['proce_fee_gst'],2), \PHPExcel_Cell_DataType::TYPE_STRING)
-            ->setCellValueExplicit('AD'.$rows, number_format($rowData['tds_proce_fee'],2), \PHPExcel_Cell_DataType::TYPE_STRING)
-            ->setCellValueExplicit('AE'.$rows, number_format($rowData['net_proc_fee_rec'],2), \PHPExcel_Cell_DataType::TYPE_STRING)
-            ->setCellValueExplicit('AF'.$rows, number_format($rowData['proce_fee_rec'],2), \PHPExcel_Cell_DataType::TYPE_STRING)
-            ->setCellValueExplicit('AG'.$rows, !empty($rowData['proce_fee_amt_date']) ? ($rowData['proce_fee_amt_date']) : '---', \PHPExcel_Cell_DataType::TYPE_STRING)
-            ->setCellValueExplicit('AH'.$rows, number_format($rowData['balance'],2), \PHPExcel_Cell_DataType::TYPE_STRING)
-            ->setCellValueExplicit('AI'.$rows, number_format($rowData['margin_amt'],2), \PHPExcel_Cell_DataType::TYPE_STRING)
-            ->setCellValueExplicit('AJ'.$rows, Carbon::parse($rowData['due_date'])->format('d-m-Y') ?? NULL, \PHPExcel_Cell_DataType::TYPE_STRING)
-            ->setCellValueExplicit('AK'.$rows, !empty($rowData['funds_received']) ? $rowData['funds_received'] : '---', \PHPExcel_Cell_DataType::TYPE_STRING)
-            ->setCellValueExplicit('AL'.$rows, number_format($rowData['principal_rece'],2), \PHPExcel_Cell_DataType::TYPE_STRING)
-            ->setCellValueExplicit('AM'.$rows, number_format($rowData['received'],2), \PHPExcel_Cell_DataType::TYPE_STRING)
-            ->setCellValueExplicit('AN'.$rows, number_format($rowData['net_receivalble'],2), \PHPExcel_Cell_DataType::TYPE_STRING)
-            ->setCellValueExplicit('AO'.$rows, '---', \PHPExcel_Cell_DataType::TYPE_STRING)
-            ->setCellValueExplicit('AP'.$rows, $rowData['customer_id'], \PHPExcel_Cell_DataType::TYPE_STRING)
-            ->setCellValueExplicit('AQ'.$rows, $rowData['invoice_no'], \PHPExcel_Cell_DataType::TYPE_STRING)
-            ->setCellValueExplicit('AR'.$rows, number_format($rowData['net_disbursement'],2), \PHPExcel_Cell_DataType::TYPE_STRING)
-            ->setCellValueExplicit('AS'.$rows, !empty($rowData['gross']) ? $rowData['gross'] : '---', \PHPExcel_Cell_DataType::TYPE_STRING)
-            ->setCellValueExplicit('AT'.$rows, $rowData['disbursement_method'], \PHPExcel_Cell_DataType::TYPE_STRING)
-            ->setCellValueExplicit('AU'.$rows, !empty($rowData['net_of_interest']) ? $rowData['net_of_interest'] : '---', \PHPExcel_Cell_DataType::TYPE_STRING)
-            ->setCellValueExplicit('AV'.$rows, !empty($rowData['interest_borne_by']) ? $rowData['interest_borne_by'] : '---', \PHPExcel_Cell_DataType::TYPE_STRING)
-            ->setCellValueExplicit('AW'.$rows, !empty($rowData['grace_period']) ? $rowData['grace_period'] : '---', \PHPExcel_Cell_DataType::TYPE_STRING)
-            ->setCellValueExplicit('AX'.$rows, !empty($rowData['anchor_address']) ? $rowData['anchor_address'] : '---', \PHPExcel_Cell_DataType::TYPE_STRING);
+            ->setCellValueExplicit('A'.$rows, $rowData['cust_name'], \DataType::TYPE_STRING)
+            ->setCellValueExplicit('B'.$rows, $rowData['rm_sales'], \DataType::TYPE_STRING)
+            ->setCellValueExplicit('C'.$rows,$rowData['anchor_name'], \DataType::TYPE_STRING)
+            ->setCellValueExplicit('D'.$rows, $rowData['anchor_prgm_name'], \DataType::TYPE_STRING)
+            ->setCellValueExplicit('E'.$rows, $rowData['vendor_ben_name'], \DataType::TYPE_STRING)
+            ->setCellValueExplicit('F'.$rows, $rowData['region'], \DataType::TYPE_STRING)
+            ->setCellValueExplicit('G'.$rows, $rowData['sanction_number'], \DataType::TYPE_STRING)
+            ->setCellValueExplicit('H'.$rows, Carbon::parse($rowData['sanction_date'])->format('d-m-Y') ?? NULL, \DataType::TYPE_STRING)
+            ->setCellValueExplicit('I'.$rows, number_format($rowData['sanction_amount'],2), \DataType::TYPE_STRING)
+            ->setCellValueExplicit('J'.$rows, !empty($rowData['status']) ? $rowData['status'] : '---', \DataType::TYPE_STRING)
+            ->setCellValueExplicit('K'.$rows, Carbon::parse($rowData['disbursal_month'])->format('F') ?? NULL, \DataType::TYPE_STRING)
+            ->setCellValueExplicit('L'.$rows, !empty($rowData['disburse_amount']) ? number_format($rowData['disburse_amount'],2) : '', \DataType::TYPE_STRING)
+            ->setCellValueExplicit('M'.$rows, Carbon::parse($rowData['disbursement_date'])->format('d-m-Y') ?? NULL, \DataType::TYPE_STRING)
+            ->setCellValueExplicit('N'.$rows, $rowData['disbursal_utr'], \DataType::TYPE_STRING)
+            ->setCellValueExplicit('O'.$rows, $rowData['disbursal_act_no'], \DataType::TYPE_STRING)
+            ->setCellValueExplicit('P'.$rows, $rowData['disbursal_ifc'], \DataType::TYPE_STRING)
+            ->setCellValueExplicit('Q'.$rows, $rowData['type_finance'], \DataType::TYPE_STRING)
+            ->setCellValueExplicit('R'.$rows, $rowData['supl_chan_type'], \DataType::TYPE_STRING)
+            ->setCellValueExplicit('S'.$rows, $rowData['tenor'], \DataType::TYPE_STRING)
+            ->setCellValueExplicit('T'.$rows, $rowData['interest_rate'], \DataType::TYPE_STRING)
+            ->setCellValueExplicit('U'.$rows, number_format($rowData['interest_amt'],2), \DataType::TYPE_STRING)
+            ->setCellValueExplicit('V'.$rows, Carbon::parse($rowData['from'])->format('d-m-Y') ?? NULL, \DataType::TYPE_STRING)
+            ->setCellValueExplicit('W'.$rows, Carbon::parse($rowData['to'])->format('d-m-Y') ?? NULL, \DataType::TYPE_STRING)
+            ->setCellValueExplicit('X'.$rows, number_format($rowData['tds_intrst'],2), \DataType::TYPE_STRING)
+            ->setCellValueExplicit('Y'.$rows, number_format($rowData['net_intrst'],2), \DataType::TYPE_STRING)
+            ->setCellValueExplicit('Z'.$rows, !empty($rowData['intrst_rec_date']) ? Carbon::parse($rowData['intrst_rec_date'])->format('d-m-Y') : '---', \DataType::TYPE_STRING)
+            ->setCellValueExplicit('AA'.$rows, number_format($rowData['proce_fee'],2), \DataType::TYPE_STRING)
+            ->setCellValueExplicit('AB'.$rows, number_format($rowData['proce_amt'],2), \DataType::TYPE_STRING)
+            ->setCellValueExplicit('AC'.$rows, number_format($rowData['proce_fee_gst'],2), \DataType::TYPE_STRING)
+            ->setCellValueExplicit('AD'.$rows, number_format($rowData['tds_proce_fee'],2), \DataType::TYPE_STRING)
+            ->setCellValueExplicit('AE'.$rows, number_format($rowData['net_proc_fee_rec'],2), \DataType::TYPE_STRING)
+            ->setCellValueExplicit('AF'.$rows, number_format($rowData['proce_fee_rec'],2), \DataType::TYPE_STRING)
+            ->setCellValueExplicit('AG'.$rows, !empty($rowData['proce_fee_amt_date']) ? ($rowData['proce_fee_amt_date']) : '---', \DataType::TYPE_STRING)
+            ->setCellValueExplicit('AH'.$rows, number_format($rowData['balance'],2), \DataType::TYPE_STRING)
+            ->setCellValueExplicit('AI'.$rows, number_format($rowData['margin_amt'],2), \DataType::TYPE_STRING)
+            ->setCellValueExplicit('AJ'.$rows, Carbon::parse($rowData['due_date'])->format('d-m-Y') ?? NULL, \DataType::TYPE_STRING)
+            ->setCellValueExplicit('AK'.$rows, !empty($rowData['funds_received']) ? $rowData['funds_received'] : '---', \DataType::TYPE_STRING)
+            ->setCellValueExplicit('AL'.$rows, number_format($rowData['principal_rece'],2), \DataType::TYPE_STRING)
+            ->setCellValueExplicit('AM'.$rows, number_format($rowData['received'],2), \DataType::TYPE_STRING)
+            ->setCellValueExplicit('AN'.$rows, number_format($rowData['net_receivalble'],2), \DataType::TYPE_STRING)
+            ->setCellValueExplicit('AO'.$rows, '---', \DataType::TYPE_STRING)
+            ->setCellValueExplicit('AP'.$rows, $rowData['customer_id'], \DataType::TYPE_STRING)
+            ->setCellValueExplicit('AQ'.$rows, $rowData['invoice_no'], \DataType::TYPE_STRING)
+            ->setCellValueExplicit('AR'.$rows, number_format($rowData['net_disbursement'],2), \DataType::TYPE_STRING)
+            ->setCellValueExplicit('AS'.$rows, !empty($rowData['gross']) ? $rowData['gross'] : '---', \DataType::TYPE_STRING)
+            ->setCellValueExplicit('AT'.$rows, $rowData['disbursement_method'], \DataType::TYPE_STRING)
+            ->setCellValueExplicit('AU'.$rows, !empty($rowData['net_of_interest']) ? $rowData['net_of_interest'] : '---', \DataType::TYPE_STRING)
+            ->setCellValueExplicit('AV'.$rows, !empty($rowData['interest_borne_by']) ? $rowData['interest_borne_by'] : '---', \DataType::TYPE_STRING)
+            ->setCellValueExplicit('AW'.$rows, !empty($rowData['grace_period']) ? $rowData['grace_period'] : '---', \DataType::TYPE_STRING)
+            ->setCellValueExplicit('AX'.$rows, !empty($rowData['anchor_address']) ? $rowData['anchor_address'] : '---', \DataType::TYPE_STRING);
             $rows++;
         }
 
-        $objWriter = PHPExcel_IOFactory::createWriter($sheet, 'Excel2007');
+        $objWriter = IOFactory::createWriter($sheet, 'Excel2007');
 
         $dirPath = 'public/report/temp/dailyDisbursalReport/'.date('Ymd');
         if (!Storage::exists($dirPath)) {
