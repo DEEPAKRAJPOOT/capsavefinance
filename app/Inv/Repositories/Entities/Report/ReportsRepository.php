@@ -865,20 +865,6 @@ class ReportsRepository extends BaseRepositories implements ReportInterface {
 			// }
 		   
 			$odiInterest = round((round($invDisb->overdue_interest_rate,2) - round($invDisb->interest_rate,2)),2);
-			$principalOverdue = '';
-			$principalOverdueCategory = '';
-			if(($principalOutstanding > 0) && isset($invDisb->payment_due_date) && strtotime($invDisb->payment_due_date) <= strtotime($curdate) ){
-				$dateoverdueFormat = Carbon::createFromFormat('Y-m-d', $invDisb->payment_due_date);
-				$daysToAdd = (int)$disbDetails->grace_period;
-				$dateoverdueFormat = $dateoverdueFormat->addDays($daysToAdd);
-				if(strtotime($dateoverdueFormat) > strtotime($curdate) && strtotime($invDisb->payment_due_date) <= strtotime($curdate) && $daysToAdd > 0){
-					$principalOverdueCategory='with in grace';
-				}
-				else{
-					$principalOverdueCategory='Overdue';
-				    $principalOverdue = $principalOutstanding;
-				}
-			}
 
 			$principalDPD = $invDisb->transactions->where('trans_type','16')->where('entry_type',0)->where('outstanding', '>', 0)->whereNull('payment_id')->whereNull('parent_trans_id')->max('dpd');
 
@@ -891,6 +877,21 @@ class ReportsRepository extends BaseRepositories implements ReportInterface {
 			$interestDPD = (round($interestOutstanding,2) > 0) ? ($interestDPD > 0 ? $interestDPD : 0) : 0;
 
 			$overdueDPD = (round($overdueOutstanding,2) > 0) ? ($overdueDPD > 0 ? $overdueDPD : 0) : 0;
+
+			$principalOverdue = '';
+			$principalOverdueCategory = '';
+			if($principalDPD > 0 && $principalOutstanding > 0 && isset($invDisb->payment_due_date) && strtotime($invDisb->payment_due_date) <= strtotime($curdate) ){
+				$dateoverdueFormat = Carbon::createFromFormat('Y-m-d', $invDisb->payment_due_date);
+				$daysToAdd = (int)$disbDetails->grace_period;
+				$dateoverdueFormat = $dateoverdueFormat->addDays($daysToAdd);
+				if(strtotime($dateoverdueFormat) > strtotime($curdate) && strtotime($invDisb->payment_due_date) <= strtotime($curdate) && $daysToAdd > 0){
+					$principalOverdueCategory='with in grace';
+				}
+				else{
+					$principalOverdueCategory='Overdue';
+				    $principalOverdue = $principalOutstanding;
+				}
+			}
 
 			$maxDPD = $principalDPD > $interestDPD ? $principalDPD : $interestDPD;
 			$outstanding_max_bucket = "Not Outstanding";
