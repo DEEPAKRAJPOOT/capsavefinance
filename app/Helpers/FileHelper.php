@@ -126,10 +126,10 @@ class FileHelper {
               ),
               'fill' => array(
                   'rotation' => 90,
-                  'startcolor' => array(
+                  'startColor' => array(
                     'argb' => 'FFA0A0A0',
                   ),
-                  'endcolor' => array(
+                  'endColor' => array(
                     'argb' => 'FFFFFFFF',
                   ),
               ),
@@ -216,7 +216,7 @@ class FileHelper {
               $styleArray = array(
                 'fill' => array(
                   'fillType' => Fill::FILL_SOLID,
-                  'startcolor' => array(
+                  'startColor' => array(
                     'argb' => $argb,
                   ),
                 ),
@@ -246,12 +246,12 @@ class FileHelper {
                   ),
               ),
               'fill' => array(
-                  'type' => Fill::FILL_GRADIENT_LINEAR,
+                  'fillType' => Fill::FILL_GRADIENT_LINEAR,
                   'rotation' => 90,
-                  'startcolor' => array(
+                  'startColor' => array(
                     'argb' => 'FFA0A0A0',
                   ),
-                  'endcolor' => array(
+                  'endColor' => array(
                     'argb' => 'FFFFFFFF',
                   ),
               ),
@@ -272,10 +272,10 @@ class FileHelper {
               'fill' => array(
                 'fillType' => Fill::FILL_SOLID,
                 'rotation' => 90,
-                'startcolor' => array(
+                'startColor' => array(
                     'argb' => 'FFA0A0A0',
                 ),
-                'endcolor' => array(
+                'endColor' => array(
                     'argb' => 'FFFFFFFF',
                 ),
               ),

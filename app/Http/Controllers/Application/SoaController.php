@@ -280,8 +280,10 @@ class SoaController extends Controller {
                 ->setCellValue('M'.$rows, 'Balance');
         
         $sheet->getActiveSheet()->getStyle('A'.$rows.':M'.$rows)->applyFromArray(array(
-            'fillType' => Fill::FILL_SOLID,
-            'startcolor' => [ 'rgb' => "CAD7D3" ],
+            'fill' => array(
+                'fillType' => Fill::FILL_SOLID,
+                'startColor' => [ 'rgb' => "CAD7D3" ],
+            ),
             'font' => [ 'bold'  => true ]
         ));
               
@@ -319,8 +321,10 @@ class SoaController extends Controller {
                 }
                 
                 $sheet->getActiveSheet()->getStyle('A'.$rows.':M'.$rows)->applyFromArray(array(
-                    'fillType' => Fill::FILL_SOLID,
-                    'startcolor' => array( 'rgb' => $color)
+                    'fill' => array(
+                        'fillType' => Fill::FILL_SOLID,
+                        'startColor' => array( 'rgb' => $color)
+                    ),
                 ));
                 $rows++;
             }
