@@ -880,14 +880,14 @@ class ReportsRepository extends BaseRepositories implements ReportInterface {
 
 			$principalOverdue = '';
 			$principalOverdueCategory = '';
-			if($principalDPD > 0 && $principalOutstanding > 0 && isset($invDisb->payment_due_date) && strtotime($invDisb->payment_due_date) <= strtotime($curdate) ){
+			if($principalOutstanding > 0 && isset($invDisb->payment_due_date) && strtotime($invDisb->payment_due_date) <= strtotime($curdate) ){
 				$dateoverdueFormat = Carbon::createFromFormat('Y-m-d', $invDisb->payment_due_date);
 				$daysToAdd = (int)$disbDetails->grace_period;
 				$dateoverdueFormat = $dateoverdueFormat->addDays($daysToAdd);
 				if(strtotime($dateoverdueFormat) > strtotime($curdate) && strtotime($invDisb->payment_due_date) <= strtotime($curdate) && $daysToAdd > 0){
 					$principalOverdueCategory='with in grace';
 				}
-				else{
+				elseif($principalDPD > 0){
 					$principalOverdueCategory='Overdue';
 				    $principalOverdue = $principalOutstanding;
 				}
