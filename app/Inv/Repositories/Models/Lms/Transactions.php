@@ -536,7 +536,7 @@ class Transactions extends BaseModel {
     // }
 
     public function getDpdAttribute(){
-        $to = Carbon::parse(Helpers::getSysStartDate())->subDay()->format('Y-m-d');
+        $to = Carbon::parse(Helpers::getSysStartDate())->format('Y-m-d');
         $number_days = 0;
         if($this->entry_type == 0){
             $from = Carbon::parse($this->paymentduedate)->format('Y-m-d');
