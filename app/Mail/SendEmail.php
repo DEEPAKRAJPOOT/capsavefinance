@@ -25,6 +25,7 @@ class SendEmail extends Mailable
         // dd($this->mail_subject);
         $this->mail_subject = $mail_subject;
         $this->data = $data;
+        // dd($this->data);
     }
 
     /**

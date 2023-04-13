@@ -1642,7 +1642,7 @@ class UserEventsListener extends BaseEvent
             // $from[config('common.FRONTEND_FROM_EMAIL')] = config('common.FRONTEND_FROM_EMAIL_NAME');
             $funcName = $this->func_name;
             // dd($funcName);
-            // dd($mail_subject);
+            // dd($data);
             Mail::to($to)->cc($cc)
             ->bcc($bcc)->queue(new SendEmail($mail_subject,$data));
             // SendMailJob::dispatch($to, $bcc, $cc, $mail_subject, $mail_body,$funcName,$data,$email_content)
