@@ -138,6 +138,7 @@ class OutstandingReport extends Command
                     'Principal Overdue Category' => $dataRecord['Principal Overdue Category'],
                     'Principal DPD' => (int)$dataRecord['Principal DPD'],
                     'Interest DPD' => (int)$dataRecord['Interest DPD'],
+                    'Overdue DPD' => (int)$dataRecord['Overdue DPD'],
                     'Final DPD' => (int)$dataRecord['Final DPD'],
                     'Outstanding Max Bucket' => $dataRecord['Outstanding Max Bucket'],
                     'Maturity Days' => (int)$dataRecord['Maturity Days'],
