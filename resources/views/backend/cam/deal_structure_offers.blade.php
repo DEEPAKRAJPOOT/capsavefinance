@@ -224,9 +224,18 @@
                 </tr>
                 @endif
                 @endforeach
+                <tr>
+                <td><b>Invoice Processing Fee: </b></td>
+              @if($supplyOffer->invoice_processingfee_type == 1)
+              <td>INR {{ (number_format($supplyOffer->invoice_processingfee_value) ?? 0) }}</td>
+              @else
+              <td>{{ ($supplyOffer->invoice_processingfee_value ?? 0) }}%</td>
+              @endif
+                </tr>
               <tr>
                   <td><b>Bench Mark Date: </b></td>
                   <td colspan="3">{{getBenchmarkType($supplyOffer->benchmark_date)}}</td>
+                  
               </tr>
               <tr>
                   <td><b>Investment Payment Frequency: </b></td>
