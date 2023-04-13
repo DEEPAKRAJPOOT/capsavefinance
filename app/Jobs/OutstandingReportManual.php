@@ -132,7 +132,7 @@ class OutstandingReportManual implements ShouldQueue
                 ->setCellValue('AR'.$rows, 'Balance Interest to be refunded')
                 ->setCellValue('AS'.$rows, 'Balance Overdue Interest to be refunded')
                 ->setCellValue('AT'.$rows, 'Sales Manager');
-            $sheet->getActiveSheet()->getStyle('A'.$rows.':AS'.$rows)->applyFromArray(['font' => ['bold'  => true]]);
+            $sheet->getActiveSheet()->getStyle('A'.$rows.':AT'.$rows)->applyFromArray(['font' => ['bold'  => true]]);
             $rows++;
             foreach($exceldata as $key => $rowData){
                 $sheet->setActiveSheetIndex(0)
