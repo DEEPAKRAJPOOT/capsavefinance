@@ -753,7 +753,7 @@ class ReportsRepository extends BaseRepositories implements ReportInterface {
 					if(isset($whereCondition['user_id'])){
 						$query2->where('supplier_id',$whereCondition['user_id']);
 					}
-					$query2->select('anchor_id','invoice_id','supplier_id','prgm_offer_id','biz_id','program_id');
+					$query2->select('anchor_id','invoice_no','invoice_id','supplier_id','prgm_offer_id','biz_id','program_id');
 				},
 			'invoice.lms_user:user_id,customer_id,virtual_acc_id', 
 			'invoice.anchor:anchor_id,comp_name,sales_user_id', 
@@ -762,7 +762,7 @@ class ReportsRepository extends BaseRepositories implements ReportInterface {
 			'invoice.program_offer:prgm_offer_id,payment_frequency',
 			'invoice.business:biz_id,biz_entity_name', 
 			'transactions:invoice_disbursed_id,trans_id,payment_id,link_trans_id,parent_trans_id,trans_type,entry_type,soa_flag,settled_outstanding,outstanding',
-			'disburseDetails:invoice_disbursed_id,grace_period,funded_date,approve_amount,margin_amount,interest_capitalized,tenor,overdue_capitalized'
+			'disburseDetails:invoice_disbursed_id,grace_period,funded_date,approve_amount,margin_amount,interest_capitalized,tenor,overdue_capitalized,request_amount'
 		])
 		->whereIn('status_id', [12,13,15,47])
 		->whereHas('invoice', function($query3) use($whereCondition){
@@ -849,22 +849,6 @@ class ReportsRepository extends BaseRepositories implements ReportInterface {
 			if($prgmDetails->interest_borne_by == 2 && $offer->payment_frequency == 1 && $invDisb->total_interest > 0){
 				$disbursement_method = 'Net';
 			}
-			
-			// if($offer->payment_frequency == 1){
-			// 	if($prgmType == '1'){
-			// 		if($prgmDetails->interest_borne_by == '1'){
-			// 			$disbursement_method = 'Gross';
-			// 		}
-			// 	}
-			// 	elseif($prgmType == '2'){
-			// 		if($prgmDetails->interest_borne_by == '2'){
-			// 			$disbursement_method = 'Gross';
-			// 		}
-			// 	}
-			// }else{
-			// 	$disbursement_method = 'Gross';
-			// }
-		   
 			$odiInterest = round((round($invDisb->overdue_interest_rate,2) - round($invDisb->interest_rate,2)),2);
 
 			$principalDPD = $invDisb->transactions->where('trans_type','16')->where('entry_type',0)->where('outstanding', '>', 0)->whereNull('payment_id')->whereNull('parent_trans_id')->max('dpd');
@@ -988,7 +972,7 @@ class ReportsRepository extends BaseRepositories implements ReportInterface {
 				'salesManager' => $salesUserDetails->f_name.' '. $salesUserDetails->m_name.' '. $salesUserDetails->l_name,
 				'gracePeriodEndDate' => $graceDate,
 			];
-			//$invDisbList->forget($key);
+			$invDisbList->forget($key);
 		}
 		return $result;
 	}
