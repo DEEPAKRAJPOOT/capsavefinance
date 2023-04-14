@@ -1638,18 +1638,29 @@ class UserEventsListener extends BaseEvent
                     'name' => $data["approver_name"],
                 ]
             ];
-            // $to = $data["email"];
-            // $from[config('common.FRONTEND_FROM_EMAIL')] = config('common.FRONTEND_FROM_EMAIL_NAME');
             $funcName = $this->func_name;
-            // dd($funcName);
-            // dd($data);
+            $baseUrl = env('HTTP_APPURL','');
+            $mailData = ['mail_subject' => $mail_subject, 'mail_body' => $mail_body,'base_url' => $baseUrl,'attachment_path' => NULL];
             Mail::to($to)->cc($cc)
-            ->bcc($bcc)->queue(new SendEmail($mail_subject,$data));
-            // SendMailJob::dispatch($to, $bcc, $cc, $mail_subject, $mail_body,$funcName,$data,$email_content)
-            //             ->delay(now()->addSeconds(10));
+            ->bcc($bcc)->queue(new SendEmail($mailData));
+
+            $mailContent = [
+                        'email_from' => config('common.FRONTEND_FROM_EMAIL'),
+                        'email_to' => $data["email"],
+                        'email_cc' => $cc ?? NULL,
+                        'email_bcc' => $bcc ?? NULL,
+                        'email_type' => $this->func_name,
+                        'user_name' => $data['approver_name'],
+                        'name' => $email_content->name,
+                        'subject' => $mail_subject,
+                        'body' => $mail_body,
+                        // 'att_name' => $att_name ?? NULL,
+                        // 'attachment' => $data['attachment'] ?? NULL,
+                    ];
+            FinanceModel::logEmail($mailContent);
             // Mail::send('email', ['baseUrl'=> env('HTTP_APPURL',''), 'varContent' => $mail_body],
             //     function ($message) use ($data, $mail_subject, $mail_body, $email_content) {
-            //         dd($message->to($data["email"], $data["approver_name"]));
+            //         // dd($message->to($data["email"], $data["approver_name"]));
             //         $cc = array_filter(explode(',', $email_content->cc));
             //         $bcc = array_filter(explode(',', $email_content->bcc));
             //         if (!empty($bcc)) {

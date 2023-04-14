@@ -17,15 +17,11 @@ class SendEmail extends Mailable
      *
      * @return void
      */
-    public $mail_subject;
-    public $data;
+    public $mailData;
 
-    public function __construct($mail_subject,$data)
+    public function __construct($mailData)
     {
-        // dd($this->mail_subject);
-        $this->mail_subject = $mail_subject;
-        $this->data = $data;
-        // dd($this->data);
+        $this->mailData = $mailData;
     }
 
     /**
@@ -35,9 +31,12 @@ class SendEmail extends Mailable
      */
     public function build()
     {
-        $x = EmailTemplate::getEmailTemplate("APPROVER_MAIL_FOR_PENDING_CASES");
-        // dd($x->message);
-        return $this->subject($this->mail_subject)->html($x->message);
-        // return $this->text($x);
+        $email  = $this->view('email')
+        ->with(['baseUrl' => $this->mailData['base_url'], 'varContent' => $this->mailData['mail_body']])
+        ->subject($this->mailData['mail_subject']);
+        if($this->mailData['attachment_path']){
+            $email->attach($this->mailData['attachment_path']);
+        }
+        return $email;
     }
 }
