@@ -753,13 +753,13 @@ class ReportsRepository extends BaseRepositories implements ReportInterface {
 					if(isset($whereCondition['user_id'])){
 						$query2->where('supplier_id',$whereCondition['user_id']);
 					}
-					$query2->select('anchor_id','invoice_id','supplier_id','prgm_offer_id','biz_id');
+					$query2->select('anchor_id','invoice_id','supplier_id','prgm_offer_id','biz_id','program_id');
 				},
 			'invoice.lms_user:user_id,customer_id,virtual_acc_id', 
 			'invoice.anchor:anchor_id,comp_name,sales_user_id', 
 			'invoice.anchor.salesUser:user_id,f_name,m_name,l_name', 
-			'invoice.program_offer:prgm_offer_id,payment_frequency',
 			'invoice.program:prgm_id,prgm_type,prgm_name,interest_borne_by',
+			'invoice.program_offer:prgm_offer_id,payment_frequency',
 			'invoice.business:biz_id,biz_entity_name', 
 			'transactions:invoice_disbursed_id,trans_id,payment_id,link_trans_id,parent_trans_id,trans_type,entry_type,soa_flag,settled_outstanding,outstanding',
 			'disburseDetails:invoice_disbursed_id,grace_period,funded_date,approve_amount,margin_amount,interest_capitalized,tenor,overdue_capitalized'
@@ -774,6 +774,7 @@ class ReportsRepository extends BaseRepositories implements ReportInterface {
 			}
 		})
 		->whereDate('int_accrual_start_dt','<=',$curdate)
+		->limit(1)
 		->get();
 		$sendMail = ($invDisbList->count() > 0)?true:false;
 		$result = [];
