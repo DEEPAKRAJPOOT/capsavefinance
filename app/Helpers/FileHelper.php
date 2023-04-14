@@ -11,6 +11,7 @@ use PHPExcel_Style_Fill;
 use PHPExcel_Cell_DataType;
 use PHPExcel_Style_Alignment;
 use PHPExcel_Style_Border;
+use PHPExcel_Shared_Date;
 use App\Inv\Repositories\Models\UserFile;
 use App\Inv\Repositories\Contracts\ApplicationInterface as InvAppRepoInterface;
 
@@ -172,40 +173,9 @@ class FileHelper {
             $floor = floor($rec_count/26);
             $reminder = $rec_count % 26;
             $char = ($floor > 0 ? chr(ord("A") + $floor-1) : '').chr(ord("A") + $reminder);
-            
-            //Fact Payment File Name sub string
-            $factDateFormatFlag = 0;
-            switch (strtolower(substr(trim($file_name),0,12))) {
-              case 'fact-payment':
-                $factDateFormatFlag = 1;
-                break;
-              case 'fact-journal':
-                $factDateFormatFlag = 2;
-                break;
-            }
-
             foreach($data as $key => $item) {
               foreach($item as $key1 => $item1) {
-                if($factDateFormatFlag == 1){
-                  $objPHPExcel->getActiveSheet()
-                  ->setCellValueByColumnAndRow($column, $row, $item1)  
-                  ->getStyle('C'.$row)
-                  ->getNumberFormat()
-                  ->setFormatCode('dd-mm-yyyy');
-                  $objPHPExcel->getActiveSheet()
-                  ->setCellValueByColumnAndRow($column, $row, $item1)  
-                  ->getStyle('F'.$row)
-                  ->getNumberFormat()
-                  ->setFormatCode('dd-mm-yyyy');
-                }elseif($factDateFormatFlag == 2){
-                  $objPHPExcel->getActiveSheet()
-                  ->setCellValueByColumnAndRow($column, $row, $item1)  
-                  ->getStyle('B'.$row)
-                  ->getNumberFormat()
-                  ->setFormatCode('dd-mm-yyyy');
-                }else{
-                  $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($column, $row, $item1);
-                }
+                $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($column, $row, $item1);
                 
                 $column++;
               }
@@ -558,4 +528,5 @@ public function exportCsv($data=[],$columns=[],$fileName='',$extraDataArray=[])
       ];
       return $errorMessage[$errorMessageID];
     }
+
 }

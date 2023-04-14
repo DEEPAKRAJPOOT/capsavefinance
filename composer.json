@@ -21,6 +21,7 @@
         "laravel/tinker": "^1.0",
         "laravelcollective/html": "^6.0",
         "league/flysystem-aws-s3-v3": "^1.0",
+        "league/flysystem-sftp": "^1.0",
         "paypal/rest-api-sdk-php": "^1.14",
         "phpoffice/phpexcel": "^1.8",
         "phpseclib/phpseclib": "^2.0",
