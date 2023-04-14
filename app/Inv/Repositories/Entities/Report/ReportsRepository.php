@@ -774,7 +774,6 @@ class ReportsRepository extends BaseRepositories implements ReportInterface {
 			}
 		})
 		->whereDate('int_accrual_start_dt','<=',$curdate)
-		->limit(1)
 		->get();
 		$sendMail = ($invDisbList->count() > 0)?true:false;
 		$result = [];
