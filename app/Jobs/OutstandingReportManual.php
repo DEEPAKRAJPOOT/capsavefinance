@@ -65,7 +65,7 @@ class OutstandingReportManual implements ShouldQueue
             return true;
         } catch (\Throwable $ex) {
             DB::rollback();
-            throw $th;
+            throw $ex;
         } 
     }
 
