@@ -759,6 +759,7 @@ class ReportsRepository extends BaseRepositories implements ReportInterface {
 			'invoice.anchor:anchor_id,comp_name,sales_user_id', 
 			'invoice.anchor.salesUser:user_id,f_name,m_name,l_name', 
 			'invoice.program_offer:prgm_offer_id,payment_frequency',
+			'invoice.program:prgm_id,prgm_type,prgm_name,interest_borne_by',
 			'invoice.business:biz_id,biz_entity_name', 
 			'transactions:invoice_disbursed_id,trans_id,payment_id,link_trans_id,parent_trans_id,trans_type,entry_type,soa_flag,settled_outstanding,outstanding',
 			'disburseDetails:invoice_disbursed_id,grace_period,funded_date,approve_amount,margin_amount,interest_capitalized,tenor,overdue_capitalized'
