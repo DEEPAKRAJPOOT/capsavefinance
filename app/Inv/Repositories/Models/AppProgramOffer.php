@@ -210,15 +210,9 @@ class AppProgramOffer extends BaseModel {
         // if (!is_int($appId)) {
         //     throw new InvalidDataTypeExceptions(trans('error_message.invalid_data_type'));
         // }
-                   
-        // if(!empty($userIdJob) && isset($userIdJob)){
-        //     $userId = $userIdJob;            
-        //     $anchorId = $anchorJobId;  
-        // }else{
-            $userId = isset(\Auth::user()->user_id) ? (\Auth::user()->user_id) : $userIdJob;
-            $anchorId = isset(\Auth::user()->anchor_id) ? (\Auth::user()->anchor_id) : $anchorJobId;    
-        // }
-        dd($userId);
+
+        $userId = (!empty($userIdJob) && isset($userIdJob)) ?  $userIdJob :  \Auth::user()->user_id;
+        $anchorId = (!empty($anchorJobId) && isset($anchorJobId)) ?  $anchorJobId : \Auth::user()->anchor_id;   
         $roleData = User::getBackendUser($userId); 
         $whereCond = [];
         if (isset($roleData[0]) && $roleData[0]->id == 11) {   

@@ -719,13 +719,9 @@ class UserEventsListener extends BaseEvent
        if (!empty($email_cc)) {
            $mailObj->cc($email_cc);
        }
-       $appId = request()->get('app_id');
-       $bizId = request()->get('biz_id');
-       $userJobId = $user['user_logedIn_id'];
-       $anchorJobId = $user['anchor_logedIn_id'];
-       $serializeData = [];
-       $serializeData['app_id'] = $appId;
-       $serializeData['biz_id'] = $bizId;
+       //$serializeData = [];
+       $serializeData['app_id'] = request()->get('app_id');
+       $serializeData['biz_id'] = request()->get('biz_id');
        $serializeData['user_id_job'] = $user['user_logedIn_id'];
        $serializeData['anchor_id_job'] = $user['anchor_logedIn_id'];
        
