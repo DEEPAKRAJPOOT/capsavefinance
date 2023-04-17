@@ -6,26 +6,46 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
-use App\Inv\Repositories\Models\Master\EmailTemplate;
 use App\Inv\Repositories\Models\FinanceModel;
+use Illuminate\Support\Facades\Log;
 
-class SendEmail extends Mailable
+class SendEmail extends Mailable implements ShouldQueue
 {
     use Queueable, SerializesModels;
 
     /**
+     * The email data.
+     *
+     * @var array
+     */
+    protected $mailData;
+
+    /**
+     * The email log data.
+     *
+     * @var array
+     */
+    protected $mailLogData;
+
+    /**
      * Create a new message instance.
+     *
+     * @param string $mailDataSerialized The serialized email data.
+     * @param string $mailLogDataSerialized The serialized email log data.
      *
      * @return void
      */
-    public $mailData;
-    public $mailLogData;
-
-    public function __construct($mailDataSerialized, $mailLogDataSerialized)
+    public function __construct(string $mailDataSerialized, string $mailLogDataSerialized)
     {
-        // Deserialize the data
-        $this->mailData = unserialize($mailDataSerialized);
-        $this->mailLogData = unserialize($mailLogDataSerialized);
+        try {
+            // Deserialize the data
+            $this->mailData = unserialize($mailDataSerialized);
+            $this->mailLogData = unserialize($mailLogDataSerialized);
+        } catch (\Exception $e) {
+            // Log or handle the error
+            Log::error('Failed to unserialize mail data: '.$e->getMessage());
+            throw $e;
+        }
     }
 
     /**
@@ -35,14 +55,21 @@ class SendEmail extends Mailable
      */
     public function build()
     {
-        $email = $this->view('email')
-                    ->with(['baseUrl' => $this->mailData['base_url'], 'varContent' => $this->mailData['mail_body']])
-                    ->subject($this->mailData['mail_subject']);
-        if ($this->mailData['attachment_path']) {
-            $email->attach($this->mailData['attachment_path']);
+        try {
+            $email = $this->view('email')
+                        ->with(['baseUrl' => $this->mailData['base_url'], 'varContent' => $this->mailData['mail_body']])
+                        ->subject($this->mailData['mail_subject']);
+
+            if ($this->mailData['attachment_path']) {
+                $email->attach($this->mailData['attachment_path']);
+            }
+
+            FinanceModel::logEmail($this->mailLogData);
+        } catch (\Exception $e) {
+            Log::error('Error building email: ' . $e->getMessage());
+            throw $e;
         }
-        FinanceModel::logEmail($this->mailLogData);
+
         return $email;
     }
-
 }
