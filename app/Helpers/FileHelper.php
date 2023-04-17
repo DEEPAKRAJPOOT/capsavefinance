@@ -79,12 +79,13 @@ class FileHelper {
         $realPath = str_replace($defaultPath, '', $active_filename_fullpath);
         $isSaved = $this->diskStoragePath->put($realPath, $fileContents);
         if ($isSaved) {
-            $mimetype = $this->diskStoragePath->getMimeType($realPath);
-            $metadata = $this->diskStoragePath->getMetaData($realPath);
+            $mimetype = $this->diskStoragePath->mimeType($realPath);
+            // $metadata = $this->diskStoragePath->getMetaData($realPath);
+            $size = $this->diskStoragePath->size($realPath);
             $inputArr['file_path'] = $realPath;
             $inputArr['file_type'] = $mimetype;
             $inputArr['file_name'] = basename($realPath);
-            $inputArr['file_size'] = $metadata['size'];
+            $inputArr['file_size'] = $size;
             $inputArr['file_encp_key'] =  md5('2');
             $inputArr['created_by'] = 1;
             $inputArr['updated_by'] = 1;
