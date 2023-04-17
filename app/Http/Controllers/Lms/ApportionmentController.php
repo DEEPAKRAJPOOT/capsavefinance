@@ -2163,7 +2163,7 @@ class ApportionmentController extends Controller
                                     Session::flash('untrans_error', $fileHelper->validationMessage(10));
                                     return redirect()->back();
                                 }
-                                $selectedPayment = round(str_replace(",","",$value['Payment']),2);
+                                $selectedPayment = round((float)(str_replace(",","",$value['Payment'])),2);
                                 $is_negative = $selectedPayment < 0 ? true : false;
                                 if (!empty($selectedPayment)) {
                                     $checkV = 1;
