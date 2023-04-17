@@ -871,7 +871,7 @@ class PaymentController extends Controller {
                         if (preg_match("/^(0[1-9]|[1-2][0-9]|3[0-1])-(0[1-9]|1[0-2])-[0-9]{4}$/",$txn_date)) {
                             
                         } else {
-                            Session::flash('error','Date formate is not correct(txnDate), Use only dd-mm-yyyy formate');
+                            Session::flash('error','Date format is not correct(txnDate), Use only dd-mm-yyyy format');
                             //Session::flash('operation_status', 1);
                             return redirect()->route('payment_list');
                         }
@@ -882,7 +882,7 @@ class PaymentController extends Controller {
                         if (preg_match("/^(0[1-9]|[1-2][0-9]|3[0-1])-(0[1-9]|1[0-2])-[0-9]{4}$/",$TrnTimeStamp)) {
 
                         } else {
-                            Session::flash('error','Date formate is not correct(Trn TimeStamp), Use only dd-mm-yyyy formate');
+                            Session::flash('error','Date format is not correct(Trn TimeStamp), Use only dd-mm-yyyy format');
                             //Session::flash('operation_status', 1);
                             return redirect()->route('payment_list');
                         }
