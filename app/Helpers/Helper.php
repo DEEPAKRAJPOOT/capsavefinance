@@ -1236,6 +1236,8 @@ class Helper extends PaypalHelper
         //dd($allEmailData['cc_mails']);
         $allEmailData['cc_mails'] = array_unique($Array_CC);
         $allEmailData['product_id'] = array_unique($productIdArr);
+        $allEmailData['user_logedIn_id'] = Auth::user()->user_id;
+        $allEmailData['anchor_logedIn_id'] = null;
         \Event::dispatch("APPLICATION_APPROVER_MAIL", serialize($allEmailData));
         return $approvers;
     }
