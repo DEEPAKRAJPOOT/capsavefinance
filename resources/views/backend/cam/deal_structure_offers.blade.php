@@ -224,6 +224,7 @@
                 </tr>
                 @endif
                 @endforeach
+                
                 <tr>
                 <td><b>Invoice Processing Fee: </b></td>
               @if($supplyOffer->invoice_processingfee_type == 1)
