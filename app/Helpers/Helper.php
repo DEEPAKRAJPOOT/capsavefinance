@@ -32,7 +32,7 @@ use App\Inv\Repositories\Models\Lms\CronLog;
 use Illuminate\Http\File;
 use App\Inv\Repositories\Models\Lms\ApprovalRequest;
 use Illuminate\Contracts\Support\Renderable;
-use ZanySoft\Zip\Zip;
+use Zip;
 use App\Inv\Repositories\Models\AnchorUser;
 use App\Inv\Repositories\Models\Anchor;
 use App\Inv\Repositories\Models\AppSanctionLetter;
