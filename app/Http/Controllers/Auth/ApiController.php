@@ -132,7 +132,7 @@ class ApiController
         $factvoucherNumber = $getTransfactVoucherNumber->fact_voucher_no;
       }else{
         $this->journalFactVoucherSeq++;  
-        $factvoucherNumber = 'SJV'.$this->voucherFormat.sprintf('%06d',$this->journalFactVoucherSeq);
+        $factvoucherNumber = 'SJV'.$this->voucherFormat.sprintf('%07d',$this->journalFactVoucherSeq);
         $transfactvoucherData = [
           'trans_id'=>$jrnls->trans_id,
           'fact_voucher_no'=>$factvoucherNumber,
@@ -318,7 +318,7 @@ class ApiController
         if($getTransfactVoucherNumber){
           $factvoucherNumber = $getTransfactVoucherNumber->fact_voucher_no;
         }else{
-          $factvoucherNumber = 'SRP'.$this->voucherFormat.sprintf('%06d',$this->paymentFactVoucherSeq);
+          $factvoucherNumber = 'SRP'.$this->voucherFormat.sprintf('%07d',$this->paymentFactVoucherSeq);
           $transfactvoucherData = [
             'trans_id'=>$rvrsl->trans_id,
             'fact_voucher_no'=>$factvoucherNumber,
@@ -372,7 +372,7 @@ class ApiController
       if($getTransfactVoucherNumber){
         $factvoucherNumber = $getTransfactVoucherNumber->fact_voucher_no;
       }else{
-        $factvoucherNumber = 'SRP'.$this->voucherFormat.sprintf('%06d',$this->paymentFactVoucherSeq);
+        $factvoucherNumber = 'SRP'.$this->voucherFormat.sprintf('%07d',$this->paymentFactVoucherSeq);
         $transfactvoucherData = [
           'trans_id'=>$rfnd->trans_id,
           'fact_voucher_no'=>$factvoucherNumber,
@@ -492,7 +492,7 @@ class ApiController
       if($getTransfactVoucherNumber){
         $factvoucherNumber = $getTransfactVoucherNumber->fact_voucher_no;
       }else{
-        $factvoucherNumber = 'SRP'.$this->voucherFormat.sprintf('%06d',$this->paymentFactVoucherSeq);
+        $factvoucherNumber = 'SRP'.$this->voucherFormat.sprintf('%07d',$this->paymentFactVoucherSeq);
         $transfactvoucherData = [
           'trans_id'=>$dsbrsl->trans_id,
           'fact_voucher_no'=>$factvoucherNumber,
@@ -707,7 +707,7 @@ class ApiController
     $receiptPayment = [];
     foreach($receiptData as $rcpt){
      $this->paymentFactVoucherSeq++;
-     $factvoucherNumber = 'SRP'.$this->voucherFormat.sprintf('%06d',$this->paymentFactVoucherSeq); 
+     $factvoucherNumber = 'SRP'.$this->voucherFormat.sprintf('%07d',$this->paymentFactVoucherSeq); 
      $this->paymentFactEndVoucherNumber = $factvoucherNumber;
      $this->voucherNo = $this->voucherNo + 1;
      $settledTransactoions =  $rcpt->getSettledTxns;
@@ -846,7 +846,7 @@ class ApiController
     $receiptPayment = [];
     foreach($receiptReversalData as $rcpt){
      $this->paymentFactVoucherSeq++;
-     $factvoucherNumber = 'SRP'.$this->voucherFormat.sprintf('%06d',$this->paymentFactVoucherSeq); 
+     $factvoucherNumber = 'SRP'.$this->voucherFormat.sprintf('%07d',$this->paymentFactVoucherSeq); 
      $this->paymentFactEndVoucherNumber = $factvoucherNumber;
      $this->voucherNo = $this->voucherNo + 1;
      $settledTransactoions =  $rcpt->getSettledTxns;
@@ -1053,8 +1053,8 @@ class ApiController
     $this->paymentFactVoucherSeq = (int)$lastFactVoucher['fact_srp_seq_number'];
     $this->journalFactVoucherSeq = (int)$lastFactVoucher['fact_sjv_seq_number'];
     $this->voucherFormat = $lastFactVoucher['voucher_format'];
-    $this->journalFactStartVoucherNumber = 'SJV'.$this->voucherFormat.sprintf('%06d',$this->journalFactVoucherSeq+1);
-    $this->paymentFactStartVoucherNumber = 'SRP'.$this->voucherFormat.sprintf('%06d',$this->paymentFactVoucherSeq+1);
+    $this->journalFactStartVoucherNumber = 'SJV'.$this->voucherFormat.sprintf('%07d',$this->journalFactVoucherSeq+1);
+    $this->paymentFactStartVoucherNumber = 'SRP'.$this->voucherFormat.sprintf('%07d',$this->paymentFactVoucherSeq+1);
     $batch_no = _getRand(15);
     $where = [['is_posted_in_tally', '=', '0'], ['created_at', '>=', $startDate],['created_at', '<=', $endDate],['soa_flag', '=', '1']];
     $journalData = Transactions::getJournalTxnTally($where);
