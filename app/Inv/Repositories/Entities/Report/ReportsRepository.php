@@ -761,7 +761,7 @@ class ReportsRepository extends BaseRepositories implements ReportInterface {
 			'invoice.program:prgm_id,prgm_type,prgm_name,interest_borne_by',
 			'invoice.program_offer:prgm_offer_id,payment_frequency',
 			'invoice.business:biz_id,biz_entity_name', 
-			'transactions:invoice_disbursed_id,trans_id,payment_id,link_trans_id,parent_trans_id,trans_type,entry_type,soa_flag,settled_outstanding,outstanding',
+			'transactions:invoice_disbursed_id,trans_id,payment_id,link_trans_id,parent_trans_id,trans_type,entry_type,soa_flag,settled_outstanding,outstanding,due_date,amount',
 			'disburseDetails:invoice_disbursed_id,grace_period,funded_date,approve_amount,margin_amount,interest_capitalized,tenor,overdue_capitalized,request_amount'
 		])
 		->whereIn('status_id', [12,13,15,47])
