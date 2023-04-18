@@ -845,7 +845,6 @@ class CamController extends Controller
         $appData 	 = $this->appRepo->getAppData($appId);
 		    $user_id = $appData->user_id;
         $xlsx_arr = $this->_getXLSXTable($appId,'banking');
-        dd($xlsx_arr);
         $xlsx_html = $xlsx_arr[0];
         $xlsx_pagination = $xlsx_arr[1];
         $json_files = $this->getLatestFileName($appId,'banking', 'json');
