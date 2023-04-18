@@ -310,23 +310,51 @@ class UserEventsListener extends BaseEvent
                 [ucwords($user['name'])],
                 $email_content->message
             );
-
-            Mail::send('email', ['baseUrl'=>env('REDIRECT_URL',''),'varContent' => $mail_body,
-                ],
-                function ($message) use ($user, $email_content, $mail_body) {
-                $email = $user["email"];
-                $message->from(config('common.FRONTEND_FROM_EMAIL'), config('common.FRONTEND_FROM_EMAIL_NAME'));
-                $message->to($email, $user["name"])->subject($email_content->subject);
-                $mailContent = [
-                    'email_from' => config('common.FRONTEND_FROM_EMAIL'),
-                    'email_to' => $email,
-                    'email_type' => $this->func_name,
+            $to = [
+                [
+                    'email' => $user["email"], 
                     'name' => $user['name'],
-                    'subject' => $email_content->subject,
-                    'body' => $mail_body,
-                ];
-                FinanceModel::logEmail($mailContent);
-            });
+                ]
+            ];
+            $funcName = $this->func_name;
+            $baseUrl = env('HTTP_APPURL','');
+
+            $mailData = [
+                'email_to' => $user["email"],
+                'mail_subject' => $email_content->subject,
+                'mail_body' => $mail_body,
+                'base_url' => $baseUrl,
+                'attachment_path' => NULL
+            ];
+
+            $mailLogData = [
+                'email_from' => config('common.FRONTEND_FROM_EMAIL'),
+                'email_type' => $this->func_name,
+                'name' => $user['name'],
+            ];
+
+            // Serialize the data
+            $mailDataSerialized = serialize($mailData);
+            $mailLogDataSerialized = serialize($mailLogData);
+
+            // Queue the email job
+            Mail::to($to)->cc($cc)->bcc($bcc)->queue(new SendEmail($mailDataSerialized, $mailLogDataSerialized));
+            // Mail::send('email', ['baseUrl'=>env('REDIRECT_URL',''),'varContent' => $mail_body,
+            //     ],
+            //     function ($message) use ($user, $email_content, $mail_body) {
+            //     $email = $user["email"];
+            //     $message->from(config('common.FRONTEND_FROM_EMAIL'), config('common.FRONTEND_FROM_EMAIL_NAME'));
+            //     $message->to($email, $user["name"])->subject($email_content->subject);
+            //     $mailContent = [
+            //         'email_from' => config('common.FRONTEND_FROM_EMAIL'),
+            //         'email_to' => $email,
+            //         'email_type' => $this->func_name,
+            //         'name' => $user['name'],
+            //         'subject' => $email_content->subject,
+            //         'body' => $mail_body,
+            //     ];
+            //     FinanceModel::logEmail($mailContent);
+            // });
         }
     }
 
@@ -356,12 +384,15 @@ class UserEventsListener extends BaseEvent
                     ]
                 ];
             }
-            $cc = \Helpers::ccOrBccEmailsArray($email_content->cc);
-            $bcc = \Helpers::ccOrBccEmailsArray($email_content->bcc);
+            // $cc = \Helpers::ccOrBccEmailsArray($email_content->cc);
+            // $bcc = \Helpers::ccOrBccEmailsArray($email_content->bcc);
             $funcName = $this->func_name;
             $baseUrl = env('HTTP_APPURL','');
 
             $mailData = [
+                'email_to' => $user["email"],
+                // 'email_cc' => $cc ?? NULL,
+                // 'email_bcc' => $bcc ?? NULL,
                 'mail_subject' => $email_content->subject,
                 'mail_body' => $mail_body,
                 'base_url' => $baseUrl,
@@ -370,13 +401,8 @@ class UserEventsListener extends BaseEvent
 
             $mailLogData = [
                 'email_from' => config('common.FRONTEND_FROM_EMAIL'),
-                'email_to' => $user["email"],
-                'email_cc' => $cc ?? NULL,
-                'email_bcc' => $bcc ?? NULL,
                 'email_type' => $this->func_name,
                 'name' => $user['name'],
-                'subject' => $email_content->subject,
-                'body' => $mail_body,
             ];
 
             // Serialize the data
@@ -384,7 +410,7 @@ class UserEventsListener extends BaseEvent
             $mailLogDataSerialized = serialize($mailLogData);
 
             // Queue the email job
-            Mail::to($to)->cc($cc)->bcc($bcc)->queue(new SendEmail($mailDataSerialized, $mailLogDataSerialized));
+            Mail::to($to)->queue(new SendEmail($mailDataSerialized, $mailLogDataSerialized));
             // Mail::send('email', ['baseUrl'=>env('REDIRECT_URL',''),'varContent' => $mail_body,
             //     ],
             //     function ($message) use ($user, $email_content, $mail_body) {                    
@@ -1330,6 +1356,8 @@ class UserEventsListener extends BaseEvent
             $cc = explode(',', $email_content->cc);
             $baseUrl = env('HTTP_APPURL','');
             $mailData = [
+                'email_to' => $email,
+                'email_cc' => $cc,
                 'mail_subject' => $mail_subject,
                 'mail_body' => $mail_body,
                 'base_url' => $baseUrl,
@@ -1338,13 +1366,8 @@ class UserEventsListener extends BaseEvent
 
             $mailLogData = [
                 'email_from' => config('common.FRONTEND_FROM_EMAIL'),
-                'email_to' => $email ,
                 'email_type' => $this->func_name,
                 'name' => $user['name'],
-                'subject' => $mail_subject,
-                'body' => $mail_body,
-                // 'email_bcc' => $bcc,
-                'email_cc' => $cc,
             ];
 
             // Serialize the data
@@ -1397,6 +1420,8 @@ class UserEventsListener extends BaseEvent
             $cc = explode(',', $email_content->cc);
             $baseUrl = env('HTTP_APPURL','');
             $mailData = [
+                'email_to' => $email,
+                'email_cc' => $cc,
                 'mail_subject' => $mail_subject,
                 'mail_body' => $mail_body,
                 'base_url' => $baseUrl,
@@ -1405,13 +1430,8 @@ class UserEventsListener extends BaseEvent
 
             $mailLogData = [
                 'email_from' => config('common.FRONTEND_FROM_EMAIL'),
-                'email_to' => $email ,
                 'email_type' => $this->func_name,
                 'name' => NULL,
-                'subject' => $mail_subject,
-                'body' => $mail_body,
-                // 'email_bcc' => $bcc,
-                'email_cc' => $cc,
             ];
 
             // Serialize the data
@@ -1595,6 +1615,8 @@ class UserEventsListener extends BaseEvent
             $baseUrl = env('HTTP_APPURL','');
 
             $mailData = [
+                'email_to' => $to,
+                'email_cc' => $cc,
                 'mail_subject' => $mail_subject,
                 'mail_body' => $mail_body,
                 'base_url' => $baseUrl,
@@ -1603,13 +1625,8 @@ class UserEventsListener extends BaseEvent
 
             $mailLogData = [
                 'email_from' => config('common.FRONTEND_FROM_EMAIL'),
-                'email_to' => $to ,
                 'email_type' => $this->func_name,
                 'name' => 'Request Approval For Charge Deletion',
-                'subject' => $mail_subject,
-                'body' => $mail_body,
-                // 'email_bcc' => $bcc,
-                'email_cc' => $cc,
             ];
 
             // Serialize the data
@@ -1676,6 +1693,9 @@ class UserEventsListener extends BaseEvent
             $baseUrl = env('HTTP_APPURL','');
 
             $mailData = [
+                'email_to' => $user["email"],
+                'email_bcc' => $bcc,
+                'email_cc' => $cc,
                 'mail_subject' => $mail_subject,
                 'mail_body' => $mail_body,
                 'base_url' => $baseUrl,
@@ -1684,13 +1704,8 @@ class UserEventsListener extends BaseEvent
 
             $mailLogData = [
                 'email_from' => config('common.FRONTEND_FROM_EMAIL'),
-                'email_to' => $user["email"],
                 'email_type' => $this->func_name,
                 'name' => $user['name'],
-                'subject' => $mail_subject,
-                'body' => $mail_body,
-                'email_bcc' => $bcc,
-                'email_cc' => $cc,
             ];
 
             // Serialize the data
@@ -1763,6 +1778,9 @@ class UserEventsListener extends BaseEvent
             }
 
             $mailData = [
+                'email_to' => $data["email"],
+                'email_cc' => $cc ?? NULL,
+                'email_bcc' => $bcc ?? NULL,
                 'mail_subject' => $mail_subject,
                 'mail_body' => $email_content,
                 'base_url' => $baseUrl,
@@ -1772,11 +1790,6 @@ class UserEventsListener extends BaseEvent
 
             $mailLogData = [
                 'email_from' => config('common.FRONTEND_FROM_EMAIL'),
-                'email_to' => $data["email"],
-                'email_cc' => $cc ?? NULL,
-                'email_bcc' => $bcc ?? NULL,
-                'subject' => $mail_subject,
-                'body' => $email_content,
                 'attachment' => $data['attachment'] ?? NULL,
                 'name' => null,
                 'att_name' => $att_name ?? NULL,
@@ -1872,7 +1885,6 @@ class UserEventsListener extends BaseEvent
             );
             $cc = array_filter(explode(',', $email_content->cc));
             $bcc = array_filter(explode(',', $email_content->bcc));
-            // $to[$data["email"]] = $data["approver_name"];
             $to = [
                 [
                     'email' => $data["email"], 
@@ -1883,6 +1895,9 @@ class UserEventsListener extends BaseEvent
             $baseUrl = env('HTTP_APPURL','');
 
             $mailData = [
+                'email_to' => $data["email"],
+                'email_cc' => $cc ?? NULL,
+                'email_bcc' => $bcc ?? NULL,
                 'mail_subject' => $mail_subject,
                 'mail_body' => $mail_body,
                 'base_url' => $baseUrl,
@@ -1891,16 +1906,8 @@ class UserEventsListener extends BaseEvent
 
             $mailLogData = [
                 'email_from' => config('common.FRONTEND_FROM_EMAIL'),
-                'email_to' => $data["email"],
-                'email_cc' => $cc ?? NULL,
-                'email_bcc' => $bcc ?? NULL,
                 'email_type' => $this->func_name,
-                'user_name' => $data['approver_name'],
-                'name' => $email_content->name,
-                'subject' => $mail_subject,
-                'body' => $mail_body,
-                // 'att_name' => $att_name ?? NULL,
-                // 'attachment' => $data['attachment'] ?? NULL,
+                'user_name' => $email_content->name,
             ];
 
             // Serialize the data
@@ -2010,6 +2017,9 @@ class UserEventsListener extends BaseEvent
             $baseUrl = env('HTTP_APPURL','');
 
             $mailData = [
+                'email_to' => $data["email"],
+                'email_cc' => $cc ?? NULL,
+                'email_bcc' => $bcc ?? NULL,
                 'mail_subject' => $mail_subject,
                 'mail_body' => $mail_body,
                 'base_url' => $baseUrl,
@@ -2018,14 +2028,8 @@ class UserEventsListener extends BaseEvent
 
             $mailLogData = [
                 'email_from' => config('common.FRONTEND_FROM_EMAIL'),
-                'email_to' => $data["email"],
-                'email_cc' => $cc ?? NULL,
-                'email_bcc' => $bcc ?? NULL,
                 'email_type' => $this->func_name,
-                'user_name' => $data['user_name'],
-                'name' => $email_content->name,
-                'subject' => $mail_subject,
-                'body' => $mail_body,
+                'user_name' => $email_content->name,
                 // 'att_name' => $att_name ?? NULL,
                 // 'attachment' => $data['attachment'] ?? NULL,
             ];
