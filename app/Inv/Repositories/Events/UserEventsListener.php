@@ -647,7 +647,7 @@ class UserEventsListener extends BaseEvent
             $att_name = 'sanctionLetter-'.$time.'.pdf';
             $attachData[] =
                 [
-                    'file_path' => $data['attachment'],
+                    'file_path' =>  base64_encode($data['attachment']), // encode the binary data as base64
                     'file_name' => $att_name,
                     'isBinaryData' => true,
                 ];

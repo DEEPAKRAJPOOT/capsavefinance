@@ -71,10 +71,16 @@ class SendEmail extends Mailable implements ShouldQueue
 
             if (!empty($this->mailData['attachments'])) {
                 foreach ($this->mailData['attachments'] as $attachment) {
-                    if (!$attachment['isBinaryData']) {
+                    if ($attachment['isBinaryData']) {
+                        $file_path = $attachment['file_path'];
+                        // Check if the file path is base64 encoded
+                        if (base64_decode($file_path, true) !== false) {
+                            // The file path is base64 encoded
+                            $file_path = base64_decode($file_path);
+                        }
+                        $email->attachData($file_path, $attachment['file_name']);
+                    } else {
                         $email->attach($attachment['file_path'], ['as' => $attachment['file_name']]);
-                    }else{
-                        $email->attachData($attachment['file_path'], $attachment['file_name']);
                     }
                 }
             }
