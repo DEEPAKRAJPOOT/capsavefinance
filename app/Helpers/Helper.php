@@ -2871,7 +2871,7 @@ class Helper extends PaypalHelper
             }
         }else{
             $factResult['voucher_format'] = substr($year1,-2).substr($year2,-2).'/';
-            if($factvoucherData->year2 >= '2024' && $factvoucherData->year1 >= '2023'){
+            if($factvoucherData->fact_year2 >= '2024' && $factvoucherData->fact_year1 >= '2023'){
                 $factResult['fact_srp_seq_number'] = $factvoucherData->fact_srp_seq_number;
                 $factResult['fact_sjv_seq_number'] = $factvoucherData->fact_sjv_seq_number;
             }
