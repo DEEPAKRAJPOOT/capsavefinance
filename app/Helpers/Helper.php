@@ -1980,12 +1980,13 @@ class Helper extends PaypalHelper
             $isSaved = $diskStoragePath->put($realPath, $fileContents);
         }
         if (isset($isSaved)) {
-            $mimetype = $diskStoragePath->getMimeType($realPath);
-            $metadata = $diskStoragePath->getMetaData($realPath);
+            $mimetype = $diskStoragePath->mimeType($realPath);
+            // $metadata = $diskStoragePath->getMetaData($realPath);
+            $size = $diskStoragePath->size($realPath);
             $inputArr['file_path'] = $realPath;
             $inputArr['file_type'] = $mimetype;
             $inputArr['file_name'] = basename($realPath);
-            $inputArr['file_size'] = $metadata['size'];
+            $inputArr['file_size'] = $size;
             $inputArr['file_encp_key'] =  md5('2');
             $inputArr['created_by'] = \Auth::user()->user_id ?? 0;
             $inputArr['updated_by'] = \Auth::user()->user_id ?? 0;
