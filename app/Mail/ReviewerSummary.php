@@ -30,31 +30,25 @@ class ReviewerSummary extends Mailable
      *
      * @return void
      */
-    public $serializeData;
-    
-    public function __construct($user,$serializeData)
+    public function __construct($mstRepo, $user)
     {
-        // $this->mstRepo = \App::make('App\Inv\Repositories\Contracts\MasterInterface');
+        $this->mstRepo = $mstRepo;
         $this->user = $user;
-        $this->serializeData = $serializeData;
     }
-    
 
     /**
      * Build the message.
      *
      * @return $this
      */
-    public function build()
+    public function build(Request $request)
     {
-        $mstRepo = \App::make('App\Inv\Repositories\Contracts\MasterInterface');
-        // dd($this->serializeData);
         $preCondArr = [];
         $postCondArr = [];
         $this->func_name = __FUNCTION__;
         $offerPTPQ = '';
-        $appId = $this->serializeData['app_id']; //$request->get('app_id');
-        $bizId =  $this->serializeData['biz_id'];//$request->get('biz_id');
+        $appId = $request->get('app_id');
+        $bizId = $request->get('biz_id');
         $businessDetails = Business::find($bizId);
         $preCondArr = $postCondArr = array();
         $limitOfferData = AppProgramLimit::getLimitWithOffer($appId, $bizId, config('common.PRODUCT.LEASE_LOAN'));
@@ -86,7 +80,7 @@ class ReviewerSummary extends Mailable
         } 
         
         //Get PreOffer Docs
-        $appRepo = \App::make('App\Inv\Repositories\Contracts\ApplicationInterface');  
+        $appRepo = \App::make('App\Inv\Repositories\Contracts\ApplicationInterface');   
         $appProductIds = [];
         $appProducts = $appRepo->getApplicationProduct($appId);
         foreach($appProducts->products as $product){
@@ -100,8 +94,8 @@ class ReviewerSummary extends Mailable
         //config('common.review_summ_mail_docs_id') + 
         $fileArray = AppDocumentFile::getReviewerSummaryPreDocs($appId, $preOfferDocs);
         $leaseOfferData = $facilityTypeList = array();
-        $leaseOfferData = AppProgramOffer::getAllOffers($appId, '3',$this->serializeData['user_id_job'],$this->serializeData['anchor_id_job']);
-        $facilityTypeList= $mstRepo->getFacilityTypeList()->toarray();
+        $leaseOfferData = AppProgramOffer::getAllOffers($appId, '3');
+        $facilityTypeList= $this->mstRepo->getFacilityTypeList()->toarray();
         $arrStaticData = array();
         $arrStaticData['rentalFrequency'] = array('1'=>'Yearly','2'=>'Bi-Yearly','3'=>'Quarterly','4'=>'Monthly');
         $arrStaticData['rentalFrequencyForPTPQ'] = array('1'=>'Year','2'=>'Bi-Yearly','3'=>'Quarter','4'=>'Months');
@@ -109,7 +103,7 @@ class ReviewerSummary extends Mailable
         $arrStaticData['securityDepositOf'] = array('1'=>'Loan Amount','2'=>'Asset Value','3'=>'Asset Base Value','4'=>'Sanction');
         $arrStaticData['rentalFrequencyType'] = array('1'=>'Advance','2'=>'Arrears');  
         $dispAppId = \Helpers::formatIdWithPrefix($appId, 'APP');
-        $supplyOfferData = $appRepo->getAllOffers($appId, 1,$this->serializeData['user_id_job'],$this->serializeData['anchor_id_job']);//for supply chain 
+        $supplyOfferData = $appRepo->getAllOffers($appId, 1);//for supply chain 
         $fee = [];
         foreach($supplyOfferData as $key=>$val){
             $offerCharges = $val->offerCharges;
@@ -134,7 +128,7 @@ class ReviewerSummary extends Mailable
             $borrowerLimitData['multiple_limit'] = $Limitdata['multiple_limit'];
         }
         }else{
-            $Limitdata = $mstRepo->getCurrentBorrowerLimitData();
+            $Limitdata = $this->mstRepo->getCurrentBorrowerLimitData();
             if($Limitdata){
             $borrowerLimitData['single_limit'] = $Limitdata['single_limit'];
             $borrowerLimitData['multiple_limit'] = $Limitdata['multiple_limit'];

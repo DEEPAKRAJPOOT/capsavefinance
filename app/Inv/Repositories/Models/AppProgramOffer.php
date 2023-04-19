@@ -195,7 +195,7 @@ class AppProgramOffer extends BaseModel {
      * @return mixed
      * @throws InvalidDataTypeExceptions
      */
-    public static function getAllOffers($appId, $product_id=null,$userIdJob = null,$anchorJobId = null)
+    public static function getAllOffers($appId, $product_id=null)
     {
         /**
          * Check id is not blank
@@ -211,12 +211,10 @@ class AppProgramOffer extends BaseModel {
         //     throw new InvalidDataTypeExceptions(trans('error_message.invalid_data_type'));
         // }
 
-        $userId = (!empty($userIdJob) && isset($userIdJob)) ?  $userIdJob :  \Auth::user()->user_id;
-        $anchorId = (!empty($anchorJobId) && isset($anchorJobId)) ?  $anchorJobId : \Auth::user()->anchor_id;   
-        $roleData = User::getBackendUser($userId); 
+        $roleData = User::getBackendUser(\Auth::user()->user_id);            
         $whereCond = [];
         if (isset($roleData[0]) && $roleData[0]->id == 11) {   
-            $whereCond = ['anchor_id' => $anchorId, 'app_id' => $appId, 'is_active' => 1];
+            $whereCond = ['anchor_id' => \Auth::user()->anchor_id, 'app_id' => $appId, 'is_active' => 1];
         } else {
             $whereCond = ['app_id' => $appId, 'is_active' => 1];
         }

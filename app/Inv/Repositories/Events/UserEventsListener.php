@@ -1014,27 +1014,53 @@ class UserEventsListener extends BaseEvent
        if (!empty($email_cc)) {
            $mailObj->cc($email_cc);
        }
-       //$serializeData = [];
-       $serializeData['app_id'] = request()->get('app_id');
-       $serializeData['biz_id'] = request()->get('biz_id');
-       $serializeData['user_id_job'] = $user['user_logedIn_id'];
-       $serializeData['anchor_id_job'] = $user['anchor_logedIn_id'];
        
-       $mailObj->queue(new ReviewerSummary($user,$serializeData));
-
+       $baseUrl = env('HTTP_APPURL','');
        $ccMails = is_array($email_cc) ? $email_cc : explode(',', $email_cc);
        $cc = array_filter($ccMails);
-       $mailContent = [
-        'email_from' => config('common.FRONTEND_FROM_EMAIL'),
-        'email_to' => $email,
-        'email_cc' => $cc ?? NULL,
-        'email_type' => $this->func_name,
-        'name' => "Move to Approver",
-        'subject' => "Application Approver Mail",
-        'body' => '',
+
+       $mail_body = view('emails.reviewersummary.reviewersummarymail', [
+        'limitOfferData'=> $user['limitOfferData'],
+        'reviewerSummaryData'=> $user['reviewerSummaryData'],
+        'offerPTPQ' => $user['offerPTPQ'],
+        'preCondArr' => $user['preCondArr'],
+        'postCondArr' => $user['postCondArr'],
+        'leaseOfferData'=> $user['leaseOfferData'],
+        'arrStaticData' => $user['arrStaticData'],
+        'facilityTypeList' => $user['facilityTypeList'],
+        //'receiverUserName' => $this->user['receiver_user_name'],
+        'appId' => $user['appId'],
+        'url' =>  $user['url'],
+        'dispAppId' => $user['dispAppId'],
+        'supplyOfferData' => $user['supplyOfferData'],
+        'positiveRiskCmntArr' => $user['positiveRiskCmntArr'],
+        'negativeRiskCmntArr' => $user['negativeRiskCmntArr'],
+        'fee' => $user['fee'],
+        'borrowerLimitData'=> $user['borrowerLimitData']
+        ])->render();
+        $mailData = [
+            'mail_subject' => $user['email_subject'],
+            'mail_body' => $mail_body,
+            'base_url' => $baseUrl,
+            'attachments' => $user['fileAttachments'],
+            'email_cc' => $cc ?? NULL,
+            'email_to' => $email,
         ];
-        FinanceModel::logEmail($mailContent);
-        
+
+        $mailLogData = [
+            'email_from' => config('common.FRONTEND_FROM_EMAIL'),
+            'email_type' => $this->func_name,
+            'name' => "Move to Approver",
+        ];
+
+        // Serialize the data
+        $mailDataSerialized = serialize($mailData);
+        $mailLogDataSerialized = serialize($mailLogData);
+
+        // Queue the email job
+        $mailObj->queue(new SendEmail($mailDataSerialized, $mailLogDataSerialized));
+       
+       //$mailObj->queue(new ReviewerSummary($user,$serializeData));
     }
     
 

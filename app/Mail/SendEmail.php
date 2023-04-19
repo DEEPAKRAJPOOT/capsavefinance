@@ -69,8 +69,10 @@ class SendEmail extends Mailable implements ShouldQueue
                         ->with(['baseUrl' => $this->mailData['base_url'], 'varContent' => $this->mailData['mail_body']])
                         ->subject($this->mailData['mail_subject']);
 
-            if ($this->mailData['attachment_path']) {
-                $email->attach($this->mailData['attachment_path']);
+            if ($this->mailData['attachments']) {
+                foreach ($this->mailData['attachments'] as $attachment) {
+                    $email->attach($attachment['file_path'], ['as' => $attachment['file_name']]);
+                }
             }
             // To update mail Log Data status on email_logger table
             DB::table('email_logger')
