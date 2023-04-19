@@ -3003,7 +3003,8 @@ class Helper extends PaypalHelper
                 if(file_exists(storage_path('app/public/'.$val['file_path']))) {
                     $fileAttachments[] = [
                         'file_path' => storage_path('app/public/'.$val['file_path']),
-                        'file_name' => $val['file_name']
+                        'file_name' => $val['file_name'],
+                        'isBinaryData' => false,
                     ];
                 }
             }
@@ -3014,7 +3015,8 @@ class Helper extends PaypalHelper
             if(file_exists(storage_path('app/public/'.$camFile['file_path']))) {
                 $fileAttachments[] = [
                     'file_path' => storage_path('app/public/'.$camFile['file_path']),
-                    'file_name' => $camFile['file_name']
+                    'file_name' => $camFile['file_name'],
+                    'isBinaryData' => false,
                 ];
             }
         }

@@ -69,15 +69,17 @@ class SendEmail extends Mailable implements ShouldQueue
                         ->with(['baseUrl' => $this->mailData['base_url'], 'varContent' => $this->mailData['mail_body']])
                         ->subject($this->mailData['mail_subject']);
 
-            if ($this->mailData['attachments']) {
+            if (!empty($this->mailData['attachments'])) {
                 foreach ($this->mailData['attachments'] as $attachment) {
-                    $email->attach($attachment['file_path'], ['as' => $attachment['file_name']]);
+                    if (!$attachment['isBinaryData']) {
+                        $email->attach($attachment['file_path'], ['as' => $attachment['file_name']]);
+                    }else{
+                        $email->attachData($attachment['file_path'], $attachment['file_name']);
+                    }
                 }
             }
             // To update mail Log Data status on email_logger table
-            DB::table('email_logger')
-            ->where('id', $this->mailLogDataId)
-            ->update(['status' => 1]);
+            DB::update("UPDATE rta_email_logger SET status = ? WHERE id = ?", [1, $this->mailLogDataId]);
         } catch (\Exception $e) {
             Log::error('Error building email: ' . $e->getMessage());
             throw $e;
