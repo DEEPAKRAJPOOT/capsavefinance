@@ -111,7 +111,7 @@ class FileHelper {
         $lastkey = array_key_last($toExportData);
         $objSpreadsheet = new Spreadsheet();
 
-        $ExtraRow = 0;
+        $ExtraRow = 1;
           $styleArr2 = $styleArray = array(
               'font' => array(
                 'bold' => true,
@@ -121,7 +121,7 @@ class FileHelper {
               ),
               'borders' => array(
                   'top' => array(
-                    'style' => Border::BORDER_THIN,
+                    'borderStyle' => Border::BORDER_THIN,
                   ),
               ),
               'fill' => array(
@@ -139,12 +139,12 @@ class FileHelper {
           $coll = 0;
           foreach ($vv as $moreIndex => $moreValue) {
               $chrr = chr(ord('A') + $coll);
-              $objSpreadsheet->getActiveSheet()->setCellValueByColumnAndRow($coll, $ExtraRow, $moreIndex);
+              $objSpreadsheet->getActiveSheet()->setCellValueByColumnAndRow($coll+1, $ExtraRow, $moreIndex);
               $objSpreadsheet->getActiveSheet()->getStyle($chrr. $ExtraRow)->applyFromArray($styleArray);
               unset($styleArr2['font']);
               $coll++;
               $chrr = chr(ord('A') + $coll);
-              $objSpreadsheet->getActiveSheet()->setCellValueByColumnAndRow($coll, $ExtraRow, $moreValue);
+              $objSpreadsheet->getActiveSheet()->setCellValueByColumnAndRow($coll+1, $ExtraRow, $moreValue);
               $objSpreadsheet->getActiveSheet()->getStyle($chrr. $ExtraRow)->applyFromArray($styleArr2);
               $coll = $coll+2;
           }
@@ -164,11 +164,10 @@ class FileHelper {
             $sheetTitle = $title;
             $objSpreadsheet->setActiveSheetIndex($activeSheet);
             $activeSheet++;
-            $column = 0;
             $header_row = $ExtraRow + 1;
             $start_row = $ExtraRow + 2;
             $row = $start_row;
-            $column = 0;
+            $column = 1;
             $floor = floor($rec_count/26);
             $reminder = $rec_count % 26;
             $char = ($floor > 0 ? chr(ord("A") + $floor-1) : '').chr(ord("A") + $reminder);
@@ -222,41 +221,18 @@ class FileHelper {
                 ),
               );
               $objSpreadsheet->getActiveSheet()->getStyle('A'. $row .':' . $char . $row)->applyFromArray($styleArray);
-              $column = 0;
+              $column = 1;
               $row++;
             }
             $end_row = $row - 1;
             $row = $header_row;
-            $column = 0;
+            $column = 1;
             foreach($header_cols as $key) {
                $key = ucwords(str_replace('_', ' ', $key));
                $objSpreadsheet->getActiveSheet()->getCellByColumnAndRow($column, $row)->setValueExplicit($key, DataType::TYPE_STRING);
                   $column++;
             }
-            $styleArray = array(
-              'font' => array(
-                'bold' => true,
-              ),
-              'alignment' => array(
-                    'horizontal' => Alignment::HORIZONTAL_CENTER,
-              ),
-              'borders' => array(
-                  'top' => array(
-                    'style' => Border::BORDER_THIN,
-                  ),
-              ),
-              'fill' => array(
-                  'fillType' => Fill::FILL_GRADIENT_LINEAR,
-                  'rotation' => 90,
-                  'startColor' => array(
-                    'argb' => 'FFA0A0A0',
-                  ),
-                  'endColor' => array(
-                    'argb' => 'FFFFFFFF',
-                  ),
-              ),
-            );
-
+        
             $styleArray = array(
               'font' => array(
                 'bold' => true,
@@ -266,7 +242,7 @@ class FileHelper {
               ),
               'borders' => array(
                   'top' => array(
-                    'style' => Border::BORDER_THIN,
+                    'borderStyle' => Border::BORDER_THIN,
                   ),
               ),
               'fill' => array(
@@ -292,8 +268,8 @@ class FileHelper {
                 'horizontal' => Alignment::HORIZONTAL_JUSTIFY,
               ),
               'borders' => array(
-                'allborders' => array(
-                  'style' => Border::BORDER_THIN,
+                'allBorders' => array(
+                  'borderStyle' => Border::BORDER_THIN,
                   // 'color' => array('argb' => 'FFFF0000'),
                 ),
               ),
