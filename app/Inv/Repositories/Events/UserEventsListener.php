@@ -84,39 +84,65 @@ class UserEventsListener extends BaseEvent
                 [ucwords($user['name']),$user['otp']],
                 $email_content->message
             );
-            // function(($message) use ($user, $email_content, $mail_body)){
-            //     if( env('SEND_MAIL_ACTIVE') == 1){
-            //         $email = explode(',', env('SEND_MAIL'));
-            //         $bcc = $message->bcc(explode(',', env('SEND_MAIL_BCC')));
-            //         $cc = $message->cc(explode(',', env('SEND_MAIL_CC')));
-            //     }else{
-            //         $email = $user["email"];
-            //     }
-            //     $message->from(config('common.FRONTEND_FROM_EMAIL'),config('common.FRONTEND_FROM_EMAIL_NAME'));
-            //     $to = $message->to($email, $user["name"])->subject($email_content->subject);
-            // }
-            Mail::send('email', ['baseUrl'=>env('REDIRECT_URL',''),'varContent' => $mail_body,
-                ],
-                function ($message) use ($user, $email_content, $mail_body) {
-                    if( env('SEND_MAIL_ACTIVE') == 1){
-                        $email = explode(',', env('SEND_MAIL'));
-                        $message->bcc(explode(',', env('SEND_MAIL_BCC')));
-                        $message->cc(explode(',', env('SEND_MAIL_CC')));
-                    }else{
-                        $email = $user["email"];
-                    }
-                $message->from(config('common.FRONTEND_FROM_EMAIL'),config('common.FRONTEND_FROM_EMAIL_NAME'));
-                $message->to($email, $user["name"])->subject($email_content->subject);
-                $mailContent = [
-                    'email_from' => config('common.FRONTEND_FROM_EMAIL'),
-                    'email_to' => $email,
-                    'email_type' => $this->func_name,
-                    'name' => $user['name'],
-                    'subject' => $email_content->subject,
-                    'body' => $mail_body,
+            if( env('SEND_MAIL_ACTIVE') == 1){
+                $to = [
+                    [
+                        'email' => explode(',', env('SEND_MAIL')), 
+                        'name' => NULL,
+                    ]
                 ];
-                FinanceModel::logEmail($mailContent);
-            });
+            }else{
+                $to = [
+                    [
+                        'email' => $user["email"], 
+                        'name' => $user['name'],
+                    ]
+                ];
+            }
+            $baseUrl = env('HTTP_APPURL','');
+
+            $mailData = [
+                'email_to' => $user["email"],
+                'mail_subject' => $email_content->subject,
+                'mail_body' => $mail_body,
+                'base_url' => $baseUrl,
+                'attachment_path' => NULL
+            ];
+
+            $mailLogData = [
+                'email_from' => config('common.FRONTEND_FROM_EMAIL'),
+                'email_type' => $this->func_name,
+                'name' => $user['name'],
+            ];
+
+            // Serialize the data
+            $mailDataSerialized = serialize($mailData);
+            $mailLogDataSerialized = serialize($mailLogData);
+
+            // Queue the email job
+            Mail::to($to)->queue(new SendEmail($mailDataSerialized, $mailLogDataSerialized));
+            // Mail::send('email', ['baseUrl'=>env('REDIRECT_URL',''),'varContent' => $mail_body,
+            //     ],
+            //     function ($message) use ($user, $email_content, $mail_body) {
+            //         if( env('SEND_MAIL_ACTIVE') == 1){
+            //             $email = explode(',', env('SEND_MAIL'));
+            //             $message->bcc(explode(',', env('SEND_MAIL_BCC')));
+            //             $message->cc(explode(',', env('SEND_MAIL_CC')));
+            //         }else{
+            //             $email = $user["email"];
+            //         }
+            //     $message->from(config('common.FRONTEND_FROM_EMAIL'),config('common.FRONTEND_FROM_EMAIL_NAME'));
+            //     $message->to($email, $user["name"])->subject($email_content->subject);
+            //     $mailContent = [
+            //         'email_from' => config('common.FRONTEND_FROM_EMAIL'),
+            //         'email_to' => $email,
+            //         'email_type' => $this->func_name,
+            //         'name' => $user['name'],
+            //         'subject' => $email_content->subject,
+            //         'body' => $mail_body,
+            //     ];
+            //     FinanceModel::logEmail($mailContent);
+            // });
         }
     }
 
@@ -131,28 +157,65 @@ class UserEventsListener extends BaseEvent
                 link_to($user['vlink'], 'here')],
                 $email_content->message
             );
-            Mail::send('email', ['baseUrl'=>env('REDIRECT_URL',''),'varContent' => $mail_body,
-                ],
-                function ($message) use ($user, $email_content, $mail_body) {
-                    if( env('SEND_MAIL_ACTIVE') == 1){
-                        $email = explode(',', env('SEND_MAIL'));
-                        $message->bcc(explode(',', env('SEND_MAIL_BCC')));
-                        $message->cc(explode(',', env('SEND_MAIL_CC')));
-                    }else{
-                        $email = $user["email"];
-                    }
-                $message->from(config('common.FRONTEND_FROM_EMAIL'),config('common.FRONTEND_FROM_EMAIL_NAME'));
-                $message->to($email, $user["name"])->subject($email_content->subject);
-                $mailContent = [
-                    'email_from' => config('common.FRONTEND_FROM_EMAIL'),
-                    'email_to' => $email,
-                    'email_type' => $this->func_name,
-                    'name' => $user['name'],
-                    'subject' => $email_content->subject,
-                    'body' => $mail_body,
+            if( env('SEND_MAIL_ACTIVE') == 1){
+                $to = [
+                    [
+                        'email' => explode(',', env('SEND_MAIL')), 
+                        'name' => NULL,
+                    ]
                 ];
-                FinanceModel::logEmail($mailContent);
-            });
+            }else{
+                $to = [
+                    [
+                        'email' => $user["email"], 
+                        'name' => $user['name'],
+                    ]
+                ];
+            }
+            $baseUrl = env('HTTP_APPURL','');
+
+            $mailData = [
+                'email_to' => $user["email"],
+                'mail_subject' => $email_content->subject,
+                'mail_body' => $mail_body,
+                'base_url' => $baseUrl,
+                'attachment_path' => NULL
+            ];
+
+            $mailLogData = [
+                'email_from' => config('common.FRONTEND_FROM_EMAIL'),
+                'email_type' => $this->func_name,
+                'name' => $user['name'],
+            ];
+
+            // Serialize the data
+            $mailDataSerialized = serialize($mailData);
+            $mailLogDataSerialized = serialize($mailLogData);
+
+            // Queue the email job
+            Mail::to($to)->queue(new SendEmail($mailDataSerialized, $mailLogDataSerialized));
+            // Mail::send('email', ['baseUrl'=>env('REDIRECT_URL',''),'varContent' => $mail_body,
+            //     ],
+            //     function ($message) use ($user, $email_content, $mail_body) {
+            //         if( env('SEND_MAIL_ACTIVE') == 1){
+            //             $email = explode(',', env('SEND_MAIL'));
+            //             $message->bcc(explode(',', env('SEND_MAIL_BCC')));
+            //             $message->cc(explode(',', env('SEND_MAIL_CC')));
+            //         }else{
+            //             $email = $user["email"];
+            //         }
+            //     $message->from(config('common.FRONTEND_FROM_EMAIL'),config('common.FRONTEND_FROM_EMAIL_NAME'));
+            //     $message->to($email, $user["name"])->subject($email_content->subject);
+            //     $mailContent = [
+            //         'email_from' => config('common.FRONTEND_FROM_EMAIL'),
+            //         'email_to' => $email,
+            //         'email_type' => $this->func_name,
+            //         'name' => $user['name'],
+            //         'subject' => $email_content->subject,
+            //         'body' => $mail_body,
+            //     ];
+            //     FinanceModel::logEmail($mailContent);
+            // });
         }
 
     }
@@ -173,28 +236,66 @@ class UserEventsListener extends BaseEvent
                 [ucwords($user['name']),$user['email'],$user['password'], $link],
                 $email_content->message
             );
-            Mail::send('email', ['baseUrl'=>env('REDIRECT_URL',''),'varContent' => $mail_body,
-                ],
-                function ($message) use ($user, $email_content, $mail_body) {
-                    if( env('SEND_MAIL_ACTIVE') == 1){
-                        $email = explode(',', env('SEND_MAIL'));
-                        $message->bcc(explode(',', env('SEND_MAIL_BCC')));
-                        $message->cc(explode(',', env('SEND_MAIL_CC')));
-                    }else{
-                        $email = $user["email"];
-                    }
-                $message->from(config('common.FRONTEND_FROM_EMAIL'), config('common.FRONTEND_FROM_EMAIL_NAME'));
-                $message->to($email, $user["name"])->subject($email_content->subject);
-                $mailContent = [
-                    'email_from' => config('common.FRONTEND_FROM_EMAIL'),
-                    'email_to' => $email,
-                    'email_type' => $this->func_name,
-                    'name' => $user['name'],
-                    'subject' => $email_content->subject,
-                    'body' => $mail_body,
+            if( env('SEND_MAIL_ACTIVE') == 1){
+                $to = [
+                    [
+                        'email' => explode(',', env('SEND_MAIL')), 
+                        'name' => NULL,
+                    ]
                 ];
-                FinanceModel::logEmail($mailContent);
-            });
+            }else{
+                $to = [
+                    [
+                        'email' => $user["email"], 
+                        'name' => $user['name'],
+                    ]
+                ];
+            }
+            $funcName = $this->func_name;
+            $baseUrl = env('HTTP_APPURL','');
+
+            $mailData = [
+                'email_to' => $user["email"],
+                'mail_subject' => $email_content->subject,
+                'mail_body' => $mail_body,
+                'base_url' => $baseUrl,
+                'attachment_path' => NULL
+            ];
+
+            $mailLogData = [
+                'email_from' => config('common.FRONTEND_FROM_EMAIL'),
+                'email_type' => $this->func_name,
+                'name' => $user['name'],
+            ];
+
+            // Serialize the data
+            $mailDataSerialized = serialize($mailData);
+            $mailLogDataSerialized = serialize($mailLogData);
+
+            // Queue the email job
+            Mail::to($to)->queue(new SendEmail($mailDataSerialized, $mailLogDataSerialized));
+            // Mail::send('email', ['baseUrl'=>env('REDIRECT_URL',''),'varContent' => $mail_body,
+            //     ],
+            //     function ($message) use ($user, $email_content, $mail_body) {
+            //         if( env('SEND_MAIL_ACTIVE') == 1){
+            //             $email = explode(',', env('SEND_MAIL'));
+            //             $message->bcc(explode(',', env('SEND_MAIL_BCC')));
+            //             $message->cc(explode(',', env('SEND_MAIL_CC')));
+            //         }else{
+            //             $email = $user["email"];
+            //         }
+            //     $message->from(config('common.FRONTEND_FROM_EMAIL'), config('common.FRONTEND_FROM_EMAIL_NAME'));
+            //     $message->to($email, $user["name"])->subject($email_content->subject);
+            //     $mailContent = [
+            //         'email_from' => config('common.FRONTEND_FROM_EMAIL'),
+            //         'email_to' => $email,
+            //         'email_type' => $this->func_name,
+            //         'name' => $user['name'],
+            //         'subject' => $email_content->subject,
+            //         'body' => $mail_body,
+            //     ];
+            //     FinanceModel::logEmail($mailContent);
+            // });
         }
     }
 
@@ -214,34 +315,77 @@ class UserEventsListener extends BaseEvent
                 [ucwords($user['name']),$user['otp']],
                 $email_content->message
             );
-            Mail::send('email', ['baseUrl'=>env('REDIRECT_URL',''),'varContent' => $mail_body,
-                ],
-                function ($message) use ($user, $email_content, $mail_body) {
-                    // if( env('SEND_MAIL_ACTIVE') == 1){
-                    //     $email = explode(',', env('SEND_MAIL'));
-                    //     $emailBcc = \Helpers::ccOrBccEmailsArray(env('SEND_MAIL_BCC'));
-                    //     $emailCc = \Helpers::ccOrBccEmailsArray(env('SEND_MAIL_CC'));
-                    // }else{
-                        $email = $user["email"];
-                        $emailBcc = \Helpers::ccOrBccEmailsArray($email_content->bcc);
-                        $emailCc = \Helpers::ccOrBccEmailsArray($email_content->cc);
-                    // }
-                $message->bcc($emailBcc);
-                $message->cc($emailCc);
-                $message->from(config('common.FRONTEND_FROM_EMAIL'), config('common.FRONTEND_FROM_EMAIL_NAME'));
-                $message->to($email, $user["name"])->subject($email_content->subject);
-                $mailContent = [
-                    'email_from' => config('common.FRONTEND_FROM_EMAIL'),
-                    'email_to' => $email,
-                    'email_type' => $this->func_name,
-                    'name' => $user['name'],
-                    'subject' => $email_content->subject,
-                    'body' => $mail_body,
-                    'email_bcc' => $emailBcc,
-                    'email_cc' => $emailCc,
+            if( env('SEND_MAIL_ACTIVE') == 1){
+                $to = [
+                    [
+                        'email' => explode(',', env('SEND_MAIL')), 
+                        'name' => NULL,
+                    ]
                 ];
-                FinanceModel::logEmail($mailContent);
-            });
+                $cc = \Helpers::ccOrBccEmailsArray(env('SEND_MAIL_CC'));
+                $bcc = \Helpers::ccOrBccEmailsArray(env('SEND_MAIL_BCC'));
+            }else{
+                $to = [
+                    [
+                        'email' => $user["email"], 
+                        'name' => $user['name'],
+                    ]
+                ];
+                $cc = \Helpers::ccOrBccEmailsArray($email_content->cc);
+                $bcc = \Helpers::ccOrBccEmailsArray($email_content->bcc);
+            }
+            $baseUrl = env('HTTP_APPURL','');
+
+            $mailData = [
+                'email_to' => $user["email"],
+                'email_cc' => $cc ?? NULL,
+                'email_bcc' => $bcc ?? NULL,
+                'mail_subject' => $email_content->subject,
+                'mail_body' => $mail_body,
+                'base_url' => $baseUrl,
+                'attachment_path' => NULL
+            ];
+
+            $mailLogData = [
+                'email_from' => config('common.FRONTEND_FROM_EMAIL'),
+                'email_type' => $this->func_name,
+                'name' => $user['name'],
+            ];
+
+            // Serialize the data
+            $mailDataSerialized = serialize($mailData);
+            $mailLogDataSerialized = serialize($mailLogData);
+
+            // Queue the email job
+            Mail::to($to)->cc($cc)->bcc($bcc)->queue(new SendEmail($mailDataSerialized, $mailLogDataSerialized));
+            // Mail::send('email', ['baseUrl'=>env('REDIRECT_URL',''),'varContent' => $mail_body,
+            //     ],
+            //     function ($message) use ($user, $email_content, $mail_body) {
+            //         // if( env('SEND_MAIL_ACTIVE') == 1){
+            //         //     $email = explode(',', env('SEND_MAIL'));
+            //         //     $emailBcc = \Helpers::ccOrBccEmailsArray(env('SEND_MAIL_BCC'));
+            //         //     $emailCc = \Helpers::ccOrBccEmailsArray(env('SEND_MAIL_CC'));
+            //         // }else{
+            //             $email = $user["email"];
+            //             $emailBcc = \Helpers::ccOrBccEmailsArray($email_content->bcc);
+            //             $emailCc = \Helpers::ccOrBccEmailsArray($email_content->cc);
+            //         // }
+            //     $message->bcc($emailBcc);
+            //     $message->cc($emailCc);
+            //     $message->from(config('common.FRONTEND_FROM_EMAIL'), config('common.FRONTEND_FROM_EMAIL_NAME'));
+            //     $message->to($email, $user["name"])->subject($email_content->subject);
+            //     $mailContent = [
+            //         'email_from' => config('common.FRONTEND_FROM_EMAIL'),
+            //         'email_to' => $email,
+            //         'email_type' => $this->func_name,
+            //         'name' => $user['name'],
+            //         'subject' => $email_content->subject,
+            //         'body' => $mail_body,
+            //         'email_bcc' => $emailBcc,
+            //         'email_cc' => $emailCc,
+            //     ];
+            //     FinanceModel::logEmail($mailContent);
+            // });
         }
     }
 
@@ -264,35 +408,78 @@ class UserEventsListener extends BaseEvent
                 [ucwords($user['name']),$user['reset_link']],
                 $email_content->message
             );
-
-            Mail::send('email', ['baseUrl'=>env('REDIRECT_URL',''),'varContent' => $mail_body,
-                ],
-                function ($message) use ($user, $email_content, $mail_body) {                
-                // if( env('SEND_MAIL_ACTIVE') == 1){
-                    //     $email = explode(',', env('SEND_MAIL'));
-                    //     $emailBcc = \Helpers::ccOrBccEmailsArray(env('SEND_MAIL_BCC'));
-                    //     $emailCc = \Helpers::ccOrBccEmailsArray(env('SEND_MAIL_CC'));
-                    // }else{
-                        $email = $user["email"];
-                        $emailBcc = \Helpers::ccOrBccEmailsArray($email_content->bcc);
-                        $emailCc = \Helpers::ccOrBccEmailsArray($email_content->cc);
-                    // }
-                $message->bcc($emailBcc);
-                $message->cc($emailCc);    
-                $message->from(config('common.FRONTEND_FROM_EMAIL'), config('common.FRONTEND_FROM_EMAIL_NAME'));
-                $message->to($email, $user["name"])->subject($email_content->subject);
-                $mailContent = [
-                    'email_from' => config('common.FRONTEND_FROM_EMAIL'),
-                    'email_to' => $email,
-                    'email_type' => $this->func_name,
-                    'name' => $user['name'],
-                    'subject' => $email_content->subject,
-                    'body' => $mail_body,
-                    'email_bcc' => $emailBcc,
-                    'email_cc' => $emailCc,
+            if( env('SEND_MAIL_ACTIVE') == 1){
+                $to = [
+                    [
+                        'email' => explode(',', env('SEND_MAIL')), 
+                        'name' => NULL,
+                    ]
                 ];
-                FinanceModel::logEmail($mailContent);
-            });
+                $cc = \Helpers::ccOrBccEmailsArray(env('SEND_MAIL_CC'));
+                $bcc = \Helpers::ccOrBccEmailsArray(env('SEND_MAIL_BCC'));
+            }else{
+                $to = [
+                    [
+                        'email' => $user["email"], 
+                        'name' => $user['name'],
+                    ]
+                ];
+                $cc = \Helpers::ccOrBccEmailsArray($email_content->cc);
+                $bcc = \Helpers::ccOrBccEmailsArray($email_content->bcc);
+            }
+            $baseUrl = env('HTTP_APPURL','');
+
+            $mailData = [
+                'email_to' => $user["email"],
+                'email_cc' => $cc ?? NULL,
+                'email_bcc' => $bcc ?? NULL,
+                'mail_subject' => $email_content->subject,
+                'mail_body' => $mail_body,
+                'base_url' => $baseUrl,
+                'attachment_path' => NULL
+            ];
+
+            $mailLogData = [
+                'email_from' => config('common.FRONTEND_FROM_EMAIL'),
+                'email_type' => $this->func_name,
+                'name' => $user['name'],
+            ];
+
+            // Serialize the data
+            $mailDataSerialized = serialize($mailData);
+            $mailLogDataSerialized = serialize($mailLogData);
+
+            // Queue the email job
+            Mail::to($to)->cc($cc)->bcc($bcc)->queue(new SendEmail($mailDataSerialized, $mailLogDataSerialized));
+
+            // Mail::send('email', ['baseUrl'=>env('REDIRECT_URL',''),'varContent' => $mail_body,
+            //     ],
+            //     function ($message) use ($user, $email_content, $mail_body) {                
+            //     // if( env('SEND_MAIL_ACTIVE') == 1){
+            //         //     $email = explode(',', env('SEND_MAIL'));
+            //         //     $emailBcc = \Helpers::ccOrBccEmailsArray(env('SEND_MAIL_BCC'));
+            //         //     $emailCc = \Helpers::ccOrBccEmailsArray(env('SEND_MAIL_CC'));
+            //         // }else{
+            //             $email = $user["email"];
+            //             $emailBcc = \Helpers::ccOrBccEmailsArray($email_content->bcc);
+            //             $emailCc = \Helpers::ccOrBccEmailsArray($email_content->cc);
+            //         // }
+            //     $message->bcc($emailBcc);
+            //     $message->cc($emailCc);    
+            //     $message->from(config('common.FRONTEND_FROM_EMAIL'), config('common.FRONTEND_FROM_EMAIL_NAME'));
+            //     $message->to($email, $user["name"])->subject($email_content->subject);
+            //     $mailContent = [
+            //         'email_from' => config('common.FRONTEND_FROM_EMAIL'),
+            //         'email_to' => $email,
+            //         'email_type' => $this->func_name,
+            //         'name' => $user['name'],
+            //         'subject' => $email_content->subject,
+            //         'body' => $mail_body,
+            //         'email_bcc' => $emailBcc,
+            //         'email_cc' => $emailCc,
+            //     ];
+            //     FinanceModel::logEmail($mailContent);
+            // });
         }
     }
     
@@ -338,7 +525,7 @@ class UserEventsListener extends BaseEvent
             $mailLogDataSerialized = serialize($mailLogData);
 
             // Queue the email job
-            Mail::to($to)->cc($cc)->bcc($bcc)->queue(new SendEmail($mailDataSerialized, $mailLogDataSerialized));
+            Mail::to($to)->queue(new SendEmail($mailDataSerialized, $mailLogDataSerialized));
             // Mail::send('email', ['baseUrl'=>env('REDIRECT_URL',''),'varContent' => $mail_body,
             //     ],
             //     function ($message) use ($user, $email_content, $mail_body) {
@@ -376,6 +563,8 @@ class UserEventsListener extends BaseEvent
                         'name' => NULL,
                     ]
                 ];
+                $cc = \Helpers::ccOrBccEmailsArray(env('SEND_MAIL_CC'));
+                $bcc = \Helpers::ccOrBccEmailsArray(env('SEND_MAIL_BCC'));
             }else{
                 $to = [
                     [
@@ -383,16 +572,16 @@ class UserEventsListener extends BaseEvent
                         'name' => $user['name'],
                     ]
                 ];
+                $cc = \Helpers::ccOrBccEmailsArray($email_content->cc);
+                $bcc = \Helpers::ccOrBccEmailsArray($email_content->bcc);
             }
-            // $cc = \Helpers::ccOrBccEmailsArray($email_content->cc);
-            // $bcc = \Helpers::ccOrBccEmailsArray($email_content->bcc);
             $funcName = $this->func_name;
             $baseUrl = env('HTTP_APPURL','');
 
             $mailData = [
                 'email_to' => $user["email"],
-                // 'email_cc' => $cc ?? NULL,
-                // 'email_bcc' => $bcc ?? NULL,
+                'email_cc' => $cc ?? NULL,
+                'email_bcc' => $bcc ?? NULL,
                 'mail_subject' => $email_content->subject,
                 'mail_body' => $mail_body,
                 'base_url' => $baseUrl,
@@ -410,7 +599,7 @@ class UserEventsListener extends BaseEvent
             $mailLogDataSerialized = serialize($mailLogData);
 
             // Queue the email job
-            Mail::to($to)->queue(new SendEmail($mailDataSerialized, $mailLogDataSerialized));
+            Mail::to($to)->cc($cc)->bcc($bcc)->queue(new SendEmail($mailDataSerialized, $mailLogDataSerialized));
             // Mail::send('email', ['baseUrl'=>env('REDIRECT_URL',''),'varContent' => $mail_body,
             //     ],
             //     function ($message) use ($user, $email_content, $mail_body) {                    
@@ -453,29 +642,65 @@ class UserEventsListener extends BaseEvent
                 [ucwords($user['name']),$user['email'],$user['password'], $link],
                 $email_content->message
             );
-
-            Mail::send('email', ['baseUrl'=>env('REDIRECT_URL',''),'varContent' => $mail_body,
-                ],
-                function ($message) use ($user, $email_content, $mail_body) {
-                    if( env('SEND_MAIL_ACTIVE') == 1){
-                        $email = explode(',', env('SEND_MAIL'));
-                        $message->bcc(explode(',', env('SEND_MAIL_BCC')));
-                        $message->cc(explode(',', env('SEND_MAIL_CC')));
-                    }else{
-                        $email = $user["email"];
-                    }
-                $message->from(config('common.FRONTEND_FROM_EMAIL'), config('common.FRONTEND_FROM_EMAIL_NAME'));
-                $message->to($email, $user["name"])->subject($email_content->subject);
-                $mailContent = [
-                    'email_from' => config('common.FRONTEND_FROM_EMAIL'),
-                    'email_to' => $email,
-                    'email_type' => $this->func_name,
-                    'name' => $user['name'],
-                    'subject' => $email_content->subject,
-                    'body' => $mail_body,
+            if( env('SEND_MAIL_ACTIVE') == 1){
+                $to = [
+                    [
+                        'email' => explode(',', env('SEND_MAIL')), 
+                        'name' => NULL,
+                    ]
                 ];
-                FinanceModel::logEmail($mailContent);
-            });
+            }else{
+                $to = [
+                    [
+                        'email' => $user["email"], 
+                        'name' => $user['name'],
+                    ]
+                ];
+            }
+            $baseUrl = env('HTTP_APPURL','');
+
+            $mailData = [
+                'email_to' => $user["email"],
+                'mail_subject' => $email_content->subject,
+                'mail_body' => $mail_body,
+                'base_url' => $baseUrl,
+                'attachment_path' => NULL
+            ];
+
+            $mailLogData = [
+                'email_from' => config('common.FRONTEND_FROM_EMAIL'),
+                'email_type' => $this->func_name,
+                'name' => $user['name'],
+            ];
+
+            // Serialize the data
+            $mailDataSerialized = serialize($mailData);
+            $mailLogDataSerialized = serialize($mailLogData);
+
+            // Queue the email job
+            Mail::to($to)->queue(new SendEmail($mailDataSerialized, $mailLogDataSerialized));
+            // Mail::send('email', ['baseUrl'=>env('REDIRECT_URL',''),'varContent' => $mail_body,
+            //     ],
+            //     function ($message) use ($user, $email_content, $mail_body) {
+            //         if( env('SEND_MAIL_ACTIVE') == 1){
+            //             $email = explode(',', env('SEND_MAIL'));
+            //             $message->bcc(explode(',', env('SEND_MAIL_BCC')));
+            //             $message->cc(explode(',', env('SEND_MAIL_CC')));
+            //         }else{
+            //             $email = $user["email"];
+            //         }
+            //     $message->from(config('common.FRONTEND_FROM_EMAIL'), config('common.FRONTEND_FROM_EMAIL_NAME'));
+            //     $message->to($email, $user["name"])->subject($email_content->subject);
+            //     $mailContent = [
+            //         'email_from' => config('common.FRONTEND_FROM_EMAIL'),
+            //         'email_to' => $email,
+            //         'email_type' => $this->func_name,
+            //         'name' => $user['name'],
+            //         'subject' => $email_content->subject,
+            //         'body' => $mail_body,
+            //     ];
+            //     FinanceModel::logEmail($mailContent);
+            // });
         }
     }
 
@@ -837,37 +1062,74 @@ class UserEventsListener extends BaseEvent
                 $email_content->message
             );
             $mail_subject = str_replace(['%app_id'], $user['app_id'],$email_content->subject);
+            if( env('SEND_MAIL_ACTIVE') == 1){
+                $to = [
+                    [
+                        'email' => explode(',', env('SEND_MAIL')), 
+                        'name' => NULL,
+                    ]
+                ];
+            }else{
+                $to = [
+                    [
+                        'email' => [$user["receiver_email"],$user["sales_manager_email"]], 
+                        'name' => $user['receiver_user_name'],
+                    ]
+                ];
+            }
+            $funcName = $this->func_name;
+            $baseUrl = env('HTTP_APPURL','');
 
-            Mail::send('email', ['baseUrl'=>env('REDIRECT_URL',''),'varContent' => $mail_body, ],
-                function ($message) use ($user, $mail_subject, $mail_body) {
+            $mailData = [
+                'email_to' => [$user["receiver_email"],$user["sales_manager_email"]],
+                'mail_subject' => $mail_subject,
+                'mail_body' => $mail_body,
+                'base_url' => $baseUrl,
+                'attachment_path' => NULL
+            ];
+
+            $mailLogData = [
+                'email_from' => config('common.FRONTEND_FROM_EMAIL'),
+                'email_type' => $this->func_name,
+                'name' => $user['receiver_user_name'],
+            ];
+
+            // Serialize the data
+            $mailDataSerialized = serialize($mailData);
+            $mailLogDataSerialized = serialize($mailLogData);
+
+            // Queue the email job
+            Mail::to($to)->queue(new SendEmail($mailDataSerialized, $mailLogDataSerialized));
+            // Mail::send('email', ['baseUrl'=>env('REDIRECT_URL',''),'varContent' => $mail_body, ],
+            //     function ($message) use ($user, $mail_subject, $mail_body) {
                 
                 
-                $message->from(config('common.FRONTEND_FROM_EMAIL'), config('common.FRONTEND_FROM_EMAIL_NAME'));
-                $message->subject($mail_subject);
+            //     $message->from(config('common.FRONTEND_FROM_EMAIL'), config('common.FRONTEND_FROM_EMAIL_NAME'));
+            //     $message->subject($mail_subject);
                 
-                if( env('SEND_MAIL_ACTIVE') == 1){
-                    $email = explode(',', env('SEND_MAIL'));
-                    $message->to($email);
-                    $message->bcc(explode(',', env('SEND_MAIL_BCC')));
-                    $message->cc(explode(',', env('SEND_MAIL_CC')));                    
-                }else{
-                    //$message->to($user["receiver_email"], $user["receiver_user_name"]);
-                    //$message->to($user["sales_manager_email"], $user["sales_manager_name"]);
-                    $email = [$user["receiver_email"],$user["sales_manager_email"]];
-                    $message->to($email);
-                }
+            //     if( env('SEND_MAIL_ACTIVE') == 1){
+            //         $email = explode(',', env('SEND_MAIL'));
+            //         $message->to($email);
+            //         $message->bcc(explode(',', env('SEND_MAIL_BCC')));
+            //         $message->cc(explode(',', env('SEND_MAIL_CC')));                    
+            //     }else{
+            //         //$message->to($user["receiver_email"], $user["receiver_user_name"]);
+            //         //$message->to($user["sales_manager_email"], $user["sales_manager_name"]);
+            //         $email = [$user["receiver_email"],$user["sales_manager_email"]];
+            //         $message->to($email);
+            //     }
         
-                $mailContent = [
-                    'email_from' => config('common.FRONTEND_FROM_EMAIL'),
-                    'email_to' => $email,
-                    'email_type' => $this->func_name,
-                    'name' => $user['receiver_user_name'],
-                    'subject' => $mail_subject,
-                    'body' => $mail_body,
-                ]; 
-                FinanceModel::logEmail($mailContent);
+            //     $mailContent = [
+            //         'email_from' => config('common.FRONTEND_FROM_EMAIL'),
+            //         'email_to' => $email,
+            //         'email_type' => $this->func_name,
+            //         'name' => $user['receiver_user_name'],
+            //         'subject' => $mail_subject,
+            //         'body' => $mail_body,
+            //     ]; 
+            //     FinanceModel::logEmail($mailContent);
                 
-            });
+            // });
         }
     }
     
@@ -881,28 +1143,66 @@ class UserEventsListener extends BaseEvent
                 [ucwords($user['name'])],
                 $email_content->message
             );
-            Mail::send('email', ['baseUrl'=>env('REDIRECT_URL',''),'varContent' => $mail_body,
-                ],
-                function ($message) use ($user, $email_content, $mail_body) {
-                    if( env('SEND_MAIL_ACTIVE') == 1){
-                        $email = explode(',', env('SEND_MAIL'));
-                        $message->bcc(explode(',', env('SEND_MAIL_BCC')));
-                        $message->cc(explode(',', env('SEND_MAIL_CC')));
-                    }else{
-                        $email = $user["email"];
-                    }
-                $message->from(config('common.FRONTEND_FROM_EMAIL'), config('common.FRONTEND_FROM_EMAIL_NAME'));
-                $message->to($email, $user["name"])->subject($email_content->subject);
-                $mailContent = [
-                    'email_from' => config('common.FRONTEND_FROM_EMAIL'),
-                    'email_to' => $email,
-                    'email_type' => $this->func_name,
-                    'name' => $user['name'],
-                    'subject' => $email_content->subject,
-                    'body' => $mail_body,
+            if( env('SEND_MAIL_ACTIVE') == 1){
+                $to = [
+                    [
+                        'email' => explode(',', env('SEND_MAIL')), 
+                        'name' => NULL,
+                    ]
                 ];
-                FinanceModel::logEmail($mailContent);
-            });
+            }else{
+                $to = [
+                    [
+                        'email' => $user["email"], 
+                        'name' => $user['name'],
+                    ]
+                ];
+            }
+            $funcName = $this->func_name;
+            $baseUrl = env('HTTP_APPURL','');
+
+            $mailData = [
+                'email_to' => $user["email"],
+                'mail_subject' => $email_content->subject,
+                'mail_body' => $mail_body,
+                'base_url' => $baseUrl,
+                'attachment_path' => NULL
+            ];
+
+            $mailLogData = [
+                'email_from' => config('common.FRONTEND_FROM_EMAIL'),
+                'email_type' => $this->func_name,
+                'name' => $user['name'],
+            ];
+
+            // Serialize the data
+            $mailDataSerialized = serialize($mailData);
+            $mailLogDataSerialized = serialize($mailLogData);
+
+            // Queue the email job
+            Mail::to($to)->queue(new SendEmail($mailDataSerialized, $mailLogDataSerialized));
+            // Mail::send('email', ['baseUrl'=>env('REDIRECT_URL',''),'varContent' => $mail_body,
+            //     ],
+            //     function ($message) use ($user, $email_content, $mail_body) {
+            //         if( env('SEND_MAIL_ACTIVE') == 1){
+            //             $email = explode(',', env('SEND_MAIL'));
+            //             $message->bcc(explode(',', env('SEND_MAIL_BCC')));
+            //             $message->cc(explode(',', env('SEND_MAIL_CC')));
+            //         }else{
+            //             $email = $user["email"];
+            //         }
+            //     $message->from(config('common.FRONTEND_FROM_EMAIL'), config('common.FRONTEND_FROM_EMAIL_NAME'));
+            //     $message->to($email, $user["name"])->subject($email_content->subject);
+            //     $mailContent = [
+            //         'email_from' => config('common.FRONTEND_FROM_EMAIL'),
+            //         'email_to' => $email,
+            //         'email_type' => $this->func_name,
+            //         'name' => $user['name'],
+            //         'subject' => $email_content->subject,
+            //         'body' => $mail_body,
+            //     ];
+            //     FinanceModel::logEmail($mailContent);
+            // });
         }
     }    
 
@@ -1302,33 +1602,63 @@ class UserEventsListener extends BaseEvent
             //     $emailCC[] = $emailVal;
             // };
             
-            $email_cc = explode(',', $email_content->cc);
+            $cc = explode(',', $email_content->cc);
             foreach ($user['email'] as $key => $emailVlaue) {
-                array_push($email_cc, $emailVlaue);
+                array_push($cc, $emailVlaue);
             }
 
             if(isset($email_to) && !empty($email_to)) {
-                if (($key = array_search($email_to, $email_cc)) !== false) {
-                    unset($email_cc[$key]);
+                if (($key = array_search($email_to, $cc)) !== false) {
+                    unset($cc[$key]);
                 }
-                Mail::send('email', ['baseUrl'=>env('REDIRECT_URL',''),'varContent' => $mail_body, ],
-                    function ($message) use ($user, $mail_subject, $mail_body, $email_cc, $email_to) {
-                    $message->from(config('common.FRONTEND_FROM_EMAIL'), config('common.FRONTEND_FROM_EMAIL_NAME'));
-                    $message->to($email_to)->subject($mail_subject);
-                    $message->cc($email_cc);
+                $check = array($email_to, $user['curr_email']);
+                $check = array_merge($check, $email_cc);
+                $to = [
+                    [
+                        'email' => $user['trigger_email'], 
+                        'name' => NULL,
+                    ]
+                ];
+                $mail_subject = $email_content->subject . \Carbon\Carbon::today();
+                $baseUrl = env('HTTP_APPURL','');
+                $mailData = [
+                    'email_to' => $check,
+                    'mail_subject' => $mail_subject,
+                    'mail_body' => $mail_body,
+                    'base_url' => $baseUrl,
+                    'attachment_path' => NULL
+                ];
+    
+                $mailLogData = [
+                    'email_from' => config('common.FRONTEND_FROM_EMAIL'),
+                    'email_type' => $this->func_name,
+                    'name' => $user['curr_user'],
+                ];
+    
+                // Serialize the data
+                $mailDataSerialized = serialize($mailData);
+                $mailLogDataSerialized = serialize($mailLogData);
+    
+                // Queue the email job
+                Mail::to($to)->cc($cc)->queue(new SendEmail($mailDataSerialized, $mailLogDataSerialized));
+                // Mail::send('email', ['baseUrl'=>env('REDIRECT_URL',''),'varContent' => $mail_body, ],
+                //     function ($message) use ($user, $mail_subject, $mail_body, $email_cc, $email_to) {
+                //     $message->from(config('common.FRONTEND_FROM_EMAIL'), config('common.FRONTEND_FROM_EMAIL_NAME'));
+                //     $message->to($email_to)->subject($mail_subject);
+                //     $message->cc($email_cc);
                     
-                    $check = array($email_to, $user['curr_email']);
-                    $check = array_merge($check, $email_cc);
-                    $mailContent = [
-                        'email_from' => config('common.FRONTEND_FROM_EMAIL'),
-                        'email_to' => $check,
-                        'email_type' => $this->func_name,
-                        'name' => $user['curr_user'],
-                        'subject' => $mail_subject,
-                        'body' => $mail_body,
-                    ];
-                    FinanceModel::logEmail($mailContent);
-                });
+                //     $check = array($email_to, $user['curr_email']);
+                //     $check = array_merge($check, $email_cc);
+                //     $mailContent = [
+                //         'email_from' => config('common.FRONTEND_FROM_EMAIL'),
+                //         'email_to' => $check,
+                //         'email_type' => $this->func_name,
+                //         'name' => $user['curr_user'],
+                //         'subject' => $mail_subject,
+                //         'body' => $mail_body,
+                //     ];
+                //     FinanceModel::logEmail($mailContent);
+                // });
             }
         }
     }
@@ -1345,10 +1675,9 @@ class UserEventsListener extends BaseEvent
                 [ucwords($user['name']),$user['email'], $link],
                 $email_content->message
             );
-            $email = $user["email"];
             $to = [
                 [
-                    'email' => $email, 
+                    'email' => $user["email"], 
                     'name' => $user['name'],
                 ]
             ];
@@ -1356,7 +1685,7 @@ class UserEventsListener extends BaseEvent
             $cc = explode(',', $email_content->cc);
             $baseUrl = env('HTTP_APPURL','');
             $mailData = [
-                'email_to' => $email,
+                'email_to' => $user["email"],
                 'email_cc' => $cc,
                 'mail_subject' => $mail_subject,
                 'mail_body' => $mail_body,
