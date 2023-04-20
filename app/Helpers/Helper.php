@@ -2847,7 +2847,7 @@ class Helper extends PaypalHelper
 
     public static function getfactVoucherNumber($startDate){
         $startDate = Helper::utcToIst($startDate,'Y-m-d H:i:s', 'Y-m-d H:i:s');
-        
+        $factvoucherData = TallyFactVoucher::getfactVoucherNumber();
         $month =  Carbon::parse($startDate)->format('M');
         $fYear = explode('-',getFinancialYear($startDate));
         $year1 =  $fYear[0];
@@ -2858,22 +2858,24 @@ class Helper extends PaypalHelper
             'month'=>$month,
             'fact_srp_seq_number'=>0,
             'fact_sjv_seq_number'=>0,
-            'voucher_format'=> substr($year1,-2).substr($year2,-2).'/'.mb_substr($month, 0, 1)
         );
-        $factvoucherData = TallyFactVoucher::getfactVoucherNumber();
-        if($factvoucherData){
-            if(!($factvoucherData->fact_month == $month)){
-                $factvoucherData->fact_srp_seq_number = 0;
-                $factvoucherData->fact_sjv_seq_number = 0;
+
+        if($year2 <= '2023' || $year1 <= '2022'){
+            $factResult['voucher_format'] = substr($year1,-2).substr($year2,-2).'/'.mb_substr($month, 0, 1);
+            if($factvoucherData){
+                if(!($factvoucherData->fact_month == $month)){
+                    $factvoucherData->fact_srp_seq_number = 0;
+                    $factvoucherData->fact_sjv_seq_number = 0;
+                }
+                $factResult['fact_srp_seq_number'] = $factvoucherData->fact_srp_seq_number;
+                $factResult['fact_sjv_seq_number'] = $factvoucherData->fact_sjv_seq_number;
             }
-            $factResult = array(
-                'year1'=>$year1,
-                'year2'=>$year2,
-                'month'=>$month,
-                'fact_srp_seq_number'=>$factvoucherData->fact_srp_seq_number,
-                'fact_sjv_seq_number'=>$factvoucherData->fact_sjv_seq_number,
-                'voucher_format'=> substr($year1,-2).substr($year2,-2).'/'.mb_substr($month, 0, 1)
-            );
+        }else{
+            $factResult['voucher_format'] = substr($year1,-2).substr($year2,-2).'/';
+            if($factvoucherData->fact_year2 >= '2024' && $factvoucherData->fact_year1 >= '2023'){
+                $factResult['fact_srp_seq_number'] = $factvoucherData->fact_srp_seq_number;
+                $factResult['fact_sjv_seq_number'] = $factvoucherData->fact_sjv_seq_number;
+            }
         }
         return $factResult;
     }

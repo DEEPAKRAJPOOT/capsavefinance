@@ -172,18 +172,6 @@ class FileHelper {
             $floor = floor($rec_count/26);
             $reminder = $rec_count % 26;
             $char = ($floor > 0 ? chr(ord("A") + $floor-1) : '').chr(ord("A") + $reminder);
-            
-            //Fact Payment File Name sub string
-            $factDateFormatFlag = 0;
-            switch (strtolower(substr(trim($file_name),0,12))) {
-              case 'fact-payment':
-                $factDateFormatFlag = 1;
-                break;
-              case 'fact-journal':
-                $factDateFormatFlag = 2;
-                break;
-            }
-
             foreach($data as $key => $item) {
               foreach($item as $key1 => $item1) {
                 if($factDateFormatFlag == 1){
@@ -535,4 +523,5 @@ public function exportCsv($data=[],$columns=[],$fileName='',$extraDataArray=[])
       ];
       return $errorMessage[$errorMessageID];
     }
+
 }
