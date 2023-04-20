@@ -341,7 +341,7 @@ class SoaController extends Controller {
         // If you're serving to IE 9, then the following may be needed
         header('Cache-Control: max-age=1');
         
-        $objWriter = IOFactory::createWriter($sheet, 'Excel2007');
+        $objWriter = IOFactory::createWriter($sheet, 'Xlsx');
         ob_end_clean();
         $objWriter->save('php://output');
         exit;

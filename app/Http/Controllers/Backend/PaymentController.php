@@ -15,13 +15,13 @@ use App\Inv\Repositories\Models\BizApi;
 use App\Inv\Repositories\Contracts\Traits\LmsTrait;
 use App\Inv\Repositories\Models\Payment;
 use App\Inv\Repositories\Models\PaymentExcel;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use Session;
 use Helpers;
 use DB;
 use App\Libraries\Pdf;
 use Carbon\Carbon;
 use App\Inv\Repositories\Contracts\ApplicationInterface;
-use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use App\Inv\Repositories\Models\Lms\Disbursal;
 use App\Inv\Repositories\Models\Lms\Transactions;
@@ -597,7 +597,7 @@ class PaymentController extends Controller {
 	header ('Cache-Control: cache, must-revalidate'); // HTTP/1.1
 	header ('Pragma: public'); // HTTP/1.0
 
-	$objWriter = IOFactory::createWriter($objSpreadsheet, 'Excel2007');
+	$objWriter = IOFactory::createWriter($objSpreadsheet, 'Xlsx');
 	$objWriter->save('php://output');
 	
   }

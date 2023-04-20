@@ -11,9 +11,10 @@ use Illuminate\Queue\SerializesModels;
 use App\Inv\Repositories\Models\Master\EmailTemplate;
 use App\Inv\Repositories\Contracts\ReportInterface;
 use Illuminate\Support\Facades\Storage;
-use PhpOffice\PhpSpreadsheet\IOFactory;
 use Carbon\Carbon;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\IOFactory;
+use PhpOffice\PhpSpreadsheet\Cell\DataType;
 use Helpers;
 
 class AccountDisbursalReport implements ShouldQueue
@@ -82,25 +83,25 @@ class AccountDisbursalReport implements ShouldQueue
         $rows++;
         foreach($exceldata as $rowData){
             $sheet->setActiveSheetIndex(0)
-            ->setCellValueExplicit('A'.$rows, $rowData['cust_name'], \DataType::TYPE_STRING)
-            ->setCellValueExplicit('B'.$rows, $rowData['loan_ac'], \DataType::TYPE_STRING)
-            ->setCellValueExplicit('C'.$rows, Carbon::parse($rowData['trans_date'])->format('d-m-Y'), \DataType::TYPE_STRING)
-            ->setCellValueExplicit('D'.$rows, $rowData['trans_no'], \DataType::TYPE_STRING)
-            ->setCellValueExplicit('E'.$rows, $rowData['invoice_no'], \DataType::TYPE_STRING)
-            ->setCellValueExplicit('F'.$rows, Carbon::parse($rowData['invoice_date'])->format('d-m-Y'), \DataType::TYPE_STRING)
-            ->setCellValueExplicit('G'.$rows, number_format($rowData['invoice_amt'],2), \DataType::TYPE_STRING)
-            ->setCellValueExplicit('H'.$rows, number_format($rowData['margin_amt'],2), \DataType::TYPE_STRING)
-            ->setCellValueExplicit('I'.$rows, number_format($rowData['disb_amt'],2), \DataType::TYPE_STRING)
-            ->setCellValueExplicit('J'.$rows, $rowData['trans_utr'], \DataType::TYPE_STRING)
-            ->setCellValueExplicit('K'.$rows, $rowData['remark'], \DataType::TYPE_STRING)
-            ->setCellValueExplicit('L'.$rows, $rowData['bank_ac'], \DataType::TYPE_STRING)
-            ->setCellValueExplicit('M'.$rows, $rowData['ifsc'], \DataType::TYPE_STRING)
-            ->setCellValueExplicit('N'.$rows, $rowData['status'], \DataType::TYPE_STRING)
-            ->setCellValueExplicit('O'.$rows, $rowData['status_des'], \DataType::TYPE_STRING);
+            ->setCellValueExplicit('A'.$rows, $rowData['cust_name'], DataType::TYPE_STRING)
+            ->setCellValueExplicit('B'.$rows, $rowData['loan_ac'], DataType::TYPE_STRING)
+            ->setCellValueExplicit('C'.$rows, Carbon::parse($rowData['trans_date'])->format('d-m-Y'), DataType::TYPE_STRING)
+            ->setCellValueExplicit('D'.$rows, $rowData['trans_no'], DataType::TYPE_STRING)
+            ->setCellValueExplicit('E'.$rows, $rowData['invoice_no'], DataType::TYPE_STRING)
+            ->setCellValueExplicit('F'.$rows, Carbon::parse($rowData['invoice_date'])->format('d-m-Y'), DataType::TYPE_STRING)
+            ->setCellValueExplicit('G'.$rows, number_format($rowData['invoice_amt'],2), DataType::TYPE_STRING)
+            ->setCellValueExplicit('H'.$rows, number_format($rowData['margin_amt'],2), DataType::TYPE_STRING)
+            ->setCellValueExplicit('I'.$rows, number_format($rowData['disb_amt'],2), DataType::TYPE_STRING)
+            ->setCellValueExplicit('J'.$rows, $rowData['trans_utr'], DataType::TYPE_STRING)
+            ->setCellValueExplicit('K'.$rows, $rowData['remark'], DataType::TYPE_STRING)
+            ->setCellValueExplicit('L'.$rows, $rowData['bank_ac'], DataType::TYPE_STRING)
+            ->setCellValueExplicit('M'.$rows, $rowData['ifsc'], DataType::TYPE_STRING)
+            ->setCellValueExplicit('N'.$rows, $rowData['status'], DataType::TYPE_STRING)
+            ->setCellValueExplicit('O'.$rows, $rowData['status_des'], DataType::TYPE_STRING);
             $rows++;
         }
 
-        $objWriter = IOFactory::createWriter($sheet, 'Excel2007');
+        $objWriter = IOFactory::createWriter($sheet, 'Xlsx');
 
         $dirPath = 'public/report/temp/accountDailyDisbursalReport/'.date('Ymd');
         if (!Storage::exists($dirPath)) {

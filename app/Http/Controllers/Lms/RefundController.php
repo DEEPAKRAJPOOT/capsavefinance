@@ -686,14 +686,14 @@ class RefundController extends Controller
             }
             $storage_path = storage_path('app/public/docs/bank_excel');
             $filePath = $storage_path.'/'.$filename.'.xlsx';
-           $objWriter = IOFactory::createWriter($sheet, 'Excel2007');
+           $objWriter = IOFactory::createWriter($sheet, 'Xlsx');
             $objWriter->save($filePath);
 
             return [ 'status' => 1,
                 'file_path' => $filePath
             ];
         } else {
-            $objWriter = IOFactory::createWriter($sheet, 'Excel2007');
+            $objWriter = IOFactory::createWriter($sheet, 'Xlsx');
             $objWriter->save('php://output');
         }
     }

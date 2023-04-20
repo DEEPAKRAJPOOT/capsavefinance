@@ -940,7 +940,7 @@ class InvoiceController extends Controller {
 
             foreach ($supplierIds as $userid) {
                 $refNo = _getRand(12);
-                $disburseAmount = 0;
+                $disburseAmount = 0;            
                 foreach ($allinvoices as $invoice) {
                     if($invoice['supplier_id'] == $userid) {
                         
@@ -1594,7 +1594,7 @@ public function disburseTableInsert($exportData = [], $supplierIds = [], $allinv
         $storage_path = storage_path('app/public/docs/bank_excel');
         $filePath = $storage_path.'/'.$filename.'.xlsx';
 
-        $objWriter = IOFactory::createWriter($sheet, 'Excel2007');
+        $objWriter = IOFactory::createWriter($sheet, 'Xlsx');
         $objWriter->save($filePath);
 
         return [ 'status' => 1,
@@ -1741,7 +1741,7 @@ public function disburseTableInsert($exportData = [], $supplierIds = [], $allinv
         header ('Cache-Control: cache, must-revalidate'); // HTTP/1.1
         header ('Pragma: public'); // HTTP/1.0
         
-        $objWriter = IOFactory::createWriter($sheet, 'Excel2007');
+        $objWriter = IOFactory::createWriter($sheet, 'Xlsx');
         $objWriter->save('php://output');
     }
     

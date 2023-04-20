@@ -481,7 +481,7 @@ class NACHController extends Controller {
         // $filePath = $storage_path.'/'.$filename.'.xlsx';
         $fileUrl = Storage::url($commonUrl);
 
-        $objWriter = IOFactory::createWriter($sheet, 'Excel2007');
+        $objWriter = IOFactory::createWriter($sheet, 'Xlsx');
         $objWriter->save($filePath);
         $objWriter->save("php://output");
         

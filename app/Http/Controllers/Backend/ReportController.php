@@ -135,7 +135,7 @@ class ReportController extends Controller
 		// If you're serving to IE 9, then the following may be needed
 		header('Cache-Control: max-age=1');
 		
-		$objWriter = IOFactory::createWriter($sheet, 'Excel2007');
+		$objWriter = IOFactory::createWriter($sheet, 'Xlsx');
 		$objWriter->save('php://output');     
 	}
 
@@ -192,7 +192,7 @@ class ReportController extends Controller
 		// If you're serving to IE 9, then the following may be needed
 		header('Cache-Control: max-age=1');
 		
-		$objWriter = IOFactory::createWriter($sheet, 'Excel2007');
+		$objWriter = IOFactory::createWriter($sheet, 'Xlsx');
 		$objWriter->save('php://output');
 	}
 
@@ -247,7 +247,7 @@ class ReportController extends Controller
 		// If you're serving to IE 9, then the following may be needed
 		header('Cache-Control: max-age=1');
 		
-		$objWriter = IOFactory::createWriter($sheet, 'Excel2007');
+		$objWriter = IOFactory::createWriter($sheet, 'Xlsx');
 		$objWriter->save('php://output');
 	}
 	
@@ -827,7 +827,7 @@ class ReportController extends Controller
             $rows++;
         }
         
-        $objWriter = IOFactory::createWriter($sheet, 'Excel2007');
+        $objWriter = IOFactory::createWriter($sheet, 'Xlsx');
         
         $dirPath = 'public/report/temp/maturityReport/'.date('Ymd');
         if (!Storage::exists($dirPath)) {
@@ -945,7 +945,7 @@ class ReportController extends Controller
             $rows++;
         }
         
-        $objWriter = IOFactory::createWriter($sheet, 'Excel2007');
+        $objWriter = IOFactory::createWriter($sheet, 'Xlsx');
 
         $dirPath = 'public/report/temp/dailyDisbursalReport/'.date('Ymd');
         if (!Storage::exists($dirPath)) {
@@ -1047,7 +1047,7 @@ class ReportController extends Controller
             $rows++;
         }
         
-        $objWriter = IOFactory::createWriter($sheet, 'Excel2007');
+        $objWriter = IOFactory::createWriter($sheet, 'Xlsx');
         
         $dirPath = 'public/report/temp/utilizationReport/'.date('Ymd');
         if (!Storage::exists($dirPath)) {
@@ -1092,7 +1092,7 @@ class ReportController extends Controller
             $rows++;
         }
         
-        $objWriter = IOFactory::createWriter($sheet, 'Excel2007');
+        $objWriter = IOFactory::createWriter($sheet, 'Xlsx');
         
         $dirPath = 'public/report/temp/overdueReport/'.date('Ymd');
         if (!Storage::exists($dirPath)) {
@@ -1146,7 +1146,7 @@ class ReportController extends Controller
             $rows++;
         }
         
-        $objWriter = IOFactory::createWriter($sheet, 'Excel2007');
+        $objWriter = IOFactory::createWriter($sheet, 'Xlsx');
 
         $dirPath = 'public/report/temp/accountDailyDisbursalReport/'.date('Ymd');
         if (!Storage::exists($dirPath)) {

@@ -11,9 +11,9 @@ use Illuminate\Queue\SerializesModels;
 use App\Inv\Repositories\Models\Master\EmailTemplate;
 use App\Inv\Repositories\Contracts\ReportInterface;
 use Illuminate\Support\Facades\Storage;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use Carbon\Carbon;
-use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use Helpers;
 
 class MarginReport implements ShouldQueue
@@ -91,7 +91,7 @@ class MarginReport implements ShouldQueue
             $rows++;
         }
 
-        $objWriter = IOFactory::createWriter($sheet, 'Excel2007');
+        $objWriter = IOFactory::createWriter($sheet, 'Xlsx');
 
         $dirPath = 'public/report/temp/marginReport/'.date('Ymd');
         if (!Storage::exists($dirPath)) {

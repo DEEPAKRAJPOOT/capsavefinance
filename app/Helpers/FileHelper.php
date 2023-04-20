@@ -288,7 +288,7 @@ class FileHelper {
             $fileData = [];
             $storage_path = storage_path('app/public/nach/request');
             $filePath = $storage_path.'/'.$file_name;
-            $objWriter = IOFactory::createWriter($objSpreadsheet, 'Excel2007');
+            $objWriter = IOFactory::createWriter($objSpreadsheet, 'Xlsx');
             $objWriter->save($filePath); 
             $fileContent = $this->readFileContent($filePath);
             $fileData = $this->uploadFileWithContent($filePath, $fileContent);
@@ -298,10 +298,10 @@ class FileHelper {
             $nachBatchData['batch_id'] = $batchId;
             $this->appRepo->saveNachBatch($nachBatchData, null);
         }
-        $objWriter = IOFactory::createWriter($objSpreadsheet, 'Excel2007');
+        $objWriter = IOFactory::createWriter($objSpreadsheet, 'Xlsx');
         $objWriter->save('php://output');
         ob_end_flush();
-        exit; 
+        exit;
     } 
 
     public function array_to_pdf($pdfArr, $view='reports.commonReport') {

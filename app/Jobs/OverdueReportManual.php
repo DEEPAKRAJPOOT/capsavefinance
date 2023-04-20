@@ -2,8 +2,8 @@
 
 namespace App\Jobs;
 use Helpers;
-use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use Carbon\Carbon;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use Illuminate\Bus\Queueable;
 use Illuminate\Support\Facades\App;
@@ -142,7 +142,7 @@ class OverdueReportManual implements ShouldQueue
             $rows++;
         }
 
-        $objWriter = IOFactory::createWriter($sheet, 'Excel2007');
+        $objWriter = IOFactory::createWriter($sheet, 'Xlsx');
         $objWriter->setPreCalculateFormulas(true);
 
         $dirPath = 'public/report/temp/overdueReport/manual/console';

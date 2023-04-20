@@ -2,8 +2,8 @@
 
 namespace App\Jobs;
 use Helpers;
-use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use Carbon\Carbon;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use Illuminate\Bus\Queueable;
 use Illuminate\Support\Facades\DB;
@@ -121,7 +121,7 @@ class ReconReport implements ShouldQueue
         header("Cache-Control: post-check=0, pre-check=0", false);
         header("Pragma: no-cache");
         
-        $objWriter = IOFactory::createWriter($sheet, 'Excel2007');
+        $objWriter = IOFactory::createWriter($sheet, 'Xlsx');
        
         $objWriter->save($filePath);
         return $filePath;
