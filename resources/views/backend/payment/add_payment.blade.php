@@ -797,12 +797,7 @@ $.validator.addMethod('decimal', function(value, element) {
             success: function(resultData) {                        
                 var amt = parseFloat(resultData.repayment_amount);
                 if (resultData.repayment_amount != ""){
-                    if(userData['action_type']!=3){
-                      //  $('#amount').val(amt.toFixed(2)); 
-                    }
-                    //$("#amount").val(amt.toFixed(2)); 
                     $('#txtAmt').text("( ₹ "+ amt.toFixed(2) +" )");
-
                     $('#amount').removeAttr('max');
                     $('#amount').removeAttr('max-data');  
                 } else {
