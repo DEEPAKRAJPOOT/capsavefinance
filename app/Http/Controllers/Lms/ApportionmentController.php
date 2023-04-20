@@ -1088,12 +1088,17 @@ class ApportionmentController extends Controller
                 ->orderBy('trans_id','desc')
                 ->first();
                 $parsedDate = Carbon::parse($trans->trans_date);
+                $parsedDueDate = $trans->due_date ? Carbon::parse($trans->due_date) : null;
                 $currentDate = Carbon::now();
                 // Compare year and month
                 if ($parsedDate->year == $currentDate->year && $parsedDate->month == $currentDate->month) {
                     $dueDate = $currentDate->format('Y-m-d');
                 } else {
-                    $dueDate = $parsedDate->endOfMonth()->format('Y-m-d');
+                    if ($parsedDueDate && $parsedDueDate->year == $currentDate->year && $parsedDueDate->month == $currentDate->month) {
+                        $dueDate = $currentDate->format('Y-m-d');
+                    } else {
+                        $dueDate = $parsedDate->endOfMonth()->format('Y-m-d');
+                    }
                 }
                 $transactionList[] = [
                     'payment_id' => null,
