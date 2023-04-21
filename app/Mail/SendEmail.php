@@ -72,12 +72,15 @@ class SendEmail extends Mailable implements ShouldQueue
                 throw new \Exception("No email recipient specified.");
             }
             foreach ($emailFields as $field => $emails) {
-                $invalidEmails = array_filter($emails, fn($email) => !filter_var($email, FILTER_VALIDATE_EMAIL));
+                    if (is_null($emails)) {
+                        continue;
+                    }
+                    $invalidEmails = array_filter($emails, fn($email) => !filter_var($email, FILTER_VALIDATE_EMAIL));
 
-                if (!empty($invalidEmails)) {
-                    $errorMsg = 'Invalid email address(es) in ' . $field . ': ' . implode(', ', $invalidEmails);
-                    throw new \Exception($errorMsg);
-                }
+                    if (!empty($invalidEmails)) {
+                        $errorMsg = 'Invalid email address(es) in ' . $field . ': ' . implode(', ', $invalidEmails);
+                        throw new \Exception($errorMsg);
+                    }
             }
             $email = $this->view('email')
                         ->with(['baseUrl' => $this->mailData['base_url'], 'varContent' => $this->mailData['mail_body']])
@@ -99,7 +102,9 @@ class SendEmail extends Mailable implements ShouldQueue
                 }
             }
             // To update mail Log Data status on email_logger table
-            DB::update("UPDATE rta_email_logger SET status = ? WHERE id = ?", [1, $this->mailLogDataId]);
+            DB::table('email_logger')
+                ->where('id', $this->mailLogDataId)
+                ->update(['status' => 1]);
         } catch (\Exception $e) {
             throw $e;
         }
