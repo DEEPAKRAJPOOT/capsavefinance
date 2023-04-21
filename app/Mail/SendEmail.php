@@ -67,30 +67,16 @@ class SendEmail extends Mailable implements ShouldQueue
             $email_to = $this->mailData['email_to'];
             $email_cc = $this->mailData['email_cc'] ?? NULL;
             $email_bcc = $this->mailData['email_bcc'] ?? NULL;
-            if (!empty($email_to)) {
-                $invalid_emails = array_filter($email_to, function($email) {
-                    return !filter_var(trim($email), FILTER_VALIDATE_EMAIL);
-                });
-                if (!empty($invalid_emails)) {
-                    throw new \Exception("Invalid email address(es): " . implode(", ", $invalid_emails));
-                }
+            $emailFields = ['to' => $email_to, 'cc' => $email_cc, 'bcc' => $email_bcc];
+            if (empty($email_to) || !is_array($email_to)) {
+                throw new \Exception("No email recipient specified.");
             }
-            
-            if (!empty($email_cc)) {
-                $invalid_emails = array_filter($email_cc, function($email) {
-                    return !filter_var(trim($email), FILTER_VALIDATE_EMAIL);
-                });
-                if (!empty($invalid_emails)) {
-                    throw new \Exception("Invalid email address(es) in CC: " . implode(", ", $invalid_emails));
-                }
-            }
-            
-            if (!empty($email_bcc)) {
-                $invalid_emails = array_filter($email_bcc, function($email) {
-                    return !filter_var(trim($email), FILTER_VALIDATE_EMAIL);
-                });
-                if (!empty($invalid_emails)) {
-                    throw new \Exception("Invalid email address(es) in BCC: " . implode(", ", $invalid_emails));
+            foreach ($emailFields as $field => $emails) {
+                $invalidEmails = array_filter($emails, fn($email) => !filter_var($email, FILTER_VALIDATE_EMAIL));
+
+                if (!empty($invalidEmails)) {
+                    $errorMsg = 'Invalid email address(es) in ' . $field . ': ' . implode(', ', $invalidEmails);
+                    throw new \Exception($errorMsg);
                 }
             }
             $email = $this->view('email')

@@ -407,7 +407,6 @@ class UserEventsListener extends BaseEvent
                 $cc = \Helpers::ccOrBccEmailsArray($email_content->cc);
                 $bcc = \Helpers::ccOrBccEmailsArray($email_content->bcc);
             }
-            // dd($to);
             $funcName = $this->func_name;
             $baseUrl = env('REDIRECT_URL','');
             $mailData = [
