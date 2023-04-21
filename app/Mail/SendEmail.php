@@ -67,25 +67,30 @@ class SendEmail extends Mailable implements ShouldQueue
             $email_to = $this->mailData['email_to'];
             $email_cc = $this->mailData['email_cc'] ?? NULL;
             $email_bcc = $this->mailData['email_bcc'] ?? NULL;
-            if(!empty($email_to)){
-                foreach($email_to as $email){
-                    if (!filter_var(trim($email), FILTER_VALIDATE_EMAIL)) {
-                        throw new \Exception("Invalid email address.$email)");
-                    }
+            if (!empty($email_to)) {
+                $invalid_emails = array_filter($email_to, function($email) {
+                    return !filter_var(trim($email), FILTER_VALIDATE_EMAIL);
+                });
+                if (!empty($invalid_emails)) {
+                    throw new \Exception("Invalid email address(es): " . implode(", ", $invalid_emails));
                 }
             }
-            if(!empty($email_cc)){
-                foreach($email_cc as $emailCc){
-                    if (!filter_var(trim($emailCc), FILTER_VALIDATE_EMAIL)) {
-                        throw new \Exception("Invalid email address.$emailCc)");
-                    }
+            
+            if (!empty($email_cc)) {
+                $invalid_emails = array_filter($email_cc, function($email) {
+                    return !filter_var(trim($email), FILTER_VALIDATE_EMAIL);
+                });
+                if (!empty($invalid_emails)) {
+                    throw new \Exception("Invalid email address(es) in CC: " . implode(", ", $invalid_emails));
                 }
             }
-            if(!empty($email_bcc)){
-                foreach($email_bcc as $emailBcc){
-                    if (!filter_var(trim($emailBcc), FILTER_VALIDATE_EMAIL)) {
-                        throw new \Exception("Invalid email address.$emailBcc)");
-                    }
+            
+            if (!empty($email_bcc)) {
+                $invalid_emails = array_filter($email_bcc, function($email) {
+                    return !filter_var(trim($email), FILTER_VALIDATE_EMAIL);
+                });
+                if (!empty($invalid_emails)) {
+                    throw new \Exception("Invalid email address(es) in BCC: " . implode(", ", $invalid_emails));
                 }
             }
             $email = $this->view('email')
