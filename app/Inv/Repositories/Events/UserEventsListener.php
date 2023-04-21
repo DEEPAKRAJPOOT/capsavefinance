@@ -101,7 +101,7 @@ class UserEventsListener extends BaseEvent
             }
             $baseUrl = env('REDIRECT_URL','');
             $mailData = [
-                'email_to' => $user["email"],
+                'email_to' => [$user["email"]],
                 'mail_subject' => $email_content->subject,
                 'mail_body' => $mail_body,
                 'base_url' => $baseUrl,
@@ -147,7 +147,7 @@ class UserEventsListener extends BaseEvent
             }
             $baseUrl = env('REDIRECT_URL','');
             $mailData = [
-                'email_to' => $user["email"],
+                'email_to' => [$user["email"]],
                 'mail_subject' => $email_content->subject,
                 'mail_body' => $mail_body,
                 'base_url' => $baseUrl,
@@ -200,7 +200,7 @@ class UserEventsListener extends BaseEvent
             $funcName = $this->func_name;
             $baseUrl = env('REDIRECT_URL','');
             $mailData = [
-                'email_to' => $user["email"],
+                'email_to' => [$user["email"]],
                 'mail_subject' => $email_content->subject,
                 'mail_body' => $mail_body,
                 'base_url' => $baseUrl,
@@ -256,7 +256,7 @@ class UserEventsListener extends BaseEvent
             }
             $baseUrl = env('REDIRECT_URL','');
             $mailData = [
-                'email_to' => $user["email"],
+                'email_to' => [$user["email"]],
                 'email_cc' => $cc ?? NULL,
                 'email_bcc' => $bcc ?? NULL,
                 'mail_subject' => $email_content->subject,
@@ -316,7 +316,7 @@ class UserEventsListener extends BaseEvent
             }
             $baseUrl = env('REDIRECT_URL','');
             $mailData = [
-                'email_to' => $user["email"],
+                'email_to' => [$user["email"]],
                 'email_cc' => $cc ?? NULL,
                 'email_bcc' => $bcc ?? NULL,
                 'mail_subject' => $email_content->subject,
@@ -359,7 +359,7 @@ class UserEventsListener extends BaseEvent
             $funcName = $this->func_name;
             $baseUrl = env('REDIRECT_URL','');
             $mailData = [
-                'email_to' => $user["email"],
+                'email_to' => [$user["email"]],
                 'mail_subject' => $email_content->subject,
                 'mail_body' => $mail_body,
                 'base_url' => $baseUrl,
@@ -407,10 +407,11 @@ class UserEventsListener extends BaseEvent
                 $cc = \Helpers::ccOrBccEmailsArray($email_content->cc);
                 $bcc = \Helpers::ccOrBccEmailsArray($email_content->bcc);
             }
+            // dd($to);
             $funcName = $this->func_name;
             $baseUrl = env('REDIRECT_URL','');
             $mailData = [
-                'email_to' => $user["email"],
+                'email_to' => [$user["email"]],
                 'email_cc' => $cc ?? NULL,
                 'email_bcc' => $bcc ?? NULL,
                 'mail_subject' => $email_content->subject,
@@ -458,7 +459,7 @@ class UserEventsListener extends BaseEvent
             }
             $baseUrl = env('REDIRECT_URL','');
             $mailData = [
-                'email_to' => $user["email"],
+                'email_to' => [$user["email"]],
                 'mail_subject' => $email_content->subject,
                 'mail_body' => $mail_body,
                 'base_url' => $baseUrl,
@@ -497,9 +498,9 @@ class UserEventsListener extends BaseEvent
             $bcc = \Helpers::ccOrBccEmailsArray($email_content->bcc);
             $baseUrl = env('REDIRECT_URL','');
             $mailData = [
-                'email_to' => $user["email"],
-                'email_cc' => $cc,
-                'email_cc' => $bcc,
+                'email_to' => [$user["email"]],
+                'email_cc' => $cc ?? NULL,
+                'email_cc' => $bcc ?? NULL,
                 'mail_subject' => $email_content->subject."//".$user['businessName']."//".$user['anchorName'],
                 'mail_body' => $mail_body,
                 'base_url' => $baseUrl,
@@ -546,7 +547,7 @@ class UserEventsListener extends BaseEvent
             }
             $baseUrl = env('REDIRECT_URL','');
             $mailData = [
-                'email_to' => $user["email"],
+                'email_to' => [$user["email"]],
                 'mail_subject' => $email_content->subject,
                 'mail_body' => $mail_body,
                 'base_url' => $baseUrl,
@@ -598,7 +599,7 @@ class UserEventsListener extends BaseEvent
             }
             $baseUrl = env('REDIRECT_URL','');
             $mailData = [
-                'email_to' => $data["email"],
+                'email_to' => [$data["email"]],
                 'mail_subject' => $email_content->subject,
                 'mail_body' => $mail_body,
                 'base_url' => $baseUrl,
@@ -653,7 +654,7 @@ class UserEventsListener extends BaseEvent
                 ];
         }
         $mailData = [
-            'email_to' => $data["email"],
+            'email_to' => [$data["email"]],
             'mail_subject' => $data['subject'],
             'mail_body' => $data['body'],
             'base_url' => $baseUrl,
@@ -813,17 +814,15 @@ class UserEventsListener extends BaseEvent
             }else{
                 $email_cc = [];
             }
-        }        
+        }
        $email_cc = array_filter($email_cc);
        $mailObj = Mail::to($email, ''); //$user["receiver_user_name"]
        if (!empty($email_cc)) {
            $mailObj->cc($email_cc);
        }
-       
        $baseUrl = env('REDIRECT_URL','');
        $ccMails = is_array($email_cc) ? $email_cc : explode(',', $email_cc);
        $cc = array_filter($ccMails);
-
        $mail_body = view('emails.reviewersummary.reviewersummarymail', [
         'limitOfferData'=> $user['limitOfferData'],
         'reviewerSummaryData'=> $user['reviewerSummaryData'],
@@ -955,7 +954,7 @@ class UserEventsListener extends BaseEvent
             $funcName = $this->func_name;
             $baseUrl = env('REDIRECT_URL','');
             $mailData = [
-                'email_to' => $user["email"],
+                'email_to' => [$user["email"]],
                 'mail_subject' => $email_content->subject,
                 'mail_body' => $mail_body,
                 'base_url' => $baseUrl,
@@ -1036,7 +1035,7 @@ class UserEventsListener extends BaseEvent
             ];
             $baseUrl = env('REDIRECT_URL','');
             $mailData = [
-                'email_to' => $user["receiver_email"],
+                'email_to' => [$user["receiver_email"]],
                 'email_cc' => $email_cc,
                 'mail_subject' => $mail_subject,
                 'mail_body' => $mail_body,
@@ -1404,7 +1403,7 @@ class UserEventsListener extends BaseEvent
                 $mail_subject = $email_content->subject . \Carbon\Carbon::today();
                 $baseUrl = env('REDIRECT_URL','');
                 $mailData = [
-                    'email_to' => $check,
+                    'email_to' => [$check],
                     'mail_subject' => $mail_subject,
                     'mail_body' => $mail_body,
                     'base_url' => $baseUrl,
@@ -1445,7 +1444,7 @@ class UserEventsListener extends BaseEvent
             $cc = explode(',', $email_content->cc);
             $baseUrl = env('REDIRECT_URL','');
             $mailData = [
-                'email_to' => $user["email"],
+                'email_to' => [$user["email"]],
                 'email_cc' => $cc,
                 'mail_subject' => $mail_subject,
                 'mail_body' => $mail_body,
@@ -1488,7 +1487,7 @@ class UserEventsListener extends BaseEvent
             $cc = explode(',', $email_content->cc);
             $baseUrl = env('REDIRECT_URL','');
             $mailData = [
-                'email_to' => $email,
+                'email_to' => [$email],
                 'email_cc' => $cc,
                 'mail_subject' => $mail_subject,
                 'mail_body' => $mail_body,
@@ -1559,7 +1558,7 @@ class UserEventsListener extends BaseEvent
             $funcName = $this->func_name;
             $baseUrl = env('HTTP_APPURL','');
             $mailData = [
-                'email_to' => 'gaurav.agarwal@zuron.in', //$data["email"]
+                'email_to' => ['gaurav.agarwal@zuron.in'], //$data["email"]
                 'email_bcc' => $bcc,
                 'email_cc' => $cc,
                 'mail_subject' => $mail_subject,
@@ -1631,7 +1630,7 @@ class UserEventsListener extends BaseEvent
             $funcName = $this->func_name;
             $baseUrl = env('HTTP_APPURL','');
             $mailData = [
-                'email_to' => 'gaurav.agarwal@zuron.in', //$data["email"]
+                'email_to' => ['gaurav.agarwal@zuron.in'], //$data["email"]
                 'email_bcc' => $bcc,
                 'email_cc' => $cc,
                 'mail_subject' => $mail_subject,
@@ -1652,7 +1651,7 @@ class UserEventsListener extends BaseEvent
     }
 
     public function onChargeDeletionRequest($userData){
-        $user = unserialize($userData);  
+        $user = unserialize($userData);
         $this->func_name = __FUNCTION__;
         
         $to = [];
@@ -1728,7 +1727,7 @@ class UserEventsListener extends BaseEvent
             $funcName = $this->func_name;
             $baseUrl = env('REDIRECT_URL','');
             $mailData = [
-                'email_to' => $user["email"],
+                'email_to' => [$user["email"]],
                 'email_bcc' => $bcc,
                 'email_cc' => $cc,
                 'mail_subject' => $mail_subject,
@@ -1786,7 +1785,7 @@ class UserEventsListener extends BaseEvent
                 ];
             }
             $mailData = [
-                'email_to' => $data["email"],
+                'email_to' => [$data["email"]],
                 'email_cc' => $cc ?? NULL,
                 'email_bcc' => $bcc ?? NULL,
                 'mail_subject' => $mail_subject,
@@ -1861,7 +1860,7 @@ class UserEventsListener extends BaseEvent
             $funcName = $this->func_name;
             $baseUrl = env('HTTP_APPURL','');
             $mailData = [
-                'email_to' => $data["email"],
+                'email_to' => [$data["email"]],
                 'email_cc' => $cc ?? NULL,
                 'email_bcc' => $bcc ?? NULL,
                 'mail_subject' => $mail_subject,
@@ -1934,7 +1933,7 @@ class UserEventsListener extends BaseEvent
             ];
             $baseUrl = env('HTTP_APPURL','');
             $mailData = [
-                'email_to' => $data["email"],
+                'email_to' => [$data["email"]],
                 'email_cc' => $cc ?? NULL,
                 'email_bcc' => $bcc ?? NULL,
                 'mail_subject' => $mail_subject,

@@ -52,7 +52,6 @@ class SendEmail extends Mailable implements ShouldQueue
             $this->mailLogDataId = FinanceModel::logEmail($this->mailLogData);
         } catch (\Exception $e) {
             // Log or handle the error
-            Log::error('Failed to unserialize mail data: '.$e->getMessage());
             throw $e;
         }
     }
@@ -65,6 +64,30 @@ class SendEmail extends Mailable implements ShouldQueue
     public function build()
     {
         try {
+            $email_to = $this->mailData['email_to'];
+            $email_cc = $this->mailData['email_cc'] ?? NULL;
+            $email_bcc = $this->mailData['email_bcc'] ?? NULL;
+            if(!empty($email_to)){
+                foreach($email_to as $email){
+                    if (!filter_var(trim($email), FILTER_VALIDATE_EMAIL)) {
+                        throw new \Exception("Invalid email address.$email)");
+                    }
+                }
+            }
+            if(!empty($email_cc)){
+                foreach($email_cc as $emailCc){
+                    if (!filter_var(trim($emailCc), FILTER_VALIDATE_EMAIL)) {
+                        throw new \Exception("Invalid email address.$emailCc)");
+                    }
+                }
+            }
+            if(!empty($email_bcc)){
+                foreach($email_bcc as $emailBcc){
+                    if (!filter_var(trim($emailBcc), FILTER_VALIDATE_EMAIL)) {
+                        throw new \Exception("Invalid email address.$emailBcc)");
+                    }
+                }
+            }
             $email = $this->view('email')
                         ->with(['baseUrl' => $this->mailData['base_url'], 'varContent' => $this->mailData['mail_body']])
                         ->subject($this->mailData['mail_subject']);
@@ -87,7 +110,6 @@ class SendEmail extends Mailable implements ShouldQueue
             // To update mail Log Data status on email_logger table
             DB::update("UPDATE rta_email_logger SET status = ? WHERE id = ?", [1, $this->mailLogDataId]);
         } catch (\Exception $e) {
-            Log::error('Error building email: ' . $e->getMessage());
             throw $e;
         }
 
