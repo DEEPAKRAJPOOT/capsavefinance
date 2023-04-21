@@ -164,8 +164,8 @@ class FileHelper {
             $sheetTitle = $title;
             $objSpreadsheet->setActiveSheetIndex($activeSheet);
             $activeSheet++;
-            $header_row = $ExtraRow + 1;
-            $start_row = $ExtraRow + 2;
+            $header_row =  ($ExtraRow > 1) ? ($ExtraRow + 1) : $ExtraRow;
+            $start_row = ($ExtraRow > 1) ? ($ExtraRow + 2) : $ExtraRow+1;
             $row = $start_row;
             $column = 1;
             $floor = floor($rec_count/26);
