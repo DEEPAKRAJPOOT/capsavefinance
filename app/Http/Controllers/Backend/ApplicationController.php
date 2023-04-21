@@ -3068,6 +3068,7 @@ class ApplicationController extends Controller
 
 	public function userInvoiceLocationApp(Request $request) {
         try {
+			// dd( $request->all()); // getting user_id as null
             $user_id = $request->get('user_id');
 			$biz_id = $request->get('biz_id');
 			$app_id = $request->get('app_id');
