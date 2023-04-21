@@ -2939,8 +2939,7 @@ class Helper extends PaypalHelper
               $positiveRiskCmntArr = array_filter($dataRiskComments, array($this, "filterRiskCommentPositive"));
               $negativeRiskCmntArr = array_filter($dataRiskComments, array($this, "filterRiskCommentNegative"));
             }
-        } 
-        
+        }
         //Get PreOffer Docs
         $appRepo = \App::make('App\Inv\Repositories\Contracts\ApplicationInterface');  
         $appProductIds = [];
