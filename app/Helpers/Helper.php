@@ -1981,7 +1981,6 @@ class Helper extends PaypalHelper
         }
         if (isset($isSaved)) {
             $mimetype = $diskStoragePath->mimeType($realPath);
-            // $metadata = $diskStoragePath->getMetaData($realPath);
             $size = $diskStoragePath->size($realPath);
             $inputArr['file_path'] = $realPath;
             $inputArr['file_type'] = $mimetype;

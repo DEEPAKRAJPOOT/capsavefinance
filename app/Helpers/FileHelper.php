@@ -80,7 +80,6 @@ class FileHelper {
         $isSaved = $this->diskStoragePath->put($realPath, $fileContents);
         if ($isSaved) {
             $mimetype = $this->diskStoragePath->mimeType($realPath);
-            // $metadata = $this->diskStoragePath->getMetaData($realPath);
             $size = $this->diskStoragePath->size($realPath);
             $inputArr['file_path'] = $realPath;
             $inputArr['file_type'] = $mimetype;
