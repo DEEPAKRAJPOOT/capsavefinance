@@ -75,12 +75,14 @@ class SendEmail extends Mailable implements ShouldQueue
                     if (is_null($emails)) {
                         continue;
                     }
-                    $invalidEmails = array_filter($emails, fn($email) => !filter_var($email, FILTER_VALIDATE_EMAIL));
-
+                    $invalidEmails = array_filter($emails, function($email) {
+                        return !filter_var($email, FILTER_VALIDATE_EMAIL);
+                    });
+                    
                     if (!empty($invalidEmails)) {
                         $errorMsg = 'Invalid email address(es) in ' . $field . ': ' . implode(', ', $invalidEmails);
                         throw new \Exception($errorMsg);
-                    }
+                    }                    
             }
             $email = $this->view('email')
                         ->with(['baseUrl' => $this->mailData['base_url'], 'varContent' => $this->mailData['mail_body']])
