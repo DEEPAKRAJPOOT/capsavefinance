@@ -168,12 +168,12 @@ class DocumentController extends Controller
             $document_info = $this->docRepo->saveDocument($arrFileData, $docId, $userId);
             if ($document_info) {
                 Session::flash('message',trans('success_messages.uploaded'));
-                return redirect()->route('pp_document_list', ['app_id' => $appId, 'biz_id' => $bizId]);
+                return redirect()->route('pp_document_list', ['app_id' => $appId, 'biz_id' => $bizId,'user_id' => $userId]);
             } else {                                
-                return redirect()->route('pp_document_list', ['app_id' => $appId, 'biz_id' => $bizId]);
+                return redirect()->route('pp_document_list', ['app_id' => $appId, 'biz_id' => $bizId,'user_id' => $userId]);
             }
         } catch (Exception $ex) {                
-            return redirect()->route('pp_document_list', ['app_id' => $appId, 'biz_id' => $bizId])->withErrors(Helpers::getExceptionMessage($ex));
+            return redirect()->route('pp_document_list', ['app_id' => $appId, 'biz_id' => $bizId,'user_id' => $userId])->withErrors(Helpers::getExceptionMessage($ex));
         }
     }
 
