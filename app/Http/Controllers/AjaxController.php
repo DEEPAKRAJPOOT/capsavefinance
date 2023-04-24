@@ -5796,7 +5796,8 @@ if ($err) {
     public function getTDSOutstatingAmount(Request $request)
     {
         $userId    = $request->get('user_id');
-        $TDSOutstating = $this->lmsRepo->getTDSOutstatingAmount($userId);
+        $whereCon = $request->filled('payment_date') ? ['due_date' => Carbon::createFromFormat('d/m/Y', $request->payment_date)->format('Y-m-d')] : [];
+        $TDSOutstating = $this->lmsRepo->getTDSOutstatingAmount($userId, $whereCon);
         $TDSOutstating = ((float)$TDSOutstating<0) ? 0 : $TDSOutstating;
         return response()->json(['tds_amount' => round($TDSOutstating, 2)]);
     }
