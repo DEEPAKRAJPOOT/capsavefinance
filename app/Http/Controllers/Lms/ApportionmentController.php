@@ -1089,6 +1089,19 @@ class ApportionmentController extends Controller
                 ->orderBy('trans_date','desc')
                 ->orderBy('trans_id','desc')
                 ->first();
+                $parsedDate = Carbon::parse($trans->trans_date);
+                $parsedDueDate = $trans->due_date ? Carbon::parse($trans->due_date) : null;
+                $currentDate = Carbon::now();
+                // Compare year and month
+                if ($parsedDate->year == $currentDate->year && $parsedDate->month == $currentDate->month) {
+                    $dueDate = $currentDate->format('Y-m-d');
+                } else {
+                    if ($parsedDueDate && $parsedDueDate->year == $currentDate->year && $parsedDueDate->month == $currentDate->month) {
+                        $dueDate = $currentDate->format('Y-m-d');
+                    } else {
+                        $dueDate = $parsedDate->endOfMonth()->format('Y-m-d');
+                    }
+                }
                 $transactionList[] = [
                     'payment_id' => null,
                     'link_trans_id' => null,
@@ -1104,7 +1117,7 @@ class ApportionmentController extends Controller
                     'trans_mode' => 2,
                     'from_date' => $lastPostedTrans->trans_date ?? $trans->from_date,
                     'to_date' => $trans->trans_date,
-                    'due_date' => $trans->trans_date,
+                    'due_date' => $dueDate,
                 ];
             }
             if(!empty($transactionList)){
