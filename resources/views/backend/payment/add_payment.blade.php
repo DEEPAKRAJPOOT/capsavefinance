@@ -284,11 +284,14 @@ cursor: pointer;
     $(document).ready(function() {
         // document.getElementById('amount').addEventListener('input', event =>
         // event.target.value = (parseInt(event.target.value.replace(/[^\d]+/gi, '')) || 0).toLocaleString('en-US'));
+        var date = new Date();
+        var date3 = new Date(date.getFullYear(),date.getMonth() -1, 1);
 
         $("#date_of_payment").datetimepicker({
                 format: 'dd/mm/yyyy',
                 autoclose: true,
                 minView : 2,
+                startDate: date3,
                 endDate: new Date(messages.sysDate),
         }).on('changeDate', function(e) {
             if (userData['action_type'] == '3'){
@@ -624,14 +627,14 @@ cursor: pointer;
             },'This UTR number is already used by this customer.'
         );
 
-$.validator.addMethod('decimal', function(value, element) {
-        return this.optional(element) || /^((\d+(\\.\d{2})?)|((\d*(\.\d{2}))))$/.test(value);
+        $.validator.addMethod('decimal', function(value, element) {
+            return this.optional(element) || /^((\d+(\\.\d{2})?)|((\d*(\.\d{2}))))$/.test(value);
         }, "Please enter only 2 decimal places");
+        
         $("#amount").keyup(function(){
             $(this).val(function(i, v) {
-    return v.replace(/[, ]+/g, "");
-    
-  });
+                return v.replace(/[, ]+/g, "");
+            });
         });
         $('#savePayFrm').validate( {
             onkeyup: false,
@@ -659,6 +662,7 @@ $.validator.addMethod('decimal', function(value, element) {
                     },
                     date_of_payment:{
                         required:true,
+                        checkPaymentDate:true,
                     },
                     amount:{
                         required:true, 
