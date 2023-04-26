@@ -1138,7 +1138,15 @@ class Helper extends PaypalHelper
                                                                     ])) {
                         $isViewOnly = 1;
                     } else {
-                        $isViewOnly = AppAssignment::isAppCurrentAssignee($app_id, $userArr, isset($roleData[0]) ? $roleData[0]->id : null);
+                        $appStatusArr = [
+                            config('common.mst_status_id.APP_SANCTIONED'),
+                            config('common.mst_status_id.APP_CLOSED'),
+                        ];
+                        if(in_array($appData->curr_status_id, $appStatusArr)) {
+                            $isViewOnly = 1;
+                        } else {
+                            $isViewOnly = AppAssignment::isAppCurrentAssignee($app_id, $userArr, isset($roleData[0]) ? $roleData[0]->id : null);
+                        }   
                     }
                 }
             }
