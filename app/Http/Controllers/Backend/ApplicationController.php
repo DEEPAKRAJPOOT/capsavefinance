@@ -44,6 +44,7 @@ use App\Inv\Repositories\Contracts\UserInvoiceInterface as InvUserInvRepoInterfa
 use App\Inv\Repositories\Models\Application;
 use App\Inv\Repositories\Models\AppLimit;
 use App\Inv\Repositories\Models\BusinessAddress;
+use Exception;
 
 
 class ApplicationController extends Controller
@@ -594,7 +595,7 @@ class ApplicationController extends Controller
 				}
 
 				Session::flash('message',trans('success_messages.uploaded'));
-				return redirect()->route('documents', ['app_id' => $appId, 'biz_id' => $bizId]);
+				return redirect()->route('documents', ['app_id' => $appId, 'biz_id' => $bizId, 'user_id' => $userId]); 
 			} else {
 				//Add application workflow stages
 				//Helpers::updateWfStage('doc_upload', $appId, $wf_status=2);
@@ -1635,6 +1636,8 @@ class ApplicationController extends Controller
 
 		try {
 			$offerData = [];
+			$appData = $this->appRepo->getAppDataByAppId($appId);
+			$userId = $appData ? $appData->user_id : null;
 			if ($request->has('btn_accept_offer')) {
 				$offerData['status'] = 1;
 				$message = trans('backend_messages.accept_offer_success');
@@ -1652,8 +1655,6 @@ class ApplicationController extends Controller
 				//Insert Pre Sanctions Documents
 				$prgmDocsWhere = [];
 				$prgmDocsWhere['stage_code'] = 'upload_pre_sanction_doc';
-				$appData = $this->appRepo->getAppDataByAppId($appId);
-				$userId = $appData ? $appData->user_id : null;
 				$reqdDocs = $this->createAppRequiredDocs($prgmDocsWhere, $userId, $appId);
 				/*$limitData = $this->masterRepo->getCurrentBorrowerLimitData();
 				if($limitData){
@@ -1727,7 +1728,8 @@ class ApplicationController extends Controller
 			}
 
 		} catch (Exception $ex) {
-			return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
+			return redirect()->route('view_offer', ['app_id' => $appId, 'biz_id' => $bizId,'user_id' => $userId ])
+					->withErrors(Helpers::getExceptionMessage($ex));;
 		}
 	}
 

@@ -14,6 +14,7 @@ use Helpers;
 use Auth;
 use App\Inv\Repositories\Contracts\Traits\ApplicationTrait;
 use Illuminate\Support\Facades\Storage;
+use Exception;
 
 class DocumentController extends Controller
 {
@@ -169,11 +170,13 @@ class DocumentController extends Controller
             if ($document_info) {
                 Session::flash('message',trans('success_messages.uploaded'));
                 return redirect()->route('pp_document_list', ['app_id' => $appId, 'biz_id' => $bizId,'user_id' => $userId]);
+                return redirect()->route('pp_document_list', ['app_id' => $appId, 'biz_id' => $bizId,'user_id' => $userId]);
             } else {                                
                 return redirect()->route('pp_document_list', ['app_id' => $appId, 'biz_id' => $bizId,'user_id' => $userId]);
+                return redirect()->route('pp_document_list', ['app_id' => $appId, 'biz_id' => $bizId,'user_id' => $userId]);
             }
-        } catch (Exception $ex) {                
-            return redirect()->route('pp_document_list', ['app_id' => $appId, 'biz_id' => $bizId,'user_id' => $userId])->withErrors(Helpers::getExceptionMessage($ex));
+        } catch (\Exception $ex) {                
+            return redirect()->route('pp_document_list', ['app_id' => $appId, 'biz_id' => $bizId, 'user_id' => $userId])->withErrors(Helpers::getExceptionMessage($ex));
         }
     }
 
