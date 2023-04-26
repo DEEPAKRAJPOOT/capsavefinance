@@ -34,3 +34,4 @@ Homestead.json
 /bootstrap/cache/config.php
 .vscode
 worker.log
+composer.lock
