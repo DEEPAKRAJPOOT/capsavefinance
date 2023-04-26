@@ -80,7 +80,7 @@
                                                 <option value="">Please Select</option>
                                                 @if($get_program)
                                                 @foreach($get_program as $row1) 
-                                                <option value="{{{$row1->program->prgm_id}}},{{{$row1->app_prgm_limit_id}}}">{{{$row1->program->prgm_name}}}</option>
+                                                <option value="{{{$row1->program->prgm_id}}},{{{$row1->app_prgm_limit_id}}}">{{{$row1->program->prgm_id}}} - {{{$row1->program->prgm_name}}}</option>
 
                                                 @endforeach
                                                 @endif

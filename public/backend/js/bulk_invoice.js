@@ -155,7 +155,7 @@
                     $(obj1).each(function (i, v) {
                         if (v.program != null)
                         {
-                            $("#program_bulk_id").append("<option value='" + v.program.prgm_id + "," + v.app_prgm_limit_id + "'>" + v.program.prgm_name + "</option>");
+                            $("#program_bulk_id").append("<option value='" + v.program.prgm_id + "," + v.app_prgm_limit_id + "'>"+ v.program.prgm_id +" - " + v.program.prgm_name + "</option>");
                         }
                     });
                 } else
