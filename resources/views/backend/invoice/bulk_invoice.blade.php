@@ -138,6 +138,9 @@
                            
                             <div class="row" id="setInvoiceCount" data-count="{{count($getBulkInvoice)}}">
                                     <div class="col-sm-12">
+                                        @if(count($getBulkInvoice) > 0)
+                                        <a href="{{ route('download_bulk_invoice') }}" title="Download Bulk Invoice" class="btn btn-success btn-sm float-right ml-3" style="margin: 0px 0 10px 0;"><i class="fa fa-download" aria-hidden="true"></i> Download</a>
+                                        @endif
                                         <table  class="text-capitalize table white-space table-striped cell-border dataTable no-footer overview-table" cellspacing="0" width="100%" role="grid" aria-describedby="supplier-listing_info" style="width: 100%;">
                                             <thead>
                                                 <tr role="row">
@@ -174,7 +177,10 @@
                                                     <span><b>Due Date:&nbsp;</b>{{$val->invoice_due_date}}</span><br>
                                                     <span><b>Tenor In Days:&nbsp;</b>{{$val->tenor}}</span>
                                              </td>
-                                             <td>{{number_format($val->invoice_approve_amount)}}</td>
+                                             <td>
+                                                <span><b>Inv. Appr. Amt.:&nbsp;</b>{{number_format($val->invoice_approve_amount)}}</span><br>
+                                                <span><b>Upfront Int. Amt.:&nbsp;</b>{{$val->upfront_interest}}</span><br>
+                                            </td>
                                               <td>
                                                     <span><b>Name:&nbsp;</b>{{$val->user->f_name}} {{$val->user->l_name}}</span><br>
                                                     <span><b>Date:&nbsp;</b>{{date('d-m-Y',strtotime($val->created_at))}}</span>

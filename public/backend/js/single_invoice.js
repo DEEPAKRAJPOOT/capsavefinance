@@ -251,6 +251,7 @@
              $("#pro_limit_hide").empty();
              $("#pro_remain_limit").empty();
              $("#program_id").html("<option value=''>No data found</option>");
+             $("#offer_data").val('');
             return false;
       }
       $("#program_id").empty();
@@ -332,6 +333,7 @@
       {
           $("#pro_limit").empty();
           $("#pro_remain_limit").empty();
+          $("#offer_data").val('');
           return false; 
       }
       $("#supplier_id").empty();
@@ -453,7 +455,13 @@
                         $("#pro_limit").html('Prgm. Limit : <span class="fa fa-inr"></span>  '+data.limit+'');
                         $("#pro_remain_limit").html('Remaining Prgm. Balance : <span class="fa fa-inr"></span>  '+data.remain_limit+'');
                         $("#pro_limit_hide").val(data.remain_limit);  
-                        $("#margin").val(data.margin);  
+                        $("#margin").val(data.margin);
+                        if (data.offerData !== null) {
+                          // Find the hidden input field on the page
+                          var hiddenInputField = $('input[id="offer_data"]');
+                          // Set the value of the hidden input field to the JSON string
+                          hiddenInputField.val('').val(data.offerData);
+                        }  
                 }
         }); }); 
   
@@ -509,4 +517,8 @@
     var selValue = $(this).val();
     var selValueArr = selValue.split(",");
     $("#prgm_offer_id").val(selValueArr[2]);       
-  });   
+  });
+  
+  function calculateUpfrontInterest(amount, interestRate, tenor) {
+    return amount * interestRate * (tenor / 365);
+  }

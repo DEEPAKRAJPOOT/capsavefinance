@@ -1110,4 +1110,25 @@ trait LmsTrait
         $days = round($datediff / (60 * 60 * 24));
         return $days;        
     }
+
+    /**
+     * Calculate upfront interest for a given invoice
+     * @param  array $invoice
+     * @return float|null
+     */
+    protected function calculateUpfrontInterest($invoice){
+        if (!$invoice['program_offer'] || $invoice['program_offer']['payment_frequency'] != 1) {
+            return null;
+        }
+        $tenor = $this->calculateTenorDays($invoice);
+        $margin = $this->calMargin($invoice['invoice_approve_amount'], $invoice['program_offer']['margin']);
+        $fundedAmount = $invoice['invoice_approve_amount'] - $margin;
+        $interestRate = (float) $invoice['program_offer']['interest_rate'];
+        if ($invoice['program_offer']['benchmark_date'] == 1) {
+            $curDate = Carbon::parse(\Helpers::getSysStartDate())->format('Y-m-d');
+            $tenor = $this->calDiffDays($invoice['invoice_due_date'], $curDate);
+        }
+        $upfrontInterest = $this->calInterest($fundedAmount, $interestRate, $tenor);
+        return round($upfrontInterest, config('lms.DECIMAL_TYPE')['AMOUNT_TWO_DECIMAL']);
+    }
 }

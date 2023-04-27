@@ -2844,7 +2844,11 @@ if ($err) {
         ini_set('memory_limit',-1);
         $invoice_data = $this->invRepo->getAllManageInvoice($this->request,7);
         $invoice = $dataProvider->getBackendInvoiceList($this->request, $invoice_data);
-        return $invoice;
+        $invoice = $invoice->getData(true);
+        foreach ($invoice['data'] as &$inv) {
+            $inv['upfront_interest'] = $this->calculateUpfrontInterest($inv);
+        }
+        return new JsonResponse($invoice);
     } 
     
      //////////////////// use for invoice list/////////////////
@@ -2866,7 +2870,11 @@ if ($err) {
         $invoice_data = $this->invRepo->getAllManageInvoice($this->request,8);
         // dd($invoice_data->first());
         $invoice = $dataProvider->getBackendInvoiceListApprove($this->request, $invoice_data);
-        return $invoice;
+        $invoice = $invoice->getData(true);
+        foreach ($invoice['data'] as &$inv) {
+            $inv['upfront_interest'] = $this->calculateUpfrontInterest($inv);
+        }
+        return new JsonResponse($invoice);
     } 
         
     
@@ -2921,8 +2929,12 @@ if ($err) {
             }
         }
 
-        $invoice = $dataProvider->getBackendInvoiceListDisbursedQue($this->request, $invoice_data,$IsOverdueArray, $isLimitExpiredArray,$isLimitExceedArray, $isAnchorLimitExceededArray);        
-        return $invoice;
+        $invoice = $dataProvider->getBackendInvoiceListDisbursedQue($this->request, $invoice_data,$IsOverdueArray, $isLimitExpiredArray,$isLimitExceedArray, $isAnchorLimitExceededArray);
+        $invoice = $invoice->getData(true);
+        foreach ($invoice['data'] as &$inv) {
+            $inv['upfront_interest'] = $this->calculateUpfrontInterest($inv);
+        }
+        return new JsonResponse($invoice);
     } 
     
       //////////////////// use for Invoice Disbursed Que list/////////////////
@@ -3960,8 +3972,18 @@ if ($err) {
         $remainAmount = round(($limit - $sum), 2);
         $offer = AppProgramOffer::getAppPrgmOfferById($res['prgm_offer_id']);
         $margin = $offer && $offer->margin ? $offer->margin : 0;
-
-        return response()->json(['status' => 1,'tenor' => $getTenor['tenor'],'tenor_old_invoice' =>$getTenor['tenor_old_invoice'],'limit' => $limit,'remain_limit' =>$remainAmount,'is_adhoc' => $is_adhoc,'margin' => $margin]);
+        $offerDataJson = null;
+        if ($offer){
+            $offerData = [
+                'interest_rate' => $offer->interest_rate ?? 0,
+                'payment_frequency' => $offer->payment_frequency,
+                'benchmark_date' => $offer->benchmark_date,
+                'margin' => $margin,
+              ];
+              // Convert the "$offerData" object to a JSON string
+              $offerDataJson = json_encode($offerData);
+        }
+        return response()->json(['status' => 1,'tenor' => $getTenor['tenor'],'tenor_old_invoice' =>$getTenor['tenor_old_invoice'],'limit' => $limit,'remain_limit' =>$remainAmount,'is_adhoc' => $is_adhoc,'margin' => $margin,'offerData' => $offerDataJson]);
     }
     
     public function getAdhoc(Request $request)

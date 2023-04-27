@@ -606,9 +606,9 @@ class BizInvoice extends BaseModel
         $chkUser =    DB::table('roles')->whereIn('id',$role_id)->first();
         if( $chkUser->id==11) {
             $res  = User::where('user_id',$id)->first();
-            return self::where(['status_id' => $status,'anchor_id' => $res->anchor_id])->orderBy('updated_at', 'DESC');
+            return self::with('program_offer')->where(['status_id' => $status,'anchor_id' => $res->anchor_id])->orderBy('updated_at', 'DESC');
         } else {
-           return self::where('status_id',$status)->orderBy('updated_at', 'DESC');
+           return self::with('program_offer')->where('status_id',$status)->orderBy('updated_at', 'DESC');
         }
     }
 

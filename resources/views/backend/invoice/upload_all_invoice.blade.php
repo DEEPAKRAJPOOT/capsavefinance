@@ -165,7 +165,8 @@
                             <input type="hidden" value="" id="tenor" name="tenor">
                             <input type="hidden" value="" id="margin" name="margin">
                              <input type="hidden" value="" id="exception" name="exception">
-                             <input type="hidden" value="" id="tenor_old_invoice" name="tenor_old_invoice"> 
+                             <input type="hidden" value="" id="tenor_old_invoice" name="tenor_old_invoice">
+                             <input type="hidden" value="" id="offer_data" name="offer_data"> 
                             <input type="reset"    class="btn btn-secondary btn-sm" value="Cancel">
                            <input type="submit" id="submit"   class="btn btn-primary ml-2 btn-sm" value="Submit">
                        </div>

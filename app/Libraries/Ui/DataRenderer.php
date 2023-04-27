@@ -1315,7 +1315,7 @@ class DataRenderer implements DataProviderInterface
     {
 
         return DataTables::of($invoice)
-               ->rawColumns(['updated_at','anchor_name','supplier_name','invoice_date','invoice_amount','view_upload_invoice','status','anchor_id','action','invoice_id','invoice_due_date'])
+               ->rawColumns(['updated_at','anchor_name','supplier_name','invoice_date_detail','invoice_amount','view_upload_invoice','status','anchor_id','action','invoice_id','invoice_due_date'])
 
                 ->addColumn(
                     'anchor_id',
@@ -1379,7 +1379,7 @@ class DataRenderer implements DataProviderInterface
                         return $custo_name;
                 })
                  ->addColumn(
-                    'invoice_date',
+                    'invoice_date_detail',
                     function ($invoice) {
                         $inv_date = '';
                         $inv_date .= $invoice->invoice_date ? '<span><b>Date:&nbsp;</b>'.Carbon::parse($invoice->invoice_date)->format('d-m-Y').'</span>' : '';
@@ -1591,7 +1591,7 @@ class DataRenderer implements DataProviderInterface
     {
 
     return DataTables::of($invoice)
-               ->rawColumns(['updated_at','anchor_name','supplier_name','invoice_date','invoice_amount','view_upload_invoice','status','anchor_id','action','invoice_id','invoice_due_date'])
+               ->rawColumns(['updated_at','anchor_name','supplier_name','invoice_date_detail','invoice_amount','view_upload_invoice','status','anchor_id','action','invoice_id','invoice_due_date'])
 
                 ->addColumn(
                     'anchor_id',
@@ -1635,7 +1635,7 @@ class DataRenderer implements DataProviderInterface
                         return $custo_name;
                 })
                 ->addColumn(
-                    'invoice_date',
+                    'invoice_date_detail',
                     function ($invoice) {
                         $inv_date = '';
                         $inv_date .= $invoice->invoice_date ? '<span><b>Date:&nbsp;</b>'.Carbon::parse($invoice->invoice_date)->format('d-m-Y').'</span>' : '';
@@ -1716,7 +1716,7 @@ class DataRenderer implements DataProviderInterface
     public function getBackendInvoiceListDisbursedQue(Request $request,$invoice, $IsOverdueArray, $isLimitExpiredArray,$isLimitExceedArray, $isAnchorLimitExceeded)
     {     
       return DataTables::of($invoice)
-                ->rawColumns(['updated_at','invoice_checkbox', 'anchor_name','supplier_name','invoice_date','invoice_amount','status','anchor_id','action'])
+                ->rawColumns(['updated_at','invoice_checkbox', 'anchor_name','supplier_name','invoice_date_detail','invoice_amount','status','anchor_id','action'])
 
                 ->addColumn(
                     'invoice_checkbox',
@@ -1757,7 +1757,7 @@ class DataRenderer implements DataProviderInterface
                         return $custo_name;
                 })
                   ->addColumn(
-                    'invoice_date',
+                    'invoice_date_detail',
                     function ($invoice) {
                         $inv_date = '';
                         $inv_date .= $invoice->invoice_date ? '<span><b>Date:&nbsp;</b>'.Carbon::parse($invoice->invoice_date)->format('d-m-Y').'</span>' : '';

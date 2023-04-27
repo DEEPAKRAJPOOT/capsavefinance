@@ -162,6 +162,9 @@ class InvoiceController extends Controller {
         $get_program = $this->invRepo->getLimitProgram($aid);
         $get_program_limit = $this->invRepo->geAnchortLimitProgram($aid);
         $getBulkInvoice = $this->invRepo->getAllBulkInvoice();
+        foreach ($getBulkInvoice as &$invoice) {
+            $invoice['upfront_interest'] = $this->calculateUpfrontInterest($invoice);// add the upfront interest to the invoice
+        }
         return view('backend.invoice.bulk_invoice')->with(['get_bus' => $get_bus, 'anchor_list' => $getAllInvoice,'anchor' => $chkUser->id,'id' =>  $aid,'limit' => $get_program_limit,'get_program' =>$get_program,'getBulkInvoice' =>$getBulkInvoice]);
     }
 
@@ -812,6 +815,14 @@ class InvoiceController extends Controller {
                $is_margin_deduct =  1;  
                $this->invRepo->updateFileId(['invoice_margin_amount'=>$inv_apprv_margin_amount,'is_margin_deduct' =>1],$result['invoice_id']);
             }
+            $upfrontInterest = '';
+            if(!empty($attributes['offer_data']) && $attributes['offer_data']){
+                $result['program_offer'] = json_decode($attributes['offer_data'],true);
+                if (!empty($result['program_offer'])){
+                    $upfrontInterest = $this->calculateUpfrontInterest($result);
+                    $upfrontInterest = (!empty($upfrontInterest)) ? ' (Upfront Interest Amount: '.$upfrontInterest.')' : '';
+                }
+            }
 
             $whereActivi['activity_code'] = 'backend_save_invoice';
             $activity = $this->master->getActivity($whereActivi);
@@ -822,7 +833,7 @@ class InvoiceController extends Controller {
                 $this->activityLogByTrait($activity_type_id, $activity_desc, response()->json($arr), $arrActivity);
             }             
             
-            Session::flash('message', 'Invoice successfully saved');
+            Session::flash('message', 'Invoice successfully saved'.$upfrontInterest);
             return back();
         } else {
             Session::flash('message', 'Something wrong, Invoice is not saved');
@@ -3111,6 +3122,70 @@ public function disburseTableInsert($exportData = [], $supplierIds = [], $allinv
             }
         }
         return true;
+    }
+
+    /**
+     * Download Bulk Invoice
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function downloadBulkInvoice(Request $request)
+    {
+        if ($request->get('eod_process')) {
+            Session::flash('error', trans('backend_messages.lms_eod_batch_process_msg'));
+            return back();
+        }
+        $data = $this->invRepo->getAllBulkInvoice()->toArray();
+        $sheet =  new PHPExcel();
+        $sheet->getProperties()
+                ->setCreator("Capsave")
+                ->setLastModifiedBy("Capsave")
+                ->setTitle("Bulk Invoice Excel")
+                ->setSubject("Bulk Invoice Excel")
+                ->setDescription("Bulk Invoice Excel")
+                ->setKeywords("Bulk Invoice Excel")
+                ->setCategory("Bulk Invoice Excel");
+    
+        $sheet->setActiveSheetIndex(0)
+                ->setCellValue('A1', 'Customer_id')
+                ->setCellValue('B1', 'Invoice_no')
+                ->setCellValue('C1', 'Invoice_date')
+                ->setCellValue('D1', 'Amount')
+                ->setCellValue('E1', 'File_name')
+                ->setCellValue('F1', 'Upfront Interest');
+        $rows = 2;
+        foreach($data as $rowData){
+            $file_name = $rowData['user_file'] ? $rowData['user_file']['file_name'] : '';
+            $upfrontInterest = $this->calculateUpfrontInterest($rowData); 
+            $invoiceDate = Carbon::parse($rowData['invoice_date'])->format('d-m-Y');   
+            $sheet->setActiveSheetIndex(0)
+                ->setCellValue('A' . $rows, $rowData['lms_user']['customer_id'] ?? '')
+                ->setCellValue('B' . $rows, $rowData['invoice_no'] ?? '')
+                ->setCellValue('C' . $rows, $invoiceDate ?? '')
+                ->setCellValue('D' . $rows, $rowData['invoice_approve_amount'] ?? '')
+                ->setCellValue('E' . $rows, $file_name ?? '')
+                ->setCellValue('F' . $rows, $upfrontInterest ?? '');
+            $rows++;
+        }
+        // Get the current time
+        $currentTime = Carbon::now();
+        // Format the time as a string
+        $timeString = $currentTime->format('Ymd_His');
+        // Redirect output to a client’s web browser (Excel2007)
+        header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        header('Content-Disposition: attachment;filename="download_bulk_invoice_Excel_'.$timeString.'.xlsx"');
+        header('Cache-Control: max-age=0');
+        // If you're serving to IE 9, then the following may be needed
+        header('Cache-Control: max-age=1');
+
+        // If you're serving to IE over SSL, then the following may be needed
+        header ('Expires: Mon, 26 Jul 1997 05:00:00 GMT'); // Date in the past
+        header ('Last-Modified: '.gmdate('D, d M Y H:i:s').' GMT'); // always modified
+        header ('Cache-Control: cache, must-revalidate'); // HTTP/1.1
+        header ('Pragma: public'); // HTTP/1.0
+        
+        $objWriter = PHPExcel_IOFactory::createWriter($sheet, 'Excel2007');
+        $objWriter->save('php://output');
     }
 
 }

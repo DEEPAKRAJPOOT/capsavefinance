@@ -31,13 +31,19 @@ try {
                 {data: 'anchor_id'},
                 {data: 'anchor_name'},
                 {data: 'supplier_name'},
-                 {data: 'invoice_date'},
+                 {data: 'invoice_date_detail'},
                 {data: 'invoice_amount'},
                 {data: 'updated_at'},
                  {data: 'action'},
                
             ],
             aoColumnDefs: [{'bSortable': false, 'aTargets': [0,1,3]}],
+            createdRow: function(row, data) {
+                var upfrontInterest = data.upfront_interest; // assuming this value is in the data object
+                if (typeof upfrontInterest !== 'undefined' && upfrontInterest != null) {
+                    $('td:eq(5)', row).append('<br/><b>Upfront Int. Amt:</b> ' + upfrontInterest); // append the value to the 6th column (index 5)
+                }
+            }
         });
 
         //Search
