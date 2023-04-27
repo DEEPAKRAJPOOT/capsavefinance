@@ -1111,6 +1111,28 @@ trait LmsTrait
         return $days;        
     }
 
+    protected function calTenorDays($invoice = [])
+    {
+        $dueDate = Carbon::parse($invoice['invoice_due_date'] ?? null);
+        $invoiceDate = Carbon::parse($invoice['invoice_date'] ?? null);
+        if ($dueDate === null || $invoiceDate === null) {
+            throw new \Exception('Invalid invoice date or due date');
+        }
+        $dueDateString = $dueDate->format('Y-m-d');
+        $invoiceDateString = $invoiceDate->format('Y-m-d');
+        return Carbon::parse($dueDateString)->diffInDays($invoiceDateString);
+    }
+
+    protected function calDifferenceInDays($pastDate = '', $nowDate = '') {
+        $pastDateTime = Carbon::parse($pastDate ?? null);
+        $nowDateTime = Carbon::parse($nowDate ?? null);
+        if ($pastDateTime === null || $nowDateTime === null) {
+            throw new \Exception('Invalid past date or now date');
+        }
+        $pastDateTimeString = $pastDateTime->format('Y-m-d');
+        $nowDateTimeString = $nowDateTime->format('Y-m-d');
+        return Carbon::parse($pastDateTimeString)->diffInDays($nowDateTimeString);
+    }
     /**
      * Calculate upfront interest for a given invoice
      * @param  array $invoice
@@ -1120,13 +1142,14 @@ trait LmsTrait
         if (!$invoice['program_offer'] || $invoice['program_offer']['payment_frequency'] != 1) {
             return null;
         }
-        $tenor = $this->calculateTenorDays($invoice);
+        $tenor = $this->calTenorDays($invoice);
         $margin = $this->calMargin($invoice['invoice_approve_amount'], $invoice['program_offer']['margin']);
         $fundedAmount = $invoice['invoice_approve_amount'] - $margin;
         $interestRate = (float) $invoice['program_offer']['interest_rate'];
         if ($invoice['program_offer']['benchmark_date'] == 1) {
-            $curDate = Carbon::parse(\Helpers::getSysStartDate())->format('Y-m-d');
-            $tenor = $this->calDiffDays($invoice['invoice_due_date'], $curDate);
+            $currentDate = \Helpers::getSysStartDate();
+            $curDate = Carbon::parse($currentDate)->format('Y-m-d');
+            $tenor = $this->calDifferenceInDays($invoice['invoice_due_date'], $curDate);
         }
         $upfrontInterest = $this->calInterest($fundedAmount, $interestRate, $tenor);
         return round($upfrontInterest, config('lms.DECIMAL_TYPE')['AMOUNT_TWO_DECIMAL']);
