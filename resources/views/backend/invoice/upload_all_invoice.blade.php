@@ -106,7 +106,7 @@
                                     </div> --}}
                                     <div class="col-md-4">
                                         <div class="form-group">
-                                            <label for="txtCreditPeriod">Invoice No. <span class="error_message_label">*</span> </label>
+                                            <label for="txtCreditPeriod">Invoice No. <span class="error_message_label">*</span>  <span id="text_payment_frequency" class="success"></span></label>
                                             <input type="text" minlength="3" maxlength="25" id="invoice_no" name="invoice_no" class="form-control" placeholder="Invoice No">
                                             <span id="msgInvoiceDupli" class="error"></span>  
                                         </div>
@@ -120,7 +120,7 @@
 									
 									<div class="col-md-4">
                                         <div class="form-group">
-                                            <label for="txtCreditPeriod">Invoice Due Date <span class="error_message_label">*</span> </label>
+                                            <label for="txtCreditPeriod">Invoice Due Date <span class="error_message_label">*</span>  <span id="text_benchmark_date" class="success"></span></label>
                                               <input type="text" id="invoice_due_date" readonly="readonly" name="invoice_due_date" class="form-control date_of_birth" placeholder="Invoice Due Date">
                                        
                                         </div>

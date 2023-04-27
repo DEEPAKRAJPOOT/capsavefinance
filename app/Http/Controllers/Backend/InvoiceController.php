@@ -817,7 +817,7 @@ class InvoiceController extends Controller {
             }
             $upfrontInterest = '';
             if(!empty($attributes['offer_data']) && $attributes['offer_data']){
-                $result['program_offer'] = json_decode($attributes['offer_data'],true);
+                $result['program_offer'] = json_decode(base64_decode($attributes['offer_data']),true);
                 if (!empty($result['program_offer'])){
                     $upfrontInterest = $this->calculateUpfrontInterest($result);
                     $upfrontInterest = (!empty($upfrontInterest)) ? ' (Upfront Interest Amount: '.$upfrontInterest.')' : '';

@@ -252,6 +252,8 @@
              $("#pro_remain_limit").empty();
              $("#program_id").html("<option value=''>No data found</option>");
              $("#offer_data").val('');
+             $('#text_payment_frequency').empty();
+            $('#text_benchmark_date').empty();
             return false;
       }
       $("#program_id").empty();
@@ -334,6 +336,8 @@
           $("#pro_limit").empty();
           $("#pro_remain_limit").empty();
           $("#offer_data").val('');
+          $('#text_payment_frequency').empty();
+          $('#text_benchmark_date').empty();
           return false; 
       }
       $("#supplier_id").empty();
@@ -457,6 +461,43 @@
                         $("#pro_limit_hide").val(data.remain_limit);  
                         $("#margin").val(data.margin);
                         if (data.offerData !== null) {
+                          // Parse the JSON string into an object
+                          const decodedOfferData = atob(data.offerData);
+                          const offerData = JSON.parse(decodedOfferData);
+                          if (offerData.payment_frequency != null){
+                            switch (offerData.payment_frequency) {
+                              case '1':
+                                 textPayFre = ' (Payment Frequency - Upfront)';
+                                break;
+                              case '2':
+                                textPayFre = ' (Payment Frequency - Monthly)';
+                                break;
+                              case '3':
+                                textPayFre = ' (Payment Frequency - Rear Ended)';
+                                break;
+                              default:
+                                // Handle the case where the payment frequency is not recognized
+                                textPayFre = '';
+                                break;
+                            }
+                            $('#text_payment_frequency').empty().html(textPayFre);
+                          }
+                          if (offerData.benchmark_date != null){
+                              switch (offerData.benchmark_date) {
+                                case '1':
+                                  textBencMarDate = ' (Benchmark Date - Invoice Date)';
+                                  break;
+                                case '2':
+                                  textBencMarDate = ' (Benchmark Date - Date of discounting)';
+                                  break;
+                                default:
+                                  // Handle the case where the payment frequency is not recognized
+                                  textBencMarDate = '';
+                                  break;
+                              }
+                              $('#text_benchmark_date').empty().html(textBencMarDate);
+                          }
+
                           // Find the hidden input field on the page
                           var hiddenInputField = $('input[id="offer_data"]');
                           // Set the value of the hidden input field to the JSON string

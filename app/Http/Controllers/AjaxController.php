@@ -3981,7 +3981,7 @@ if ($err) {
                 'margin' => $margin,
               ];
               // Convert the "$offerData" object to a JSON string
-              $offerDataJson = json_encode($offerData);
+              $offerDataJson = base64_encode(json_encode($offerData));
         }
         return response()->json(['status' => 1,'tenor' => $getTenor['tenor'],'tenor_old_invoice' =>$getTenor['tenor_old_invoice'],'limit' => $limit,'remain_limit' =>$remainAmount,'is_adhoc' => $is_adhoc,'margin' => $margin,'offerData' => $offerDataJson]);
     }
