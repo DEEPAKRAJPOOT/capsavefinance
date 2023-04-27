@@ -138,9 +138,11 @@
                            
                             <div class="row" id="setInvoiceCount" data-count="{{count($getBulkInvoice)}}">
                                     <div class="col-sm-12">
+                                        @can('download_bulk_invoice')
                                         @if(count($getBulkInvoice) > 0)
                                         <a href="{{ route('download_bulk_invoice') }}" title="Download Bulk Invoice" class="btn btn-success btn-sm float-right ml-3" style="margin: 0px 0 10px 0;"><i class="fa fa-download" aria-hidden="true"></i> Download</a>
                                         @endif
+                                        @endcan
                                         <table  class="text-capitalize table white-space table-striped cell-border dataTable no-footer overview-table" cellspacing="0" width="100%" role="grid" aria-describedby="supplier-listing_info" style="width: 100%;">
                                             <thead>
                                                 <tr role="row">
