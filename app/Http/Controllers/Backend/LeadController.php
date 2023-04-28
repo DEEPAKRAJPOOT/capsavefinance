@@ -412,9 +412,9 @@ class LeadController extends Controller {
      */
     public function saveaddAnchorReg(Request $request) {
         try {
+            
             //$string = Helpers::randomPassword();
             $string = time();
-           
             $validator = Validator::make($request->all(), [
                 'doc_file' => 'required|mimes:jpeg,jpg,png,pdf',
                 'is_fungible' => 'required|numeric',

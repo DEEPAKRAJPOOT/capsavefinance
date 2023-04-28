@@ -294,7 +294,9 @@ class Helper extends PaypalHelper
     public static function uploadAppFile($attributes, $appId)
     {
         $userId = Application::where('app_id', $appId)->pluck('user_id')->first();
-        $inputArr = [];
+        $s3path = env('S3_BUCKET_DIRECTORY_PATH').'/user/' . $userId . '/' . $appId;
+        $inputArr = this::uploadAwsS3Bucket($s3path, $attributes);
+        /*$inputArr = [];
         if(!empty($attributes['doc_file'])) {
             if ($attributes['doc_file']) {
                 if (!Storage::exists('/public/user/' . $userId . '/' . $appId)) {
@@ -309,7 +311,7 @@ class Helper extends PaypalHelper
         $inputArr['file_size'] = !empty($attributes['doc_file']) ? $attributes['doc_file']->getClientSize() : '';
         $inputArr['file_encp_key'] =  md5('2');
         $inputArr['created_by'] = 1;
-        $inputArr['updated_by'] = 1;
+        $inputArr['updated_by'] = 1;*/
 
         return $inputArr;
     }
@@ -481,12 +483,35 @@ class Helper extends PaypalHelper
      */
     public static function uploadAnchorFile($attributes, $anchorId)
     {
-        $inputArr = [];
+        /*$inputArr = [];
         if ($attributes['doc_file']) {
             if (!Storage::exists('/public/anchor/' . $anchorId)) {
                 Storage::makeDirectory('/public/anchor/' . $anchorId, 0777, true);
             }
             $path = Storage::disk('public')->put('/anchor/' . $anchorId, $attributes['doc_file'], null);
+            $inputArr['file_path'] = $path;
+        }*/
+        $s3path = env('S3_BUCKET_DIRECTORY_PATH').'/anchor/' . $anchorId;
+        $inputArr = this::uploadAwsS3Bucket($s3path, $attributes);
+
+       /* $inputArr['file_type'] = $attributes['doc_file']->getClientMimeType();
+        $inputArr['file_name'] = $attributes['doc_file']->getClientOriginalName();
+        $inputArr['file_size'] = $attributes['doc_file']->getClientSize();
+        $inputArr['file_encp_key'] =  md5('2');
+        $inputArr['created_by'] = 1;
+        $inputArr['updated_by'] = 1;*/
+
+        return $inputArr;
+    }
+
+    public function uploadAwsS3Bucket($s3path, $attributes){
+
+        $inputArr = [];
+        if ($attributes['doc_file']) {
+            if (!Storage::disk('s3')->exists($s3path)) {
+                Storage::disk('s3')->makeDirectory($s3path, 0777, true);
+            }
+            $path = Storage::disk('s3')->put($s3path, $attributes['doc_file'], null);
             $inputArr['file_path'] = $path;
         }
 
