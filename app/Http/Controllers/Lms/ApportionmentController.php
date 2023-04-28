@@ -261,6 +261,8 @@ class ApportionmentController extends Controller
     public function saveWaiveOffDetail(Request $request){
         DB::beginTransaction();
         try {
+            $eventDate = Helpers::getSysStartDate();
+            $curDate = carbon::parse($eventDate)->setTimezone(config('common.timezone'))->format('Y-m-d'); 
             $sanctionPageView = false;
             if($request->has('sanctionPageView')){
                 $sanctionPageView = $request->get('sanctionPageView');
@@ -282,7 +284,7 @@ class ApportionmentController extends Controller
                 DB::rollback();
                 return redirect()->route('apport_unsettled_view', [ 'payment_id' => $paymentId, 'user_id' =>$TransDetail->user_id, 'sanctionPageView'=>$sanctionPageView])->with(['error' => 'Waived off is possible only Interest, Charges and Principal.']);
             }
-            $outstandingAmount = $TransDetail->outstanding;
+            $outstandingAmount = round($TransDetail->outstanding,2);
             if ($amount > $outstandingAmount)  {
                 DB::rollback();
                 return redirect()->route('apport_unsettled_view', [ 'payment_id' => $paymentId, 'user_id' =>$TransDetail->user_id, 'sanctionPageView'=>$sanctionPageView])->with(['error' => 'Amount to be Waived Off must be less than or equal to '. $outstandingAmount]);
@@ -302,7 +304,7 @@ class ApportionmentController extends Controller
                     'parent_trans_id' => $TransDetail->parent_trans_id??$transId,
                     'invoice_disbursed_id' => $TransDetail->disburse->invoice_disbursed_id ?? NULL,
                     'user_id' => $TransDetail->user_id,
-                    'trans_date' => Helpers::getSysStartDate(),
+                    'trans_date' => $curDate,
                     'base_amt' => $base_amt,
                     'gst_amt' => $gst_amt,
                     'gst' => ($gst_amt > 0)?1:0,
@@ -316,6 +318,7 @@ class ApportionmentController extends Controller
                     'soa_flag' => 1,
                     'pay_from' => 1,
                     'is_settled' => 2,
+                    'created_at' => $eventDate
             ];
             $resp = $this->lmsRepo->saveTransaction($txnInsertData);
             if (!empty($resp->trans_id)) {
@@ -356,6 +359,8 @@ class ApportionmentController extends Controller
      */
     public function saveReversalDetail(Request $request){
         try {
+            $eventDate = Helpers::getSysStartDate();
+            $curDate = carbon::parse($eventDate)->setTimezone(config('common.timezone'))->format('Y-m-d');
             $newTransactions = array();
             $sanctionPageView = false;
             if($request->has('sanctionPageView')){
@@ -401,7 +406,7 @@ class ApportionmentController extends Controller
                     'parent_trans_id' => $TransDetail->parent_trans_id,
                     'invoice_disbursed_id' => $TransDetail->invoice_disbursed_id ?? NULL,
                     'user_id' => $TransDetail->user_id,
-                    'trans_date' => Helpers::getSysStartDate(),
+                    'trans_date' => $curDate,
                     'amount' => $amount,
                     'entry_type' => 0,
                     'trans_type' => config('lms.TRANS_TYPE.REVERSE'),
@@ -410,6 +415,7 @@ class ApportionmentController extends Controller
                     'soa_flag' => 1,
                     'pay_from' => 1,
                     'is_settled' => 2,
+                    'created_at' => $eventDate,
             ];
             
             $resp = $this->lmsRepo->saveTransaction($txnInsertData);
@@ -430,7 +436,7 @@ class ApportionmentController extends Controller
                         'parent_trans_id' => $TransDetail->parent_trans_id,
                         'invoice_disbursed_id' => $TransDetail->invoice_disbursed_id ?? NULL,
                         'user_id' => $TransDetail->user_id,
-                        'trans_date' => Helpers::getSysStartDate(),
+                        'trans_date' => $curDate,
                         'amount' => $crt->settled_outstanding,
                         'entry_type' => 0,
                         'trans_type' => config('lms.TRANS_TYPE.REVERSE'),
@@ -439,6 +445,7 @@ class ApportionmentController extends Controller
                         'soa_flag' => 0,
                         'pay_from' => 1,
                         'is_settled' => 2,
+                        'created_at' => $eventDate,
                     ];
                 }
             }
@@ -484,8 +491,8 @@ class ApportionmentController extends Controller
 
                 if($TransDetail->invoice_disbursed_id){
                     $Obj = new ManualApportionmentHelper($this->lmsRepo);
-                    $Obj->intAccrual($TransDetail->invoice_disbursed_id, $TransDetail->trans_date, $apportionment->apportionment_id);
-                    $Obj->transactionPostingAdjustment($TransDetail->invoice_disbursed_id, $apportionment->apportionment_id);
+                    $Obj->intAccrual($TransDetail->invoice_disbursed_id, $TransDetail->trans_date, $apportionment->apportionment_id,8,$eventDate);
+                    $Obj->transactionPostingAdjustment($TransDetail->invoice_disbursed_id, $apportionment->apportionment_id,8,$eventDate);
                     $this->updateInvoiceRepaymentFlag([$TransDetail->invoice_disbursed_id]);
                     $Obj->generateCreditNote($TransDetail->user_id, $apportionment->apportionment_id);
                 }
@@ -602,7 +609,7 @@ class ApportionmentController extends Controller
             return [
                 'payment_id' => $payment->payment_id??null,
                 'amount'=>$payment->amount??null,
-                'date_of_payment'=> $payment->date_of_payment??null, 
+                'date_of_payment'=> isset($payment->date_of_payment)?carbon::parse($payment->date_of_payment)->format('Y-m-d'):null, 
                 'paymentmode'=> $payment->paymentmode??null,
                 'transactionno'=> $payment->transactionno??null,
                 'payment_amt' => $payment->amount??null,
@@ -714,7 +721,7 @@ class ApportionmentController extends Controller
                 DB::rollback();
                 return redirect()->route('unsettled_payments')->withErrors('Apportionment is not possible for the selected Payment. Please select valid payment!.');
             }
-            $repaymentAmt = $paymentDetails['amount']; 
+            $repaymentAmt = round($paymentDetails['amount'],2); 
             
             foreach ($checks as $Ckey => $Cval) {
                 if($Cval === 'on' && round($payments[$Ckey],2) > 0){
@@ -748,8 +755,10 @@ class ApportionmentController extends Controller
                 $invoiceList[$trans->invoice_disbursed_id] = [
                     'invoice_disbursed_id'=>$trans->invoice_disbursed_id,
                     'date_of_payment'=>$paymentDetails['date_of_payment']
-                ];     
-                $isValid = (round($payments[$trans->trans_id],2) <= round($trans->outstanding,2)) && $bill_date_check;
+                ];   
+                $payAmt = ($payments[$trans->trans_id])?round($payments[$trans->trans_id],2):0;
+                $osAmt = round($trans->outstanding,2);
+                $isValid = ($payAmt <= $osAmt && $payAmt > 0) && $bill_date_check;
                 $transactionList[] = [
                     'trans_id' => $trans->trans_id,
                     'trans_date' => $trans->trans_date,
@@ -759,16 +768,17 @@ class ApportionmentController extends Controller
                     'trans_type' => $trans->trans_type,
                     'trans_name' =>  $trans->transName,
                     'total_repay_amt' => round($trans->amount,2),
-                    'outstanding_amt' => round($trans->outstanding,2),
+                    'outstanding_amt' => $osAmt,
                     'payment_date' =>  $paymentDetails['date_of_payment'],
-                    'pay' => ($payments[$trans->trans_id])?round($payments[$trans->trans_id],2):null,
+                    'pay' => $payAmt,
                     'is_valid' => $isValid?1:0
                 ];
-                if($isValid)
-                    $amtToSettle += $payments[$trans->trans_id];
+                if($isValid){
+                    $amtToSettle = round($amtToSettle + $payments[$trans->trans_id],2);
+                }
             }
 
-            $unAppliedAmt = $repaymentAmt-$amtToSettle;
+            $unAppliedAmt = round($repaymentAmt-$amtToSettle,2);
 
 
             $request->session()->put('apportionment', [
@@ -826,6 +836,7 @@ class ApportionmentController extends Controller
         try {
             DB::beginTransaction();
             ini_set('max_execution_time', 2000);
+            $eventDate = Helpers::getSysStartDate();
             $payment = Payment::find($request->payment_id);
 
             if (!$this->verifyUnSettleTransInitiator($payment)) {
@@ -852,7 +863,6 @@ class ApportionmentController extends Controller
             DB::commit();
 
             DB::beginTransaction();
-            $Obj = new ManualApportionmentHelper($this->lmsRepo);
             $sanctionPageView = false;
             if($request->has('sanctionPageView')){
                 $sanctionPageView = $request->get('sanctionPageView');
@@ -903,6 +913,7 @@ class ApportionmentController extends Controller
                     'soa_flag' => 1,
                     'trans_type' => config('lms.TRANS_TYPE.REPAYMENT'),
                     'trans_mode' => 2,
+                    'created_at' => $eventDate
                 ];
 
                 foreach ($transactions as $trans){
@@ -933,7 +944,10 @@ class ApportionmentController extends Controller
                         ];             
                     }
 
-                    $isValid = (round($payments[$trans->trans_id],2) <= round($trans->outstanding,2)) && $bill_date_check;
+                    $payAmt = round($payments[$trans->trans_id],2);
+                    $osAmt = round($trans->outstanding,2);
+
+                    $isValid = ($payAmt <= $osAmt && $payAmt > 0) && $bill_date_check;
                     if($isValid){
                         $transactionList[] = [
                             'payment_id' => $paymentId,
@@ -943,13 +957,14 @@ class ApportionmentController extends Controller
                             'invoice_disbursed_id' => $trans->invoice_disbursed_id,
                             'user_id' => $userId,
                             'trans_date' => $paymentDetails['date_of_payment'],
-                            'amount' => $payments[$trans->trans_id],
+                            'amount' => $payAmt,
                             'entry_type' => 1,
                             'soa_flag' => 1,
                             'trans_type' => $trans->trans_type,
-                            'trans_mode' => 2
+                            'trans_mode' => 2,
+                            'created_at' => $eventDate
                         ];
-                        $amtToSettle += $payments[$trans->trans_id];
+                        $amtToSettle = round($amtToSettle + $payAmt,2);
                     }
                 }
 
@@ -969,8 +984,9 @@ class ApportionmentController extends Controller
                         'soa_flag' => 1,
                         'trans_type' => config('lms.TRANS_TYPE.NON_FACTORED_AMT'),
                         'trans_mode' => 2,
+                        'created_at' => $eventDate
                     ];
-                    $amtToSettle += $unAppliedAmt;
+                    $amtToSettle = round($amtToSettle+$unAppliedAmt,2);
                 }
                 if(round($amtToSettle,2) > round($repaymentAmt,2)){
                     Session::flash('error', trans('error_messages.apport_invalid_unapplied_amt'));
@@ -996,14 +1012,15 @@ class ApportionmentController extends Controller
                     $payment->save();
                 }
 
+                $Obj = new ManualApportionmentHelper($this->lmsRepo);
                 foreach ($invoiceList as $invDisb) {
                     $date_of_payment = $invDisb['date_of_payment'];
                     if( (strtotime($invDisb['payment_due_date']) <= strtotime($invDisb['date_of_payment']) )  && ( strtotime($invDisb['date_of_payment']) <= strtotime($invDisb['payment_due_date'] . "+". $invDisb['grace_period']." days"))){
                         $date_of_payment = $invDisb['payment_due_date'];
                     }
                     
-                    $Obj->intAccrual($invDisb['invoice_disbursed_id'], $date_of_payment, $apportionment->apportionment_id);
-                    $Obj->transactionPostingAdjustment($invDisb['invoice_disbursed_id'], $apportionment->apportionment_id);
+                    $Obj->intAccrual($invDisb['invoice_disbursed_id'], $date_of_payment, $apportionment->apportionment_id,2,$eventDate);
+                    $Obj->transactionPostingAdjustment($invDisb['invoice_disbursed_id'], $apportionment->apportionment_id,2,$eventDate);
                     $this->updateInvoiceRepaymentFlag([$invDisb['invoice_disbursed_id']]);
                 }
                 $Obj->generateCreditNote($userId,$apportionment->apportionment_id);
@@ -1035,7 +1052,6 @@ class ApportionmentController extends Controller
         }
     }
 
-    
     /**
      * save reversal Detail
      * @param Request $request
@@ -1043,6 +1059,8 @@ class ApportionmentController extends Controller
      */
     public function saveRunningDetail(Request $request){
         try {
+            $eventDate = Helpers::getSysStartDate();
+            $curDate = carbon::parse($eventDate)->setTimezone(config('common.timezone'))->format('Y-m-d');
             $validator = Validator::make($request->all(), [
                 'user_id' => 'required|integer',
                 'check' =>'required|array'
@@ -1109,7 +1127,7 @@ class ApportionmentController extends Controller
                     'trans_running_id'=> $trans->trans_running_id,
                     'invoice_disbursed_id' => $trans->invoice_disbursed_id,
                     'user_id' => $trans->user_id,
-                    'trans_date' => Helpers::getSysStartDate(),
+                    'trans_date' => $curDate,
                     'amount' => $trans->outstanding,
                     'entry_type' => $trans->entry_type,
                     'soa_flag' => 1,
@@ -1118,6 +1136,7 @@ class ApportionmentController extends Controller
                     'from_date' => $lastPostedTrans->trans_date ?? $trans->from_date,
                     'to_date' => $trans->trans_date,
                     'due_date' => $dueDate,
+                    'created_at' => $eventDate
                 ];
             }
             if(!empty($transactionList)){
@@ -1293,6 +1312,8 @@ class ApportionmentController extends Controller
     public function markWriteOffSave(Request $request){
         DB::beginTransaction();
         try {
+            $eventDate = Helpers::getSysStartDate();
+            $curDate = carbon::parse($eventDate)->setTimezone(config('common.timezone'))->format('Y-m-d');
             $sanctionPageView = false;
             if($request->has('sanctionPageView')){
                 $sanctionPageView = $request->get('sanctionPageView');
@@ -1320,21 +1341,22 @@ class ApportionmentController extends Controller
                 }
 
                 foreach ($transactions as $trans){  
+                    $osAmt = round($trans->outstanding,2);
                     $transactionList[] = [
                         'payment_id' => null,
                         'link_trans_id' => $trans->trans_id,
                         'parent_trans_id' => $trans->trans_id,
                         'invoice_disbursed_id' => $trans->invoice_disbursed_id,
                         'user_id' => $trans->user_id,
-                        'trans_date' => Helpers::getSysStartDate(),
-                        'amount' => $trans->outstanding,
-                        'settled_outstanding' => $trans->outstanding,
+                        'trans_date' => $curDate,
+                        'amount' => $osAmt,
                         'entry_type' => 1,
                         'soa_flag' => 1,
                         'trans_type' => config('lms.TRANS_TYPE.WRITE_OFF'),
                         'trans_mode' => 2,
+                        'created_at' => $eventDate,
                     ];
-                    $woAmount += $trans->outstanding;
+                    $woAmount = round($woAmount + $osAmt,2);
                 }
 
                 if(!empty($transactionList)){
@@ -1411,6 +1433,8 @@ class ApportionmentController extends Controller
                 $invoiceList[$trans->invoice_disbursed_id] = [
                     'invoice_disbursed_id'=>$trans->invoice_disbursed_id
                 ];     
+                $refAmt = ($refunds[$trans->trans_id])?round($refunds[$trans->trans_id],2):0;
+                $osAmt = round($trans->refundoutstanding,2);
                 $transactionList[] = [
                     'trans_id' => $trans->trans_id,
                     'trans_date' => $trans->trans_date,
@@ -1420,10 +1444,10 @@ class ApportionmentController extends Controller
                     'trans_name' =>  $trans->transName,
                     'total_repay_amt' => round($trans->amount,2),
                     'outstanding_amt' => round($trans->refundoutstanding,2),
-                    'refund' => ($refunds[$trans->trans_id])?round($refunds[$trans->trans_id],2):null,
-                    'is_valid' => (round($refunds[$trans->trans_id],2) <= round($trans->refundoutstanding,2))?1:0
+                    'refund' => $refAmt,
+                    'is_valid' => ($refAmt <= $osAmt && $refAmt > 0)?1:0
                 ];
-                $amtToSettle += $refunds[$trans->trans_id];
+                $amtToSettle = round($refAmt + $amtToSettle,2);
             }
 
             $request->session()->put('adjustment', [
@@ -1449,6 +1473,8 @@ class ApportionmentController extends Controller
     public function markAdjustmentSave(Request $request){
         DB::beginTransaction();
         try {
+            $eventDate = Helpers::getSysStartDate();
+            $curDate = carbon::parse($eventDate)->setTimezone(config('common.timezone'))->format('Y-m-d');
             $sanctionPageView = false;
             if($request->has('sanctionPageView')){
                 $sanctionPageView = $request->get('sanctionPageView');
@@ -1476,27 +1502,24 @@ class ApportionmentController extends Controller
                     ->orderByRaw("FIELD(trans_id, ".implode(',',$transIds).")")
                     ->get();
                 }
-                $adjTransDate = Helpers::getSysStartDate();
                 $payments = [];
-                foreach ($transactions as $trans){  
+                foreach ($transactions as $trans){
+                    $refAmt = round($refunds[$trans->trans_id],2);
                     $transactionList[] = [
                         'payment_id' => NULL,
                         'link_trans_id' => $trans->trans_id,
                         'parent_trans_id' => $trans->parent_trans_id ?? $trans->trans_id,
                         'invoice_disbursed_id' => $trans->invoice_disbursed_id,
                         'user_id' => $trans->user_id,
-                        'trans_date' => $adjTransDate,
-                        'amount' => $refunds[$trans->trans_id],
+                        'trans_date' => $curDate,
+                        'amount' => $refAmt,
                         'entry_type' => 0,
                         'soa_flag' => 1,
                         'trans_type' => config('lms.TRANS_TYPE.ADJUSTMENT'),
                         'trans_mode' => 2,
+                        'created_at' => $eventDate,
                     ];
-                    if(!isset($payments[$adjTransDate]['amount'])){
-                        $payments[$adjTransDate]['amount'] = 0;
-                    }
-                    $payments[$adjTransDate]['amount'] += $refunds[$trans->trans_id];
-                    
+                    $payments[$curDate]['amount'] = (isset($payments[$curDate]['amount']))?round($payments[$curDate]['amount'] + $refAmt,2):$refAmt;
                 }
 
                 if(!empty($transactionList)){
@@ -1542,8 +1565,10 @@ class ApportionmentController extends Controller
         }
     }
     
-    private function processApportionmentUndoTrans($payment, $paymentApportionment, $result)
-    {
+    private function processApportionmentUndoTrans($payment, $paymentApportionment, $result){
+        $eventDate = Helpers::getSysStartDate();
+        $curDate = carbon::parse($eventDate)->setTimezone(config('common.timezone'))->format('Y-m-d');
+            
         $errorMsg = null;
         $result = true;
         $transactionList = [];
@@ -1560,12 +1585,7 @@ class ApportionmentController extends Controller
                                     ->toArray();
 
         $uniqInvDisbIds     =   array_keys($data);
-        $paymentDate        =   $payment->date_of_payment;
-        $from               =   Carbon::parse($paymentDate)->format('Y-m-d');
-        $to                 =   now()->format('Y-m-d');
-        $interestAccruals   =   InterestAccrual::whereBetween('interest_date', [$from, $to])
-                                            ->whereIn('invoice_disbursed_id', $uniqInvDisbIds)
-                                            ->get();
+        $paymentDate        =   carbon::parse($payment->date_of_payment)->format('Y-m-d');
 
         $maxTransId         =   $query1->max('trans_id');
         $transactions       =   $query1->get();
@@ -1584,6 +1604,7 @@ class ApportionmentController extends Controller
                 'soa_flag' => $aporTrans->soa_flag,
                 'trans_type' => ($aporTrans->entry_type == 1) ? config('lms.TRANS_TYPE.REVERSE') : config('lms.TRANS_TYPE.CANCEL'),
                 'trans_mode' => 2,
+                'created_at' => $eventDate,
             ];
         }
         if(!empty($transactionList)){
@@ -1592,17 +1613,16 @@ class ApportionmentController extends Controller
             }
         }
         if ($maxTransId) {
-            $trans = Transactions::whereIn('invoice_disbursed_id', $uniqInvDisbIds)
+            $billGeneratedTransCount = Transactions::whereIn('invoice_disbursed_id', $uniqInvDisbIds)
                     ->where('user_id', $userId)
                     ->where('trans_id', '>', $maxTransId)
                     ->whereNotNull('invoice_disbursed_id')
                     ->whereNull('payment_id')
                     ->whereNull('apportionment_id')
-                    ->get();
-            $billGeneratedTransCount = $trans->where('is_invoice_generated', '1')
-            ->where('entry_type','0')
-            ->whereIn('trans_type',[9,33])
-            ->count();
+                    ->where('is_invoice_generated', '1')
+                    ->where('entry_type','0')
+                    ->whereIn('trans_type',[9,33])
+                    ->count();
             
             if($billGeneratedTransCount > 0){
                 $errorMsg =  "Apportionment can't be reverted : After this settlement interest/overdue are posted and invoices have also been generated for them.";
@@ -1610,12 +1630,11 @@ class ApportionmentController extends Controller
                 return ['status' => $result, 'error' => $errorMsg];
             }
         }
-        if ($result) {
-            //CustomerTransactionSOA::updateTransactionSOADetails($userId);
+        if($result) {
             $Obj  = new ManualApportionmentHelper($this->lmsRepo);
             foreach ($data as $invDisb) {
-                $Obj->intAccrual($invDisb, $paymentDate, $apportionment->apportionment_id);
-                $Obj->transactionPostingAdjustment($invDisb, $apportionment->apportionment_id);
+                $Obj->intAccrual($invDisb, $paymentDate, $apportionment->apportionment_id,9,$eventDate);
+                $Obj->transactionPostingAdjustment($invDisb, $apportionment->apportionment_id,9,$eventDate);
                 $this->updateInvoiceRepaymentFlag([$invDisb]);
             }
             $Obj->generateCreditNoteReversal($aporTrans->user_id,$apportionment->apportionment_id);
@@ -1715,8 +1734,6 @@ class ApportionmentController extends Controller
                 $paymentId = $request->payment_id;
                 $payment = $this->getPaymentDetails($paymentId,$userId); 
                 $payment_amt = $payment['payment_amt']; 
-               /* $Obj = new ManualApportionmentHelperTemp($this->lmsRepo);
-                $Obj->setTempInterest($paymentId);*/
                 if(!$payment['isApportPayValid']){
                     Session::flash('error', trans('Please select Valid Payment!'));
                     return redirect()->back()->withInput();
@@ -1763,8 +1780,9 @@ class ApportionmentController extends Controller
     }
 
     public function markSettleConfirmationTDS(ApportionmentRequest $request){
-        //dd($request->all());
         try {
+            $eventDate = Helpers::getSysStartDate();
+            $curDate = carbon::parse($eventDate)->setTimezone(config('common.timezone'))->format('Y-m-d');    
             $sanctionPageView = false;
             if($request->has('sanctionPageView')){
                 $sanctionPageView = $request->get('sanctionPageView');
@@ -1811,6 +1829,8 @@ class ApportionmentController extends Controller
                     'invoice_disbursed_id'=>$trans->invoice_disbursed_id,
                     'date_of_payment'=>$paymentDetails['date_of_payment']
                 ];     
+                $tdsAmt = ($payments[$trans->trans_id])?round($payments[$trans->trans_id],2):0;
+                $osAmt = round($trans->TDSAmount,2);
                 $transactionList[] = [
                     'trans_id' => $trans->trans_id,
                     'trans_date' => $trans->trans_date,
@@ -1823,17 +1843,16 @@ class ApportionmentController extends Controller
                     'total_repay_amt' => round($trans->amount,2),
                     'outstanding_amt' => round($trans->TDSAmount,2),
                     'payment_date' =>  $paymentDetails['date_of_payment'],
-                    'pay' => ($payments[$trans->trans_id])?round($payments[$trans->trans_id],2):null,
-                    'is_valid' => (round($payments[$trans->trans_id],2) <= round($trans->TDSAmount,2))?1:0
+                    'pay' => $tdsAmt,
+                    'is_valid' => ($tdsAmt <= $osAmt && $tdsAmt > 0)?1:0
                 ];
-                $amtToSettle += $payments[$trans->trans_id];
+                $amtToSettle = round($tdsAmt + $amtToSettle,2);
             }
 
             $amtToSettle = round($amtToSettle,2);
             $unAppliedAmt = round(($repaymentAmt - $amtToSettle),2);
 
             $totalOutstanding = round($totalOutstanding,2);
-            //dd($paymentDetails);
             if($paymentDetails['action_type'] == '3' &&  $paymentDetails['trans_type'] == '7'){
                 if($unAppliedAmt > 0 && $totalOutstanding > 0){
                     Session::flash('error', trans('You cannot settle partial TDS amount, please use full TDS amount for settlement.'));
@@ -1876,6 +1895,9 @@ class ApportionmentController extends Controller
 
     public function TDSMarkSettleSave(Request $request){
         try {
+            $eventDate = Helpers::getSysStartDate();
+            $curDate = carbon::parse($eventDate)->setTimezone(config('common.timezone'))->format('Y-m-d');
+         
             DB::beginTransaction();
             $payment = Payment::find($request->payment_id);
 
@@ -1938,23 +1960,26 @@ class ApportionmentController extends Controller
 
                 $refundTrans = [];
                 foreach ($transactions as $trans){ 
-                    $amount = round($payments[$trans->trans_id],2);           
-                    $transactionList[] = [
-                        'payment_id' => $paymentId,
-                        'apportionment_id'=> $apportionment->apportionment_id,
-                        'link_trans_id' => $trans->trans_id,
-                        'parent_trans_id' => $trans->trans_id,
-                        'invoice_disbursed_id' => $trans->invoice_disbursed_id,
-                        'user_id' => $userId,
-                        'trans_date' => $paymentDetails['date_of_payment'],
-                        'amount' => $amount,
-                        'entry_type' => 1,
-                        'soa_flag' => 1,
-                        'trans_type' => config('lms.TRANS_TYPE.TDS'),
-                        'trans_mode' => 2,
-                        'tds_per' => $trans->TDSRate,
-                    ];
-                    $amtToSettle += $amount;
+                    $amount = round($payments[$trans->trans_id],2);
+                    if($amount > 0){        
+                        $transactionList[] = [
+                            'payment_id' => $paymentId,
+                            'apportionment_id'=> $apportionment->apportionment_id,
+                            'link_trans_id' => $trans->trans_id,
+                            'parent_trans_id' => $trans->trans_id,
+                            'invoice_disbursed_id' => $trans->invoice_disbursed_id,
+                            'user_id' => $userId,
+                            'trans_date' => $paymentDetails['date_of_payment'],
+                            'amount' => $amount,
+                            'entry_type' => 1,
+                            'soa_flag' => 1,
+                            'trans_type' => config('lms.TRANS_TYPE.TDS'),
+                            'trans_mode' => 2,
+                            'tds_per' => $trans->TDSRate,
+                            'created_at' => $eventDate,
+                        ];
+                        $amtToSettle = round($amount + $amtToSettle,2);
+                    }   
                 }
 
                 if(round($repaymentAmt,2) > round($amtToSettle,2)){
@@ -1986,13 +2011,13 @@ class ApportionmentController extends Controller
                 if(!empty($invoiceDisbursedList)){
                     foreach($invoiceDisbursedList as $invDisbId){
                         $date_of_payment = $paymentDetails['date_of_payment'];
-                        $Obj->intAccrual($invDisbId, $date_of_payment, $apportionment->apportionment_id);
-                        $Obj->transactionPostingAdjustment($invDisbId, $apportionment->apportionment_id);
+                        $Obj->intAccrual($invDisbId, $date_of_payment, $apportionment->apportionment_id,3,$eventDate);
+                        $Obj->transactionPostingAdjustment($invDisbId, $apportionment->apportionment_id,3,$eventDate);
                     }
                 }
                     
                 $transIds = $transactions->pluck('trans_id');
-                $Obj->transactionUserChargePostingAdjustment($transIds, $paymentId, $apportionment->apportionment_id);
+                $Obj->transactionUserChargePostingAdjustment($transIds, $paymentId, $apportionment->apportionment_id,3,$eventDate);
                 $this->updateInvoiceRepaymentFlag(array_keys($invoiceDisbursedList));
                 $Obj->generateCreditNote($userId, $apportionment->apportionment_id);
                 /* Refund Process End */
@@ -2041,11 +2066,11 @@ class ApportionmentController extends Controller
                 if($showSuggestion && $payment && in_array($trans->trans_type,[config('lms.TRANS_TYPE.INTEREST'),config('lms.TRANS_TYPE.INTEREST_OVERDUE')])){
                     $accuredInterest = $trans->tempInterest;
                     if(!is_null($accuredInterest) && !($trans->invoiceDisbursed->invoice->program_offer->payment_frequency == 1 && $trans->invoiceDisbursed->invoice->program->interest_borne_by == 1 && $trans->trans_type == config('lms.TRANS_TYPE.INTEREST'))){
-                           $accuredInterestR = number_format($accuredInterest,2);
+                        $accuredInterestR = round($accuredInterest,2);
                     }
                 }
-                $totalPay = $trans->amount;
-                $outStanding = $trans->outstanding;
+                $totalPay = round($trans->amount,2);
+                $outStanding = round($trans->outstanding,2);
                 $unTransactions[] = [
                     'Trans ID' => Helpers::_encrypt($trans->trans_id, 'CAPAUT'),
                     'Trans Date' => Carbon::parse($trans->parenttransdate)->format('d-m-Y'),
@@ -2283,12 +2308,10 @@ class ApportionmentController extends Controller
                         ->update([
                             'is_active' => 0
                         ]);
-                    //return redirect()->route('apport_unsettled_view', [ 'user_id' => $request->user_id , 'payment_id' => $request->payment_id, 'sanctionPageView' => $request->sanctionPageView ]);
                     return \Response::json(['status' => 1, 'message' =>  'Deleted Successfully!']);
                 }
             }
         } catch (Exception $ex) {
-            //return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
             return \Response::json(['status' => 0, 'message' =>  Helpers::getExceptionMessage($ex)]);
         }
     }

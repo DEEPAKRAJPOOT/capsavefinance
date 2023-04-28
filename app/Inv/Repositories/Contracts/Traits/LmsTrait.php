@@ -269,7 +269,7 @@ trait LmsTrait
         if(isset($data['soa_flag'])){
             $soaFlag = $data['soa_flag'];
         }else{
-            $soaFlag = in_array($transType,[10,35]) ? 0 : 1;
+            $soaFlag = in_array($transType,[10]) ? 0 : 1;
         }
 
         $transactionData = [];
@@ -296,6 +296,9 @@ trait LmsTrait
         $transactionData['gst_amt'] = $data['gst_amt'] ?? null;
         $transactionData['chrg_gst_id'] = $data['chrg_gst_id'] ?? null;
         $transactionData['trans_mode'] = $data['trans_mode'] ?? null;
+        if(isset($data['created_at'])){
+            $transactionData['created_at'] = $data['created_at']; 
+        }
         return $transactionData;
     }
 
@@ -613,6 +616,8 @@ trait LmsTrait
 
     protected function finalRefundTransactions(int $refundReqId, $actualRefundDate)
     {
+        $eventDate = Helpers::getSysStartDate();
+        $actualRefundDate = carbon::parse($actualRefundDate)->format('Y-m-d');
         $transactions = RefundReqTrans::where('refund_req_id','=',$refundReqId)
         ->whereHas('transaction',function($query){
             $query->whereIn('trans_type',[config('lms.TRANS_TYPE.REFUND'),config('lms.TRANS_TYPE.MARGIN'),config('lms.TRANS_TYPE.NON_FACTORED_AMT')]);
@@ -641,7 +646,8 @@ trait LmsTrait
                     'invoice_disbursed_id'=>$transDetail->invoice_disbursed_id,
                     'parent_trans_id'=>$transDetail->parent_trans_id??$transDetail->trans_id,
                     'link_trans_id'=>$transDetail->trans_id,
-                    'soa_flag'=>1
+                    'soa_flag'=>1,
+                    'created_at'=>$eventDate
                 ], config('lms.TRANS_TYPE.REFUND'), 0);
 
                 $trans_data =  Transactions::saveTransaction($refundData);

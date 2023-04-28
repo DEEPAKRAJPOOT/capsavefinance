@@ -416,7 +416,6 @@ class InvoiceController extends Controller {
     }
     
     public function updateTransactionInvoiceDisbursed($disbursalIds, $fundedDate) {
-        $oldTimeZone = trim(strtolower(date_default_timezone_get()));
         $invoiceDisbursed = $this->lmsRepo->getInvoiceDisbursed($disbursalIds)->toArray();
         $selectDate = (!empty($fundedDate)) ? date("Y-m-d h:i:s", strtotime(str_replace('/','-',$fundedDate))) : \Carbon\Carbon::now()->format('Y-m-d h:i:s');
         $curData = \Carbon\Carbon::now()->format('Y-m-d h:i:s');
@@ -458,7 +457,10 @@ class InvoiceController extends Controller {
 
             /* Sudesh: Code to save Invoice Disbursed details : S */
             if(1){
+                $oldTimeZone = trim(strtolower(date_default_timezone_get()));
                 date_default_timezone_set("UTC");
+                $eventDate = Helpers::getSysStartDate();
+                $fundedDate = \Carbon\Carbon::parse($fundedDate)->format('Y-m-d');
                 $invoiceDetails = [
                     'invoice_id' => $value['invoice']['invoice_id'],
                     'invoice_disbursed_id' => $value['invoice_disbursed_id'],
@@ -488,7 +490,6 @@ class InvoiceController extends Controller {
                 $this->lmsRepo->saveInvoiceDisbursedDetails($invoiceDetails,$whereInvoiceDetails);
                 unset($invoiceDetails);
                 unset($whereInvoiceDetails);
-                /* Sudesh: Code to save Invoice Disbursed details : E */
 
                 if($disbAmt > 0.00){
                     $transactionData = $this->createTransactionData($value['disbursal']['user_id'], [
@@ -498,7 +499,8 @@ class InvoiceController extends Controller {
                         'from_date' => $value['int_accrual_start_dt'],
                         'to_date' => $value['payment_due_date'],
                         'due_date' => $value['payment_due_date'],
-                        'trans_mode' => '1'
+                        'trans_mode' => '1',
+                        'created_at' => $eventDate,
                     ], config('lms.TRANS_TYPE.PAYMENT_DISBURSED'));
                     $createTransaction = $this->lmsRepo->saveTransaction($transactionData);   
                 }
@@ -515,7 +517,8 @@ class InvoiceController extends Controller {
                         'to_date' =>   date('Y-m-d', strtotime($value['payment_due_date'] . "- 1 days")),
                         'due_date' => (($value['invoice']['program_offer']['payment_frequency'] == 1 && $value['invoice']['program_offer']['program']['interest_borne_by'] == 1)) ? $value['int_accrual_start_dt'] : $value['payment_due_date'],
                         'gst' => '0',
-                        'trans_mode' => '1'
+                        'trans_mode' => '1',
+                        'created_at' => $eventDate,
                     ], config('lms.TRANS_TYPE.INTEREST'));
                     $createTransaction = $this->lmsRepo->saveTransaction($intrstDbtTrnsData);
 
@@ -527,7 +530,8 @@ class InvoiceController extends Controller {
                             'trans_date' => $fundedDate, 
                             'invoice_disbursed_id' => $value['invoice_disbursed_id'],
                             'gst' => '0',
-                            'trans_mode' => '1'
+                            'trans_mode' => '1',
+                            'created_at' => $eventDate,
                         ], config('lms.TRANS_TYPE.INTEREST'), 1);
                         $createTransaction = $this->lmsRepo->saveTransaction($intrstCdtTrnsData);
                     }
@@ -553,6 +557,7 @@ class InvoiceController extends Controller {
                     $transData['invoice_disbursed_id'] = $value['invoice_disbursed_id'];
                     $transData['trans_mode']  = 1;
                     $transData['trans_date'] = $fundedDate;
+                    $transData['created_at'] = $eventDate;
                     if($chrgData->is_gst_applicable == 1) {
                         $transData['amount'] += $fWGst;
                         $transData['base_amt'] = $value['processing_fee'];
@@ -572,13 +577,21 @@ class InvoiceController extends Controller {
                 /// Margin transaction $tranType = 10
                 $marginAmt = round($margin, config('lms.DECIMAL_TYPE')['AMOUNT_TWO_DECIMAL']);
                 if ($marginAmt > 0.00) {
-                    $marginTrnsData = $this->createTransactionData($value['disbursal']['user_id'], ['amount' => $marginAmt, 'trans_date' => $fundedDate, 'invoice_disbursed_id' => $value['invoice_disbursed_id']], config('lms.TRANS_TYPE.MARGIN'), 0);
+                    $marginTrnsData = $this->createTransactionData($value['disbursal']['user_id'], [
+                        'amount' => $marginAmt, 
+                        'trans_date' => $fundedDate, 
+                        'invoice_disbursed_id' => $value['invoice_disbursed_id'],
+                        'created_at' => $eventDate,
+                    ], config('lms.TRANS_TYPE.MARGIN'), 0);
                     $createTransaction = $this->lmsRepo->saveTransaction($marginTrnsData);
                 }
-                $Obj->intAccrual($value['invoice_disbursed_id'], NULL,NULL,1);
-                $Obj->transactionPostingAdjustment($value['invoice_disbursed_id'], NULL); 
+                $Obj->intAccrual($value['invoice_disbursed_id'], NULL,NULL,1,$eventDate);
                 $Obj->generateCreditNote($value['disbursal']['user_id']);    
+                $Obj->transactionPostingAdjustment($value['invoice_disbursed_id'], NULL,1,$eventDate); 
+                date_default_timezone_set($oldTimeZone);
             }
+            /* Sudesh: Code to save Invoice Disbursed details : E */
+
         }
 
         foreach($invDisbs as $userId => $invDisb){
