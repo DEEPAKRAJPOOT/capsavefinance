@@ -276,7 +276,15 @@
                         var obj1  = data.get_program;
                         var obj2   =  data.limit;
                         var obj3 = data.get_supplier;
-                        $("#anc_limit").html('Limit : <span class="fa fa-inr"></span>  '+obj2.anchor_limit+'');
+                        var obj4 = data.anchorData;
+                        var obj5 = data.anchorRemainLimit;
+                        let IndianLocale = Intl.NumberFormat('en-US');
+                        if(obj4.is_fungible == 1) {
+                        //$("#anc_limit").html('Limit : <span class="fa fa-inr"></span>  '+obj2.anchor_limit+'');
+                        $("#anc_limit").html('<b>Anchor Available Limit:</b> <span class="fa fa-inr"></span>  '+IndianLocale.format(data.anchorRemainLimit)+'');
+                        } else {
+                          $("#anc_limit").html('');  
+                        }
                         $("#program_id").append("<option value=''>Please Select Customer</option>"); 
                           //  $("#program_id").append("<option value=''>Please Select Program</option>");
                          if(obj1.length > 0){
@@ -284,17 +292,18 @@
                              if(v.program!=null)
                              {  
                                 getSupplierByPrgmId = (obj3[v.program.prgm_id])?obj3[v.program.prgm_id]:'';
-                                $dropDown = "<optgroup label='"+v.program.prgm_name+"'>";
                                 if(getSupplierByPrgmId != ''){
+                                $dropDown = "<optgroup label='"+v.program.prgm_name+"-"+v.program.prgm_id+"'>";
                                   $(getSupplierByPrgmId).each(function(j,v1){
                                     if(v1 !=null)
                                     {           
                                       $dropDown +="<option value='"+v.program.prgm_id+","+v.app_prgm_limit_id+","+v1.user_id+","+v1.app_id+","+v1.prgm_offer_id+"'>"+v1.biz_entity_name+"&nbsp;&nbsp;("+v1.customer_id+")</option>";  
                                     }                   
                                     });
+                                    $dropDown += "</optgroup>";
+                                    $("#program_id").append($dropDown);
                                 }
-                                $dropDown += "</optgroup>";
-                                $("#program_id").append($dropDown);
+                                
                                   
                               }                   
                              });
@@ -450,8 +459,11 @@
                         var tenor_old_invoice  = data.tenor_old_invoice;
                         $("#tenor_old_invoice").val(tenor_old_invoice);
                         $("#tenor").val(tenor);
-                        $("#pro_limit").html('Prgm. Limit : <span class="fa fa-inr"></span>  '+data.limit+'');
-                        $("#pro_remain_limit").html('Remaining Prgm. Balance : <span class="fa fa-inr"></span>  '+data.remain_limit+'');
+                        let IndianLocale = Intl.NumberFormat('en-US');
+                        //$("#pro_limit").html('Prgm. Limit : <span class="fa fa-inr"></span>  '+data.limit+'');
+                        //$("#pro_remain_limit").html('Remaining Prgm. Balance : <span class="fa fa-inr"></span>  '+data.remain_limit+'');
+                        $("#pro_limit").html('<b>Available Customer Limit:</b> <span class="fa fa-inr"></span>  '+IndianLocale.format(data.remain_limit)+'');
+                        $("#pro_remain_limit").html('<b>Available Program Limit:</b> <span class="fa fa-inr"></span>  '+IndianLocale.format(data.limit)+'');
                         $("#pro_limit_hide").val(data.remain_limit);  
                         $("#margin").val(data.margin);  
                 }

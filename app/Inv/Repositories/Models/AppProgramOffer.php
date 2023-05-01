@@ -751,4 +751,35 @@ class AppProgramOffer extends BaseModel {
     public function appGroupDetails() {
         return $this->hasMany('App\Inv\Repositories\Models\AppGroupDetail', 'app_id', 'app_id');
     }
+
+    public static function getActiveProgramOfferByPrgmId($prgmId)
+    {
+        $curDate = \Carbon\Carbon::now()->format('Y-m-d');
+        $result = self::select('app_prgm_offer.*','app.user_id','users.f_name','users.l_name','biz.biz_entity_name','lms_users.customer_id')
+                ->join('app', 'app.app_id', '=', 'app_prgm_offer.app_id')
+                ->join('biz', 'app.biz_id', '=', 'biz.biz_id')                
+                ->join('app_product', 'app_product.app_id', '=', 'app.app_id')
+                ->join('users', 'users.user_id', '=', 'app.user_id')          
+                ->join('user_detail', 'user_detail.user_id', '=', 'users.user_id') 
+                ->join('lms_users', function ($join) {
+                    $join->on('lms_users.user_id', '=', 'user_detail.user_id');                    
+                    $join->on('lms_users.app_id', '=', 'app.app_id');
+                }) 
+                ->join('app_limit', function ($join) {
+                    $join->on('app.user_id', '=', 'app_limit.user_id');                    
+                    $join->on('app.app_id', '=', 'app_limit.app_id');
+                })                
+                ->where('app_product.product_id', 1)
+                ->where('app_prgm_offer.prgm_id', $prgmId)
+                ->where('app_prgm_offer.is_approve', 1)
+                ->where('app_prgm_offer.status', 1)
+                ->where('app.status', 2)      
+                ->where('user_detail.is_active', 1)  
+                ->where('app_limit.status', 1) 
+                ->where('app_limit.end_date', '>=', $curDate)       
+                ->groupBy('app.user_id')        
+                ->get();
+        
+        return isset($result[0]) ? $result : [];
+    }
 }

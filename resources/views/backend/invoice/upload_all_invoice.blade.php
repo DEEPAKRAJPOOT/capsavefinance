@@ -33,7 +33,7 @@
                                     
                                     <div class="col-md-4">
                                         <div class="form-group">
-                                            <label for="txtCreditPeriod">Anchor Business Name<span class="error_message_label">*</span><!--<span id="anc_limit" class="error" style="">--></span></label>
+                                            <label for="txtCreditPeriod">Anchor Business Name<span class="error_message_label">*</span><span id="anc_limit" class="success" style=""></span></label>
                                             <select readonly="readonly" class="form-control changeAnchor" id="anchor_id"  name="anchor_id">
                                              
                                             @if(count($get_anchor) > 0)
@@ -62,7 +62,7 @@
                                         <div class="form-group">
                                             <label for="txtCreditPeriod">Customer Name
                                                 <span class="error_message_label">*</span>
-                                            </label><span id="pro_limit" class="error"></span>  
+                                            </label><span id="pro_limit" class="success"></span>  
                                             <span id="adhoc_msg" style="display:none;margin-left: 10px;">
                                                 <input name="limit_type" type="checkbox" id="limit_type" class="get_adhoc" value="1">
                                                 <b> Adhoc </b>
@@ -129,7 +129,7 @@
                                     				
 					<div class="col-md-4">
                                         <div class="form-group">
-                                             <label for="txtCreditPeriod">Invoice Amount <span class="error_message_label">*</span> </label><span id="pro_remain_limit" class="error"></span>
+                                             <label for="txtCreditPeriod">Invoice Amount <span class="error_message_label">*</span> </label><span id="pro_remain_limit" class="success"></span>
                                             <input type="text" class="form-control" maxlength="15" id="invoice_approve_amount" name="invoice_approve_amount" placeholder="Invoice Approve Amount">
                                             <span id="msgProLimit" class="error"></span>
                                          </div>

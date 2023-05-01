@@ -86,7 +86,11 @@ class AppLimit extends BaseModel {
        return  self::where(['user_id'=>$user_id,'status' => 1,'is_deleted' => 0])->first();
     }
     
-
+    public static function getUserTotalLimit($user_id)
+    {
+       return  self::where(['user_id'=>$user_id,'status' => 1,'is_deleted' => 0])
+                     ->sum('tot_limit_amt');
+    }
  
     public static function updateAppLimit($data, $whereCond=[]){
         if (!is_array($data)) {
@@ -136,6 +140,19 @@ class AppLimit extends BaseModel {
                             $query->whereNotIn('curr_status_id', [config('common.mst_status_id')['APP_REJECTED'], config('common.mst_status_id')['APP_CANCEL']]);
                         })
                         ->where(['user_id'=>$user_id])
+                        ->orderBy('created_at','DESC')
+                        ->get();
+    }
+
+
+    public static  function getUserActiveApproveLimit($user_id)
+    {
+        return  AppLimit::with(['app','supplyProgramLimit','supplyProgramLimit.product','supplyProgramLimit.offer.program','supplyProgramLimit.offer.anchor','supplyProgramLimit.offer.adhoc_limit'])
+                        ->whereHas('app', function ($query) {
+                            $query->whereNotIn('curr_status_id', [config('common.mst_status_id')['APP_REJECTED'], config('common.mst_status_id')['APP_CANCEL']]);
+                        })
+                        ->where(['user_id'=>$user_id])
+                        ->where(['status'=>1])
                         ->orderBy('created_at','DESC')
                         ->get();
     }

@@ -1873,6 +1873,19 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
        }
        
    }
+
+/** get the user Total limit  **/
+
+   public function getUserTotalLimit($user_id)
+   {
+       try
+       {
+           return AppLimit::getUserTotalLimit($user_id);
+       } catch (Exception $ex) {
+             return $ex;
+       }
+       
+   }
    
    /** get the user program  limit  **/
 
@@ -1886,6 +1899,18 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
        }
        
    } 
+
+
+   public function getUserActiveProgramLimit($user_id)
+   {
+       try
+       {
+           return AppLimit::getUserActiveApproveLimit($user_id);
+       } catch (Exception $ex) {
+             return $ex;
+       }
+       
+   }
 
    public function getUserProgramLimitByBizId($biz_id)
    {
