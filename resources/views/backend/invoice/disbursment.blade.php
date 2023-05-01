@@ -30,7 +30,7 @@
 
                     <div class="tab-content">
 
-                        <div id="menu1" class=" active tab-pane "><br>
+                        <div id="menu1" class=" active tab-pane mt-4">
   <span id="moveCase" class="text-success"></span>
 
                             <div class="card">
@@ -39,13 +39,14 @@
                                         {{-- <div class="col-md-5"> --}}
                                             <input type="hidden" name="route" value="{{Route::currentRouteName()}}">                                
                                         {{-- </div> --}}
-                                        <div class="col-md-5" style="margin-left:10px;">
-                                            <input class="form-control form-control-sm"  name="search_biz"  placeholder="Search by CustId, Anchor, Business Name, Batch Id and Invoice number" style="width: 510px;">
+                                        <div class="col-md-4">
+                                            <div class="input-group">
+                                                <input class="form-control form-control-sm"  name="search_biz"  placeholder="Search by CustId, Anchor, Business Name, Batch Id and Invoice number">
+                                                <div class="input-group-append ml-2">
+                                                    <button  type="button" id="search_biz" class="btn  btn-primary btn-sm">Search</button>
+                                                </div>
+                                            </div>
                                         </div>
-                                        <div class="col-md-1" style="padding-left: 115px;">
-                                            <button  type="button" id="search_biz" class="btn  btn-primary btn-sm float-right">Search</button>
-                                        </div>  
-                                        
                                     </div>
                                     <div class="row">
                                         <div class="col-12 dataTables_wrapper mt-4">

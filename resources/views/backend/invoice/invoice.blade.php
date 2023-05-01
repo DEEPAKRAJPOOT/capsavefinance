@@ -31,67 +31,35 @@
 
                         <div class="tab-content">
 
-                            <div id="menu1" class=" active tab-pane "><br>
+                            <div id="menu1" class=" active tab-pane ">
                              <span id="moveCase" class="text-success" style="margin: 34px;"></span>
                              <span id="errormoveCase" class="text-danger" style="margin: 34px;"></span>
                                <div class="card">
                                     <div class="card-body">
                                         <div class="row">
-                                            {{-- <div class="col-md-2"> --}}
-                                                 <input type="hidden" name="route" value="{{Route::currentRouteName()}}">                                
-                                            {{-- </div> --}}
-                                              <div class="col-md-4" style="margin-left: 10px;">
-                                                  <input class="form-control form-control-sm" style="width: 456px;" name="search_biz"  placeholder="Search by CustId, Anchor, Business Name and Invoice Number ">
-                                              </div> 
-                                             <div class="col-md-1" style="padding-left: 150px;">
-                                             <button  type="button" id="search_biz" class="btn  btn-primary btn-sm float-right">Search</button>
-                                             </div>  
-                                           <!-- <div class="col-md-3">				 
-                                               
-                                              <select class="form-control form-control-sm changeBiz searchbtn"  name="search_biz" id="search_biz">
-                                                    <option value="">Select Business Name  </option>
-                                                        @foreach($get_bus as $row)
-                                                         @php if(isset($row->business->biz_id)) { @endphp
-                                                    <option value="{{{$row->business->biz_id}}}">{{{$row->business->biz_entity_name}}} </option>
-                                                      @php } @endphp
-                                                    @endforeach
-
-
-                                                </select>
-                                                <span id="anchorMsg" class="error"></span>
-
+                                            <div class="col-md-5">
+                                                <input type="hidden" name="route" value="{{Route::currentRouteName()}}">
+                                                <div class="input-group">
+                                                    <input class="form-control form-control-sm" name="search_biz" placeholder="Search by CustId, Anchor, Business Name and Invoice Number">
+                                                    <div class="input-group-append ml-2">
+                                                        <button type="button" id="search_biz" class="btn btn-primary btn-sm">Search</button>
+                                                        @can('backend_bulk_invoice')
+                                                            <a href="{{Route('backend_bulk_invoice')}}" type="button" class="btn btn-primary btn-sm ml-5">Bulk Invoice Upload</a>
+                                                        @endcan
+                                                    </div>
+                                                </div>
                                             </div>
-                                            <div class="col-md-2">				 
-                                                <select class="form-control form-control-sm changeAnchor searchbtn" id="changeAnchor"  name="search_anchor">
-                                                 
-                                                </select>
-
+                                            <div class="col-md-7 text-right">
+                                                @can('update_bulk_invoice')
+                                                    <button type="button" id="bulkApprove" data-status="8" class="btn btn-primary btn-sm ml-2 btn-app">Approve</button>
+                                                @endcan
+                                                @can('update_invoice_pending_tab')
+                                                    <button type="button" id="rejectPending" data-status="14" class="btn btn-primary btn-sm ml-2 btn-app">Reject</button>
+                                                @endcan
                                             </div>
-                                            <div class="col-md-2">		    
-
-                                                <select readonly="readonly" class="form-control form-control-sm searchbtn" id="supplier_id" name="search_supplier">
-
-                                                </select>
-                                            </div>  -->   
-                                            <div class="col-md-2" style="padding-left: 420px;">
-                                             @can('backend_bulk_invoice')
-                                                <a href="{{Route('backend_bulk_invoice')}}"type="button" class="btn btn-primary btn-sm float-right"> Bulk Invoice Upload</a>
-                                             @endcan
-                                       
-                                            </div>
-                                            <div class="col-md-1" style="margin-left: -20px;">
-                                            @can('update_bulk_invoice')
-                                                <button type="button" id="bulkApprove" data-status="8" class="btn btn-primary btn-sm ml-2 btn-app">Approve</button>
-                                            @endcan
-                                            </div>
-                                            <div class="col-md-1" style="margin-left: -20px;">
-                                            @can('update_invoice_pending_tab')
-                                                <button type="button" id="rejectPending" data-status="14" class="btn btn-primary btn-sm ml-2 btn-app">Reject</button>
-                                            @endcan
-                                            </div>
-                                        </div>
+                                        </div>                                        
                                         <div class="row">
-                                            <div class="col-12 dataTables_wrapper mt-1">
+                                            <div class="col-12 dataTables_wrapper mt-4">
                                                 <div class="overflow">
                                                     <div id="supplier-listing_wrapper" class="dataTables_wrapper dt-bootstrap4 no-footer">
                                                         <div class="row">
