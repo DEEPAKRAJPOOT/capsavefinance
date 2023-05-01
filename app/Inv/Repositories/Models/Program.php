@@ -76,6 +76,7 @@ class Program extends BaseModel {
         'is_grace_period',
         'grace_period',
         'interest_borne_by',
+        'overdue_interest_borne_by',
         'disburse_method',
         'repayment_method',
         'processing_fee',

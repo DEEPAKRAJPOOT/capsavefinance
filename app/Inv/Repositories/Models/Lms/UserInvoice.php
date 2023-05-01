@@ -76,6 +76,8 @@ class UserInvoice extends BaseModel {
         'tot_paid_amt',
         'tot_no_of_trans',
         'is_active',
+        'customer_id',
+        'customer_name',
         'file_id',
         'job_id',
         'created_by',

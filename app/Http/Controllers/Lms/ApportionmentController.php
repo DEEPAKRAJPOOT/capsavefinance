@@ -1101,7 +1101,7 @@ class ApportionmentController extends Controller
             $transactionList = [];
 
             foreach ($transactionsRunning as $key => $trans) {
-                $lastPostedTrans = Transactions::where('trans_running_id',$trans->trans_running_id)
+                $lastPostedTrans = Transactions::with('invoiceDisbursed:invoice_disbursed_id,invoice_id','invoiceDisbursed.invoice:invoice_id,program_id','invoiceDisbursed.invoice.program:prgm_id,interest_borne_by,overdue_interest_borne_by')->where('trans_running_id',$trans->trans_running_id)
                 ->where('entry_type', $trans->entry_type)
                 ->where('trans_type', $trans->trans_type)
                 ->orderBy('trans_date','desc')
@@ -1136,27 +1136,46 @@ class ApportionmentController extends Controller
                     'from_date' => $lastPostedTrans->trans_date ?? $trans->from_date,
                     'to_date' => $trans->trans_date,
                     'due_date' => $dueDate,
-                    'created_at' => $eventDate
+                    'created_at' => $eventDate,
+                    'interest_borne_by' => $lastPostedTrans->invoiceDisbursed->invoice->program->interest_borne_by,
+                    'overdue_interest_borne_by' => $lastPostedTrans->invoiceDisbursed->invoice->program->overdue_interest_borne_by,
                 ];
             }
             if(!empty($transactionList)){
                 foreach ($transactionList as $key => $newTrans) {
+                    $intBorneBy = $newTrans['interest_borne_by'];
+                    $odBorneBy = $newTrans['overdue_interest_borne_by'];
+                    unset($newTrans['interest_borne_by']);
+                    unset($newTrans['overdue_interest_borne_by']);
+
                     $transData = $this->lmsRepo->saveTransaction($newTrans);
                     $transactionList[$key]['trans_id'] = $transData->trans_id;
+                    $transactionList[$key]['interest_borne_by'] = $intBorneBy;
+                    $transactionList[$key]['overdue_interest_borne_by'] = $odBorneBy;
+
                 }
             }
             
             $controller = app()->make('App\Http\Controllers\Lms\userInvoiceController');
             $billData = [];
             foreach($transactionList as $trans){
-                $billData[$trans['user_id']][$trans['trans_id']] = $trans['trans_id'];
+                if(in_array($trans['trans_type'], [config('lms.TRANS_TYPE.INTEREST'),config('lms.TRANS_TYPE.INTEREST_OVERDUE')])){
+                    if($trans['interest_borne_by'] == 2){
+                        $billType = 'IC';
+                    }else{
+                        $billType = 'IA';
+                    }
+                    $billData[$trans['user_id']][$billType][$trans['trans_id']] = $trans['trans_id'];
+                }
             }
-
-            foreach($billData as $userId => $trans){
-                $transIds = array_keys($trans);
-                $controller->generateDebitNote($transIds, $userId, 'I');
+            foreach($billData as $userId => $billTypes){
+                foreach($billTypes as $billType => $trans){
+                    $transIds = array_keys($trans);
+                    if(!empty($transIds)){
+                        $controller->generateDebitNote($transIds, $userId, $billType);
+                    }
+                }
             }
-
             $whereActivi['activity_code'] = 'apport_running_save';
             $activity = $this->master->getActivity($whereActivi);
             if(!empty($activity)) {

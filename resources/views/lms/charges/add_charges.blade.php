@@ -122,6 +122,21 @@
                 <label for="chrg_name"> Date</label>
                 <input type="text" readonly="readonly"  class="form-control datepicker-charge_date" id="charge_date" name="charge_date" placeholder="Enter Date" value="{{ \Helpers::convertDateTimeFormat(\Helpers::getSysStartDate(), $fromDateFormat='Y-m-d H:i:s', $toDateFormat='d/m/Y') }}" >
             </div>
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label for="txtCreditPeriod"> Level Charges <span class="error_message_label">*</span> </label>
+                    {!!
+                    Form::select('level_charges',
+                    [
+                    ''=>'Select', '1'=>'Anchor',   '2'=>'Customer/Supplier',
+                    ],
+                    isset($subProgramData->overdue_interest_borne_by) ? $subProgramData->overdue_interest_borne_by : null,
+                    ['id' => 'level_charges',
+                    'class'=>'form-control',
+                    ])
+                    !!}
+                </div>
+            </div>
         </div>
 
 

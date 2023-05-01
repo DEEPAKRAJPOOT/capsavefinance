@@ -5999,7 +5999,7 @@ if ($err) {
             ],['chrg_id.required' => 'Please select atleast one checked']);
     
             $chrgIds = is_array($request->chrg_id) && count($request->chrg_id) ? $request->chrg_id : [$request->chrg_id];
-            $chrgTrans = ChargesTransactions::whereIn('chrg_trans_id', $chrgIds)->get();
+            $chrgTrans = ChargesTransactions::with('chargePrgm:prgm_id,interest_borne_by')->whereIn('chrg_trans_id', $chrgIds)->get();
             $chrgTranReqDltLogs = ChargeTransactionDeleteLog::whereIn('chrg_trans_id', $chrgIds)
                                             ->reqForDeletion()
                                             ->get();
@@ -6036,6 +6036,15 @@ if ($err) {
 
                 if ($chrgTran->transaction->is_invoice_generated == 0) {
                     $debitNoteTransIds[] = $chrgTran->trans_id;
+                    if(isset($chrgTran->chargePrgm)){
+                        if($chrgTran->chargePrgm->interest_borne_by == 2){
+                            $bill = 'CC';
+                        }else{
+                            $bill = 'CA';
+                        }
+                    }else{
+                        $bill = 'CC';
+                    }
                 }
                 $chrgTransactions[] = $chrgTran->transaction;
                 if (!$userId) {
@@ -6047,7 +6056,7 @@ if ($err) {
             $controller = app()->make('App\Http\Controllers\Lms\userInvoiceController');
 
             if (count($debitNoteTransIds)) {
-                $debitNoteResults = $controller->generateDebitNote($debitNoteTransIds, $userId, $billType = 'C');
+                $debitNoteResults = $controller->generateDebitNote($debitNoteTransIds, $userId, $billType = $bill);
             }
 
             $creditNoteTransIds = Transactions::processChrgTransDeletion($chrgTransactions);
@@ -6060,7 +6069,7 @@ if ($err) {
 
         try {
             if(count($creditNoteTransIds)) {
-                $creditNoteResults = $controller->generateCreditNote($creditNoteTransIds, $userId, $billType = 'C');
+                $creditNoteResults = $controller->generateCreditNote($creditNoteTransIds, $userId, $billType = 'CC');
             }
             return response()->json(['status' => 1,'msg' => "Charge cancellation approved successfully."]);
         } catch (Exception $ex) {

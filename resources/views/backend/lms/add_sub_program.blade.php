@@ -315,48 +315,17 @@ $defaultMinimumLoanSize = ($anchorData->is_fungible) ? 1 : NULL;
                                                             </div>
                                                             <div class="col-md-6">
                                                                 <div class="form-group">
-                                                                    <div class="row">
-                                                                        <div class="col-md-6">
-                                                                            <label for="is_adhoc_facility">Adhoc Facility<span class="error_message_label">*</span</label>
-                                                                            <div class="" style="color:black;">
-                                                                                <div class="form-check-inline">
-                                                                                    <label class="form-check-label fnt">
-                                                                                        {!! Form::radio('is_adhoc_facility',
-                                                                                        1,
-                                                                                        isset($subProgramData->is_adhoc_facility) && ($subProgramData->is_adhoc_facility == 1) ? true : false,
-                                                                                        ['class'=>'form-check-input adhoc',
-                                                                                        'id'=>'is_adhoc_facility'])
-                                                                                        !!}
-
-                                                                                        Yes
-                                                                                    </label>
-                                                                                </div>
-                                                                                <div class="form-check-inline">
-                                                                                    <label class="form-check-label fnt">
-                                                                                        {!! Form::radio('is_adhoc_facility',
-                                                                                        0,
-                                                                                        isset($subProgramData->is_adhoc_facility) && ($subProgramData->is_adhoc_facility == 0) ? true : false,
-                                                                                        ['class'=>'form-check-input adhoc',
-                                                                                        'id'=>'is_adhoc_facility'])
-                                                                                        !!}No
-                                                                                    </label>
-                                                                                </div>
-                                                                            </div>
-                                                                            <label id="prgm_type-error" class="error mb-0" for="is_adhoc_facility"></label>
-                                                                        </div>
-                                                                        <div class="col-md-6">
-                                                                            <div id="facility1" class="desc" style="display:none; color:black;">
-                                                                                <label for="txtCreditPeriod">Max. Interset Rate (%) <span class="error_message_label">*</span></label>
-
-                                                                                {!! Form::text('adhoc_interest_rate',
-                                                                                isset($subProgramData->adhoc_interest_rate) ? $subProgramData->adhoc_interest_rate : null,
-                                                                                ['class'=>'form-control  percentage','placeholder'=>'Max interset rate',
-                                                                                'id'=>'employee'])
-                                                                                !!}
-
-                                                                            </div>
-                                                                        </div>
-                                                                    </div>
+                                                                    <label for="txtCreditPeriod"> Overdue Interest Borne By <span class="error_message_label">*</span> </label>
+                                                                    {!!
+                                                                    Form::select('overdue_interest_borne_by',
+                                                                    [
+                                                                    ''=>'Select', '1'=>'Anchor',   '2'=>'Customer/Supplier',
+                                                                    ],
+                                                                    isset($subProgramData->overdue_interest_borne_by) ? $subProgramData->overdue_interest_borne_by : null,
+                                                                    ['id' => 'overdue_interest_borne_by',
+                                                                    'class'=>'form-control',
+                                                                    ])
+                                                                    !!}
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -409,6 +378,52 @@ $defaultMinimumLoanSize = ($anchorData->is_fungible) ? 1 : NULL;
                                                                             ['class'=>'form-control numberOnly','placeholder'=>'Grace Period (In Days)',
                                                                             'id'=>'grace_period'])
                                                                             !!}
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-md-6">
+                                                                <div class="form-group">
+                                                                    <div class="row">
+                                                                        <div class="col-md-6">
+                                                                            <label for="is_adhoc_facility">Adhoc Facility<span class="error_message_label">*</span</label>
+                                                                            <div class="" style="color:black;">
+                                                                                <div class="form-check-inline">
+                                                                                    <label class="form-check-label fnt">
+                                                                                        {!! Form::radio('is_adhoc_facility',
+                                                                                        1,
+                                                                                        isset($subProgramData->is_adhoc_facility) && ($subProgramData->is_adhoc_facility == 1) ? true : false,
+                                                                                        ['class'=>'form-check-input adhoc',
+                                                                                        'id'=>'is_adhoc_facility'])
+                                                                                        !!}
+
+                                                                                        Yes
+                                                                                    </label>
+                                                                                </div>
+                                                                                <div class="form-check-inline">
+                                                                                    <label class="form-check-label fnt">
+                                                                                        {!! Form::radio('is_adhoc_facility',
+                                                                                        0,
+                                                                                        isset($subProgramData->is_adhoc_facility) && ($subProgramData->is_adhoc_facility == 0) ? true : false,
+                                                                                        ['class'=>'form-check-input adhoc',
+                                                                                        'id'=>'is_adhoc_facility'])
+                                                                                        !!}No
+                                                                                    </label>
+                                                                                </div>
+                                                                            </div>
+                                                                            <label id="prgm_type-error" class="error mb-0" for="is_adhoc_facility"></label>
+                                                                        </div>
+                                                                        <div class="col-md-6">
+                                                                            <div id="facility1" class="desc" style="display:none; color:black;">
+                                                                                <label for="txtCreditPeriod">Max. Interset Rate (%) <span class="error_message_label">*</span></label>
+
+                                                                                {!! Form::text('adhoc_interest_rate',
+                                                                                isset($subProgramData->adhoc_interest_rate) ? $subProgramData->adhoc_interest_rate : null,
+                                                                                ['class'=>'form-control  percentage','placeholder'=>'Max interset rate',
+                                                                                'id'=>'employee'])
+                                                                                !!}
+
+                                                                            </div>
                                                                         </div>
                                                                     </div>
                                                                 </div>

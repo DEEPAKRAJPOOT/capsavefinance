@@ -934,4 +934,12 @@ class User extends Authenticatable
                     ->where('email', $email)
                     ->first();
     }
+
+    public static function getCustomerData($userId) {
+        $query = self::select('users.f_name','users.l_name','lms_users.customer_id')
+            ->join('lms_users', 'users.user_id', '=', 'lms_users.user_id');
+        $query->where('users.user_id', $userId);
+        $customers = $query->first();            
+        return ($customers ? $customers : []);
+    }
 }

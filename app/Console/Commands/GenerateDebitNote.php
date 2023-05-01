@@ -53,24 +53,60 @@ class GenerateDebitNote extends Command
         $controller = \App::make('App\Http\Controllers\Lms\userInvoiceController');
         $billData = [];
         $curdate = Helpers::getSysStartDate();
-        $transList = Transactions::whereNull('parent_trans_id')
-        ->whereHas('transType', function($query){
+        $transList = Transactions::with('invoiceDisbursed:invoice_disbursed_id,invoice_id','invoiceDisbursed.invoice:invoice_id,program_id','invoiceDisbursed.invoice.program:prgm_id,interest_borne_by,overdue_interest_borne_by','ChargesTransactions:trans_id,prgm_id','ChargesTransactions.chargePrgm:prgm_id,interest_borne_by')->whereNull('parent_trans_id')->whereDate('created_at','>=','2023-01-01')
+        ->where('entry_type','0')
+        ->where('invoice_disbursed_id','!=','NULL')
+        ->where('is_invoice_generated','0');
+        if($invoiceType == 'IA_9'){
+            $transList->whereHas('invoiceDisbursed.invoice.program', function($newQuery1){
+                $newQuery1->where('interest_borne_by',1);
+            });
+        }elseif($invoiceType == 'IC_9'){
+            $transList->whereHas('invoiceDisbursed.invoice.program', function($newQuery1){
+                $newQuery1->where('interest_borne_by',2);
+            });
+        }
+        if($invoiceType == 'IA_33'){
+            $transList->whereHas('invoiceDisbursed.invoice.program', function($newQuery2){
+                $newQuery1->where('overdue_interest_borne_by',1);
+            });
+        }elseif($invoiceType == 'IC_33'){
+            $transList->whereHas('invoiceDisbursed.invoice.program', function($newQuery2){
+                $newQuery1->where('overdue_interest_borne_by',2);
+            });
+        }
+        $transList->whereHas('transType', function($query){
             $query->where('chrg_master_id','>','0')
             ->orWhereIn('id',[config('lms.TRANS_TYPE.INTEREST'),config('lms.TRANS_TYPE.INTEREST_OVERDUE')]);
-        })
-        ->whereDate('created_at','>=','2023-01-01')
-        ->where('entry_type','0')
-        ->where('is_invoice_generated','0')
-        ->get();
+        });
+        $transList = $transList->get();
         $billData = [];
         foreach($transList as $trans){
             $billType = null;
-            if($trans->trans_type == config('lms.TRANS_TYPE.INTEREST')){
-                $billType = 'I';
+            if($trans->trans_type == config('lms.TRANS_TYPE.INTEREST') ){
+                if(isset($trans->invoiceDisbursed->invoice->program)){
+                    if($trans->invoiceDisbursed->invoice->program->interest_borne_by == 2){
+                        $billType = 'IC';
+                    }else{
+                        $billType = 'IA';
+                    }
+                }
             }elseif($trans->trans_type == config('lms.TRANS_TYPE.INTEREST_OVERDUE')){
-                $billType = 'I';
+                if(isset($trans->invoiceDisbursed->invoice->program)){
+                    if($trans->invoiceDisbursed->invoice->program->overdue_interest_borne_by == 2){
+                        $billType = 'IC';
+                    }else{
+                        $billType = 'IA';
+                    }
+                }
             }elseif($trans->trans_type >= 50){
-                $billType = 'C';
+                if(isset($trans->ChargesTransactions->chargePrgm)){
+                    if($trans->ChargesTransactions->chargePrgm->interest_borne_by == 2){
+                        $billType = 'CC';
+                    }else{
+                        $billType = 'CA';
+                    }
+                }
             }
 
             $billData[$trans->user_id][$billType][$trans->gst][$trans->trans_id] = $trans->trans_id;
