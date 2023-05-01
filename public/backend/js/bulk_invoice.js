@@ -156,7 +156,7 @@
                          if(v.program!=null)
                          {  
                             getSupplierByPrgmId = (obj3[v.program.prgm_id])?obj3[v.program.prgm_id]:'';
-                            $dropDown = "<option value='"+v.program.prgm_id+","+v.app_prgm_limit_id+"'>"+v.program.prgm_name+"&nbsp;&nbsp;(Program id: "+v.program.prgm_id+")</option>";
+                            $dropDown = "<option value='"+v.program.prgm_id+","+v.app_prgm_limit_id+"'>"+v.program.prgm_name+"&nbsp;&nbsp;(Sub-Program ID: "+v.program.prgm_id+")</option>";
                             if(getSupplierByPrgmId != ''){
                               $(getSupplierByPrgmId).each(function(j,v1){
                                 if(v1 !=null)

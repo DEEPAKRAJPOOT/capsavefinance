@@ -110,7 +110,7 @@
                                                 @php
                                                     $getSupplierByPrgmId = $get_supplier[$row1->program->prgm_id]??'';
                                                 @endphp  
-                                                <option value="{{{$row1->program->prgm_id}}},{{{$row1->app_prgm_limit_id}}}">{{{$row1->program->prgm_name}}}&nbsp;&nbsp;(Program id: {{ $row1->program->prgm_id }})</option>
+                                                <option value="{{{$row1->program->prgm_id}}},{{{$row1->app_prgm_limit_id}}}">{{{$row1->program->prgm_name}}}&nbsp;&nbsp;(Sub-Program ID: {{ $row1->program->prgm_id }})</option>
                                                 @if(!empty($getSupplierByPrgmId))
                                                     @foreach($getSupplierByPrgmId as $row2)
                                                     <option value="{{{$row1->program->prgm_id}}},{{{$row1->app_prgm_limit_id}}},{{{$row2['user_id']}}},{{{$row2['app_id']}}},{{{$row2['prgm_offer_id']}}}" disabled>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{ $row2['biz_entity_name'] }}&nbsp;&nbsp;({{ $row2['customer_id'] }})</option>
@@ -156,7 +156,7 @@
                                             <span id="customFile_msg" class="error"></span>
                                             <span id="msgFile" class="text-success"></span>
                                         </div>
-   <a href="{{url('backend/assets/invoice/invoice-template.csv')}}" class="mt-1 float-left"><i class="fa fa-file-pdf-o" aria-hidden="true"></i> Download Template</a>
+   <a href="{{url('backend/assets/invoice/invoice-template.csv')}}" class="mt-1 float-left"><i class="fa fa-file-pdf-o" aria-hidden="true"></i> Download Bulk Invoice Template</a>
                                     </div>
 
                                     <div class="col-md-2">
