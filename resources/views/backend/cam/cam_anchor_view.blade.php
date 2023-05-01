@@ -12,6 +12,7 @@
                 <div class="pl-4 pr-4 pb-4 pt-2">
                     <input type="hidden" id="biz_id" name="biz_id" value="{{$biz_id}}">
                     <input type="hidden" id="app_id" name="app_id" value="{{$app_id}}">
+                    <input type="hidden" id="user_id" name="user_id" value="{{$user_id}}">
                     <table class="table overview-table">
 
                         <tbody>

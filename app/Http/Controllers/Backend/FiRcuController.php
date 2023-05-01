@@ -72,8 +72,6 @@ class FiRcuController extends Controller
      */
     public function saveFiUpload(Request $request)
     {
-        $biz_id = $request->get('biz_id');
-        $app_id = $request->get('app_id');
         $fi_addr_id = $request->fiaid;
         $uploadData = Helpers::uploadAppFile($request->all(), $app_id);
         $userFile = $this->docRepo->saveFile($uploadData);
@@ -92,10 +90,14 @@ class FiRcuController extends Controller
      */
     public function showAssignFi(Request $request)
     {
+        $appId = $request->get('app_id');
+        $bizId = $request->get('biz_id');
+        $appData 	 = $this->appRepo->getAppData($appId);
+		$userId = $appData->user_id;
         $agencies = $this->appRepo->getAllAgency('fi');
         $agency_users = $this->userRepo->getAllAgencyUsers();
         //dd($agency_users->toArray());
-        return view('backend.fircu.fi_trigger')->with(['agencies'=>$agencies, 'agency_users'=>$agency_users]);   
+        return view('backend.fircu.fi_trigger')->with(['agencies'=>$agencies, 'agency_users'=>$agency_users,'app_id' => $appId,'biz_id' => $bizId,'user_id' => $userId]);   
     }
 
     /**
@@ -108,9 +110,10 @@ class FiRcuController extends Controller
         $userId = $request->all('to_id');
         $app_id = $request->all('app_id');
         $appData = $this->appRepo->getAppDataByAppId($request->get('app_id'));
+        $user_id = $appData->user_id;
         if((int)$userId['to_id'] == $roleData) {
             Session::flash('error',trans('You can not assign to same user'));
-           return redirect()->route('backend_fi', ['app_id' => request()->get('app_id'), 'biz_id' => $appData->biz_id]);  
+           return redirect()->route('backend_fi', ['app_id' => request()->get('app_id'), 'biz_id' => $appData->biz_id,'user_id' => $user_id]);  
         }
         $this->appRepo->insertFIAddress($request->all());  
 
@@ -139,7 +142,7 @@ class FiRcuController extends Controller
         $emailData['trigger_type'] = 'FI';
         $emailData['subject'] = 'Capsave has requested FI for this FI ID '. $request_info;
         \Event::dispatch("FI_FCU_PD_CONCERN_MAIL", serialize($emailData));
-        return redirect()->route('backend_fi', ['app_id' => request()->get('app_id'), 'biz_id' => $appData->biz_id]);   
+        return redirect()->route('backend_fi', ['app_id' => request()->get('app_id'), 'biz_id' => $appData->biz_id,'user_id' => $user_id]);   
     }
 
 
@@ -249,7 +252,6 @@ class FiRcuController extends Controller
             else
                 $rcuResult[$key]['agencies'] = $this->appRepo->getRcuAgencies($appId, $value->doc_id);        
         }
-        // dd($rcuResult);
         return view('backend.fircu.rcu', [
                     'data' => $rcuResult,
                     'user_id' => $user_id
@@ -262,10 +264,14 @@ class FiRcuController extends Controller
      */
     public function showAssignRcu(Request $request)
     {
+        $appId = $request->get('app_id');
+        $bizId = $request->get('biz_id');
+        $appData 	 = $this->appRepo->getAppData($appId);
+		$userId = $appData->user_id;
         $agencies = $this->appRepo->getAllAgency('rcu');
         $agency_users = $this->userRepo->getAllAgencyUsers();
         
-        return view('backend.fircu.rcu_trigger')->with(['agencies'=>$agencies, 'agency_users'=>$agency_users]);   
+        return view('backend.fircu.rcu_trigger')->with(['agencies'=>$agencies, 'agency_users'=>$agency_users,'app_id' => $appId,'biz_id' => $bizId,'user_id' =>$userId]);   
     }
 
     /**
@@ -307,7 +313,7 @@ class FiRcuController extends Controller
             
             if($rcuDocResponse == 'Assigned') {
                 Session::flash('message',trans('success_messages.rcu.alreadyAssigned'));
-                return redirect()->route('backend_rcu', ['app_id' => request()->get('app_id'), 'biz_id' => $appData->biz_id]);
+                return redirect()->route('backend_rcu', ['app_id' => request()->get('app_id'), 'biz_id' => $appData->biz_id,'user_id' => $appData->user_id]);
                 
             }
             if($rcuDocResponse) {

@@ -45,6 +45,7 @@
 
                 <input type="hidden" name="app_id" value="{{isset($arrRequest['app_id']) ? $arrRequest['app_id'] : ''}}" />             
                 <input type="hidden" name="biz_id" value="{{isset($arrRequest['biz_id']) ? $arrRequest['biz_id'] : ''}}" />             
+                <input type="hidden" name="user_id" value="{{$user_id}}" />             
                 <input type="hidden" name="cam_report_id" value="{{isset($arrCamData->cam_report_id) ? $arrCamData->cam_report_id : ''}}" />    
                 @if($route_name!="security_deposit")
                 <table class="table table-bordered overview-table" cellpadding="0" cellspacing="0" border="1">

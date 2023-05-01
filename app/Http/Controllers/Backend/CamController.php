@@ -279,7 +279,7 @@ class CamController extends Controller
                       Session::flash('message',trans('CAM information not saved successfully'));
                 }
            }    
-           return redirect()->route('cam_overview', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')]);
+           return redirect()->route('cam_overview', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id'),'user_id' => $arrCamData['user_id']]);
        } catch (Exception $ex) {
            return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
        }
@@ -581,7 +581,7 @@ class CamController extends Controller
             $this->activityLogByTrait($activity_type_id, $activity_desc, response()->json($arrData), $arrActivity);
         }
 
-        return redirect()->route('reviewer_summary', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')]);
+        return redirect()->route('reviewer_summary', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id'),'user_id' => $arrData['user_id']]);
       } catch (Exception $ex) {
           return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
       }
@@ -2597,7 +2597,7 @@ class CamController extends Controller
                 $this->activityLogByTrait($activity_type_id, $activity_desc, response()->json($arrHygieneData), $arrActivity);
             }
 
-            return redirect()->route('cam_cibil', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')]);
+            return redirect()->route('cam_cibil', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id'),'user_id' => $arrHygieneData['user_id']]);
         } catch (Exception $ex) {
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
         }
@@ -2611,6 +2611,7 @@ class CamController extends Controller
             $owneridArray = $arrCamData['ownerid'];
             $ckycNumberArray = $arrCamData['ckycNumber'];
             $appId = $arrCamData['app_id'];
+            $user_id = $request->get('user_id');
             $docId = 77;
             foreach($owneridArray as $key => $ownerId) {
                 echo "<br>-->".$ckycNumberArray[$key]."<br>";
@@ -2635,7 +2636,7 @@ class CamController extends Controller
                         }
                     } else {
                         Session::flash('error',trans('CKYC allow only Alphanumeric'));
-                        return redirect()->route('cam_promoter', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')]);
+                        return redirect()->route('cam_promoter', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id'),'user_id' => $user_id]);
                     }
                 }
             }
@@ -2732,6 +2733,7 @@ class CamController extends Controller
       try {
             $resultFlag = false;
             $arrData['app_id'] = request()->get('app_id');
+            $user_id = $request->get('user_id');
             $date = $request->get('debt_on');
             $fund_date = $request->get('fund_date');
             $nonfund_date = $request->get('nonfund_date');
@@ -2778,7 +2780,7 @@ class CamController extends Controller
             }else{
                 Session::flash('error',trans('Bank detail not saved'));
             }
-            return redirect()->route('cam_bank', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')]);
+            return redirect()->route('cam_bank', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id'),'user_id' => $user_id]);
         } catch (Exception $ex) {
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
         }
@@ -3007,6 +3009,7 @@ class CamController extends Controller
     \DB::beginTransaction();
     try {
         $arrCamData = $request->all();
+        $user_id = $request->get('user_id');
         $userId = Auth::user()->user_id;
         if (isset($arrCamData['security_doc_id']) && !empty($arrCamData['security_doc_id']) && isset($arrCamData['doc_type']) && !empty($arrCamData['doc_type'])) {
           $dataCheck = array_filter($arrCamData['security_doc_id']);
@@ -3106,7 +3109,7 @@ class CamController extends Controller
         if($request->has("security_deposit")){
           \DB::commit();
           Session::flash('message', trans('Pre/Post disbursment information saved successfully'));
-          return redirect()->route('security_deposit', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')]);
+          return redirect()->route('security_deposit', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id'),'user_id' => $request->get('user_id')]);
         }
       } catch (Exception $ex) {
         \DB::rollBack();

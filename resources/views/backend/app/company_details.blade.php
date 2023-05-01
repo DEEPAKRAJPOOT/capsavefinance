@@ -35,6 +35,7 @@
 				@csrf
 				<input type="hidden" name="biz_id" value="{{ request()->get('biz_id') }}">
 				<input type="hidden" name="app_id" value="{{ request()->get('app_id') }}">
+				<input type="hidden" name="user_id" value="{{ request()->get('user_id') }}">
 				<!-- <input type="hidden" name="biz_cin" value=""> -->
 				<input type="hidden" name="pan_api_res" value="">
 				<input type="hidden" name="cin_api_res" value="">

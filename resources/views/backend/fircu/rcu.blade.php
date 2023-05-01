@@ -16,12 +16,12 @@
     <ul class="sub-menu-main pl-0 m-0">
         @can('backend_fi')
         <li>
-            <a href="{{ route('backend_fi', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')]) }}">FI Residence</a>
+            <a href="{{ route('backend_fi', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id'),'user_id' => request()->get('user_id')]) }}">FI Residence</a>
         </li>
         @endcan
         @can('backend_rcu')
         <li>
-            <a href="{{ route('backend_rcu', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')]) }}" class="active">RCU Document</a>
+            <a href="{{ route('backend_rcu', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id'),'user_id' => request()->get('user_id')]) }}" class="active">RCU Document</a>
         </li>
         @endcan
         @can('backend_inspection')
@@ -31,7 +31,7 @@
         @endcan
         @can('pd_notes_list')
         <li>
-            <a href="{{ route('pd_notes_list', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')]) }}"> Personal Discussion </a>
+            <a href="{{ route('pd_notes_list', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id'),'user_id' => request()->get('user_id')]) }}"> Personal Discussion </a>
         </li>
         @endcan
     </ul>

@@ -183,6 +183,7 @@ class ApplicationController extends Controller
 			}
 			$appId = $request->app_id;
 			$bizId = $request->biz_id;
+			$userId = $request->user_id;
 
 			$business_info = $this->appRepo->updateCompanyDetail($arrFileData, $bizId, Auth::user()->user_id);
 
@@ -203,7 +204,7 @@ class ApplicationController extends Controller
                 $this->activityLogByTrait($activity_type_id, $activity_desc, response()->json($arrFileData), $arrActivity);
             }
 				Session::flash('message',trans('success_messages.update_company_detail_successfully'));
-				return redirect()->route('promoter_details',['app_id' =>  $appId, 'biz_id' => $bizId]);
+				return redirect()->route('promoter_details',['app_id' =>  $appId, 'biz_id' => $bizId,'user_id' => $userId]);
 			} else {
 				return redirect()->back()->withInput()->withErrors(trans('auth.oops_something_went_wrong'));
 			}
@@ -458,12 +459,19 @@ class ApplicationController extends Controller
 	 * showing form for uploading document
 	 */
 
-	public function uploadDocument()
+	public function uploadDocument(Request $request)
 	{
+		$app_id = $request->get('app_id');
+		$biz_id = $request->get('biz_id');
 		$bankdata = User::getBankData();
+		$userData = User::getUserByAppId($app_id);
+		$user_id = $userData->user_id;
 
 		return view('backend.app.upload_document', [
-					'bankdata' => $bankdata
+					'bankdata' => $bankdata,
+					'app_id' => $app_id,
+					'biz_id' => $biz_id,
+					'user_id' => $user_id,
 				]);
 	}
 
@@ -594,7 +602,7 @@ class ApplicationController extends Controller
 				}
 
 				Session::flash('message',trans('success_messages.uploaded'));
-				return redirect()->route('documents', ['app_id' => $appId, 'biz_id' => $bizId]);
+				return redirect()->route('documents', ['app_id' => $appId, 'biz_id' => $bizId,'user_id' => $userId]);
 			} else {
 				//Add application workflow stages
 				//Helpers::updateWfStage('doc_upload', $appId, $wf_status=2);
@@ -604,7 +612,7 @@ class ApplicationController extends Controller
 			//Add application workflow stages
 			//Helpers::updateWfStage('doc_upload', $request->get('appId'), $wf_status=2);
 
-			return redirect()->route('documents', ['app_id' => $appId, 'biz_id' => $bizId])->withErrors(Helpers::getExceptionMessage($ex));
+			return redirect()->route('documents', ['app_id' => $appId, 'biz_id' => $bizId,'user_id' => $userId])->withErrors(Helpers::getExceptionMessage($ex));
 		}
 	}
 
@@ -706,7 +714,6 @@ class ApplicationController extends Controller
 				//$appData = $this->appRepo->getAppDataByAppId($appId);
 				//$userId = $appData ? $appData->user_id : null;
 				$reqdDocs = $this->createAppRequiredDocs($prgmDocsWhere, $userId, $appId);
-
 				return redirect()->route('application_list')->with('message', trans('success_messages.app.saved'));
 			// } else {
 			//     //Add application workflow stages
