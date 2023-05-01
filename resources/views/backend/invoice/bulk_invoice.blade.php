@@ -106,12 +106,23 @@
                                                 @if($anchor==11)
                                                 <option value="">Please Select</option>
                                                 @if($get_program)
-                                                @foreach($get_program as $row1) 
-                                                <option value="{{{$row1->program->prgm_id}}},{{{$row1->app_prgm_limit_id}}}">{{{$row1->program->prgm_name}}} - {{{$row1->program->prgm_id}}}</option>
-
-                                                @endforeach
+                                                @foreach($get_program as $row1)
+                                                @php
+                                                    $getSupplierByPrgmId = $get_supplier[$row1->program->prgm_id]??'';
+                                                @endphp  
+                                                <option value="{{{$row1->program->prgm_id}}},{{{$row1->app_prgm_limit_id}}}">{{{$row1->program->prgm_name}}}&nbsp;&nbsp;(Program id: {{ $row1->program->prgm_id }})</option>
+                                                @if(!empty($getSupplierByPrgmId))
+                                                    @foreach($getSupplierByPrgmId as $row2)
+                                                    <option value="{{{$row1->program->prgm_id}}},{{{$row1->app_prgm_limit_id}}},{{{$row2['user_id']}}},{{{$row2['app_id']}}},{{{$row2['prgm_offer_id']}}}" disabled>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{ $row2['biz_entity_name'] }}&nbsp;&nbsp;({{ $row2['customer_id'] }})</option>
+                                                    @endforeach
                                                 @endif
-                                                @endif          
+                                                @endforeach
+                                                @else
+                                                <option value="">No data Found</option>
+                                                @endif
+                                                @else
+                                                <option value="">No data Found</option>
+                                                @endif         
 
                                             </select>
                                             <input type="hidden" id="pro_limit_hide" name="pro_limit_hide">
