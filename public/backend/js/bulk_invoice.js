@@ -147,17 +147,31 @@
 
                     var obj1 = data.get_program;
                     var obj2 = data.limit;
+                    var obj3 = data.get_supplier;
 
                     $("#anc_limit").html('Limit : <span class="fa fa-inr"></span>  ' + obj2.anchor_limit + '');
-
-
                     $("#program_bulk_id").append("<option value=''>Please Select</option>");
-                    $(obj1).each(function (i, v) {
-                        if (v.program != null)
-                        {
-                            $("#program_bulk_id").append("<option value='" + v.program.prgm_id + "," + v.app_prgm_limit_id + "'>" + v.program.prgm_name + " - "+ v.program.prgm_id +"</option>");
-                        }
-                    });
+                    if(obj1.length > 0){
+                        $(obj1).each(function(i,v){
+                         if(v.program!=null)
+                         {  
+                            getSupplierByPrgmId = (obj3[v.program.prgm_id])?obj3[v.program.prgm_id]:'';
+                            $dropDown = "<option value='"+v.program.prgm_id+","+v.app_prgm_limit_id+"'>"+v.program.prgm_name+"&nbsp;&nbsp;(Program id: "+v.program.prgm_id+")</option>";
+                            if(getSupplierByPrgmId != ''){
+                              $(getSupplierByPrgmId).each(function(j,v1){
+                                if(v1 !=null)
+                                {           
+                                  $dropDown +="<option value='"+v.program.prgm_id+","+v.app_prgm_limit_id+"' disabled>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"+v1.biz_entity_name+"&nbsp;&nbsp;("+v1.customer_id+")</option>";  
+                                }                   
+                                });
+                            }
+                            $("#program_bulk_id").append($dropDown);
+                              
+                          }                   
+                         });
+                      }else{
+                        $("#program_bulk_id").html("<option value=''>No data found</option>");
+                      }
                 } else
                 {
                     $("#program_bulk_id").append("<option value=''>No data found</option>");

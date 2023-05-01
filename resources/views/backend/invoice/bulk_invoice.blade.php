@@ -1,5 +1,32 @@
 @extends('layouts.backend.admin-layout')
 @section('additional_css')
+<style>
+   select#program_bulk_id option {
+        padding: 5px 10px;
+    }
+
+    select#program_bulk_id option:not([value=""]) {
+        font-weight: bold;
+    }
+
+    select#program_bulk_id option[value=""] {
+        font-weight: normal;
+    }
+
+    select#program_bulk_id option[disabled] {
+        font-weight: normal;
+    }
+
+    select#program_bulk_id option[label]:not([value=""]) {
+        font-weight: bold;
+        padding-left: 10px;
+    }
+
+    select#program_bulk_id option:not([label]):not([value=""]) {
+        padding-left: 30px;
+    }
+
+  </style>  
 @endsection
 @section('content')
 <div class="content-wrapper">
