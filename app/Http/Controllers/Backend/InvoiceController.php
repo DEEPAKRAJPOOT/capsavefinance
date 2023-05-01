@@ -3153,6 +3153,11 @@ public function disburseTableInsert($exportData = [], $supplierIds = [], $allinv
                 ->setCellValue('D1', 'Amount')
                 ->setCellValue('E1', 'File_name')
                 ->setCellValue('F1', 'Upfront Interest');
+                // Get the number of columns
+                // Get the worksheet
+                $worksheet = $sheet->getActiveSheet();
+                // Get the number of columns
+                $lastColumn = $worksheet->getHighestColumn();
         $rows = 2;
         foreach($data as $rowData){
             $file_name = $rowData['user_file'] ? $rowData['user_file']['file_name'] : '';
@@ -3165,6 +3170,11 @@ public function disburseTableInsert($exportData = [], $supplierIds = [], $allinv
                 ->setCellValue('D' . $rows, $rowData['invoice_approve_amount'] ?? '')
                 ->setCellValue('E' . $rows, $file_name ?? '')
                 ->setCellValue('F' . $rows, $upfrontInterest ?? '');
+                // Remove data from the last column of the current row
+                if ($upfrontInterest === null || empty($upfrontInterest)){
+                    $sheet->getActiveSheet()->setCellValue($lastColumn . $rows, '');
+                    $sheet->getActiveSheet()->setCellValue( 'F1', '');
+                }
             $rows++;
         }
         // Get the current time

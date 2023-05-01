@@ -181,7 +181,9 @@
                                              </td>
                                              <td>
                                                 <span><b>Inv. Appr. Amt.:&nbsp;</b>{{number_format($val->invoice_approve_amount)}}</span><br>
-                                                <span><b>Upfront Int. Amt.:&nbsp;</b>{{$val->upfront_interest}}</span><br>
+                                                @if(!empty($val->upfront_interest))
+                                                    <span><b>Upfront Int. Amt.:&nbsp;</b>{{$val->upfront_interest}}</span><br>
+                                                @endif
                                             </td>
                                               <td>
                                                     <span><b>Name:&nbsp;</b>{{$val->user->f_name}} {{$val->user->l_name}}</span><br>
