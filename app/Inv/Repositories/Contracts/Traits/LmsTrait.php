@@ -2,8 +2,8 @@
 namespace App\Inv\Repositories\Contracts\Traits;
 
 use Auth;
+use Helpers;
 use Carbon\Carbon;
-use Dompdf\Helpers;
 use Illuminate\Support\Facades\DB;
 use App\Helpers\ApportionmentHelper;
 use App\Inv\Repositories\Models\Payment;
@@ -14,7 +14,6 @@ use App\Inv\Repositories\Models\Lms\Disbursal;
 use App\Inv\Repositories\Models\Lms\Transactions;
 use App\Inv\Repositories\Models\Lms\InterestAccrual;
 use App\Inv\Repositories\Models\Lms\Refund\RefundReqTrans;
-
 use App\Inv\Repositories\Models\Lms\InvoiceDisbursed;
 use App\Inv\Repositories\Models\Lms\RefundTransactions;
 use App\Inv\Repositories\Models\Lms\InvoiceRepaymentTrail;
