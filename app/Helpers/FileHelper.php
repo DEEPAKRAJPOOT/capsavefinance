@@ -450,6 +450,10 @@ public function exportCsv($data=[],$columns=[],$fileName='',$extraDataArray=[])
         $inputArr = [];
         if ($data) {
           if($type == 'download'){
+              if (!Storage::disk('s3')->exists('Development/ckycdoc/business/identityDetails/'.$userInfo['user_id'])) {
+                Storage::disk('s3')->makeDirectory('Development/ckycdoc/business/identityDetails/'.$userInfo['user_id'], 0777, true);
+            }
+
               if (!Storage::exists('/public/payment/' . $paymentId.'/download')) {
                 Storage::makeDirectory('/public/payment/' . $paymentId.'/download', 0777, true);
               }
