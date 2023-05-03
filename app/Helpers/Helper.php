@@ -294,9 +294,9 @@ class Helper extends PaypalHelper
     public static function uploadAppFile($attributes, $appId)
     {
         $userId = Application::where('app_id', $appId)->pluck('user_id')->first();
-        $s3path = env('S3_BUCKET_DIRECTORY_PATH').'/user/' . $userId . '/' . $appId;
-        $inputArr = this::uploadAwsS3Bucket($s3path, $attributes);
-        /*$inputArr = [];
+        //$s3path = env('S3_BUCKET_DIRECTORY_PATH').'/user/' . $userId . '/' . $appId;
+        //$inputArr = self::uploadAwsS3Bucket($s3path, $attributes);
+        $inputArr = [];
         if(!empty($attributes['doc_file'])) {
             if ($attributes['doc_file']) {
                 if (!Storage::exists('/public/user/' . $userId . '/' . $appId)) {
@@ -311,14 +311,14 @@ class Helper extends PaypalHelper
         $inputArr['file_size'] = !empty($attributes['doc_file']) ? $attributes['doc_file']->getClientSize() : '';
         $inputArr['file_encp_key'] =  md5('2');
         $inputArr['created_by'] = 1;
-        $inputArr['updated_by'] = 1;*/
+        $inputArr['updated_by'] = 1;
 
         return $inputArr;
     }
     public static function uploadUserLMSFile($attributes, $userId)
     {
         $s3path = env('S3_BUCKET_DIRECTORY_PATH').'/Lms/' . $userId;
-        $inputArr = this::uploadAwsS3Bucket($s3path, $attributes);
+        $inputArr = self::uploadAwsS3Bucket($s3path, $attributes);
         
         return $inputArr;
     }
@@ -353,7 +353,7 @@ class Helper extends PaypalHelper
        $name   = $attributes['file_id']->getClientOriginalName();
        $name  =  explode('.',$name);
        $filename =  $name[0].'.'.$extension;
-       $inputArr = this::uploadAwsS3Bucket($s3path, $attributes, $filename);
+       $inputArr = self::uploadAwsS3Bucket($s3path, $attributes, $filename);
        /*if ($attributes['file_id']) {
             if (!Storage::exists('/public/user/' . $userId . '/invoice/' . $batch_id)) {
                 Storage::makeDirectory('/public/user/' . $userId . '/invoice/' . $batch_id, 0777, true);
@@ -485,7 +485,7 @@ class Helper extends PaypalHelper
             $inputArr['file_path'] = $path;
         }*/
         $s3path = env('S3_BUCKET_DIRECTORY_PATH').'/anchor/' . $anchorId;
-        $inputArr = this::uploadAwsS3Bucket($s3path, $attributes);
+        $inputArr = self::uploadAwsS3Bucket($s3path, $attributes);
 
        /* $inputArr['file_type'] = $attributes['doc_file']->getClientMimeType();
         $inputArr['file_name'] = $attributes['doc_file']->getClientOriginalName();
@@ -497,7 +497,7 @@ class Helper extends PaypalHelper
         return $inputArr;
     }
 
-    public function uploadAwsS3Bucket($s3path, $attributes, $filename = null){
+    public static function uploadAwsS3Bucket($s3path, $attributes, $filename = null){
 
         $inputArr = [];
         if ($attributes['doc_file']) {
@@ -2240,7 +2240,7 @@ class Helper extends PaypalHelper
     public static function uploadDirectoryFile($attributes, $pathDirectory = 'user')
     {
         $s3path = env('S3_BUCKET_DIRECTORY_PATH').$pathDirectory;
-        $inputArr = this::uploadAwsS3Bucket($s3path, $attributes);
+        $inputArr = self::uploadAwsS3Bucket($s3path, $attributes);
         
         return $inputArr;
     }
@@ -2263,7 +2263,7 @@ class Helper extends PaypalHelper
         $anchorData = Anchor::getAnchorById($anchorId);
         $oldFileId = UserFile::deletes($anchorData->logo_file_id);
         $s3path = env('S3_BUCKET_DIRECTORY_PATH'). '/anchor/'. $anchorId;
-        $inputArr = this::uploadAwsS3Bucket($s3path, $attributes);
+        $inputArr = self::uploadAwsS3Bucket($s3path, $attributes);
 
         return $inputArr;
     }
@@ -2673,7 +2673,7 @@ class Helper extends PaypalHelper
     {
         $attributes['doc_file'] = $attributes['approval_doc_file'];
         $s3path = env('S3_BUCKET_DIRECTORY_PATH').'/user/' . $userId . '/'. $appId;
-        $inputArr = this::uploadAwsS3Bucket($s3path, $attributes);
+        $inputArr = self::uploadAwsS3Bucket($s3path, $attributes);
 
         return $inputArr;
     }
@@ -2721,7 +2721,7 @@ class Helper extends PaypalHelper
         $inputArr = [];
         $attributes['doc_file'] = $docFile;
         $s3path = env('S3_BUCKET_DIRECTORY_PATH').'/user/' . $userId . '/' . $appId . '/adhoc-limit' . '/'. $adhocLimit->app_offer_adhoc_limit_id . '/docs';
-        $inputArr = this::uploadAwsS3Bucket($s3path, $attributes);
+        $inputArr = self::uploadAwsS3Bucket($s3path, $attributes);
 
         return $inputArr;
     }
@@ -2729,7 +2729,7 @@ class Helper extends PaypalHelper
     {
         $inputArr = [];
         $s3path = env('S3_BUCKET_DIRECTORY_PATH').'/Lms/app_limit_review/'. $userId . '/'. $appId;
-        $inputArr = this::uploadAwsS3Bucket($s3path, $attributes);
+        $inputArr = self::uploadAwsS3Bucket($s3path, $attributes);
 
         return $inputArr;
     }
