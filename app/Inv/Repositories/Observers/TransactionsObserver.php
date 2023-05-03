@@ -5,6 +5,7 @@ use App\Inv\Repositories\Models\Lms\Transactions;
 use App\Inv\Repositories\Models\Lms\InvoiceDisbursedDetail;
 use App\Inv\Repositories\Models\Lms\CustomerTransactionSOA;
 use App\Http\Controllers\Lms\userInvoiceController;
+use App\Inv\Repositories\Models\Master\Charges;
 
 class TransactionsObserver
 {
@@ -21,19 +22,19 @@ class TransactionsObserver
         CustomerTransactionSOA::createTransactionSOADetails($transaction);
         if($transaction->entry_type == 0 &&  is_null($transaction->parent_trans_id)){
             // Temporarily prevented for overdue interest by sudesh
-            if($transaction->transType->chrg_master_id > 0 && !in_array($transaction->trans_type,[config('lms.TRANS_TYPE.INTEREST_OVERDUE'), config('lms.TRANS_TYPE.INVOICE_PROCESSING_FEE')])){
-                $controller = app()->make('App\Http\Controllers\Lms\userInvoiceController');
-                if(isset($transaction->ChargesTransactions->chargePrgm)){
-                    if($transaction->ChargesTransactions->chargePrgm->interest_borne_by == 2){
+            $chrgMstId = $transaction->transType->chrg_master_id;
+            if($chrgMstId > 0 && !in_array($transaction->trans_type,[config('lms.TRANS_TYPE.INTEREST_OVERDUE'), config('lms.TRANS_TYPE.INVOICE_PROCESSING_FEE')])){
+                $levelBaseChrg = Charges::getChargeLevel($chrgMstId);
+                if(isset($levelBaseChrg)){
+                    $controller = app()->make('App\Http\Controllers\Lms\userInvoiceController');
+                    if($levelBaseChrg->level_charges == 2){
                         $invType = 'CC';
                     }else{
                         $invType = 'CA';
                     }
-                }else{
-                    $invType = 'CC';
+                    $appId = $transaction->ChargesTransactions->app_id ?? null;
+                    $controller->generateDebitNote([$transaction->trans_id], $transaction->user_id, $invType, $appId);
                 }
-                $appId = $transaction->ChargesTransactions->app_id ?? null;
-                $controller->generateDebitNote([$transaction->trans_id], $transaction->user_id, $invType, $appId);
             }
         }
     }

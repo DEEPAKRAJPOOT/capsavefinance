@@ -259,6 +259,7 @@ class ChargeController extends Controller
                         'entry_type' => 0,
                         "trans_date" => ($request['charge_date']) ? Carbon::createFromFormat('d/m/Y', $request['charge_date'])->format('Y-m-d') : '',
                         "trans_type" => $getTransType->id,
+                        "level_charges" =>$request->level_charges,
                         "pay_from" => $request['pay_from']
                     ];
                     $res =   $this->lmsRepo->saveCharge($arr);

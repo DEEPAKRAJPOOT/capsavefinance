@@ -112,4 +112,8 @@ class ChargesTransactions extends BaseModel
        return $this->hasOne('App\Inv\Repositories\Models\Program','prgm_id','prgm_id');
    
     }
+
+    public static function getChrgTxnData($transId){
+       return self::where(['trans_id' => $transId])->value('prgm_id');
+    }
 }
