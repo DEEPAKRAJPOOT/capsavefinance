@@ -64,7 +64,12 @@ class FiRcuController extends Controller
      */
     public function FiUpload(Request $request)
     {
-        return view('backend.fircu.fi_upload_file');   
+        // dd($request->all());
+        $appId = $request->app_id;
+        $bizId = $request->biz_id;
+        // $userId = $request->user_id;
+        // dd($userId,$bizId,$appId);
+        return view('backend.fircu.fi_upload_file')->with(['app_id' => $appId,'biz_id' => $bizId]);   
     }
 
     /**
@@ -72,6 +77,9 @@ class FiRcuController extends Controller
      */
     public function saveFiUpload(Request $request)
     {
+        // dd($request->all());
+        $app_id = $request->app_id;
+        $biz_id = $request->biz_id;
         $fi_addr_id = $request->fiaid;
         $uploadData = Helpers::uploadAppFile($request->all(), $app_id);
         $userFile = $this->docRepo->saveFile($uploadData);
