@@ -46,10 +46,13 @@ class Role extends BaseModel
      * @var array
      */
     protected $fillable = [
+        'parent_role_id',
+        'role_type',
         'name',
         'display_name',
         'description',
         'is_editable',
+        'is_superadmin',
         'is_active',
         'redirect_path',
         'is_front_login_allowed',
@@ -125,7 +128,7 @@ class Role extends BaseModel
      */
     public static function getRoleLists()
     {
-        $arrRoles = Role::where('is_editable', 1)->where('role_type',2)->where('name','!=','Accounts');
+        $arrRoles = Role::where('is_editable', 1)->where('role_type',2);
         return ($arrRoles ? : false);
     }
     
@@ -207,8 +210,7 @@ class Role extends BaseModel
      */
     public static function getAllRole()
     {
-        $arrRoles = Role::whereIn('id', [4, 5, 6, 7, 8, 9, 10, 13, 14])
-                        ->where('is_active', 1)
+        $arrRoles = Role::where(['is_active' => 1, 'role_type' => 2])
                         ->pluck('name','id');
         return ($arrRoles ? $arrRoles: []);
     }
@@ -230,5 +232,11 @@ class Role extends BaseModel
                         ->where('is_active', 1)
                         ->get('id');
         return $arrRoles;               
+    }
+
+    public static function getActiveRolesByType($role_type)
+    {
+        $arrRoles = self::where(['role_type'=> $role_type, 'is_active' => 1])->get();
+        return $arrRoles ? $arrRoles : [];
     }
 }

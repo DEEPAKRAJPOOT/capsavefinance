@@ -41,9 +41,8 @@ class ManualApportionmentHelper{
         return $calDate;
     }
 
-    public function transactionPostingAdjustment($invDisbId, $apportionmentId = NULL){
-        $currentdate =  Helpers::getSysStartDate();
-        $curdate = Carbon::parse($currentdate)->setTimezone(config('common.timezone'))->format('Y-m-d');
+    public function transactionPostingAdjustment($invDisbId, $apportionmentId = NULL, $event = NULL, $eventDate){
+        $curDate = Carbon::parse($eventDate)->setTimezone(config('common.timezone'))->format('Y-m-d');
         $transactionList = [];
         $amount = 0.00;
 
@@ -77,7 +76,7 @@ class ManualApportionmentHelper{
             $actualAmount = $trans->actInterest;
             $actualAmount = ($actualAmount > $amount) ? $amount : $actualAmount;
             if(is_null($trans->trans_running_id) && $payFreq == 1 && $principalTrans->outstanding > 0 ){
-                if(strtotime($curdate) < strtotime($paymentDueDate)){
+                if(strtotime($curDate) < strtotime($paymentDueDate)){
                     $actualAmount = $amount;
                 }
             }
@@ -104,12 +103,13 @@ class ManualApportionmentHelper{
                         'trans_running_id'=> $trans->trans_running_id,
                         'invoice_disbursed_id' => $trans->invoice_disbursed_id,
                         'user_id' => $trans->user_id,
-                        'trans_date' => $currentdate,
+                        'trans_date' => $curDate,
                         'amount' => $tt,
                         'entry_type' => 1,
                         'soa_flag' => 1,
                         'trans_type' => config('lms.TRANS_TYPE.CANCEL'),
-                        'apportionment_id' => $apportionmentId ?? null
+                        'apportionment_id' => $apportionmentId ?? null,
+                        'created_at' => $eventDate
                     ];
                 }
             }elseif($cancelableAmount < $cancelledAmount){ 
@@ -124,12 +124,13 @@ class ManualApportionmentHelper{
                             'trans_running_id'=> $cTrans->trans_running_id,
                             'invoice_disbursed_id' => $cTrans->invoice_disbursed_id,
                             'user_id' => $cTrans->user_id,
-                            'trans_date' => $currentdate,
+                            'trans_date' => $curDate,
                             'amount' => $cTrans->settled_outstanding,
                             'entry_type' => 0,
                             'soa_flag' => 1,
                             'trans_type' => config('lms.TRANS_TYPE.REVERSE'),
-                            'apportionment_id' => $apportionmentId ?? null
+                            'apportionment_id' => $apportionmentId ?? null,
+                            'created_at' => $eventDate
                         ];
                         $cancelableAmount = round($cancelableAmount + $cTrans->settled_outstanding,2);
                     }
@@ -142,12 +143,13 @@ class ManualApportionmentHelper{
                         'trans_running_id'=> $trans->trans_running_id,
                         'invoice_disbursed_id' => $trans->invoice_disbursed_id,
                         'user_id' => $trans->user_id,
-                        'trans_date' => $currentdate,
+                        'trans_date' => $curDate,
                         'amount' => round(abs($cancelableAmount),2),
                         'entry_type' => 1,
                         'soa_flag' => 1,
                         'trans_type' => config('lms.TRANS_TYPE.CANCEL'),
-                        'apportionment_id' => $apportionmentId ?? null
+                        'apportionment_id' => $apportionmentId ?? null,
+                        'created_at' => $eventDate
                     ];
                 }
             }
@@ -182,12 +184,13 @@ class ManualApportionmentHelper{
                                     'trans_running_id'=> $paidTrans->trans_running_id,
                                     'invoice_disbursed_id' => $paidTrans->invoice_disbursed_id,
                                     'user_id' => $paidTrans->user_id,
-                                    'trans_date' => $currentdate,
+                                    'trans_date' => $curDate,
                                     'amount' => $rfAmt,
                                     'entry_type' => 0,
                                     'soa_flag' => $paidTrans->soa_flag,
                                     'trans_type' => config('lms.TRANS_TYPE.REVERSE'),
-                                    'apportionment_id' => $apportionmentId ?? null
+                                    'apportionment_id' => $apportionmentId ?? null,
+                                    'created_at' => $eventDate
                                 ];
                                 $actualAmount2 = round(($actualAmount2 + $rfAmt),2);
                                 $tdsReceivable = round(($tdsReceivable + $rfAmt),2);
@@ -209,12 +212,13 @@ class ManualApportionmentHelper{
                                 'trans_running_id'=> $rtf->trans_running_id,
                                 'invoice_disbursed_id' => $rtf->invoice_disbursed_id,
                                 'user_id' => $rtf->user_id,
-                                'trans_date' => $currentdate,
+                                'trans_date' => $curDate,
                                 'amount' => $rtf->settled_outstanding,
                                 'entry_type' => 0,
                                 'soa_flag' => $rtf->soa_flag,
                                 'trans_type' => config('lms.TRANS_TYPE.REVERSE'),
-                                'apportionment_id' => $apportionmentId ?? null
+                                'apportionment_id' => $apportionmentId ?? null,
+                                'created_at' => $eventDate
                             ];
                         }else{
                             Log::info("$paidTrans->invoice_disbursed_id  $rtf->amount Overd Refund"); 
@@ -238,12 +242,13 @@ class ManualApportionmentHelper{
                                     'trans_running_id'=> $paidTrans->trans_running_id,
                                     'invoice_disbursed_id' => $paidTrans->invoice_disbursed_id,
                                     'user_id' => $paidTrans->user_id,
-                                    'trans_date' => $currentdate,
+                                    'trans_date' => $curDate,
                                     'amount' => $refRevAmt,
                                     'entry_type' => 1,
                                     'soa_flag' => 0,
                                     'trans_type' => config('lms.TRANS_TYPE.REFUND'),
-                                    'apportionment_id' => $apportionmentId ?? null
+                                    'apportionment_id' => $apportionmentId ?? null,
+                                    'created_at' => $eventDate
                                 ];
                                 $actualAmount2 = round($actualAmount2 + $refRevAmt,2);
                             }
@@ -256,12 +261,13 @@ class ManualApportionmentHelper{
                                     'trans_running_id'=> $paidTrans->trans_running_id,
                                     'invoice_disbursed_id' => $paidTrans->invoice_disbursed_id,
                                     'user_id' => $paidTrans->user_id,
-                                    'trans_date' => $currentdate,
+                                    'trans_date' => $curDate,
                                     'amount' => $refRevAmt,
                                     'entry_type' => 0,
                                     'soa_flag' => $paidTrans->soa_flag,
                                     'trans_type' => config('lms.TRANS_TYPE.REVERSE'),
-                                    'apportionment_id' => $apportionmentId ?? null
+                                    'apportionment_id' => $apportionmentId ?? null,
+                                    'created_at' => $eventDate
                                 ];
                                 $actualAmount2 = round($actualAmount2 + $refRevAmt,2);
                             }
@@ -289,12 +295,13 @@ class ManualApportionmentHelper{
                                     'trans_running_id'=> $rtf->trans_running_id,
                                     'invoice_disbursed_id' => $rtf->invoice_disbursed_id,
                                     'user_id' => $rtf->user_id,
-                                    'trans_date' => $currentdate,
+                                    'trans_date' => $curDate,
                                     'amount' => $refRevAmt,
                                     'entry_type' => 0,
                                     'soa_flag' => $rtf->soa_flag,
                                     'trans_type' => config('lms.TRANS_TYPE.REVERSE'),
-                                    'apportionment_id' => $apportionmentId ?? null
+                                    'apportionment_id' => $apportionmentId ?? null,
+                                    'created_at' => $eventDate
                                 ];
                             }
                         }
@@ -313,10 +320,9 @@ class ManualApportionmentHelper{
         }
     }
 
-    public function transactionUserChargePostingAdjustment($transIds, $paymentId, $apportionmentId){
+    public function transactionUserChargePostingAdjustment($transIds, $paymentId, $apportionmentId =NULL, $event = NULL, $eventDate){
         $transactionList = [];
-        $currentdate =  Helpers::getSysStartDate();
-
+        $curDate = Carbon::parse($eventDate)->setTimezone(config('common.timezone'))->format('Y-m-d');
         $charges = Transactions::whereHas('transType',function($query){
             $query->where('chrg_master_id','!=','0');
         })->whereNull('parent_trans_id')
@@ -353,12 +359,13 @@ class ManualApportionmentHelper{
                             'parent_trans_id' => $charge->trans_id,
                             'invoice_disbursed_id' => $settleTrans->invoice_disbursed_id ?? NULL,
                             'user_id' => $charge->user_id,
-                            'trans_date' => $currentdate,
+                            'trans_date' => $curDate,
                             'amount' => $refAmt,
                             'entry_type' => 1,
                             'soa_flag' => 0,
                             'trans_type' => config('lms.TRANS_TYPE.REFUND'),
                             'apportionment_id' =>  $apportionmentId,
+                            'created_at' => $eventDate
                         ];
                     }
                     $currentRefundableAmount = round($currentRefundableAmount - $refAmt,2);
@@ -374,12 +381,13 @@ class ManualApportionmentHelper{
                             'parent_trans_id' => $charge->trans_id,
                             'invoice_disbursed_id' => $toBeRefTrans->invoice_disbursed_id ?? NULL,
                             'user_id' => $charge->user_id,
-                            'trans_date' => $currentdate,
+                            'trans_date' => $curDate,
                             'amount' => abs($revAmt),
                             'entry_type' => 0,
                             'soa_flag' => 0,
                             'trans_type' => config('lms.TRANS_TYPE.REVERSE'),
-                            'apportionment_id' =>  $apportionmentId
+                            'apportionment_id' =>  $apportionmentId,
+                            'created_at' => $eventDate
                         ];
                         $currentRefundableAmount = round($currentRefundableAmount + $revAmt,2);
                     }
@@ -393,9 +401,8 @@ class ManualApportionmentHelper{
             }
         }
     }
-
-    public function runningToTransPosting($invDisbId, $intAccrualDt, $payFreq, $invdueDate, $odStartDate, $currDate = NULL){
-        $dueDate = Carbon::parse($currDate)->format('Y-m-d');
+    public function runningToTransPosting($invDisbId, $intAccrualDt, $payFreq, $invdueDate, $odStartDate, $event = NULL, $eventDate){
+        $dueDate = Carbon::parse($eventDate)->setTimezone(config('common.timezone'))->format('Y-m-d');
         $intAccrualDate = $intAccrualDt;
         $invdueDate = $this->subDays($invdueDate,1);
         $graceStartDate = $invdueDate;
@@ -485,7 +492,8 @@ class ManualApportionmentHelper{
                     'entry_type' => $trans->entry_type,
                     'soa_flag' => 1,
                     'gst' => 0,
-                    'trans_type' => $trans->trans_type
+                    'trans_type' => $trans->trans_type,
+                    'created_at' => $eventDate
                 ];
             }
         }
@@ -564,21 +572,11 @@ class ManualApportionmentHelper{
                 $query->OrwhereIn('parent_trans_id',$intTransIds);
             })
             ->sum('settled_outstanding');
-
-            // $Dr +=  Transactions::whereDate('trans_date','<=',$transDate) 
-            // ->where('invoice_disbursed_id','=',$invDisbId)
-            // ->where('entry_type','=','0')
-            // ->whereNotIn('trans_type',[config('lms.TRANS_TYPE.REVERSE'),config('lms.TRANS_TYPE.REFUND')]) 
-            // ->where(function($query) use($intTransIds){
-            //     $query->whereIn('link_trans_id',$intTransIds);
-            //     $query->OrwhereIn('parent_trans_id',$intTransIds);
-            // })
-            // ->sum('amount');
         }
         return $Dr-$Cr;
     }
     
-    public function overDuePosting($invDisbId, $userId, $payFreq, $transDate, $gStartDate, $gEndDate, $curdate){
+    public function overDuePosting($invDisbId, $userId, $payFreq, $transDate, $gStartDate, $gEndDate, $curDate){
         $overdues = InterestAccrual::select(\DB::raw("
         sum(accrued_interest) as totalInt, 
         max(interest_date) as interestDate, 
@@ -590,7 +588,7 @@ class ManualApportionmentHelper{
         TransactionsRunning::where('invoice_disbursed_id','=',$invDisbId)
         ->whereDate('trans_date','>=',$transDate)
         ->update(['amount'=>0,'sys_updated_at' => Helpers::getSysStartDate()]);
-        $eomdate = Carbon::parse($curdate)->endOfMonth()->format('Y-m-d');
+        $eomdate = Carbon::parse($curDate)->endOfMonth()->format('Y-m-d');
         if($overdues->count() > 0 ){
             foreach ($overdues as $odue) {
                 $odEomDate = Carbon::parse($odue->interestDate)->endOfMonth()->format('Y-m-d');
@@ -749,18 +747,26 @@ class ManualApportionmentHelper{
      * Event 
      * Null = Default but Not for Disbursement
      * 1=>Disbursement 
-     * 
+     * 2=>Receipt
+     * 3=>TDS
+     * 4=>Waived Off
+     * 5=>Write Off
+     * 6=>SOD
+     * 7=>EOD
+     * 8=>Reversal
+     * 9=>Apportionment Reversal
      */
-    public function intAccrual(int $invDisbId, $startDate = null, $apportionmentId = NULL, $event = NULL){
+    public function intAccrual(int $invDisbId, $startDate = null, $apportionmentId = NULL, $event = NULL, $eventDate){
         try{   
             $startDate = $startDate ? Carbon::parse($startDate)->format('Y-m-d') : $startDate;
             $invdisbInN = [];
-            $curdate =  Helpers::getSysStartDate();  
-            $curdate = Carbon::parse($curdate)->setTimezone(config('common.timezone'));
-            if($curdate->format('His') >= '224500'){
-                $curdate = $curdate->format('Y-m-d');
+            $curDate =  $eventDate;  
+            $curDate = Carbon::parse($curDate)->setTimezone(config('common.timezone'));
+            
+            if($event == 7){
+                $curDate = $curDate->format('Y-m-d');
             }else{
-                $curdate = $curdate->subDay()->format('Y-m-d');
+                $curDate = $curDate->subDay()->format('Y-m-d');
             }
 
             $invDisbDetail = InvoiceDisbursed::find($invDisbId);
@@ -803,7 +809,7 @@ class ManualApportionmentHelper{
             $oldIntRate = $offerDetails->interest_rate - $offerDetails->base_rate;
             $bankRatesArr = $this->getBankBaseRates($offerDetails->bank_id);//if $bankRatesArr value is false then follow the old process. otherwise call the below function to get the actual interest rate based on base rate.
 
-            while(strtotime($curdate) >= strtotime($loopStratDate)){
+            while(strtotime($curDate) >= strtotime($loopStratDate)){
                 if($bankRatesArr){
                     if(isset($payFreq) && $payFreq == 1){
                         $intRate = $this->getIntRate($oldIntRate, $bankRatesArr, strtotime($funded_date));//$str_to_time_date is the time at that point of time you want to get interest rate
@@ -861,27 +867,27 @@ class ManualApportionmentHelper{
                 $this->interestPosting($invDisbId, $userId, $payFreq, $loopStratDate, $gStartDate, $gEndDate);
                 
                 if(strtotime($loopStratDate) >= strtotime($odStartDate))
-                $this->overDuePosting($invDisbId, $userId, $payFreq, $loopStratDate, $gStartDate, $gEndDate, $curdate);
+                $this->overDuePosting($invDisbId, $userId, $payFreq, $loopStratDate, $gStartDate, $gEndDate, $curDate);
                 
                 
                 if(!in_array($invDisbId, $invdisbInN)){
                     if(is_null($event)){
-                        $eomdate = Carbon::createFromFormat('Y-m-d', $curdate)->endOfMonth()->format('Y-m-d');
+                        $eomdate = Carbon::createFromFormat('Y-m-d', $curDate)->endOfMonth()->format('Y-m-d');
                         if($payFreq == 1){
-                            if(strtotime($curdate) > strTotime($gStartDate) && strtotime($eomdate) == strtotime($curdate)){
-                                $this->runningToTransPosting($invDisbId, $loopStratDate, $payFreq, $payDueDate, $odStartDate, $curdate);
+                            if(strtotime($curDate) > strTotime($gStartDate) && strtotime($eomdate) == strtotime($curDate)){
+                                $this->runningToTransPosting($invDisbId, $loopStratDate, $payFreq, $payDueDate, $odStartDate, $event, $eventDate);
                             }
                         }elseif($payFreq == 2){
-                            if(strtotime($eomdate) == strtotime($curdate)){
-                                $this->runningToTransPosting($invDisbId, $loopStratDate, $payFreq, $payDueDate, $odStartDate, $curdate);
+                            if(strtotime($eomdate) == strtotime($curDate)){
+                                $this->runningToTransPosting($invDisbId, $loopStratDate, $payFreq, $payDueDate, $odStartDate, $event, $eventDate);
                             }
                         }elseif($payFreq == 3){
-                            if(strTotime($gStartDate) == strtotime($curdate) || (strtotime($curdate) > strtotime($gStartDate) && strtotime($eomdate) == strtotime($curdate))){
-                                $this->runningToTransPosting($invDisbId, $loopStratDate, $payFreq, $payDueDate, $odStartDate, $curdate);
+                            if(strTotime($gStartDate) == strtotime($curDate) || (strtotime($curDate) > strtotime($gStartDate) && strtotime($eomdate) == strtotime($curDate))){
+                                $this->runningToTransPosting($invDisbId, $loopStratDate, $payFreq, $payDueDate, $odStartDate, $event, $eventDate);
                             }
                         }
                     }elseif($event == 1){
-                        $this->runningToTransPosting($invDisbId, $loopStratDate, $payFreq, $payDueDate, $odStartDate, $curdate);
+                        $this->runningToTransPosting($invDisbId, $loopStratDate, $payFreq, $payDueDate, $odStartDate, $event, $eventDate);
                     }
                 }
                 $loopStratDate = $this->addDays($loopStratDate,1);
@@ -899,13 +905,13 @@ class ManualApportionmentHelper{
             return Helpers::getExceptionMessage($ex);
        } 
     }
-    
+
     public function dailyIntAccrual(){
         
         ini_set("memory_limit", "-1");
         $cLogDetails = Helper::cronLogBegin(1);
 
-        $curdate = Helpers::getSysStartDate();
+        $curDate = Helpers::getSysStartDate();
         $invoiceList = InvoiceDisbursed::whereNotNull('int_accrual_start_dt')
         ->whereNotNull('payment_due_date')
         ->whereHas('invoice',function($query){ 
@@ -916,7 +922,7 @@ class ManualApportionmentHelper{
         foreach ($invoiceList as $invId => $trans) {
             echo $invId."\n";
             $this->intAccrual($invId, NULL);
-            $this->transactionPostingAdjustment($invId, NULL);
+            $this->transactionPostingAdjustment($invId,NULL,NULL,NULL,$curDate);
         }
         $this->runningIntPosting();
         // Update Invoice Disbursed Accrual Detail
@@ -1059,10 +1065,10 @@ class ManualApportionmentHelper{
         }
     }
 
-    public function runningIntPosting(){
-        $curDate = Helpers::getSysStartDate();  
+    public function runningIntPosting($apportionmentId = NULL, $event = NULL, $eventDate){
+        $curDate = $eventDate;  
         $curDate = Carbon::parse($curDate)->setTimezone(config('common.timezone'));
-        if($curDate->format('His') >= '224500'){
+        if($event == 7){
             $curDate = $curDate->format('Y-m-d');
         }else{
             $curDate = $curDate->subDay()->format('Y-m-d');
@@ -1088,8 +1094,58 @@ class ManualApportionmentHelper{
             $gPeriod = $invDisbDetail->grace_period;
             $gEndDate = $this->addDays($payDueDate,$gPeriod);
             $odStartDate = $gEndDate;
-            $this->runningToTransPosting($invDisbId, $curDate, $payFreq, $payDueDate, $odStartDate, $curDate);
-            $this->transactionPostingAdjustment($invDisbId, NULL);
+            $this->runningToTransPosting($invDisbId, $curDate, $payFreq, $payDueDate, $odStartDate, $event, $eventDate);
+            $this->transactionPostingAdjustment($invDisbId, NULL, $event, $eventDate);
+        }
+    }
+    
+    public function sod(){
+        ini_set("memory_limit", "-1");
+        $cLogDetails = Helper::cronLogBegin(1);
+        
+            $invoiceList = InvoiceDisbursed::whereNotNull('int_accrual_start_dt')
+            ->whereNotNull('payment_due_date')
+            ->whereHas('invoice',function($query){ 
+                $query->where('is_repayment','0'); 
+            })
+            ->pluck('invoice_disbursed_id','invoice_disbursed_id');
+
+            $eventDate = Helpers::getSysStartDate();
+            
+            foreach ($invoiceList as $invId => $trans) {
+                $this->intAccrual($invId, NULL,NULL,6,$eventDate);
+                $this->transactionPostingAdjustment($invId,NULL,6,$eventDate);
+            }
+            $this->runningIntPosting(NULL,6,$eventDate);
+            InvoiceDisbursedDetail::updateDailyInterestAccruedDetails();
+
+        if($cLogDetails){
+            Helper::cronLogEnd('1',$cLogDetails->cron_log_id);
+        }
+    }
+
+    public function eod(){
+        ini_set("memory_limit", "-1");
+        $cLogDetails = Helper::cronLogBegin(1);
+        
+            $invoiceList = InvoiceDisbursed::whereNotNull('int_accrual_start_dt')
+            ->whereNotNull('payment_due_date')
+            ->whereHas('invoice',function($query){ 
+                $query->where('is_repayment','0'); 
+            })
+            ->pluck('invoice_disbursed_id','invoice_disbursed_id');
+
+            $eventDate = Helpers::getSysStartDate();
+            
+            foreach ($invoiceList as $invId => $trans) {
+                $this->intAccrual($invId, NULL,NULL,7,$eventDate);
+                $this->transactionPostingAdjustment($invId,NULL,7,$eventDate);
+            }
+            $this->runningIntPosting(NULL,7,$eventDate);
+            InvoiceDisbursedDetail::updateDailyInterestAccruedDetails();
+
+        if($cLogDetails){
+            Helper::cronLogEnd('1',$cLogDetails->cron_log_id);
         }
     }
     

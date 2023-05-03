@@ -22,7 +22,7 @@
                 }
                 @endphp          
                 <div class="card-body limit-management"> 
-                    
+                    @if($uLimit->is_deleted ==0)
                     <div class="limit-title"> 
                         <div class="row" style="margin-top:10px;">
                             <div class="col-lg-2 col-md-6 col-sm-6 col-xs-12">
@@ -58,7 +58,7 @@
                             @php 
                                 $sDate  = $obj->convertDateTimeFormat($uLimit->start_date, $fromDateFormat='Y-m-d', $toDateFormat='d-m-Y');
                                 $eDate  = $obj->convertDateTimeFormat($uLimit->end_date, $fromDateFormat='Y-m-d', $toDateFormat='d-m-Y');
-                                $limitExpDate = '';
+                                $limitExpDate = $limitExpDateCheck = '';
                                 if ($uLimit->limit_expiration_date != null){
                                     $limitExpDate  = $obj->convertDateTimeFormat($uLimit->limit_expiration_date, $fromDateFormat='Y-m-d', $toDateFormat='d-m-Y');
                                     $limitExpDateCheck  = date('Y-m-d', strtotime($limitExpDate));
@@ -124,7 +124,7 @@
                             @if($getAccountClosure > 0 && $uLimit->app->status==2)
                               @if(count($getAppLimitReview) > 0)
                                <div class="col-lg-1 col-md-6 col-sm-6 col-xs-12 ml-5">
-                                <a class="btn-sm badge badge-success btn-sm" data-toggle="collapse" href="#scollapse1" role="button" aria-expanded="false" aria-controls="scollapse1"><i class="fa fa-plus" aria-hidden="true"></i></a>
+                                <a class="btn-sm badge badge-success btn-sm" data-toggle="collapse" href="#scollapse{{ $uLimit->app_limit_id }}" role="button" aria-expanded="false" aria-controls="scollapse{{ $uLimit->app_limit_id }}"><i class="fa fa-plus" aria-hidden="true"></i></a>
                                 </div>
                                @endif
                               @endif
@@ -134,7 +134,7 @@
                         @can('edit_review_date')
                             @if($getAccountClosure > 0 && $uLimit->app->status==2)
                                 @if(count($getAppLimitReview) > 0)
-                                <div id="scollapse1" class="card-body bdr collapse" style="padding: 0; border: 1px solid #e9ecef;">
+                                <div id="scollapse{{ $uLimit->app_limit_id }}" class="card-body bdr collapse" style="padding: 0; border: 1px solid #e9ecef;">
                                     <table class="table overview-table" cellpadding="0" cellspacing="0" border="1">
                                     <thead>
                                     <tr role="row">
@@ -335,6 +335,7 @@
 
                     @endforeach
                 </div>
+                @endif
 
                 @endforeach 
             </div>
@@ -365,6 +366,14 @@
           
        }
     })
+
+    $(document).ready(function(){
+        $('.collapse').on('show.bs.collapse', function(){
+            $(this).prev().find('.fa-plus').removeClass('fa-plus').addClass('fa-minus');
+        }).on('hide.bs.collapse', function(){
+            $(this).prev().find('.fa-minus').removeClass('fa-minus').addClass('fa-plus');
+        });
+    });
     
 </script>
 @endsection

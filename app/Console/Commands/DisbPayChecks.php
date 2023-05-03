@@ -123,6 +123,7 @@ class DisbPayChecks extends Command
                             ->whereDate('created_at', $this->eodDate)
                             ->where('trans_type', config('lms.TRANS_TYPE.REPAYMENT'))
                             ->where('action_type', 1)
+                            ->whereNull('deleted_at')
                             ->groupBy(['user_id', 'amount', 'utr_no', 'unr_no', 'cheque_no'])
                             ->havingRaw('paymentCount > 1')
                             ->get();

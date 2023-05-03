@@ -337,7 +337,7 @@ class Apportionment {
             selectAmt = (parseFloat(selectAmt) + parseFloat($(element).val())).toFixed(2);
         });
 
-        if(selectAmt>paymentAmt){
+        if(parseFloat(selectAmt) > parseFloat(paymentAmt)){
             message = "Requested Amount: "+selectAmt+ " is greater than Unsettled Amount: "+paymentAmt;
             status = false;
         }

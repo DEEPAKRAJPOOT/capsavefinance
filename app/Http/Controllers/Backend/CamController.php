@@ -61,6 +61,8 @@ use App\Inv\Repositories\Models\AppSecurityDoc;
 use App\Inv\Repositories\Models\DocumentMaster;
 use App\Inv\Repositories\Models\Application;
 use PhpOffice\PhpSpreadsheet\IOFactory;
+use App\Inv\Repositories\Models\AppLimit;
+use App\Inv\Repositories\Models\AppStatusLog;
 class CamController extends Controller
 {
     use ApplicationTrait;
@@ -446,10 +448,22 @@ class CamController extends Controller
         $supplyOfferData[$key]['programData'] = $this->appRepo->getSelectedProgramData(['prgm_id' => $val->prgm_id], ['*'], ['programDoc', 'programCharges'])->first();
         $supplyOfferData[$key]['subProgramData'] = $this->appRepo->getSelectedProgramData(['prgm_id' => $val->prgm_id, 'is_null_parent_prgm_id' => true], ['*'], ['programDoc', 'programCharges'])->first();
       }
-
-      $is_shown = $this->appRepo->getOfferStatus([['app_id', $appId], ['is_approve', 1], ['status', 1],['is_active', 1]]);
-      $borrowerLimitData['single_limit'] = config('common.DEFAULT_BORROWER_LIMIT.Single_limit');
-      $borrowerLimitData['multiple_limit'] = config('common.DEFAULT_BORROWER_LIMIT.multiple_limit');
+      //Below code is hardcoded from line no.451 to 461 as we need to display single limit and multiple limit basis on the fix date. 
+      $status_log = [21,22,25,50,51];
+      $appData = Application::getAppData((int)$appId);
+      $implementDate = Carbon::parse('2023-04-05')->format('Y-m-d');
+      $appCreated = Carbon::parse($appData->curr_status_updated_at)->format('Y-m-d');
+      if (in_array($appData->curr_status_id,$status_log) && 
+      (strtotime($appCreated) <= strtotime($implementDate))) {
+        $borrowerLimitData['single_limit'] = 150;
+        $borrowerLimitData['multiple_limit'] = 250;
+      } else {
+        $borrowerLimitData['single_limit'] = 0;
+        $borrowerLimitData['multiple_limit'] = 0;
+      } 
+      /*$is_shown = $this->appRepo->getOfferStatus([['app_id', $appId], ['is_approve', 1], ['status', 1],['is_active', 1]]);
+      $borrowerLimitData['single_limit'] = 0;
+      $borrowerLimitData['multiple_limit'] = 0;
       if($is_shown){
        $Limitdata =  $this->appRepo->getAppBorrowerLimit($appId);
        if($Limitdata){
@@ -462,8 +476,8 @@ class CamController extends Controller
         $borrowerLimitData['single_limit'] = $Limitdata['single_limit'];
         $borrowerLimitData['multiple_limit'] = $Limitdata['multiple_limit'];
         }
-      }
-      
+      }*/
+     
       $roleData =  Helpers::getUserRole()->first();
       $is_editable = ($roleData->id == config('common.user_role.APPROVER'))?0:1;
       $securityDocumentList = $this->mstRepo->getAllSecurityDocument()->where('is_active', 1)->get();
@@ -1680,19 +1694,17 @@ class CamController extends Controller
         $limitData = $this->appRepo->getAppLimit($appId);
         $prgmLimitTotal = $this->appRepo->getTotalPrgmLimitByAppId($appId);
         $tot_offered_limit = $this->appRepo->getTotalOfferedLimit($appId);
-
         $product_types = $this->mstRepo->getProductDataList();
-
-        //$offerStatus = $this->appRepo->getOfferStatus(['app_id' => $appId, 'is_approve'=>1, 'is_active'=>1, 'status'=>1]);//to check the offer status
         $offerStatus = $this->appRepo->getAppData($appId)->status;//to check offer is sanctioned or not
-
         $approveStatus = $this->appRepo->getApproverStatus(['app_id'=>$appId, 'approver_user_id'=>Auth::user()->user_id, 'is_active'=>1]);
         $currStage = Helpers::getCurrentWfStage($appId);
         $currStageCode = isset($currStage->stage_code)? $currStage->stage_code: '';
         $userRole = $this->userRepo->getBackendUser(Auth::user()->user_id);
         $appData = $this->appRepo->getAppData($appId);
         $appType = $appData->app_type;
-
+        $appStatus = $appData->curr_status_id;
+        $userInfo = Helpers::getAppCurrentAssignee($appId);
+        // dd($userInfo->assignee_role);
         return view('backend.cam.limit_assessment')
                 ->with('appId', $appId)
                 ->with('bizId', $bizId)
@@ -1708,7 +1720,9 @@ class CamController extends Controller
                 ->with('userRole', $userRole)
                 ->with('product_types', $product_types)
                 ->with('appType', $appType)
-                ->with('user_id', $user_id);
+                ->with('appStatus', $appStatus)
+                ->with('user_id', $user_id)
+                ->with('userInfo', $userInfo);
     }
 
     /**
@@ -1940,6 +1954,7 @@ class CamController extends Controller
                 'status' => 2
               ];
             $this->appRepo->saveAppApprovers($appApprData);
+            
 
             $addl_data = [];
             $addl_data['sharing_comment'] = $cmntText;
@@ -1947,6 +1962,9 @@ class CamController extends Controller
             $roles = $this->appRepo->getBackStageUsers($appId, [$selRoleId]);
             $selUserId = $roles[0]->user_id;
             $currStage = Helpers::getCurrentWfStage($appId);
+            if($currStage->stage_code == 'approver'){
+              $updateStatus = AppApprover::updateAppApprActiveFlag($appId);
+            }
             //$selRoleStage = Helpers::getCurrentWfStagebyRole($selRoleId);
             $selRoleStage = Helpers::getCurrentWfStagebyRole($selRoleId, $user_journey=2, $wf_start_order_no=$currStage->order_no, $orderBy='DESC');
             Helpers::updateWfStageManual($appId, $selRoleStage->order_no, $currStage->order_no, $wf_status = 2, $selUserId, $addl_data);
@@ -1978,6 +1996,10 @@ class CamController extends Controller
       $facilityTypeList= $this->mstRepo->getFacilityTypeList();
       $limitData= $this->appRepo->getLimit($aplid);
       $offerData= $this->appRepo->getOfferData(['prgm_offer_id' => $prgmOfferId]);
+      $userRole = $this->userRepo->getBackendUser(Auth::user()->user_id);
+      $userInfo = Helpers::getAppCurrentAssignee($appId);
+      $appData = $this->appRepo->getAppData($appId);
+      $appStatus = $appData->curr_status_id;
       $invUtilizedAmt = 0;
       if ($limitData->product_id == 1) {
         $appData = $this->appRepo->getAppData($appId);
@@ -2050,7 +2072,7 @@ class CamController extends Controller
       }
       //dd($parent_pf_amt);
       $page = ($limitData->product_id == 1)? 'supply_limit_offer': (($limitData->product_id == 2)? 'term_limit_offer': 'leasing_limit_offer');
-      return view('backend.cam.'.$page, ['offerData'=>$offerData, 'limitData'=>$limitData, 'totalOfferedAmount'=>$totalOfferedAmount, 'programOfferedAmount'=>$prgmOfferedAmount, 'totalLimit'=> $totalLimit->tot_limit_amt, 'currentOfferAmount'=> $currentOfferAmount, 'programLimit'=> $prgmLimit, 'equips'=> $equips, 'facilityTypeList'=>$facilityTypeList, 'subTotalAmount'=>$totalSubLmtAmt, 'anchors'=>$anchors, 'anchorPrgms'=>$anchorPrgms, 'bizOwners'=>$bizOwners, 'appType'=>$appType,'parent_pf_amt' =>$parent_pf_amt, 'assets' => $assets, 'invUtilizedAmt' => $invUtilizedAmt]);
+      return view('backend.cam.'.$page, ['offerData'=>$offerData, 'limitData'=>$limitData, 'totalOfferedAmount'=>$totalOfferedAmount, 'programOfferedAmount'=>$prgmOfferedAmount, 'totalLimit'=> $totalLimit->tot_limit_amt??0, 'currentOfferAmount'=> $currentOfferAmount, 'programLimit'=> $prgmLimit, 'equips'=> $equips, 'facilityTypeList'=>$facilityTypeList, 'subTotalAmount'=>$totalSubLmtAmt, 'anchors'=>$anchors, 'anchorPrgms'=>$anchorPrgms, 'bizOwners'=>$bizOwners, 'appType'=>$appType,'parent_pf_amt' =>$parent_pf_amt, 'assets' => $assets, 'invUtilizedAmt' => $invUtilizedAmt,'userRole'=>$userRole,'userInfo'=>$userInfo,'appStatus'=>$appStatus]);
     }
 
     /*function for updating offer data*/
@@ -2156,6 +2178,7 @@ class CamController extends Controller
         //if($checkApprovalStatus->count()){
         $whereCondition = ['app_id' => $appId, 'is_approve' => 1, 'status_is_null_or_accepted' =>1];
         $offerData = $this->appRepo->getOfferData($whereCondition);
+        $currentOfferAmount = isset($offerData->prgm_limit_amt)? $offerData->prgm_limit_amt: 0;
         if ($offerData && isset($offerData->prgm_offer_id) ) {
           Session::flash('message', trans('backend_messages.under_approval'));
           return redirect()->route('limit_assessment',['app_id' =>  $appId, 'biz_id' => $bizId]);
@@ -2171,6 +2194,10 @@ class CamController extends Controller
             Helpers::updateAppCurrentStatus($appId, config('common.mst_status_id.OFFER_GENERATED'));
             //} 
             $requestData =  $request->all();
+            $totalSubLmtAmt = $this->appRepo->getTotalByPrgmLimitId($aplid);
+            $limitAmt = $limitData->limit_amt;
+            $sub_total_balance = $limitAmt - ($totalSubLmtAmt - $currentOfferAmount);
+            
             if($requestData['dsa_applicable'] == '1'){
               $dsaData['dsa_name'] = $requestData['dsa_name'];
               $dsaData['payout']   = number_format($requestData['payout'],2);
@@ -2282,7 +2309,7 @@ class CamController extends Controller
 
       $totalOfferedAmount = $this->appRepo->getTotalByPrgmLimitId($aplid); // total offered amount by app_prgm_limit_id
 
-      return view('backend.cam.limit', ['totalOfferedAmount'=>$totalOfferedAmount, 'currentPrgmLimitData'=>$currentPrgmLimitData,  'totalLimit'=> $totalLimit->tot_limit_amt, 'totalPrgmLimit'=> $totalPrgmLimit]);
+      return view('backend.cam.limit', ['totalOfferedAmount'=>$totalOfferedAmount, 'currentPrgmLimitData'=>$currentPrgmLimitData,  'totalLimit'=> $totalLimit->tot_limit_amt??0, 'totalPrgmLimit'=> $totalPrgmLimit]);
     }
 
     public function updateLimit(Request $request){
@@ -3100,7 +3127,6 @@ class CamController extends Controller
   }
 
   public function getAppDsa(Request $request){
-
     try{
         $biz_id = $request->get('biz_id');
         $app_id = $request->get('app_id');
@@ -3112,5 +3138,73 @@ class CamController extends Controller
     } catch (Exception $ex) {
       return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
     }
+  }
+
+  public function deleteLimitOffer(Request $request){
+      $appId = (int)$request->get('app_id');
+      $biz_id = (int)$request->get('biz_id');
+      $aplid = $request->get('app_prgm_limit_id');
+      $prgmOfferId = $request->has('prgm_offer_id') ? $request->get('prgm_offer_id') : null;
+      if($prgmOfferId){
+         AppProgramOffer::where('prgm_offer_id',$prgmOfferId)->update(['status' => 2,'is_active'=>0]);
+         Session::flash('message', 'Offer deleted successfully');
+      }
+      $offerData = $this->appRepo->getOfferData(['app_id' => $appId]);
+      if(empty($offerData)){
+        Application::where('app_id',$appId)->update(['curr_status_id'=> 20]);
+        // AppStatusLog::where('app_id',$appId)->update(['status_id'=> 20]);
+        $getAppDetails = $this->appRepo->getAppData($appId);
+        $arrAppStatusLog=[
+          'user_id'=>$getAppDetails['user_id'],
+          'app_id'=>$appId,
+          'status_id'=>config('common.mst_status_id')['COMPLETED'],
+          'created_by'=>Auth::user()->user_id,
+          'created_at'=>\Carbon\Carbon::now(),
+        ];
+        $this->appRepo->saveAppStatusLog($arrAppStatusLog);
+      }
+      return redirect()->route('limit_assessment', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')]);
+  }
+
+  public function totalCreditAssessed(Request $request){
+    // dd($request->all());
+    $appId = $request->get('app_id');
+    $limitData = $this->appRepo->getAppLimit($appId);
+    $prgmLimitTotal = $this->appRepo->getTotalPrgmLimitByAppId($appId);
+    return view('backend.cam.editLimit')
+          ->with('limitData', $limitData)
+          ->with('prgmLimitTotal', $prgmLimitTotal);
+  }
+
+  public function updateTotalCreditAssessed(Request $request){
+
+      $appId = $request->get('app_id');
+      $bizId = $request->get('biz_id');
+      $totalLimitAmnt = $request->get('tot_limit_amt');
+      $totalLimitAmnt = str_replace(',','',$totalLimitAmnt);
+      $prgmLimitTotal = $this->appRepo->getTotalPrgmLimitByAppId($appId);
+      // dd($totalLimitAmnt,$appId,$prgmLimitTotal);
+      if($totalLimitAmnt < $prgmLimitTotal){
+        Session::flash('error', 'Total Credit Assessed should be greater than total prgm limit');
+      }else{
+        AppLimit::where('app_id', $appId)->update(['tot_limit_amt' => $totalLimitAmnt]);
+        Session::flash('message', 'Total Credit Assessed updated successfully');
+      }
+      return redirect()->route('limit_assessment', ['app_id' => $appId, 'biz_id' => $bizId]);
+
+  }
+
+  public function deletePrgmLimit(Request $request){
+    // dd($request->all());
+      $appId = (int)$request->get('app_id');
+      $biz_id = (int)$request->get('biz_id');
+      $aplid = $request->get('app_prgm_limit_id');
+      AppProgramLimit::where(['app_id' => $appId,'app_prgm_limit_id' => $aplid])->update(['is_deleted' => 1,'status' => 3]);
+      Session::flash('message', 'Product Limit deleted successfully');
+      $prgmLimitData = $this->appRepo->getProgramLimitData($appId);
+      if($prgmLimitData->count() == 0){
+        AppLimit::where(['app_id' => $appId])->update(['is_deleted' => 1,'status' => 3]);
+      }
+      return redirect()->route('limit_assessment', ['app_id' => $appId,'biz_id' => $biz_id]);
   }
 }

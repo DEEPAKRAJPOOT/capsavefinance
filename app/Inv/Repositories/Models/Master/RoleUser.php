@@ -124,7 +124,7 @@ class RoleUser extends BaseModel
                  ->join('users', 'role_user.user_id', '=', 'users.user_id')
                 ->join('roles', 'roles.id', '=', 'role_user.role_id')
                  ->leftJoin('users as rptmgr', 'users.parent_id', '=', 'rptmgr.user_id')
-                 ->whereIn('roles.id', [4, 5, 6, 7, 8, 9, 10, 13, 14])
+                 ->where('roles.role_type',2)
                  ->where('roles.is_editable','!=',0);
                 return $arr;
     }
@@ -213,5 +213,15 @@ class RoleUser extends BaseModel
                  ->where('users.is_active', 1)
                  ->get();
         return $users;         
+    }
+
+    public static function getAllUsersByRoleIds($role_id)
+    {
+         $arr = self::select('users.*')
+                 ->join('users', 'role_user.user_id', '=', 'users.user_id')
+                 ->join('roles', 'role_user.role_id', '=', 'roles.id')
+                 ->where('role_user.role_id',$role_id)
+                 ->get();  //DB::raw("CONCAT_WS(' ', rta_users.f_name, rta_users.l_name) AS f_name")
+                return $arr;
     }
 }

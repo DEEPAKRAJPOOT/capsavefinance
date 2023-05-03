@@ -1984,5 +1984,10 @@ class UserRepository extends BaseRepositories implements UserInterface
         $result = UserModel::getBackendUserByEmail($email);
         return $result ?: false;
     }
+
+    public function getActiveRolesByType($role_type) 
+    { 
+        return Role::getActiveRolesByType($role_type);
+    }
 }
 

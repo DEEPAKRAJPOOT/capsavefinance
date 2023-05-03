@@ -753,14 +753,16 @@ class ReportsRepository extends BaseRepositories implements ReportInterface {
 					if(isset($whereCondition['user_id'])){
 						$query2->where('supplier_id',$whereCondition['user_id']);
 					}
+					$query2->select('anchor_id','invoice_no','invoice_id','supplier_id','prgm_offer_id','biz_id','program_id');
 				},
-			'invoice.lms_user', 
-			'invoice.anchor', 
-			'invoice.program_offer',
-			'invoice.business', 
-			'disbursal',
-			'transactions',
-			'disburseDetails'
+			'invoice.lms_user:user_id,customer_id,virtual_acc_id', 
+			'invoice.anchor:anchor_id,comp_name,sales_user_id', 
+			'invoice.anchor.salesUser:user_id,f_name,m_name,l_name', 
+			'invoice.program:prgm_id,prgm_type,prgm_name,interest_borne_by',
+			'invoice.program_offer:prgm_offer_id,payment_frequency',
+			'invoice.business:biz_id,biz_entity_name', 
+			'transactions:invoice_disbursed_id,trans_id,payment_id,link_trans_id,parent_trans_id,trans_type,entry_type,soa_flag,settled_outstanding,outstanding,due_date,amount',
+			'disburseDetails:invoice_disbursed_id,grace_period,funded_date,approve_amount,margin_amount,interest_capitalized,tenor,overdue_capitalized,request_amount'
 		])
 		->whereIn('status_id', [12,13,15,47])
 		->whereHas('invoice', function($query3) use($whereCondition){
@@ -773,7 +775,6 @@ class ReportsRepository extends BaseRepositories implements ReportInterface {
 		})
 		->whereDate('int_accrual_start_dt','<=',$curdate)
 		->get();
-		$outstandingData = self::getOutstandingData($curdate);
 		$sendMail = ($invDisbList->count() > 0)?true:false;
 		$result = [];
 		foreach($invDisbList as $key => $invDisb){
@@ -848,45 +849,34 @@ class ReportsRepository extends BaseRepositories implements ReportInterface {
 			if($prgmDetails->interest_borne_by == 2 && $offer->payment_frequency == 1 && $invDisb->total_interest > 0){
 				$disbursement_method = 'Net';
 			}
-			
-			// if($offer->payment_frequency == 1){
-			// 	if($prgmType == '1'){
-			// 		if($prgmDetails->interest_borne_by == '1'){
-			// 			$disbursement_method = 'Gross';
-			// 		}
-			// 	}
-			// 	elseif($prgmType == '2'){
-			// 		if($prgmDetails->interest_borne_by == '2'){
-			// 			$disbursement_method = 'Gross';
-			// 		}
-			// 	}
-			// }else{
-			// 	$disbursement_method = 'Gross';
-			// }
-		   
 			$odiInterest = round((round($invDisb->overdue_interest_rate,2) - round($invDisb->interest_rate,2)),2);
+
+			$principalDPD = $invDisb->transactions->where('trans_type','16')->where('entry_type',0)->where('outstanding', '>', 0)->whereNull('payment_id')->whereNull('parent_trans_id')->max('dpd');
+
+			$interestDPD = $invDisb->transactions->where('trans_type','9')->where('entry_type',0)->where('outstanding', '>', 0)->whereNull('payment_id')->whereNull('parent_trans_id')->max('dpd');
+			
+			$overdueDPD = $invDisb->transactions->where('trans_type','33')->where('entry_type',0)->where('outstanding', '>', 0)->whereNull('payment_id')->whereNull('parent_trans_id')->max('dpd');
+
+			$principalDPD = (round($principalOutstanding,2) > 0) ? ($principalDPD > 0 ? $principalDPD : 0) : 0;
+
+			$interestDPD = (round($interestOutstanding,2) > 0) ? ($interestDPD > 0 ? $interestDPD : 0) : 0;
+
+			$overdueDPD = (round($overdueOutstanding,2) > 0) ? ($overdueDPD > 0 ? $overdueDPD : 0) : 0;
+
 			$principalOverdue = '';
 			$principalOverdueCategory = '';
-			if(($principalOutstanding > 0) && isset($invDisb->payment_due_date) && strtotime($invDisb->payment_due_date) <= strtotime($curdate) ){
-				$principalOverdue = $principalOutstanding;
+			if($principalOutstanding > 0 && isset($invDisb->payment_due_date) && strtotime($invDisb->payment_due_date) <= strtotime($curdate) ){
 				$dateoverdueFormat = Carbon::createFromFormat('Y-m-d', $invDisb->payment_due_date);
 				$daysToAdd = (int)$disbDetails->grace_period;
 				$dateoverdueFormat = $dateoverdueFormat->addDays($daysToAdd);
 				if(strtotime($dateoverdueFormat) > strtotime($curdate) && strtotime($invDisb->payment_due_date) <= strtotime($curdate) && $daysToAdd > 0){
 					$principalOverdueCategory='with in grace';
 				}
-				else{
+				elseif($principalDPD > 0){
 					$principalOverdueCategory='Overdue';
+				    $principalOverdue = $principalOutstanding;
 				}
 			}
-
-			$principalDPD = $invDisb->transactions->where('trans_type','16')->where('entry_type',0)->where('outstanding', '>', 0)->whereNull('payment_id')->whereNull('parent_trans_id')->max('dpd');
-
-			$interestDPD = $invDisb->transactions->where('trans_type','9')->where('entry_type',0)->where('outstanding', '>', 0)->whereNull('payment_id')->whereNull('parent_trans_id')->max('dpd');
-			
-			$principalDPD = (round($principalOutstanding,2) > 0) ? ($principalDPD > 0 ? $principalDPD : 0) : 0;
-
-			$interestDPD = (round($interestOutstanding,2) > 0) ? ($interestDPD > 0 ? $interestDPD : 0) : 0;
 
 			$maxDPD = $principalDPD > $interestDPD ? $principalDPD : $interestDPD;
 			$outstanding_max_bucket = "Not Outstanding";
@@ -932,8 +922,7 @@ class ReportsRepository extends BaseRepositories implements ReportInterface {
 				$graceDate = $dateOutsFormat->addDays($daysToAdd);
 				$graceDate = Carbon::parse($graceDate)->format('d-m-Y');
 			}
-			$anchorDetails = $invDetails->anchor;
-            $salesUserDetails = $anchorDetails->salesUser;
+            $salesUserDetails = $invDetails->anchor->salesUser;
 			$date = $invDisb->inv_due_date;
 
 			$result[$invDisb->invoice_disbursed_id] = [
@@ -972,6 +961,7 @@ class ReportsRepository extends BaseRepositories implements ReportInterface {
 				'principalOverdueCategory'=> $principalOverdueCategory,
 				'principalDPD' => ($principalDPD > 0) ? $principalDPD : 0,
 				'interestDPD' => ($interestDPD > 0) ? $interestDPD : 0,
+				'overdueDPD' => ($overdueDPD > 0) ? $overdueDPD : 0,
 				'finalDPD' => $maxDPD,
 				'outstandingMaxBucket' => $outstanding_max_bucket,
 				'maturityDays' => $maturityDays,
@@ -1201,6 +1191,7 @@ class ReportsRepository extends BaseRepositories implements ReportInterface {
 	}
 
 	public function getReconReportData($userId){
+		
         $resultValue = [];
 		$soaBalance = DB::select('SELECT customer_id, soa_outstanding as SOA_Outstanding FROM (SELECT user_id, customer_id FROM rta_lms_users GROUP BY user_id ) AS a LEFT JOIN(SELECT b.user_id, (SUM(b.debit_amount) - SUM(b.credit_amount)) AS soa_outstanding FROM rta_customer_transaction_soa AS b LEFT JOIN rta_transactions AS c ON c.trans_id = b.trans_id WHERE c.soa_flag = 1 GROUP BY c.user_id) AS d ON a.user_id = d.user_id'); 
 		foreach($soaBalance as $key => $soaBal) {

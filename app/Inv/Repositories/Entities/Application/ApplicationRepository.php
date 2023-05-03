@@ -1065,7 +1065,7 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
     }
 
     public function getAppLimit($appId){
-        return AppLimit::where('app_id', $appId)->first();
+        return AppLimit::where(['app_id'=> $appId, 'is_deleted' => 0])->first();
     }
 
     public function saveProgramLimit($arr, $prgm_limit_id=null){
@@ -1792,7 +1792,7 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
 
     public static function getAppLimitIdByUserIdAppId($userId, $appId)
     {
-        return AppLimit::where('user_id',$userId)->where('app_id', $appId)
+        return AppLimit::where('user_id',$userId)->where(['app_id'=> $appId,'is_deleted' => 0])
                 ->pluck('app_limit_id')->first();
     }
 
@@ -1877,6 +1877,18 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
        }
        
    } 
+
+   public function getUserProgramLimitByBizId($biz_id)
+   {
+       try
+       {
+           return AppProgramLimit::getUserProgramLimitByBizId($biz_id);
+       } catch (Exception $ex) {
+             return $ex;
+       }
+       
+   } 
+
    
      /** get the get Avaliable User Limit   **/
    public function getAvaliableUserLimit($attr)

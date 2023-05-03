@@ -1852,9 +1852,9 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
         return GstTax::getLastGSTRecord();
     }
 
-	public function getTDSOutstatingAmount($userId)
+	public function getTDSOutstatingAmount($userId, $where = [])
     {
-        $transaction = Transactions::getUnsettledSettledTDSTrans($userId);
+        $transaction = Transactions::getUnsettledSettledTDSTrans($userId, $where);
         return $transaction->sum('TDSAmount');
     }
 
@@ -1863,9 +1863,17 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
 		return Transactions::getUnsettledSettledTDSTrans($data,['due_date'=>$paymentDate]);
 	}
 
-	public static function getOverdueData()
+	public static function getUserWiseWriteOffAmt(){
+		return  DB::select("SELECT a.`user_id` AS supplier_id, SUM(settled_outstanding) AS write_off_amount FROM rta_transactions AS a WHERE trans_type = ? GROUP BY a.`user_id`",[config('lms.TRANS_TYPE.WRITE_OFF')]);
+	}
+
+	public static function getUserWiseSettledAmt(){
+		return  DB::select("SELECT a.`user_id` AS supplier_id,SUM(settled_outstanding) AS settled_amount FROM rta_transactions AS a WHERE entry_type = ? AND IF(trans_type = ? AND payment_id IS NULL , TRUE, payment_id IS NOT NULL) = TRUE GROUP BY a.`user_id`",[1,config('lms.TRANS_TYPE.INTEREST')]);
+	}
+	
+	public static function getUserWiseBucketOs()
 	{
-		return InterestAccrual::getOverdueData();
+		return  DB::select("SELECT a.user_id AS supplier_id, MAX( CASE WHEN a.trans_type = 16 THEN IF( DATE_ADD( a.due_date, INTERVAL COALESCE(b.grace_period, 0) DAY ) < CURDATE() && a.outstanding > 0, DATEDIFF( CURDATE(), DATE_ADD( a.due_date, INTERVAL COALESCE(b.grace_period, 0) DAY ) ), NULL ) WHEN a.trans_type = 9 THEN IF( a.due_date < CURDATE() && a.outstanding > 0, DATEDIFF(CURDATE(), a.due_date), NULL ) END ) AS 'max_dpd', SUM(a.outstanding) AS outstanding, SUM( IF( ( ( ( a.trans_type <> 16 && DATE(a.due_date) < CURDATE() && a.due_date >= DATE_SUB(CURDATE(), INTERVAL 30 DAY) && a.due_date < CURDATE() ) || ( a.trans_type = 16 && DATE( DATE_ADD( a.due_date, INTERVAL b.grace_period DAY ) ) < CURDATE() && DATE_ADD( a.due_date, INTERVAL b.grace_period DAY ) >= DATE_SUB(CURDATE(), INTERVAL 30 DAY) && DATE_ADD( a.due_date, INTERVAL b.grace_period DAY ) < CURDATE() ) ) && a.outstanding > 0 ), a.outstanding, 0 ) ) AS 'buk0_30', SUM( IF( ( ( ( a.trans_type <> 16 && DATE(a.due_date) < CURDATE() && a.due_date >= DATE_SUB(CURDATE(), INTERVAL 60 DAY) && a.due_date <= DATE_SUB(CURDATE(), INTERVAL 31 DAY) ) || ( a.trans_type = 16 && DATE( DATE_ADD( a.due_date, INTERVAL b.grace_period DAY ) ) < CURDATE() && a.outstanding > 0 && DATE_ADD( a.due_date, INTERVAL b.grace_period DAY ) >= DATE_SUB(CURDATE(), INTERVAL 60 DAY) && DATE_ADD( a.due_date, INTERVAL b.grace_period DAY ) <= DATE_SUB(CURDATE(), INTERVAL 31 DAY) ) ) && a.outstanding > 0 ), a.outstanding, 0 ) ) AS 'buk31_60', SUM( IF( ( ( ( a.trans_type <> 16 && DATE(a.due_date) < CURDATE() && a.due_date >= DATE_SUB(CURDATE(), INTERVAL 90 DAY) && a.due_date <= DATE_SUB(CURDATE(), INTERVAL 61 DAY) ) || ( a.trans_type = 16 && DATE( DATE_ADD( a.due_date, INTERVAL b.grace_period DAY ) ) < CURDATE() && a.outstanding > 0 && DATE_ADD( a.due_date, INTERVAL b.grace_period DAY ) >= DATE_SUB(CURDATE(), INTERVAL 90 DAY) && DATE_ADD( a.due_date, INTERVAL b.grace_period DAY ) <= DATE_SUB(CURDATE(), INTERVAL 61 DAY) ) ) && a.outstanding > 0 ), a.outstanding, 0 ) ) AS 'buk61_90', SUM( IF( ( ( ( a.trans_type <> 16 && DATE(a.due_date) < CURDATE() > 0 && a.due_date >= DATE_SUB(CURDATE(), INTERVAL 180 DAY) && a.due_date <= DATE_SUB(CURDATE(), INTERVAL 91 DAY) ) || ( a.trans_type = 16 && DATE( DATE_ADD( a.due_date, INTERVAL b.grace_period DAY ) ) < CURDATE() && a.outstanding > 0 && DATE_ADD( a.due_date, INTERVAL b.grace_period DAY ) >= DATE_SUB(CURDATE(), INTERVAL 180 DAY) && DATE_ADD( a.due_date, INTERVAL b.grace_period DAY ) <= DATE_SUB(CURDATE(), INTERVAL 91 DAY) ) ) && a.outstanding > 0 ), a.outstanding, 0 ) ) AS 'buk91_180', SUM( IF( ( ( ( a.trans_type <> 16 && DATE(a.due_date) < CURDATE() && a.due_date <= DATE_SUB(CURDATE(), INTERVAL 181 DAY) ) || ( a.trans_type = 16 && DATE( DATE_ADD( a.due_date, INTERVAL b.grace_period DAY ) ) < CURDATE() && DATE_ADD( a.due_date, INTERVAL b.grace_period DAY ) <= DATE_SUB(CURDATE(), INTERVAL 181 DAY) ) ) && a.outstanding > 0 ), a.outstanding, 0 ) ) AS 'bukabov' FROM rta_transactions AS a JOIN rta_invoice_disbursed AS b ON a.invoice_disbursed_id = b.invoice_disbursed_id WHERE a.soa_flag = 1 AND a.entry_type = 0 AND a.parent_trans_id IS NULL AND a.outstanding > 0 AND a.due_date < CURDATE() GROUP BY a.user_id");
 	}
 
 	public static function getAccountStatus($userId)
@@ -1902,7 +1910,7 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
 		->join('app_prgm_limit','app_prgm_limit.app_prgm_limit_id', '=', 'app_prgm_offer.app_prgm_limit_id') 
 		->join('app','app.app_id', '=', 'app_prgm_offer.app_id') 
 		->join('app_status_log', 'app_status_log.app_id', '=', 'app.app_id') 
-		->whereIn('app_status_log.status_id',[21, 22, 25, 50]) 
+		->where('app_status_log.status_id',50) 
 		->where('app_prgm_limit.product_id',1) 
 		->where('app_status_log.created_at', '<=', $endDate)
 		->groupBY('app.user_id') 
@@ -1912,15 +1920,17 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
 		foreach ($userAppBizDetail as $key => $appBizId) {
 			$supplierAppBiz[$appBizId->user_id] = ['app_id'=>$appBizId->app_id, 'biz_id'=>$appBizId->biz_id];
 		}
-
+		
 		foreach ($invoices as $key => $inv) {
 
 			$r = BizInvoice::with(['invoice_disbursed'])
 			->where('invoice_id',$inv->maxInv)->get();
+			
 			if($r){
 				if(!empty($supplierAppBiz[$appBizId->user_id])){
 					$r[0]->biz_id = $supplierAppBiz[$inv->supplier_id]['biz_id'];
 					$r[0]->app_id = $supplierAppBiz[$inv->supplier_id]['app_id'];
+					unset($supplierAppBiz[$appBizId->user_id]);
 				}
 
 				$r[0]->invCount = $inv->invCnt;
@@ -1931,6 +1941,21 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
 				}
 			}
 		}
+		
+		foreach ($supplierAppBiz as $key => $value) {
+            $r = new \Illuminate\Database\Eloquent\Collection;
+			
+            $r->biz_id = $value['biz_id'];
+            $r->app_id = $value['app_id'];
+			
+            if($collection){
+                $collection = $collection->merge($r);
+            }else{
+                $collection = $r;
+            }
+            unset($supplierAppBiz[$key]);
+        }
+		
 		return $collection;
     }
 

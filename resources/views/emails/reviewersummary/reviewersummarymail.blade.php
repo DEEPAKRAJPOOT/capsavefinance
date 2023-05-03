@@ -138,7 +138,7 @@
                     <td style="padding:8px 10px;font-size: 0.917rem; font-family: Calibri !important;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;"><b>DSA Name: </b></td>
                     <td style="padding:8px 10px;font-size: 0.917rem; font-family: Calibri !important;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;">{{$leaseOffer->programOfferDsa->dsa_name}}</td>
                     <td style="padding:8px 10px;font-size: 0.917rem; font-family: Calibri !important;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;"><b>Payout %:</b></td>
-                    <td style="padding:8px 10px;font-size: 0.917rem; font-family: Calibri !important;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;">{{$leaseOffer->programOfferDsa->payout}}</td>
+                    <td style="padding:8px 10px;font-size: 0.917rem; font-family: Calibri !important;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;">{{number_format($leaseOffer->programOfferDsa->payout,2)}}</td>
                 </tr>
                 <tr>
                     <td style="padding:8px 10px;font-size: 0.917rem; font-family: Calibri !important;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;"><b>Payout Event: </b></td>
@@ -223,7 +223,7 @@
                                 <td style="padding:8px 10px;font-size: 0.917rem; font-family: Calibri !important;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;"><b>DSA Name: </b></td>
                                 <td style="padding:8px 10px;font-size: 0.917rem; font-family: Calibri !important;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;">{{$supplyOffer->programOfferDsa->dsa_name}}</td>
                                 <td style="padding:8px 10px;font-size: 0.917rem; font-family: Calibri !important;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;"><b>Payout %: </b></td>
-                                <td style="padding:8px 10px;font-size: 0.917rem; font-family: Calibri !important;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;">{{$supplyOffer->programOfferDsa->payout}}</td>
+                                <td style="padding:8px 10px;font-size: 0.917rem; font-family: Calibri !important;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;">{{number_format($supplyOffer->programOfferDsa->payout,2)}}</td>
                             </tr>
                             <tr>
                                 <td style="padding:8px 10px;font-size: 0.917rem; font-family: Calibri !important;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;"><b>Payout Event: </b></td>
@@ -522,7 +522,7 @@
                         Single Borrower Limit
                     </td>
                     <td style="padding:8px 10px;font-size: 13px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;">
-                        Max 15% of Net owned funds (Rs {{$borrowerLimitData['single_limit']}} Mn)
+                        Max 15% of Net owned funds @if($borrowerLimitData['single_limit'] !== 0) (Rs {{$borrowerLimitData['single_limit']}} Mn) @endif
                     </td>
                     <td style="padding:8px 10px;font-size: 0.917rem;font-family: Calibri !important;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;">
                         {{isset($reviewerSummaryData->criteria_sing_borr_limit) ? $reviewerSummaryData->criteria_sing_borr_limit : ''}}
@@ -536,7 +536,7 @@
                         Borrower Group Limit 
                     </td>
                     <td style="padding:8px 10px;font-size: 13px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;">
-                        Max 25% of Net owned funds (Rs {{$borrowerLimitData['multiple_limit']}} Mn)
+                        Max 25% of Net owned funds @if($borrowerLimitData['multiple_limit'] !== 0) (Rs {{$borrowerLimitData['multiple_limit']}} Mn) @endif
                     </td>
                     <td style="padding:8px 10px;font-size: 0.917rem;font-family: Calibri !important;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;">
                         {{isset($reviewerSummaryData->criteria_borr_grp_limit) ? $reviewerSummaryData->criteria_borr_grp_limit : ''}}

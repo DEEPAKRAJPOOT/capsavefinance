@@ -108,11 +108,6 @@
                 <label for="txtPassword"><b>Security Deposit (%)</b> <span style="color: red;"> *</span></label>
                 <input type="text" name="security_deposit" class="form-control" value="{{ isset($offerData->security_deposit) ? $offerData->security_deposit : '' }}" placeholder="Security Deposit" maxlength="15">
             </div>
-            <div class="form-group">
-            <label for="txtPassword"><b>Processing Fee (%) @Sanction level</b> <span style="color: red;"> *</span></label>
-            <small><span class="float-right text-success processinFeeAmount"></span></small>
-            <input type="text" name="processing_fee" class="form-control" value="{{isset($offerData->processing_fee)? $offerData->processing_fee: ''}}" placeholder="Processing Fee" maxlength="6">
-          </div>
         </div>
 
         <div class="col-md-6">
@@ -159,7 +154,7 @@
                  <div class="col-md-3">
                     <div class="form-group">
                         <label for="txtPassword">Payout Event <span style="color: red;"> *</span></label> 
-                        <input type="text" name="payout_event" id="payout_event" class="form-control" value="{{ (isset($offerData->programOfferDsa) && !empty($offerData->programOfferDsa->payout_event))  ? $offerData->programOfferDsa->payout_event : '' }}" placeholder="Payout Event">
+                        <input type="text" name="payout_event" id="payout_event" class="form-control" value="{{ (isset($offerData->programOfferDsa) && !empty($offerData->programOfferDsa->payout_event))  ? $offerData->programOfferDsa->payout_event : '' }}" placeholder="Payout Event" maxlength="100">
                     </div>
                  </div>
                 
@@ -338,9 +333,11 @@
     </div>
     <div class="row">
     @can('update_limit_offer')
+    @if(($userRole->name == 'Credit Manager' || $userRole->name == 'Super Admin') && ($userInfo->assignee_role == 'Credit Manager' || $userInfo->assignee_role == 'Super Admin') &&($appStatus == 56 || $appStatus == 20 || $appStatus == 23 || $appStatus == 49 || $appStatus == 55))
       <div class="col-md-12">
         <button type="submit" class="btn btn-success btn-sm float-right">Submit</button>
       </div>
+    @endif
     @endcan
     </div>   
   </form>
@@ -521,7 +518,7 @@
         setError('select[name=rental_frequency_type]', 'Please select frequency type');
         flag = false;
     }
-    var regex = /^[a-zA-Z\s]+$/;
+    var decimalregex = /^\d+(\.\d{0,2})?$/g;
         if(xirr == ''){
             setError('input[name=xirr]', 'Please fill XIRR');
             flag = false;
@@ -529,10 +526,10 @@
             setError('input[name=xirr]', 'Please enter valid data only');
             flag = false;
         }else if(parseFloat(xirr) > 100){
-            setError('input[name=xirr]', 'XIRR value should be in between 1-100% only');
+            setError('input[name=xirr]', 'XIRR value should be in between 0-100% only');
             flag = false;
-        }else if(parseFloat(xirr) < 1){
-            setError('input[name=xirr]', 'XIRR value should be in between 1-100% only');
+        }else if(parseFloat(xirr) < 0){
+            setError('input[name=xirr]', 'XIRR value should be in between 0-100% only');
             flag = false;
         }
     if(dsa_applicable == 1){
@@ -541,10 +538,11 @@
         if(dsa_name == ''){
             setError('input[name=dsa_name]', 'Please fill DSA name');
             flag = false;
-        }else if(!isValid){
-            setError('input[name=dsa_name]', 'Please enter valid data only');
-            flag = false;
         }
+        // else if(!isValid){
+        //     setError('input[name=dsa_name]', 'Please enter valid data only');
+        //     flag = false;
+        // }
         var decimalregex = /^\d+(\.\d{0,2})?$/g;
         if(payout == ''){
             setError('input[name=payout]', 'Please fill payout');
@@ -553,10 +551,10 @@
             setError('input[name=payout]', 'Please enter valid data only');
             flag = false;
         }else if(parseFloat(payout) > 100){
-            setError('input[name=payout]', 'Payout value should be in between 1-100% only');
+            setError('input[name=payout]', 'Payout value should be in between 0-100% only');
             flag = false;
-        }else if(parseFloat(payout) < 1){
-            setError('input[name=payout]', 'Payout value should be in between 1-100% only');
+        }else if(parseFloat(payout) < 0){
+            setError('input[name=payout]', 'Payout value should be in between 0-100% only');
             flag = false;
         }
 
@@ -564,10 +562,11 @@
         if(payout_event == ''){
             setError('input[name=payout_event]', 'Please fill payout event');
             flag = false;
-        }else if(!eventValid){
-            setError('input[name=payout_event]', 'Please enter valid data only');
-            flag = false;
         }
+        // else if(!eventValid){
+        //     setError('input[name=payout_event]', 'Please enter valid data only');
+        //     flag = false;
+        // }
         
 
     }

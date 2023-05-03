@@ -95,8 +95,7 @@ try {
             isValidExt = false;
             for (let i = 0; i < files.length; i++) {
                 var file = files[i];
-                //alert(file.type);
-                if (file.type.match('image')){
+                if (file.type.match('image') || file.type.match('pdf')){
                     isValidExt = true;
                     if (formdata) {
                         formdata.append("approval_doc_file", file);
@@ -155,7 +154,7 @@ try {
                     } 
                 });
             }else{
-                $('#tMsg').show().html('<span style="color: red;font-weight: 900;margin: 22px 5px 32px;font-size: 13px;">Please enter a value with a valid extensions. (Type:- image format)</span>');
+                $('#tMsg').show().html('<span style="color: red;font-weight: 900;margin: 22px 5px 32px;font-size: 13px;">Please enter a value with a valid extensions. (Type:- image or pdf format)</span>');
                         $('html, body').animate({
                             scrollTop: $('#tMsg').offset().top - 60
                     }, 1000);

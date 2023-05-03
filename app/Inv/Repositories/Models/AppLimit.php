@@ -55,6 +55,7 @@ class AppLimit extends BaseModel {
         'start_date',
         'end_date',
         'actual_end_date',
+        'is_deleted',
         'limit_expiration_date',
         'created_at',
         'created_by',
@@ -82,7 +83,7 @@ class AppLimit extends BaseModel {
     
     public static function getUserLimit($user_id)
     {
-       return  self::where(['user_id'=>$user_id,'status' => 1])->first();
+       return  self::where(['user_id'=>$user_id,'status' => 1,'is_deleted' => 0])->first();
     }
     
 
@@ -103,7 +104,7 @@ class AppLimit extends BaseModel {
 
     public static function getUserProgramLimit($user_id)
     {
-       return  self::where(['user_id'=>$user_id,'status' => 1])->first();
+       return  self::where(['user_id'=>$user_id,'status' => 1,'is_deleted' => 0])->first();
     }
      public function anchor(){
         return $this->belongsTo('App\Inv\Repositories\Models\Anchor','anchor_id','anchor_id');

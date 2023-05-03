@@ -961,9 +961,11 @@
     </div>
     <div class="row">
     @can('update_limit_offer')
+    @if(($userRole->name == 'Credit Manager' || $userRole->name == 'Super Admin') && ($userInfo->assignee_role == 'Credit Manager' || $userInfo->assignee_role == 'Super Admin') &&($appStatus == 56 || $appStatus == 20 || $appStatus == 23 || $appStatus == 49 || $appStatus == 55))
       <div class="col-md-12">
         <button type="submit" class="btn btn-success btn-sm float-right">Submit</button>
       </div>
+    @endif
       @endcan
     </div>   
   </form>
@@ -1252,10 +1254,10 @@
             setError('input[name=xirr]', 'Please enter valid data only');
             flag = false;
         }else if(parseFloat(xirr) > 100){
-            setError('input[name=xirr]', 'XIRR value should be in between 1-100% only');
+            setError('input[name=xirr]', 'XIRR value should be in between 0-100% only');
             flag = false;
-        }else if(parseFloat(xirr) < 1){
-            setError('input[name=xirr]', 'XIRR value should be in between 1-100% only');
+        }else if(parseFloat(xirr) < 0){
+            setError('input[name=xirr]', 'XIRR value should be in between 0-100% only');
             flag = false;
         }
     if(dsa_applicable == 1){
@@ -1279,10 +1281,10 @@
             setError('input[name=payout]', 'please enter valid data only');
             flag = false;
         }else if(parseFloat(payout) > 100){
-            setError('input[name=payout]', 'Payout value should be in between 1-100% only');
+            setError('input[name=payout]', 'Payout value should be in between 0-100% only');
             flag = false;
-        }else if(parseFloat(payout) < 1){
-            setError('input[name=payout]', 'Payout value should be in between 1-100% only');
+        }else if(parseFloat(payout) < 0){
+            setError('input[name=payout]', 'Payout value should be in between 0-100% only');
             flag = false;
         }
 
@@ -1699,6 +1701,7 @@
   }
 
   function fillChargesBlock(program){
+      console.log('Calling this function');
     let html='';
     $.each(program.program_charges, function(i,program_charge){
             //if(program_charge.charge_name.chrg_tiger_id == 1){
@@ -1720,7 +1723,7 @@
                 calProcesingFee  = '<small><span class="float-right text-success processinFeeAmount"></span></small>';
                 if (currentAppType == 3){
                     calProcesingFee  = '<small><span class="float-right text-success processinFeeAmount">PF Amount: <i class="fa fa-inr"></i>0</span></small>';
-                    readonly = 'readonly';
+                    //readonly = 'readonly';
                 }
             }
             html += '<div class="col-md-6">'+
@@ -1848,9 +1851,9 @@ $(document).on('change', 'input[data-name=\"Processing Fee\"]', function() {
 
 if(offerData != "") { 
     $('input[data-name=\'Processing Fee\']').prop("readonly", false);
-    if(currentAppType == 3){
-        $('input[data-name=\'Processing Fee\']').prop("readonly", true);
-    }
+    // if(currentAppType == 3){
+    //     $('input[data-name=\'Processing Fee\']').prop("readonly", true);
+    // }
     $('input[name=\'prgm_limit_amt\']').trigger("change");
 }
 </script>
