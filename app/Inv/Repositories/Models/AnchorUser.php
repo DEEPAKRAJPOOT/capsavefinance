@@ -382,9 +382,9 @@ class AnchorUser extends BaseModel {
     public static function getAnchorsDetails($userId) {
         $query = self::select('anchor.comp_addr','anchor.pan_no','anchor.gst_no','mst_state.name','anchor.comp_city','anchor.comp_zip')
             ->join('anchor', 'anchor_user.anchor_id', '=', 'anchor.anchor_id')
-            ->join('mst_state', 'anchor.comp_state', '=', 'mst_state.id');
-        $query->where('anchor_user.user_id', $userId);
-        $anchors = $query->first();            
-        return ($anchors ? $anchors : []);
+            ->join('mst_state', 'anchor.comp_state', '=', 'mst_state.id')
+            ->where('anchor_user.user_id', $userId)
+            ->first();
+        return ($query ? $query : []);
     }
 }

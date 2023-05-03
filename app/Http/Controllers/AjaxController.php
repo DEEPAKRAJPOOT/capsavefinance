@@ -6020,6 +6020,7 @@ if ($err) {
             $chrgTransactions = [];
             $userId = '';
             $debitNoteTransIds = [];
+            $bill = null;
             foreach($chrgTrans as $chrgTran) {
 
                 if ($chrgTran->transaction && $chrgTran->transaction->amount != $chrgTran->transaction->outstanding) {
@@ -6042,8 +6043,10 @@ if ($err) {
                         }else{
                             $bill = 'CA';
                         }
-                    }else{
-                        $bill = 'CC';
+                    }
+                    $controller = app()->make('App\Http\Controllers\Lms\userInvoiceController');
+                    if (count($debitNoteTransIds)) {
+                        $debitNoteResults = $controller->generateDebitNote($debitNoteTransIds, $userId, $billType = $bill);
                     }
                 }
                 $chrgTransactions[] = $chrgTran->transaction;
@@ -6054,12 +6057,20 @@ if ($err) {
             }
 
             $controller = app()->make('App\Http\Controllers\Lms\userInvoiceController');
-
-            if (count($debitNoteTransIds)) {
-                $debitNoteResults = $controller->generateDebitNote($debitNoteTransIds, $userId, $billType = $bill);
+            // if (count($debitNoteTransIds)) {
+            //     $debitNoteResults = $controller->generateDebitNote($debitNoteTransIds, $userId, $billType = $bill);
+            // }
+            // $chrgTrans = ChargesTransactions::with('chargePrgm:prgm_id,interest_borne_by')->whereIn('chrg_trans_id', $chrgIds)->get();
+            foreach($chrgTrans as $chrgTran) {
+                $creditNoteTransIds = Transactions::processChrgTransDeletion($chrgTransactions);
+                if(isset($chrgTran->chargePrgm)){
+                    if($chrgTran->chargePrgm->interest_borne_by == 2){
+                        $bill = 'CC';
+                    }else{
+                        $bill = 'CA';
+                    }
+                }
             }
-
-            $creditNoteTransIds = Transactions::processChrgTransDeletion($chrgTransactions);
 
             \DB::commit();
         } catch (Exception $ex) {
@@ -6069,7 +6080,7 @@ if ($err) {
 
         try {
             if(count($creditNoteTransIds)) {
-                $creditNoteResults = $controller->generateCreditNote($creditNoteTransIds, $userId, $billType = 'CC');
+                $creditNoteResults = $controller->generateCreditNote($creditNoteTransIds, $userId, $billType = $bill);
             }
             return response()->json(['status' => 1,'msg' => "Charge cancellation approved successfully."]);
         } catch (Exception $ex) {

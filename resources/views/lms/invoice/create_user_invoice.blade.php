@@ -37,10 +37,10 @@
                         <label class="float-left">Invoice Tag</label>
                         <select class="form-control form-control-sm" id="invoice_type" name="invoice_type">
                             <option value="" disabled selected>Select Invoice Type</option>
-                            <option value="IC_9">Interest Borne By Customer</option>
-                            <option value="IA_9">Interest Borne By Anchor</option>
-                            <option value="IC_33">Overdue Interest Borne By Customer</option>
-                            <option value="IA_33">Overdue Interest Borne By Anchor</option>
+                            <option value="IC">Interest Borne By Customer</option>
+                            <option value="IA">Interest Borne By Anchor</option>
+                            {{-- <option value="IC_33">Overdue Interest Borne By Customer</option>
+                            <option value="IA_33">Overdue Interest Borne By Anchor</option> --}}
                             <option value="CC">Customer level Charges</option>
                             <option value="CA">Anchor level Charges</option>
                         </select>
@@ -61,17 +61,17 @@
                                           <div class="row">
                                               <div class="col-md-12" id="cust_div">
                                                 <div class="form-group">
-                                                    <label class="m-0" >Customer Id: <span id="cust_id" name= "cust_id">{{$custDetails['customer_id']}}</span></label>
+                                                    <label class="m-0" >Customer Id: <span id="cust_id">{{$custDetails['customer_id']}}</span></label>
                                                 </div>
                                               </div>
                                               <div class="col-md-12" id="cust_div1">
                                                 <div class="form-group">
-                                                    <label class="m-0">Customer Name: <span id="cust_name" name= "cust_name">{{ $custDetails['f_name'].' '.$custDetails['l_name'] }}</span></label>
+                                                    <label class="m-0">Customer Name: <span id="cust_name">{{ $custDetails['f_name'].' '.$custDetails['l_name'] }}</span></label>
                                                 </div>
                                               </div>
                                               <div class="col-md-12">
                                                   <div class="form-group">
-                                                      <label class="m-0">PAN Number: <span id="pan" name= "pan">{{$billingDetails['pan_no']}}</span></label>
+                                                      <label class="m-0">PAN Number: <span id="pan">{{$billingDetails['pan_no']}}</span></label>
                                                   </div>
                                               </div>
                                               <div class="col-md-12">
@@ -81,7 +81,7 @@
                                               </div>
                                               <div class="col-md-12">
                                                   <div class="form-group">
-                                                      <label class="m-0">GSTIN:<span id="gst" name = "gst">{{$billingDetails['gstin_no']}}</span></label>
+                                                      <label class="m-0">GSTIN:<span id="gst">{{$billingDetails['gstin_no']}}</span></label>
                                                   </div>
                                               </div>
                                               <div class="col-md-12">
@@ -372,10 +372,10 @@
       return false;
     }
     var invoice_user_code = message.charge_prefix;
-    if (invoice_type == 'IC_9' || invoice_type == 'IA_9' || invoice_type == 'IC_33' || invoice_type == 'IA_33') {
+    if (invoice_type == 'IC' || invoice_type == 'IA') {
       invoice_user_code = message.interest_prefix;
     }
-    if(invoice_type == 'IA_9' || invoice_type == 'IA_33' || invoice_type == 'CA'){
+    if(invoice_type == 'IA' || invoice_type == 'CA'){
       let anchorPan = message.anchorPan;
       let anchorGst = message.anchorGst;
       let stateCode = message.stateCode;
@@ -389,7 +389,7 @@
       $('#cust_id').text(custId);
       $('#cust_name').text(custName);
     }
-    if(invoice_type == 'IC_9' || invoice_type == 'IC_33' || invoice_type == 'CC'){
+    if(invoice_type == 'IC' || invoice_type == 'CC'){
       let custPan = message.custPan;
       let custGst = message.custGst;
       let custstateCode = message.custstateCode;

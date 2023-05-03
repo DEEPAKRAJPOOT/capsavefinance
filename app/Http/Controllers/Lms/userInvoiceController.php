@@ -266,7 +266,7 @@ class userInvoiceController extends Controller
             'message' => 'Some error occured, Try after sometime'
         ];
         $invoice_type = $request->get('invoice_type');
-        if (!in_array($invoice_type, ['IC_9','IA_9','IC_33','IA_33', 'CC','CA'])) {
+        if (!in_array($invoice_type, ['IC','IA', 'CC','CA'])) {
             $response['message'] = 'Invalid Invoice Type';
             return response()->json($response);
         }
@@ -328,7 +328,7 @@ class userInvoiceController extends Controller
         }
 
 
-        if (!in_array($invoice_type, ['IC_9','IA_9','IC_33','IA_33', 'CC','CA'])) {
+        if (!in_array($invoice_type, ['IC','IA', 'CC','CA'])) {
            return response()->json(['status' => 0,'message' => "Invalid Invoice Type found."]); 
         }
 
@@ -981,7 +981,7 @@ class userInvoiceController extends Controller
                 return $result;
             }
 
-            $userCompanyRelation  = $this->UserInvRepo->getUserCompanyRelation($userId);
+            $userCompanyRelation  = $this->UserInvRepo->getUserCompanyRelation((int) $userId);
             if (empty($userCompanyRelation)) {
                 $error[] = 'No Relation found between Company and User.'; 
                 return $result;

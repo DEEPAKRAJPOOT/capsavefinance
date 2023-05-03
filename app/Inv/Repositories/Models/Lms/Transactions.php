@@ -1324,30 +1324,32 @@ class Transactions extends BaseModel {
                 });
             }
         }
-        if($invoiceType == 'IC_9'){
+        if($invoiceType == 'IC'){
             $sql->whereHas('invoiceDisbursed.invoice.program', function($newQuery1){
                 $newQuery1->where('interest_borne_by',2);
             });
-        }elseif($invoiceType == 'IA_9'){
+        }elseif($invoiceType == 'IA'){
             $sql->whereHas('invoiceDisbursed.invoice.program', function($newQuery1){
                 $newQuery1->where('interest_borne_by',1);
             });
         }
-        if($invoiceType == 'IC_33'){
-            $sql->whereHas('invoiceDisbursed.invoice.program', function($newQuery2){
-                $newQuery2->where('overdue_interest_borne_by',2);
-            });
-        }elseif($invoiceType == 'IA_33'){
-            $sql->whereHas('invoiceDisbursed.invoice.program', function($newQuery2){
-                $newQuery2->where('overdue_interest_borne_by',1);
-            });
-        }
+        // dd($sql->get('invoiceDisbursed'));
+        // if($invoiceType == 'IC_33'){
+        //     $sql->whereHas('invoiceDisbursed.invoice.program', function($newQuery2){
+        //         $newQuery2->where('overdue_interest_borne_by',2);
+        //     });
+        // }elseif($invoiceType == 'IA_33'){
+        //     $sql->whereHas('invoiceDisbursed.invoice.program', function($newQuery2){
+        //         $newQuery2->where('overdue_interest_borne_by',1);
+        //     });
+        // }
        return $sql->whereHas('transType', function($query) use ($invoiceType) { 
-            if($invoiceType == 'IC_9' || $invoiceType == 'IA_9') {
-                $query->whereIn('id',[config('lms.TRANS_TYPE.INTEREST')]);
-             }elseif($invoiceType == 'IC_33' || $invoiceType == 'IA_33'){
-                $query->whereIn('id',[config('lms.TRANS_TYPE.INTEREST_OVERDUE')]);
-             }  
+            if($invoiceType == 'IC' || $invoiceType == 'IA') {
+                $query->whereIn('id',[config('lms.TRANS_TYPE.INTEREST'),config('lms.TRANS_TYPE.INTEREST_OVERDUE')]);
+             }
+            //  elseif($invoiceType == 'IC' || $invoiceType == 'IA'){
+            //     $query->whereIn('id');
+            //  }  
              elseif($invoiceType == 'CC' || $invoiceType == 'CA') {
                 $query->where('chrg_master_id','!=','0');
             }
