@@ -55,6 +55,7 @@ class GenerateNotePdf implements ShouldQueue
             $invoice_no = $invData->invoice_no;
             $state_name = $invData->place_of_supply;
             $invoice_type = $invData->invoice_type;
+            $invoiceBorneBy = $invData->invoice_borne_by;
             $invoice_type_name = $invData->invoice_type_name;
             $invoice_date = $invData->invoice_date;
             $due_date = $invData->due_date;
