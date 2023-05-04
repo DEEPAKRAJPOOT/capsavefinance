@@ -600,12 +600,11 @@ class InvoiceController extends Controller {
             ->where('user_id',$userId)
             ->where('entry_type','0')
             ->where('is_invoice_generated','0')
-            ->whereHas('invoice.program_offer.program',function($query){
+            ->whereHas('invoiceDisbursed.invoice.program_offer.program',function($query){
                 $query->where('interest_borne_by',2);
             })
             ->pluck('trans_id')
             ->toArray();
-
             $controller = app()->make('App\Http\Controllers\Lms\userInvoiceController');
             if(!empty($customerIntList)){
                 $controller->generateDebitNote($customerIntList, $userId, 'IC');
@@ -617,12 +616,11 @@ class InvoiceController extends Controller {
             ->where('user_id',$userId)
             ->where('entry_type','0')
             ->where('is_invoice_generated','0')
-            ->whereHas('invoice.program_offer.program',function($query){
+            ->whereHas('invoiceDisbursed.invoice.program_offer.program',function($query){
                 $query->where('interest_borne_by',1);
             })
             ->pluck('trans_id')
             ->toArray();
-
             if(!empty($anchorIntList)){
                 $controller->generateDebitNote($anchorIntList, $userId, 'IC');
                 unset($anchorIntList);
@@ -633,12 +631,11 @@ class InvoiceController extends Controller {
             ->where('user_id',$userId)
             ->where('entry_type',0)
             ->where('is_invoice_generated',0)
-            ->whereHas('invoice.program_offer.program',function($query){
+            ->whereHas('invoiceDisbursed.invoice.program_offer.program',function($query){
                 $query->where('interest_borne_by',2);
             })
             ->pluck('trans_id')
             ->toArray();
-
             if(!empty($customerChrgList)){
                 $controller->generateDebitNote($customerChrgList, $userId, 'IC');
                 unset($customerChrgList);
@@ -649,12 +646,11 @@ class InvoiceController extends Controller {
             ->where('user_id',$userId)
             ->where('entry_type',0)
             ->where('is_invoice_generated',0)
-            ->whereHas('invoice.program_offer.program',function($query){
+            ->whereHas('invoiceDisbursed.invoice.program_offer.program',function($query){
                 $query->where('interest_borne_by',2);
             })
             ->pluck('trans_id')
             ->toArray();
-        
             if(!empty($anchorChrgList)){
                 $controller->generateDebitNote($anchorChrgList, $userId, 'IC');
                 unset($anchorChrgList);
