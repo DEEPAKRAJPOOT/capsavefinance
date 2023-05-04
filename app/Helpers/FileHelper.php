@@ -173,26 +173,7 @@ class FileHelper {
             $char = ($floor > 0 ? chr(ord("A") + $floor-1) : '').chr(ord("A") + $reminder);
             foreach($data as $key => $item) {
               foreach($item as $key1 => $item1) {
-                if($factDateFormatFlag == 1){
-                  $objSpreadsheet->getActiveSheet()
-                  ->setCellValueByColumnAndRow($column, $row, $item1)  
-                  ->getStyle('C'.$row)
-                  ->getNumberFormat()
-                  ->setFormatCode('dd-mm-yyyy');
-                  $objSpreadsheet->getActiveSheet()
-                  ->setCellValueByColumnAndRow($column, $row, $item1)  
-                  ->getStyle('F'.$row)
-                  ->getNumberFormat()
-                  ->setFormatCode('dd-mm-yyyy');
-                }elseif($factDateFormatFlag == 2){
-                  $objSpreadsheet->getActiveSheet()
-                  ->setCellValueByColumnAndRow($column, $row, $item1)  
-                  ->getStyle('B'.$row)
-                  ->getNumberFormat()
-                  ->setFormatCode('dd-mm-yyyy');
-                }else{
-                  $objSpreadsheet->getActiveSheet()->setCellValueByColumnAndRow($column, $row, $item1);
-                }
+                $objSpreadsheet->getActiveSheet()->setCellValueByColumnAndRow($column, $row, $item1);
                 
                 $column++;
               }
