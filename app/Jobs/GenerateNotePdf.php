@@ -146,11 +146,6 @@ class GenerateNotePdf implements ShouldQueue
                 'custName' => $data['custName']
             ];
 
-            if($invoiceBorneBy == '1'){
-                $data['custId'] = $invData->customer_id ?? '';
-                $data['custName'] = $invData->customer_name ?? '';
-            }
-
             view()->share($data);
             $path ='capsaveInvoice/'.str_replace("/","_",strtoupper($data['origin_of_recipient']['invoice_no'])).'.pdf';
             //$year = date("Y");   
