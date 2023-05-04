@@ -6020,9 +6020,9 @@ if ($err) {
             $chrgTransactions = [];
             $userId = '';
             $debitNoteTransIds = [];
-            $bill = null;
+            $creditNoteTransIds = [];
             foreach($chrgTrans as $chrgTran) {
-
+                $bill = null;
                 if ($chrgTran->transaction && $chrgTran->transaction->amount != $chrgTran->transaction->outstanding) {
                     \DB::rollback();
                     return response()->json(['status' => 0,'msg' => "Selected Charges can't be cancelled because charge transaction is already settled."]);
@@ -6035,21 +6035,17 @@ if ($err) {
                     'created_by'    => auth()->user()->user_id
                 ];
 
-                if ($chrgTran->transaction->is_invoice_generated == 0) {
-                    $debitNoteTransIds[] = $chrgTran->trans_id;
-                    if(isset($chrgTran->chargePrgm)){
-                        if($chrgTran->chargePrgm->interest_borne_by == 2){
-                            $bill = 'CC';
-                        }else{
-                            $bill = 'CA';
-                        }
-                    }
-                    $controller = app()->make('App\Http\Controllers\Lms\userInvoiceController');
-                    if (count($debitNoteTransIds)) {
-                        $debitNoteResults = $controller->generateDebitNote($debitNoteTransIds, $userId, $billType = $bill);
+                if(isset($chrgTran->chargePrgm)){
+                    if($chrgTran->chargePrgm->interest_borne_by == 2){
+                        $bill = 'CC';
+                    }else{
+                        $bill = 'CA';
                     }
                 }
-                $chrgTransactions[] = $chrgTran->transaction;
+                if ($chrgTran->transaction->is_invoice_generated == 0) {
+                    $debitNoteTransIds[$bill][] = $chrgTran->trans_id;
+                }
+                $chrgTransactions[$bill][] = $chrgTran->transaction;
                 if (!$userId) {
                     $userId = $chrgTran->transaction->user_id;
                 }
@@ -6057,17 +6053,18 @@ if ($err) {
             }
 
             $controller = app()->make('App\Http\Controllers\Lms\userInvoiceController');
-            // if (count($debitNoteTransIds)) {
-            //     $debitNoteResults = $controller->generateDebitNote($debitNoteTransIds, $userId, $billType = $bill);
-            // }
-            // $chrgTrans = ChargesTransactions::with('chargePrgm:prgm_id,interest_borne_by')->whereIn('chrg_trans_id', $chrgIds)->get();
-            foreach($chrgTrans as $chrgTran) {
-                $creditNoteTransIds = Transactions::processChrgTransDeletion($chrgTransactions);
-                if(isset($chrgTran->chargePrgm)){
-                    if($chrgTran->chargePrgm->interest_borne_by == 2){
-                        $bill = 'CC';
-                    }else{
-                        $bill = 'CA';
+
+            if (count($debitNoteTransIds)) {
+                foreach ($debitNoteTransIds as $billType => $transIds) {
+                    if($billType){
+                        $debitNoteResults = $controller->generateDebitNote($transIds, $userId, $billType);
+                    }
+                }
+            }
+            if (count($chrgTransactions)) {
+                foreach ($chrgTransactions as $billType => $trans) {
+                    if($billType){
+                        $creditNoteTransIds[$billType] = Transactions::processChrgTransDeletion($trans);
                     }
                 }
             }
@@ -6080,7 +6077,11 @@ if ($err) {
 
         try {
             if(count($creditNoteTransIds)) {
-                $creditNoteResults = $controller->generateCreditNote($creditNoteTransIds, $userId, $billType = $bill);
+                foreach ($creditNoteTransIds as $billType => $transIds) {
+                    if($billType){
+                        $debitNoteResults = $controller->generateCreditNote($transIds, $userId, $billType);
+                    }
+                }
             }
             return response()->json(['status' => 1,'msg' => "Charge cancellation approved successfully."]);
         } catch (Exception $ex) {
