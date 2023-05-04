@@ -395,7 +395,8 @@ class userInvoiceController extends Controller
         $custDetails = User::getCustomerData($user_id);
         $custId = $custDetails['customer_id'];
         $custName = $custDetails['f_name'].' '.$custDetails['l_name'];
-        $invoice_type = substr(str_replace('_','',$invoice_type),0,2);
+        $invoiceType = substr($invoice_type,0,1);
+        $invoiceBorneBy = $invoiceType = 'C' ? 1:2;
         if(isset($custId) && isset($custName) && ($invoice_type == 'IA' || $invoice_type == 'CA')){
             $data = [
                 'company_data' => $company_data,
@@ -405,6 +406,7 @@ class userInvoiceController extends Controller
                 'total_sum_of_rental' => $total_sum_of_rental,
                 'registeredCompany' => $registeredCompany,
                 'invoice_type'=>$invoice_type,
+                'invoiceBorneBy'=>$invoiceBorneBy,
                 'custId'=>$custId,
                 'custName'=>$custName,
             ];
@@ -417,6 +419,7 @@ class userInvoiceController extends Controller
                 'total_sum_of_rental' => $total_sum_of_rental,
                 'registeredCompany' => $registeredCompany,
                 'invoice_type'=>$invoice_type,
+                'invoiceBorneBy'=>$invoiceBorneBy,
             ];
         }
         $view = $this->viewInvoiceAsPDF($data);
