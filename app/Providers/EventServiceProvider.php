@@ -6,6 +6,9 @@ use Illuminate\Support\Facades\Event;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
 use App\Inv\Repositories\Observers\TransactionsObserver;
 use App\Inv\Repositories\Models\Lms\Transactions;
+use App\Inv\Repositories\Observers\ChargeTransactionObserver;
+use App\Inv\Repositories\Models\Lms\ChargesTransactions;
+
 
 class EventServiceProvider extends ServiceProvider
 {
@@ -38,5 +41,6 @@ class EventServiceProvider extends ServiceProvider
     {
         parent::boot();
         Transactions::observe(TransactionsObserver::class);
+        ChargesTransactions::observe(ChargeTransactionObserver::class);
     }
 }
