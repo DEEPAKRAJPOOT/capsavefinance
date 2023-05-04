@@ -6041,6 +6041,12 @@ if ($err) {
                     }else{
                         $bill = 'CA';
                     }
+                }elseif($chrgTran->ChargeMaster->chrg_type == 2){
+                    if($chrgTran->level_charges == 2){
+                        $bill = 'CC';
+                    }else{
+                        $bill = 'CA';
+                    }
                 }
                 if ($chrgTran->transaction->is_invoice_generated == 0) {
                     $debitNoteTransIds[$bill][] = $chrgTran->trans_id;
