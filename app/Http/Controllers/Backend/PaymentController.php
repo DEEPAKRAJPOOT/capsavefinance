@@ -133,9 +133,9 @@ class PaymentController extends Controller {
 				return back();
 			}
 			$curdate = Carbon::parse(Helpers::getSysStartDate())->format('Y-m-d');
-			$curdateMesg = Carbon::parse(Helpers::getSysStartDate())->format('d/m/Y');
+			$curdateMesg = Carbon::parse(Helpers::getSysStartDate())->format('Y-m-d');
+			$firstDayofPreviousMonth = Carbon::now()->startOfMonth()->subMonth()->format('Y-m-d');
 			$arrFileData = $request->all();
-			// dd($arrFileData);
 			$validatedData = $request->validate([
 				'payment_type' => Rule::requiredIf(function () use ($request) {
 					return ($request->action_type == 1)?true:false;
@@ -164,7 +164,12 @@ class PaymentController extends Controller {
 				'doc_file.checkmime' => 'Invalid file format',
 				'amount.regex' =>  'Please enter only 2 decimal places',
 			]);
-
+			$date = $request->get('date_of_payment');
+			$paymentDate = Carbon::createFromFormat('d/m/Y', $date)->format('Y-m-d');
+			if ($paymentDate > $curdateMesg || $paymentDate < $firstDayofPreviousMonth) {
+				Session::flash('error', 'Selected Payment Date is Incorrect');
+				return back();
+			}
 			$utr ="";
 			$check  ="";
 			$unr  ="";

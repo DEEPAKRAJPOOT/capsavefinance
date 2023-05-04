@@ -19,7 +19,7 @@ use App\Inv\Repositories\Models\Lms\InvoiceDisbursed;
 use App\Inv\Repositories\Models\AppProgramOffer;
 use App\Inv\Repositories\Models\Master\BaseRate;
 use Illuminate\Support\Facades\View;
-
+use Carbon\Carbon;
 use App\Helpers\ManualApportionmentHelper;
 
 class DisbursalController extends Controller
@@ -213,30 +213,46 @@ class DisbursalController extends Controller
 						$updateInvoiceStatus = $this->lmsRepo->updateInvoiceStatus($invoice['invoice_id'], 12);
 					}
 				}
-
+				$eventDate = Helpers::getSysStartDate();
+				$disburseDate = Carbon::parse($disburseDate)->format('Y-m-d');		 
 				if($disburseType == 2) {
 					// disburse transaction $tranType = 16 for payment acc. to mst_trans_type table
-					$transactionData = $this->createTransactionData($disburseRequestData['user_id'], ['amount' => $fundedAmount, 'trans_date' => $disburseDate], $transId, 16);
+					$transactionData = $this->createTransactionData($disburseRequestData['user_id'], [
+						'amount' => $fundedAmount, 
+						'trans_date' => $disburseDate,
+						'created_at' => $eventDate
+					], $transId, 16);
 					$createTransaction = $this->lmsRepo->saveTransaction($transactionData);
 
 					// interest transaction $tranType = 9 for interest acc. to mst_trans_type table
 				
 					if ($interest > 0.00) {
-						$intrstTrnsData = $this->createTransactionData($disburseRequestData['user_id'], ['amount' => $interest, 'trans_date' => $disburseDate], $transId, 9);
+						$intrstTrnsData = $this->createTransactionData($disburseRequestData['user_id'], [
+							'amount' => $interest, 
+							'trans_date' => $disburseDate,
+							'created_at' => $eventDate
+						], $transId, 9);
 						$createTransaction = $this->lmsRepo->saveTransaction($intrstTrnsData);
 
-						$intrstTrnsData = $this->createTransactionData($disburseRequestData['user_id'], ['amount' => $interest, 'trans_date' => $disburseDate], $transId, 9, 1);
+						$intrstTrnsData = $this->createTransactionData($disburseRequestData['user_id'], [
+							'amount' => $interest, 
+							'trans_date' => $disburseDate,
+							'created_at' => $eventDate
+						], $transId, 9, 1);
 						$createTransaction = $this->lmsRepo->saveTransaction($intrstTrnsData);
 					}
 
 					if ($margin > 0.00) {
-						$marginTrnsData = $this->createTransactionData($disburseRequestData['user_id'], ['amount' => $margin, 'trans_date' => $disburseDate], $transId, 10, 0);
+						$marginTrnsData = $this->createTransactionData($disburseRequestData['user_id'], [
+							'amount' => $margin, 
+							'trans_date' => $disburseDate,
+							'created_at' => $eventDate
+						], $transId, 10, 0);
 						$createTransaction = $this->lmsRepo->saveTransaction($marginTrnsData);
 					}
 				}
 			}
 		}
-		// dd($allrecords);
 		// --- production code end 
 
 		if($disburseType == 1 && !empty($allrecords)) {
@@ -319,38 +335,6 @@ class DisbursalController extends Controller
 
 		return $requestData;
     }
-
-	public function uploadPfDf($user_id, $appId) {
-	    $prcsAmt = $this->appRepo->getPrgmLimitByAppId($appId);
-	    // dd($prcsAmt);
-	    if(isset($prcsAmt->offer)){
-
-			foreach ($prcsAmt->offer as $key => $offer) {
-					// $tranType = 4 for processing acc. to mst_trans_type table
-				$pf = round((($offer->prgm_limit_amt * $offer->processing_fee)/100),2);
-				$pfWGst = round((($pf*18)/100),2);
-
-				$pfDebitData = $this->createTransactionData($user_id,['amount' => $pf, 'gst' => $pfWGst] , null, 4);
-				$pfDebitCreate = $this->appRepo->saveTransaction($pfDebitData);
-
-				$pfCreditData = $this->createTransactionData($user_id, ['amount' => $pf, 'gst' => $pfWGst], null, 4, 1);
-				$pfCreditCreate = $this->appRepo->saveTransaction($pfCreditData);
-
-				// $tranType = 20 for document fee acc. to mst_trans_type table
-				$df = round((($offer->prgm_limit_amt * $offer->document_fee)/100),2);
-				$dfWGst = round((($df*18)/100),2);
-
-				$dfDebitData = $this->createTransactionData($user_id, ['amount' => $df, 'gst' => $dfWGst], null, 20);
-				$createTransaction = $this->appRepo->saveTransaction($dfDebitData);
-
-				$dfCreditData = $this->createTransactionData($user_id, ['amount' => $df, 'gst' => $dfWGst], null, 20, 1);
-				$createTransaction = $this->appRepo->saveTransaction($dfCreditData);
-			}
-	    } else {
-	    	die("No offer");
-	    }
-		die("Done !!!");
-	}
 
 	// public function processInvoiceSettlement()
 	// {

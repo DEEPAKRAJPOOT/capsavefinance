@@ -2894,7 +2894,7 @@ if ($err) {
             }
 
             if (!isset($isLimitExpiredArray[$invoice->supplier_id])) {
-                $isLimitExpiredArray[$invoice->supplier_id] = InvoiceTrait::limitExpire($invoice->supplier_id);
+                $isLimitExpiredArray[$invoice->supplier_id] = InvoiceTrait::limitExpire($invoice->supplier_id, $invoice->app_id);
             }
 
             $attribute['user_id'] = $supplierId = $invoice->supplier_id;
@@ -3207,9 +3207,10 @@ if ($err) {
            else
            {
                 $invoice_id = $request->invoice_id;
-                $invData = $this->invRepo->getInvoiceData(['invoice_id' => $invoice_id],['supplier_id']);        
-                $supplier_id = isset($invData[0]) ? $invData[0]->supplier_id : null;                                
-                $isLimitExpired = InvoiceTrait::limitExpire($supplier_id);
+                $invData = $this->invRepo->getInvoiceData(['invoice_id' => $invoice_id],['supplier_id','app_id']);        
+                $supplier_id = isset($invData[0]) ? $invData[0]->supplier_id : null;
+                $app_id = isset($invData[0]) ? $invData[0]->app_id : null;                                
+                $isLimitExpired = InvoiceTrait::limitExpire($supplier_id, $app_id);
                 $isLimitExceed = InvoiceTrait::isLimitExceed($invoice_id);                                
                 if ($isLimitExpired || $isLimitExceed) {
                     if ($isLimitExpired) {
@@ -4175,9 +4176,10 @@ if ($err) {
              //$this->invRepo->updateInvoice($row,$request->status);
             //$result = '';
             $invoice_id = $row;
-            $invData = $this->invRepo->getInvoiceData(['invoice_id' => $invoice_id],['supplier_id']);        
+            $invData = $this->invRepo->getInvoiceData(['invoice_id' => $invoice_id],['supplier_id','app_id']);        
             $supplier_id = isset($invData[0]) ? $invData[0]->supplier_id : null;
-            $isLimitExpired = InvoiceTrait::limitExpire($supplier_id);
+            $app_id = isset($invData[0]) ? $invData[0]->app_id : null;                                
+            $isLimitExpired = InvoiceTrait::limitExpire($supplier_id, $app_id);
             $isLimitExceed = InvoiceTrait::isLimitExceed($invoice_id);
             if ($isLimitExpired || $isLimitExceed) {
                 if ($isLimitExpired) {
@@ -5795,7 +5797,8 @@ if ($err) {
     public function getTDSOutstatingAmount(Request $request)
     {
         $userId    = $request->get('user_id');
-        $TDSOutstating = $this->lmsRepo->getTDSOutstatingAmount($userId);
+        $whereCon = $request->filled('payment_date') ? ['due_date' => Carbon::createFromFormat('d/m/Y', $request->payment_date)->format('Y-m-d')] : [];
+        $TDSOutstating = $this->lmsRepo->getTDSOutstatingAmount($userId, $whereCon);
         $TDSOutstating = ((float)$TDSOutstating<0) ? 0 : $TDSOutstating;
         return response()->json(['tds_amount' => round($TDSOutstating, 2)]);
     }

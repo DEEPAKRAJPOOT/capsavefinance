@@ -1701,6 +1701,7 @@
   }
 
   function fillChargesBlock(program){
+      console.log('Calling this function');
     let html='';
     $.each(program.program_charges, function(i,program_charge){
             //if(program_charge.charge_name.chrg_tiger_id == 1){
@@ -1722,7 +1723,7 @@
                 calProcesingFee  = '<small><span class="float-right text-success processinFeeAmount"></span></small>';
                 if (currentAppType == 3){
                     calProcesingFee  = '<small><span class="float-right text-success processinFeeAmount">PF Amount: <i class="fa fa-inr"></i>0</span></small>';
-                    readonly = 'readonly';
+                    //readonly = 'readonly';
                 }
             }
             html += '<div class="col-md-6">'+
@@ -1850,9 +1851,9 @@ $(document).on('change', 'input[data-name=\"Processing Fee\"]', function() {
 
 if(offerData != "") { 
     $('input[data-name=\'Processing Fee\']').prop("readonly", false);
-    if(currentAppType == 3){
-        $('input[data-name=\'Processing Fee\']').prop("readonly", true);
-    }
+    // if(currentAppType == 3){
+    //     $('input[data-name=\'Processing Fee\']').prop("readonly", true);
+    // }
     $('input[name=\'prgm_limit_amt\']').trigger("change");
 }
 </script>

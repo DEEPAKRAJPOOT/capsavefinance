@@ -45,18 +45,18 @@ class Kernel extends ConsoleKernel
         //$schedule->command('ScoutPayoutDetail:BatchDetail')->twiceDaily(2, 14);
         //$schedule->command('PaypalScoutRefund:ScoutRefund')->twiceDaily(3, 12);
          
-        if(config('lms.LMS_STATUS') && !\Helpers::checkEodProcess() && \Helpers::getInterestAccrualCronStatus() && !\Helpers::getEodProcessCronStatus()){
-            $schedule->command('lms:eodprocess')->timezone(config('common.timezone'))->dailyAt('22:45')->emailOutputOnFailure(config('lms.EOD_FAILURE_MAIL'));
-        }
+        // if(config('lms.LMS_STATUS') && !\Helpers::checkEodProcess() && \Helpers::getInterestAccrualCronStatus() && !\Helpers::getEodProcessCronStatus()){
+        //     $schedule->command('lms:eodprocess')->timezone(config('common.timezone'))->dailyAt('22:45')->emailOutputOnFailure(config('lms.EOD_FAILURE_MAIL'));
+        // }
 
         if(config('lms.LMS_STATUS')){
-            $schedule->command('lms:interestaccrual')->timezone(config('common.timezone'))->dailyAt('22:50')
+            $schedule->command('Lms:interestAccrualEod')->timezone(config('common.timezone'))->dailyAt('22:50')
             ->onSuccess(function() use($schedule){
                 $this->call('note:generateDebitNote');
                 $this->call('note:generateCreditNote');
                 $this->call('note:generateCreditNoteReversal');
             });
-            $schedule->command('lms:interestaccrual')->dailyAt('00:01');
+            $schedule->command('Lms:interestAccrualSod')->dailyAt('00:01');
             $schedule->command('finance:tallyposting')->timezone(config('common.timezone'))->dailyAt('00:01') 
             ->onSuccess(function() use($schedule){
                 $this->call('eod:check-data');

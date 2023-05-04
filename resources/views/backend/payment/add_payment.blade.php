@@ -73,7 +73,7 @@
                                             </div>
                                         </div>
 
-                                        <div class="col-md-4">
+                                        {{-- <div class="col-md-4">
                                             <div class="form-group">
                                                 <label for="txtCreditPeriod">Transation Type <span class="error_message_label">*</span></label>
                                                 <select class="form-control trans_type" name="trans_type" id="trans_type">
@@ -81,7 +81,7 @@
                                                 </select>
                                                 <span id="trans_type_error" class="error"></span>
                                             </div>
-                                        </div>
+                                        </div> --}}
 
                                         <div class="col-md-4" id="waiveoff_div" style="display: none">
                                             <div class="form-group">
@@ -167,7 +167,7 @@
                                             </div>
                                         </div>
                                         
-                                        <div class="col-md-8 payment-methods" style="display: none;" >
+                                        <div class="payment-methods" style="display: none;" id="pay-m">
                                             <div class="row" id="appendInput"></div>
                                         </div>
                                         <div class="col-md-4 bank-list">
@@ -206,6 +206,7 @@
                                       
                                         <div class="col-md-12">
                                             <div class="text-right ">
+                                                <input type="hidden" class="trans_type" name="trans_type" id="trans_type" value="">
                                                 <input type="reset" id="pre3" class="btn btn-secondary btn-sm" value="Cancel">
                                                 <input type="submit" id="savePayBtn" class="btn btn-success ml-2 btn-sm" value="Submit">
                                             </div>
@@ -283,12 +284,20 @@ cursor: pointer;
     $(document).ready(function() {
         // document.getElementById('amount').addEventListener('input', event =>
         // event.target.value = (parseInt(event.target.value.replace(/[^\d]+/gi, '')) || 0).toLocaleString('en-US'));
+        var date = new Date();
+        var date3 = new Date(date.getFullYear(),date.getMonth() -1, 1);
 
         $("#date_of_payment").datetimepicker({
                 format: 'dd/mm/yyyy',
                 autoclose: true,
                 minView : 2,
+                startDate: date3,
                 endDate: new Date(messages.sysDate),
+        }).on('changeDate', function(e) {
+            if (userData['action_type'] == '3'){
+                selectedDate = $("#date_of_payment").val();                
+                get_tdsoutstanding_amount(selectedDate);
+            }
         });
 
         var sample_data = new Bloodhound({
@@ -337,7 +346,7 @@ cursor: pointer;
             $(".payment-methods").hide();
             $(".tds_certificate").hide();
             $(".bank-list").hide();
-            console.log($(this).val());
+            //console.log($(this).val());
             switch ($(this).val()) {
                 case "1":
                     $(".bank-list").show();
@@ -431,20 +440,28 @@ cursor: pointer;
         });
 
         $("#payment_type").on('change', function() {
+            $("#pay-m").addClass('col-md-8'); //fixed form disordered
             $('#appendInput').empty();
             var status = $(this).val();
+            if (status == '') {
+                $("#pay-m").removeClass('col-md-8').removeClass('col-md-4'); //fixed form disordered 
+            }
             if (status == 1) {
-                $('#appendInput').append('<div class="col-md-6"><label for="repaid_amount" class="form-control-label"><span class="payment_text">Online RTGS/NEFT</span></label><span class="error_message_label">*</span><input type="text" class="form-control amountRepay" id="utr_no" name="utr_no" value=""><span id="utr_no_msg" class="error"></span></div>');
+                $("#pay-m").removeClass('col-md-8').addClass('col-md-4'); //fixed form disordered
+                $('#appendInput').append('<div class="col-md-12"><label for="repaid_amount" class="form-control-label"><span class="payment_text">Online RTGS/NEFT</span></label><span class="error_message_label">*</span><input type="text" class="form-control amountRepay" id="utr_no" name="utr_no" value=""><span id="utr_no_msg" class="error"></span></div>');
 
             } else if (status == 2) {
+                $("#pay-m").removeClass('col-md-4').addClass('col-md-8');
                 //$('#appendInput').append('<label for="repaid_amount" class="form-control-label"><span class="payment_text">Cheque Number</span></label><span class="error_message_label">*</span><input type="text" class="form-control amountRepay" id="utr_no" name="utr_no" value=""><span id="utr_no_msg" class="error"></span>  <label for="repaid_amount" class="form-control-label"><span class="payment_text">Upload Cheque</span></label><span class="error_message_label">*</span><input type="file" class="form-control amountRepay" id="cheque" name="cheque" value=""><span id="utr_no_msg" class="error"></span>');
                 $('#appendInput').append('<div class="col-md-6"><label for="repaid_amount" class="form-control-label"><span class="payment_text">Cheque Number</span></label><span class="error_message_label">*</span><input type="text" class="form-control amountRepay" id="utr_no" name="utr_no" value="" minlength="6" maxlength="6" /><span id="utr_no_msg" class="error"></span></div><div class="col-md-6 tds_certificate"><div class="custom-file upload-btn-cls mb-3 mt-4"><input type="file" class="custom-file-input getFileName doc_file" id="cheque" name="cheque" multiple="" /><label class="custom-file-label" for="cheque">Upload Cheque</label></div><span id="utr_no_msg" class="error"></span></div>');
 
             } else if (status == 3) {
-                $('#appendInput').append('<div class="col-md-6"><label for="repaid_amount" class="form-control-label"><span class="payment_text">UNR Number</span></label><span class="error_message_label">*</span><input type="text" class="form-control amountRepay" id="utr_no" name="utr_no" value=""><span id="utr_no_msg" class="error"></span></div>');
+                $("#pay-m").removeClass('col-md-8').addClass('col-md-4');
+                $('#appendInput').append('<div class="col-md-12"><label for="repaid_amount" class="form-control-label"><span class="payment_text">UNR Number</span></label><span class="error_message_label">*</span><input type="text" class="form-control amountRepay" id="utr_no" name="utr_no" value=""><span id="utr_no_msg" class="error"></span></div>');
 
             } else if (status == 4) {
-                $('#appendInput').append('<label for="repaid_amount" class="form-control-label"><span class="payment_text">Transaction No</span></label><span class="error_message_label">*</span><input type="text" class="form-control amountRepay" id="utr_no" name="utr_no" value=""><span id="utr_no_msg" class="error"></span>');
+                $("#pay-m").removeClass('col-md-8').addClass('col-md-4');
+                $('#appendInput').append('<div class="col-md-12"><label for="repaid_amount" class="form-control-label"><span class="payment_text">Transaction No</span></label><span class="error_message_label">*</span><input type="text" class="form-control amountRepay" id="utr_no" name="utr_no" value=""><span id="utr_no_msg" class="error"></span></div>');
 
             }
         });
@@ -610,14 +627,14 @@ cursor: pointer;
             },'This UTR number is already used by this customer.'
         );
 
-$.validator.addMethod('decimal', function(value, element) {
-        return this.optional(element) || /^((\d+(\\.\d{2})?)|((\d*(\.\d{2}))))$/.test(value);
+        $.validator.addMethod('decimal', function(value, element) {
+            return this.optional(element) || /^((\d+(\\.\d{2})?)|((\d*(\.\d{2}))))$/.test(value);
         }, "Please enter only 2 decimal places");
+        
         $("#amount").keyup(function(){
             $(this).val(function(i, v) {
-    return v.replace(/[, ]+/g, "");
-    
-  });
+                return v.replace(/[, ]+/g, "");
+            });
         });
         $('#savePayFrm').validate( {
             onkeyup: false,
@@ -645,6 +662,7 @@ $.validator.addMethod('decimal', function(value, element) {
                     },
                     date_of_payment:{
                         required:true,
+                        checkPaymentDate:true,
                     },
                     amount:{
                         required:true, 
@@ -747,20 +765,28 @@ $.validator.addMethod('decimal', function(value, element) {
                     $('.isloader').show();
                 },
                 success: function(res) {
-                    $('#trans_type').parent().parent().show();
-                    $('#trans_type').html('<option value="">Select Transaction Type</option>');
+                    //$('#trans_type').parent().parent().show();
+                    //$('#trans_type').html('<option value="">Select Transaction Type</option>');
+                    $('#trans_type').show();
                     if (res.status == 'success') {
                         chargeResult = res.result;
-                        $(chargeResult).each(function(i,v){
-                            $('#trans_type').append('<option value="'+ v.id +'">' + v.trans_name + '</option>');
-                        })
+                        // $(chargeResult).each(function(i,v){
+                        //     $('#trans_type').append('<option value="'+ v.id +'">' + v.trans_name + '</option>');
+                        // })
+                        $('#trans_type').val(chargeResult[0].id);
+                        $("#trans_type").trigger("change");
                     }
                     $('.isloader').hide();
                 }     
             });
         } else {
-            $('#trans_type').parent().parent().hide();
-            get_tdsoutstanding_amount();
+            //$('#trans_type').parent().parent().hide();
+            $('#trans_type').hide();
+            let today = new Date();
+            selectedDate = today.getDate().toString().padStart(2, '0') + '/' 
+                        + (today.getMonth() + 1).toString().padStart(2, '0') + 
+                        '/' + today.getFullYear();
+            get_tdsoutstanding_amount(selectedDate);
         }
     }
     
@@ -775,11 +801,7 @@ $.validator.addMethod('decimal', function(value, element) {
             success: function(resultData) {                        
                 var amt = parseFloat(resultData.repayment_amount);
                 if (resultData.repayment_amount != ""){
-                    if(userData['action_type']!=3){
-                        $('#amount').val(amt.toFixed(2)); 
-                    }
-                    $("#amount").val(amt.toFixed(2)); 
-
+                    $('#txtAmt').text("( ₹ "+ amt.toFixed(2) +" )");
                     $('#amount').removeAttr('max');
                     $('#amount').removeAttr('max-data');  
                 } else {
@@ -906,18 +928,19 @@ $.validator.addMethod('decimal', function(value, element) {
         $('#amountMax').html('');
         var maxValue = $(this).attr('max-data');
         var inputValue = parseFloat($(this).val().replace(/,/g, ''));
-console.log(maxValue,inputValue);
+        //console.log(maxValue,inputValue);
         if(inputValue > maxValue){
             $('#amountMax').html("Please enter a value less than or equal to " +maxValue+ ".");
         }
         return true;
     });
 
-    function get_tdsoutstanding_amount() {
+    function get_tdsoutstanding_amount(selectedPaymentDate) {
+        selectedPaymentDate = selectedPaymentDate ? selectedPaymentDate : '';
         $.ajax({
             type: 'POST',                    
             url: messages.get_tdsoutstanding_amount_url,
-            data: {user_id: $("#user_id").val(), _token: messages.token},
+            data: {user_id: $("#user_id").val(), payment_date: selectedPaymentDate, _token: messages.token},
             beforeSend: function( xhr ) {
                 $('.isloader').show();
             },
@@ -925,6 +948,7 @@ console.log(maxValue,inputValue);
                 var amt = parseFloat(resultData.tds_amount);
                 if (resultData.tds_amount != ""){
                     $('#txtAmt').text("( ₹ "+ amt.toFixed(2) +" )");
+                    $("#amount").val("");
                     $('#amount').removeAttr('max');
                     $('#amount').removeAttr('max-data');  
                 } else {
@@ -936,5 +960,8 @@ console.log(maxValue,inputValue);
             }
        });
     }
+    $("#pre3").click(function(){
+        $("#savePayFrm").validate().resetForm();
+    });
 </script>
 @endsection
