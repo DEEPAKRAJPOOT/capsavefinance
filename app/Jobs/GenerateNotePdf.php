@@ -128,6 +128,10 @@ class GenerateNotePdf implements ShouldQueue
                 $intrest_charges[$key]['total_rental'] =  $total_rental; 
             }
             $registeredCompany = json_decode($invData->comp_addr_register, true);
+            if($invoiceBorneBy == '1'){
+                $data['custId'] = $invData->customer_id ?? '';
+                $data['custName'] = $invData->customer_name ?? '';
+            }
             $data = [
                 'company_data' => $company_data,
                 'billingDetails' => $billingDetails,
@@ -136,7 +140,10 @@ class GenerateNotePdf implements ShouldQueue
                 'total_sum_of_rental' => $total_sum_of_rental,
                 'registeredCompany' => $registeredCompany,
                 'invoice_type'=>$invoice_type,
-                'invoice_type_name' => $invoice_type_name
+                'invoice_type_name' => $invoice_type_name,
+                'invoiceBorneBy' => $invoiceBorneBy,
+                'custId' =>  $data['custId'],
+                'custName' => $data['custName']
             ];
 
             if($invoiceBorneBy == '1'){

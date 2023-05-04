@@ -12,9 +12,9 @@
 <span style="font-family:Book Antiqua;padding-left: 6px;margin-bottom: 10px;border-left: 6px; float: left;width: 50%; font-size: 9px;">
    <strong>
    <span>BILLING ADDRESS:</span><br />
-   @if($invoice_type == 'IA' || $invoice_type == 'CA')
+   @if($invoiceBorneBy == 1)
    <span style="line-height: 1.5;">Customer Id: {{ $custId }}</span><br />
-   {{-- <span style="line-height: 1.5;">Customer Name: {{ $custName }}</span><br /> --}}
+   <span style="line-height: 1.5;">Customer Name: {{ $custName }}</span><br />
    @endif
    <span style="line-height: 1.5;">{{$billingDetails['name']}}</span><br />
    <span style="line-height: 1.5;">{{$billingDetails['address']}}</span><br />
