@@ -55,6 +55,7 @@ class GenerateNotePdf implements ShouldQueue
             $invoice_no = $invData->invoice_no;
             $state_name = $invData->place_of_supply;
             $invoice_type = $invData->invoice_type;
+            $invoiceBorneBy = $invData->invoice_borne_by;
             $invoice_type_name = $invData->invoice_type_name;
             $invoice_date = $invData->invoice_date;
             $due_date = $invData->due_date;
@@ -87,10 +88,6 @@ class GenerateNotePdf implements ShouldQueue
                 'due_date' => $due_date,
                 'virtual_acc_id' => $virtual_acc_id,
             ];
-            if($invoice_type == 'IA' || $invoice_type == 'CA'){
-                $custId = $invData->customer_id;
-                $custName = $invData->customer_name;
-            }
             if (empty($invData->inv_comp_data)) {
                 $companyDetail = $this->_getCompanyDetail($company_id, $bank_account_id);
                 if ($companyDetail['status'] != 'success') {
@@ -131,31 +128,22 @@ class GenerateNotePdf implements ShouldQueue
                 $intrest_charges[$key]['total_rental'] =  $total_rental; 
             }
             $registeredCompany = json_decode($invData->comp_addr_register, true);
-            if(isset($custId) && isset($custName)){
-                $data = [
-                    'company_data' => $company_data,
-                    'billingDetails' => $billingDetails,
-                    'origin_of_recipient' => $origin_of_recipient, 
-                    'intrest_charges' => $intrest_charges,
-                    'total_sum_of_rental' => $total_sum_of_rental,
-                    'registeredCompany' => $registeredCompany,
-                    'invoice_type'=>$invoice_type,
-                    'invoice_type_name' => $invoice_type_name,
-                    'custId' => $custId,
-                    'custName' => $custName,
-                ];
-            }else{
-                $data = [
-                    'company_data' => $company_data,
-                    'billingDetails' => $billingDetails,
-                    'origin_of_recipient' => $origin_of_recipient, 
-                    'intrest_charges' => $intrest_charges,
-                    'total_sum_of_rental' => $total_sum_of_rental,
-                    'registeredCompany' => $registeredCompany,
-                    'invoice_type'=>$invoice_type,
-                    'invoice_type_name' => $invoice_type_name,
-                ];
+            $data = [
+                'company_data' => $company_data,
+                'billingDetails' => $billingDetails,
+                'origin_of_recipient' => $origin_of_recipient, 
+                'intrest_charges' => $intrest_charges,
+                'total_sum_of_rental' => $total_sum_of_rental,
+                'registeredCompany' => $registeredCompany,
+                'invoice_type'=>$invoice_type,
+                'invoice_type_name' => $invoice_type_name
+            ];
+
+            if($invoiceBorneBy == '1'){
+                $data['custId'] = $invData->customer_id ?? '';
+                $data['custName'] = $invData->customer_name ?? '';
             }
+
             view()->share($data);
             $path ='capsaveInvoice/'.str_replace("/","_",strtoupper($data['origin_of_recipient']['invoice_no'])).'.pdf';
             //$year = date("Y");   

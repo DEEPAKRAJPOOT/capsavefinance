@@ -59,6 +59,7 @@ class UserInvoice extends BaseModel {
         'biz_entity_name',
         'reference_no',
         'invoice_type',
+        'invoice_borne_by',
         'invoice_cat',
         'invoice_type_name',
         'invoice_no',

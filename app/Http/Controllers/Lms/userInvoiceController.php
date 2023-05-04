@@ -846,8 +846,9 @@ class userInvoiceController extends Controller
             $bank_id = bankDetailIsOfRegisteredCompanyInInvoice() ? $registeredCompany['bank_account_id'] : $company_data['bank_id'];
 
             $invoiceType = $invoice_type;
-            $invoiceTypeName = substr($invoice_type, -1)  == 'C' ? 1 : 2;
-            $borneBy = substr($invoice_type, -2)  == 'A' ? 1 : 2;
+            $invoiceCode = substr($invoiceType,0,1);
+            $invoiceTypeName = substr($invoiceType,0,1)  == 'C' ? 1 : 2;
+            $borneBy = substr($invoiceType,1,2)  == 'A' ? 1 : 2;
             $billingDetails = [];
             if($borneBy == 1){
                 $anchorDetails = AnchorUser::getAnchorsDetails($user_id);
@@ -878,7 +879,8 @@ class userInvoiceController extends Controller
                 'comp_gst_state_id' => $companyStateId,
                 'biz_entity_name' => $billing_data['name'],
                 'reference_no' => $reference_no,
-                'invoice_type' => $invoiceType,
+                'invoice_type' => $invoiceCode,
+                'invoice_borne_by' => $borneBy,
                 'invoice_cat' => '1',
                 'invoice_type_name' => $invoiceTypeName == "C" ? 1 : 2, 
                 'invoice_no' => $newInvoiceNo,
@@ -1047,8 +1049,9 @@ class userInvoiceController extends Controller
             $created_at = Carbon::now();
             $created_by = Auth::user()->user_id ?? null;
 
-            $invoiceTypeName = substr($invoiceType, -1)  == 'C' ? 1 : 2;
-            $borneBy = substr($invoiceType, -2)  == 'A' ? 1 : 2;
+            $invoiceCode = substr($invoiceType,0,1);
+            $invoiceTypeName = substr($invoiceType,0,1)  == 'C' ? 1 : 2;
+            $borneBy = substr($invoiceType,1,2)  == 'A' ? 1 : 2;
             $billingDetails = [];
             if($borneBy == 1){
                 $anchorDetails = AnchorUser::getAnchorsDetails($userId);
@@ -1077,7 +1080,8 @@ class userInvoiceController extends Controller
                 'user_gst_state_id' => $userStateId,
                 'biz_entity_name' => $billing_data['name'],
                 'reference_no' => $reference_no,
-                'invoice_type' => $invoiceType,
+                'invoice_type' => $invoiceCode,
+                'invoice_borne_by' => $borneBy,
                 'invoice_cat' => '1',
                 'invoice_type_name' => $invoiceTypeName,
                 'invoice_no' => $newInvoiceNo,
@@ -1258,8 +1262,9 @@ class userInvoiceController extends Controller
             $created_at = Carbon::now();
             $created_by = Auth::user()->user_id ?? null;
 
-            $invoiceTypeName = substr($invoiceType, -1)  == 'C' ? 1 : 2;
-            $borneBy = substr($invoiceType, -2)  == 'A' ? 1 : 2;
+            $invoiceCode = substr($invoiceType,0,1);
+            $invoiceTypeName = substr($invoiceType,0,1)  == 'C' ? 1 : 2;
+            $borneBy = substr($invoiceType,1,2)  == 'A' ? 1 : 2;
             $billingDetails = [];
             if($borneBy == 1){
                 $anchorDetails = AnchorUser::getAnchorsDetails($userId);
@@ -1289,7 +1294,8 @@ class userInvoiceController extends Controller
                 'comp_gst_state_id' => $companyStateId,
                 'biz_entity_name' => $billing_data['name'],
                 'reference_no' => $reference_no,
-                'invoice_type' => $invoiceType,
+                'invoice_type' => $invoiceCode,
+                'invoice_borne_by' => $borneBy,
                 'invoice_type_name' => $invoiceTypeName,
                 'invoice_cat' => '2',
                 'invoice_no' => $newInvoiceNo,
@@ -1470,8 +1476,9 @@ class userInvoiceController extends Controller
             $created_at = Carbon::now();
             $created_by = Auth::user()->user_id ?? null;
 
-            $invoiceTypeName = substr($invoiceType, -1)  == 'C' ? 1 : 2;
-            $borneBy = substr($invoiceType, -2)  == 'A' ? 1 : 2;
+            $invoiceCode = substr($invoiceType,0,1);
+            $invoiceTypeName = substr($invoiceType,0,1)  == 'C' ? 1 : 2;
+            $borneBy = substr($invoiceType,1,2)  == 'A' ? 1 : 2;
             $billingDetails = [];
             if($borneBy == 1){
                 $anchorDetails = AnchorUser::getAnchorsDetails($userId);
@@ -1502,7 +1509,8 @@ class userInvoiceController extends Controller
                 'comp_gst_state_id' => $companyStateId,
                 'biz_entity_name' => $billing_data['name'],
                 'reference_no' => $reference_no,
-                'invoice_type' => $invoiceType,
+                'invoice_type' => $invoiceCode,
+                'invoice_borne_by' => $borneBy,
                 'invoice_type_name' => $invoiceTypeName,
                 'invoice_cat' => '3', //for reversal
                 'invoice_no' => $newInvoiceNo,
