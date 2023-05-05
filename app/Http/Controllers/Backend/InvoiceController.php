@@ -622,7 +622,7 @@ class InvoiceController extends Controller {
             ->pluck('trans_id')
             ->toArray();
             if(!empty($anchorIntList)){
-                $controller->generateDebitNote($anchorIntList, $userId, 'IC');
+                $controller->generateDebitNote($anchorIntList, $userId, 'IA');
                 unset($anchorIntList);
             }
 
@@ -647,12 +647,12 @@ class InvoiceController extends Controller {
             ->where('entry_type',0)
             ->where('is_invoice_generated',0)
             ->whereHas('invoiceDisbursed.invoice.program_offer.program',function($query){
-                $query->where('interest_borne_by',2);
+                $query->where('interest_borne_by',1);
             })
             ->pluck('trans_id')
             ->toArray();
             if(!empty($anchorChrgList)){
-                $controller->generateDebitNote($anchorChrgList, $userId, 'IC');
+                $controller->generateDebitNote($anchorChrgList, $userId, 'IA');
                 unset($anchorChrgList);
             }
         }
