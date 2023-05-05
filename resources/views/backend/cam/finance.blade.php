@@ -386,7 +386,7 @@
                                                         <tbody>
                                                           @php $yearly_growth_data = $growth_data[$year] @endphp
                                                           @foreach($income_cols as $key => $income_col)
-                                                          {{dd($fin_data['ProfitAndLoss']['GrossDomesticSales'])}}
+                                                          {{dd($fin_data['ProfitAndLoss'])}}
                                                             <tr>
                                                               <td height="46" align="right"><input  type="text" <?php echo function_exists($key) ? 'disabled' : 'name="year['.$year.'][ProfitAndLoss]['.$key.']"' ?> class="form-control form-control-sm" value="{{isset($fin_data['ProfitAndLoss'][$key]) ? sprintf('%.2f', $fin_data['ProfitAndLoss'][$key]) : (function_exists($key) ? $key($fin_data['ProfitAndLoss'], $yearly_growth_data) : $key)}}"></td>
                                                            </tr>
