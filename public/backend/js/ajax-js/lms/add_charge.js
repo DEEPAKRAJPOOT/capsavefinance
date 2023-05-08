@@ -260,7 +260,7 @@
       //// document.getElementById('amount').addEventListener('input', event =>
        ///// event.target.value = (parseInt(event.target.value.replace(/[^\d]+/gi, '')) || 0).toLocaleString('en-US'));
        /////////////// validation the time of final submit/////////////// 
-      $(document).on('click','#add_charge',function(e){
+       $('#add_charge').on('click', function (e){
         var amount = $("#amount").val()
         var amount = amount.replace(",", "");
          var chrgT = $('.chrgT').val();
