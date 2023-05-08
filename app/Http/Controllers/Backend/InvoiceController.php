@@ -591,7 +591,6 @@ class InvoiceController extends Controller {
                 date_default_timezone_set($oldTimeZone);
             }
             /* Sudesh: Code to save Invoice Disbursed details : E */
-
         }
 
         foreach($invDisbs as $userId => $invDisb){
@@ -623,8 +622,6 @@ class InvoiceController extends Controller {
                 $controller->generateDebitNote($chrgList, $userId, 'C');
             }
         }
-        date_default_timezone_set($oldTimeZone);
-
 
         $disbursals = $this->lmsRepo->getDisbursals($disbursalIds)->toArray();
         foreach ($disbursals as $key => $value) {
