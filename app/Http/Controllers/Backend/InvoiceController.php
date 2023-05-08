@@ -658,7 +658,6 @@ class InvoiceController extends Controller {
             })
             ->pluck('trans_id')
             ->toArray();
-            dd($customerChrgList,'aaaa');
             if(!empty($customerChrgList)){
                 $controller->generateDebitNote($customerChrgList, $userId, 'CC');
                 unset($customerChrgList);
