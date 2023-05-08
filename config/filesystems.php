@@ -72,7 +72,7 @@ return [
             'passive' => env('FACT_FTP_PASSIVE') ?? true,
             'ssl' => env('FACT_FTP_SSL') ?? true,
             'timeout' => env('FACT_FTP_TIMEOUT') ?? 30,
-            //'ignorePassiveAddress' => env('FACT_FTP_ING_PASSIVE_ADDR') ?? false,
+            'ignorePassiveAddress' => env('FACT_FTP_ING_PASSIVE_ADDR') ?? false,
         ],
 
     ],
