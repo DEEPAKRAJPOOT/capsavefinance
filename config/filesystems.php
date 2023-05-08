@@ -62,19 +62,17 @@ return [
             'region' => env('AWS_DEFAULT_REGION'),
             'bucket' => env('AWS_BUCKET'),
         ],
-        'sftp' => [
-            'driver' => env('FACT_SFTP_DRIVER'),
-            'host' => env('FACT_SFTP_HOST'),
-            'username' => env('FACT_SFTP_USERNAME'),
-            'password' => env('FACT_SFTP_PASSWORD'),
-            
-            // Settings for SSH key based authentication...
-            'privateKey' =>  env('FACT_SFTP_PRIVATE_KEY'),
-         
-            // Optional SFTP Settings...
-            'port' => env('FACT_SFTP_PORT'),
-            'root' => env('FACT_SFTP_ROOT'),
-            'timeout' => env('FACT_SFTP_TIMEOUT'),
+        'fact_ftp' => [
+            'driver' => 'ftp',
+            'host' => env('FACT_FTP_HOST'),
+            'username' => env('FACT_FTP_USERNAME'),
+            'password' => env('FACT_FTP_PASSWORD'),
+            'port' => env('FACT_FTP_PORT') ?? '21',
+            'root' => env('FACT_FTP_ROOT') ?? '',
+            'passive' => env('FACT_FTP_PASSIVE') ?? true,
+            'ssl' => env('FACT_FTP_SSL') ?? true,
+            'timeout' => env('FACT_FTP_TIMEOUT') ?? 30,
+            //'ignorePassiveAddress' => env('FACT_FTP_ING_PASSIVE_ADDR') ?? false,
         ],
 
     ],
