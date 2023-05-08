@@ -1094,14 +1094,14 @@ class ApportionmentController extends Controller
                 return redirect()->back()->withInput();
             }
 
-            $transactionsRunning = TransactionsRunning::where('user_id','=',$userId)
+            $transactionsRunning = TransactionsRunning::with('invoiceDisbursed:invoice_disbursed_id,invoice_id','invoiceDisbursed.invoice:invoice_id,program_id','invoiceDisbursed.invoice.program:prgm_id,interest_borne_by,overdue_interest_borne_by')->where('user_id','=',$userId)
             //->where('is_posted','=',0)
             ->whereIn('trans_running_id',$transRunningIds)->get();
             
             $transactionList = [];
 
             foreach ($transactionsRunning as $key => $trans) {
-                $lastPostedTrans = Transactions::with('invoiceDisbursed:invoice_disbursed_id,invoice_id','invoiceDisbursed.invoice:invoice_id,program_id','invoiceDisbursed.invoice.program:prgm_id,interest_borne_by,overdue_interest_borne_by')->where('trans_running_id',$trans->trans_running_id)
+                $lastPostedTrans = Transactions::where('trans_running_id',$trans->trans_running_id)
                 ->where('entry_type', $trans->entry_type)
                 ->where('trans_type', $trans->trans_type)
                 ->orderBy('trans_date','desc')
@@ -1137,8 +1137,8 @@ class ApportionmentController extends Controller
                     'to_date' => $trans->trans_date,
                     'due_date' => $dueDate,
                     'created_at' => $eventDate,
-                    'interest_borne_by' => $lastPostedTrans->invoiceDisbursed->invoice->program->interest_borne_by,
-                    'overdue_interest_borne_by' => $lastPostedTrans->invoiceDisbursed->invoice->program->overdue_interest_borne_by,
+                    'interest_borne_by' => $trans->invoiceDisbursed->invoice->program->interest_borne_by,
+                    'overdue_interest_borne_by' => $trans->invoiceDisbursed->invoice->program->overdue_interest_borne_by,
                 ];
             }
             if(!empty($transactionList)){
