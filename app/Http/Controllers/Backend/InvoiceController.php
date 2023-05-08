@@ -1780,6 +1780,7 @@ public function disburseTableInsert($exportData = [], $supplierIds = [], $allinv
            $resFile =  $this->invRepo->saveInvoiceBatch($userFile);
            if($resFile)
            {
+              
               $uploadData = Helpers::uploadZipInvoiceFile($attributes, $batch_id); ///Upload zip file
               if(!empty($uploadData) && $uploadData['status']==0)
              {

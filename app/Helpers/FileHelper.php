@@ -402,11 +402,11 @@ public function exportCsv($data=[],$columns=[],$fileName='',$extraDataArray=[])
             'data' => [],
           ];
       try{
-        if (!file_exists($filename) || !is_readable($filename))
-            return false;
+        // if (!file_exists($filename) || !is_readable($filename))
+        //     return false;
 
         $header = null;
-        if (($handle = fopen($filename, 'r')) !== false)
+        if (($handle = fopen(env('S3_BUCKET_URL').$filename, 'r')) !== false)
         {
             $rows=1;
             while (($row = fgetcsv($handle, 1000, $delimiter)) !== false)
@@ -436,6 +436,7 @@ public function exportCsv($data=[],$columns=[],$fileName='',$extraDataArray=[])
         $respArray['status'] = 'fail';
         $respArray['message'] = str_replace($filename, '', $e->getMessage());
     }
+
     return $respArray;
     }
 
@@ -446,14 +447,11 @@ public function exportCsv($data=[],$columns=[],$fileName='',$extraDataArray=[])
         'message' => 'success',
         'data' => [],
       ];
-      try{
+     // try{
         $inputArr = [];
         if ($data) {
           if($type == 'download'){
-              if (!Storage::disk('s3')->exists('Development/ckycdoc/business/identityDetails/'.$userInfo['user_id'])) {
-                Storage::disk('s3')->makeDirectory('Development/ckycdoc/business/identityDetails/'.$userInfo['user_id'], 0777, true);
-            }
-
+             
               if (!Storage::exists('/public/payment/' . $paymentId.'/download')) {
                 Storage::makeDirectory('/public/payment/' . $paymentId.'/download', 0777, true);
               }
@@ -475,14 +473,15 @@ public function exportCsv($data=[],$columns=[],$fileName='',$extraDataArray=[])
               $inputArr['file_size'] = \File::size($destinationPath);
               $inputArr['file_encp_key'] =  md5('2');
         }else{
+         
           if ($data['upload_unsettled_trans']) {
-          if (!Storage::exists('/public/payment/' . $paymentId.'/upload')) {
-            Storage::makeDirectory('/public/payment/' . $paymentId.'/upload', 0777, true);
+          $s3path = env('S3_BUCKET_DIRECTORY_PATH').'/payment/' . $paymentId.'/upload';
+          if (!Storage::disk('s3')->exists($s3path)) {
+              Storage::disk('s3')->makeDirectory($s3path, 0777, true);
           }
-          $destinationPath = '/payment/' . $paymentId.'/upload';
+         
           $fileName = $data['upload_unsettled_trans']->getClientOriginalName();
-          //$path = Storage::put($destinationPath,$data['upload_unsettled_trans'],'file.csv');
-          $path = Storage::disk('public')->putFileAs($destinationPath, $data['upload_unsettled_trans'],$fileName);
+          $path = Storage::disk('s3')->putFileAs($s3path, $data['upload_unsettled_trans'], $fileName);
           $inputArr['file_path'] = $path;
         }
         $inputArr['file_type'] = $data['upload_unsettled_trans']->getClientMimeType();
@@ -492,17 +491,19 @@ public function exportCsv($data=[],$columns=[],$fileName='',$extraDataArray=[])
         }
         $inputArr['created_by'] = 1;
         $inputArr['updated_by'] = 1;
+        
         $respArray = [
           'status' => 'success',
           'message' => 'success',
           'data' => $inputArr,
         ];
+        
        }
-      }catch(\Exception $e){
-        $respArray['data'] = [];
-        $respArray['status'] = 'fail';
-        $respArray['message'] = str_replace($fileName, '', $e->getMessage());
-      }
+      // }catch(\Exception $e){
+      //   $respArray['data'] = [];
+      //   $respArray['status'] = 'fail';
+      //   $respArray['message'] = str_replace($fileName, '', $e->getMessage());
+      // }
       return $respArray;
     }
 

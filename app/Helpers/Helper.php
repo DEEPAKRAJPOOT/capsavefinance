@@ -395,6 +395,7 @@ class Helper extends PaypalHelper
                     return  $attr;   
             }
                 if ($attributes['file_image_id']) {
+                    
                 if (!Storage::exists('/public/user/' . $userId . '/invoice/' . $batch_id.'/zip')) {
                     Storage::makeDirectory('/public/user/' . $userId . '/invoice/' . $batch_id.'/zip', 0777, true);
                 }
@@ -514,7 +515,7 @@ class Helper extends PaypalHelper
         $inputArr['file_encp_key'] =  md5('2');
         $inputArr['created_by'] = 1;
         $inputArr['updated_by'] = 1;
-
+        $inputArr['status'] =1;
         return $inputArr;
     }
 
