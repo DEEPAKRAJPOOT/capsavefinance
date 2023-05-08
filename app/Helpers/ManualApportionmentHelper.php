@@ -588,12 +588,11 @@ class ManualApportionmentHelper{
         TransactionsRunning::where('invoice_disbursed_id','=',$invDisbId)
         ->whereDate('trans_date','>=',$transDate)
         ->update(['amount'=>0,'sys_updated_at' => Helpers::getSysStartDate()]);
-        $eomdate = Carbon::parse($curDate)->endOfMonth()->format('Y-m-d');
         if($overdues->count() > 0 ){
             foreach ($overdues as $odue) {
                 $odEomDate = Carbon::parse($odue->interestDate)->endOfMonth()->format('Y-m-d');
                 $gEomDate = Carbon::parse($gEndDate)->endOfMonth()->format('Y-m-d');
-                $eomdate = (strtotime($odEomDate) <= strtotime($gEomDate)) ? $gEomDate : $eomdate;
+                $dueDate = (strtotime($odEomDate) <= strtotime($gEomDate)) ? $gEomDate : $odEomDate;
                 $transRunningId = TransactionsRunning::where('invoice_disbursed_id','=',$invDisbId)
                 ->where('trans_type','=',config('lms.TRANS_TYPE.INTEREST_OVERDUE'))
                 ->where('entry_type','=',0)
@@ -619,7 +618,7 @@ class ManualApportionmentHelper{
                         'user_id' => $userId,
                         'from_date' => $odue->fromDate,
                         'trans_date' => $odue->interestDate,
-                        'due_date' => $eomdate,
+                        'due_date' => $dueDate,
                         'amount' => $odue->totalInt,
                         'entry_type' => 0,
                         'trans_type' => config('lms.TRANS_TYPE.INTEREST_OVERDUE')
@@ -661,6 +660,7 @@ class ManualApportionmentHelper{
         ->update(['amount'=>0,'sys_updated_at' => Helpers::getSysStartDate()]);
         if($interests->count()>0){
             foreach ($interests as $interest) {
+                $eomdate = null;
                 if($payFreq == 2){
                     $transId = TransactionsRunning::where('invoice_disbursed_id','=',$invDisbId)
                     ->where('trans_type','=',config('lms.TRANS_TYPE.INTEREST'))
@@ -1075,7 +1075,7 @@ class ManualApportionmentHelper{
         }
 
         $invDisbursedIds = TransactionsRunning::whereDate('trans_date','<=',$curDate)
-        ->whereDate('due_date','<',$curDate)
+        ->whereDate('due_date','<=',$curDate)
         ->where('is_posted',0)
         ->orderBy('invoice_disbursed_id','ASC')
         ->get()
