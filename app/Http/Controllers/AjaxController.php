@@ -5977,10 +5977,9 @@ if ($err) {
                 array_push($allEmailData, $emailData);
             }
             $allEmailData['business_name']      = $userInfo->biz->biz_entity_name;
-            // $allEmailData['email']      = 'sarthakkaushish@gmail.com';
-            // if (count($sendEmailRoleIds)) {
+            if (count($sendEmailRoleIds)) {
                 \Event::dispatch("CHARGE_DELETION_REQUEST_MAIL", serialize($allEmailData));
-            // }
+            }
             \DB::commit();
             return response()->json(['status' => 1,'msg' => "Charge cancellation request sent for approval successfully ."]);
         } catch (Exception $ex) {

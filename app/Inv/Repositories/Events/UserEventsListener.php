@@ -1486,7 +1486,7 @@ class UserEventsListener extends BaseEvent
             $cc = explode(',', $email_content->cc);
             $baseUrl = env('REDIRECT_URL','');
             $mailData = [
-                'email_to' => [$email],
+                'email_to' => $email,
                 'email_cc' => $cc,
                 'mail_subject' => $mail_subject,
                 'mail_body' => $mail_body,
