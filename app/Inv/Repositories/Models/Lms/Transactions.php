@@ -1073,13 +1073,14 @@ class Transactions extends BaseModel {
             ->orWhere(function ($q) {
                 $q->WhereIn('trans_type', [config('lms.TRANS_TYPE.REVERSE')])->whereNull('payment_id');
             });
-        })->where($where)->orderBy('trans_date', 'ASC')->get();
+        })->where($where)->orderBy('trans_id')->get();
     }
 
     public static function getDisbursalTxnTally(array $where = []){
         return self::whereIn('trans_type', [config('lms.TRANS_TYPE.PAYMENT_DISBURSED')])
             ->where('entry_type', '=', 0)
             ->where($where)
+            ->orderBy('trans_id')
             ->get();
     }
 
@@ -1087,6 +1088,7 @@ class Transactions extends BaseModel {
         return self::whereIn('trans_type', [config('lms.TRANS_TYPE.REFUND')])
             ->where('entry_type', '=', 0)
             ->where($where)
+            ->orderBy('trans_id')
             ->get();
     }
 
