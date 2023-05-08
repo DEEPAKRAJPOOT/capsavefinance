@@ -1164,6 +1164,8 @@ class ReportController extends Controller
 	 */
 	public function maturityAlertReport() 
 	{
+		ini_set("memory_limit", "-1");
+        ini_set('max_execution_time', 10000);
 		try {
 			$anchor_id = null;
 			$anchorNameList = array();
