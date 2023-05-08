@@ -46,18 +46,26 @@
 
                 </select>
                 <span id="chrgMsg" class="error"></span>
+                {{-- @if($errors->has('chrg_name'))
+                <div class="error" style="color:red">{{ $errors->first('chrg_name') }}</div>
+                @endif  --}}
                  <!-- <small id="emailHelp" class="form-text text-muted">We'll never share your email with anyone else.</small> -->
             </div>
             <div class="form-group col-md-6">          
                 <label for="chrg_type">Charge Type</label>&nbsp;&nbsp;<span id="RadioValidation" class="error"></span><br>            
                 <div class="form-check-inline ">              
                     <label class="form-check-label fnt">               
-                        <input type="radio" class="form-check-input chrgT" id="chrg_calculation_type1" name="chrg_calculation_type" value="1"> &nbsp;&nbsp;Fixed </label>            
+                        <input type="radio" class="form-check-input chrgT" id="chrg_calculation_type1" name="chrg_calculation_type" value="1"> &nbsp;&nbsp;Fixed </label> 
+                        {{-- @if($errors->has('chrg_calculation_type1'))
+                        <div class="error" style="color:red">{{ $errors->first('chrg_calculation_type1') }}</div>
+                        @endif            --}}
                 </div>
                 <div class="form-check-inline" id="cust_hide_div">               
                     <label class="form-check-label fnt">               
                         <input type="radio" class="form-check-input chrgT" id="chrg_calculation_type2"  name="chrg_calculation_type" value="2">&nbsp;&nbsp;Percentage</label>
-
+                        {{-- @if($errors->has('chrg_calculation_type2'))
+                        <div class="error" style="color:red">{{ $errors->first('chrg_calculation_type2') }}</div>
+                        @endif --}}
                 </div>
             </div> 
 
@@ -69,20 +77,27 @@
                 <select class="form-control" id="payment" name="payment">
                     <option value="" disabled selected>Choose Payment</option>
                 </select>
+                {{-- @if($errors->has('payment'))
+                <div class="error" style="color:red">{{ $errors->first('payment') }}</div>
+                @endif --}}
             </div>
         </div>
         <div class="row">
             <div class="form-group col-md-6">
                 <label for="chrg_name" id="amount_label">Amount/Percent</label>
                 <input type="text"  class="form-control amount" readonly="readonly" id="amount" name="amount" placeholder="Charge Calculation Amount" maxlength="50">
-
+                {{-- @if($errors->has('amount'))
+                <div class="error" style="color:red">{{ $errors->first('amount') }}</div>
+                @endif --}}
             </div>
             <div class="form-group col-md-6 chargeTypeCal" id="approved_limit_div"  style="display: none">
                 <label for="chrg_type">Charge Applicable On</label>
                 <select class="form-control chrg_applicable_id" name="chrg_applicable_id" id="chrg_applicable_id">
 
                 </select>
-
+                {{-- @if($errors->has('chrg_applicable_id'))
+                <div class="error" style="color:red">{{ $errors->first('chrg_applicable_id') }}</div>
+                @endif --}}
             </div>
 
         </div>
@@ -91,12 +106,17 @@
             <div class="form-group col-md-6 chargeTypeCal" style="display: none">
                 <label for="chrg_type">Limit Amount</label>
                 <input type="text" readonly="readonly"  class="form-control" id="limit_amount_new" name="limit_amount_new">
+                {{-- @if($errors->has('limit_amount_new'))
+                <div class="error" style="color:red">{{ $errors->first('limit_amount_new') }}</div>
+                @endif --}}
             </div>
             <div class="form-group col-md-6 chargeTypeCal" style="display: none">
                 <label for="chrg_name"> Charge Amount</label>
                 <input type="text" readonly="readonly"  class="form-control" id="charge_amount_new" name="charge_amount_new"  value="" >
             </div>
-
+            {{-- @if($errors->has('charge_amount_new'))
+            <div class="error" style="color:red">{{ $errors->first('charge_amount_new') }}</div>
+            @endif --}}
         </div>
         <div class="row">
             <div class="form-group col-md-6">
@@ -105,22 +125,34 @@
                     <label class="form-check-label fnt">
                         <input type="radio" class="form-check-input gstAppli" id="is_gst_applicable1"  name="is_gst_applicable" value="1">Yes
                     </label>
+                    {{-- @if($errors->has('is_gst_applicable'))
+                    <div class="error" style="color:red">{{ $errors->first('is_gst_applicable') }}</div>
+                    @endif --}}
                 </div>
                 <div class="form-check-inline">
                     <label class="form-check-label fnt">
                         <input type="radio" class="form-check-input gstAppli" id="is_gst_applicable2"  name="is_gst_applicable" value="2">No
                     </label>
+                    {{-- @if($errors->has('is_gst_applicable2'))
+                    <div class="error" style="color:red">{{ $errors->first('is_gst_applicable2') }}</div>
+                    @endif --}}
                 </div>
             </div>
             <div class="form-group col-md-6 chargeTypeGstCal"  style="display: none">
                 <label for="chrg_name"> Charge Amount with GST</label>
                 <input type="text" readonly="readonly"  class="form-control" id="charge_amount_gst_new" name="charge_amount_gst_new"  value="" >
+                {{-- @if($errors->has('charge_amount_gst_new'))
+                <div class="error" style="color:red">{{ $errors->first('charge_amount_gst_new') }}</div>
+                @endif --}}
             </div> </div>
 
         <div class="row">
             <div class="form-group col-md-6">
                 <label for="chrg_name"> Date</label>
                 <input type="text" readonly="readonly"  class="form-control datepicker-charge_date" id="charge_date" name="charge_date" placeholder="Enter Date" value="{{ \Helpers::convertDateTimeFormat(\Helpers::getSysStartDate(), $fromDateFormat='Y-m-d H:i:s', $toDateFormat='d/m/Y') }}" >
+                {{-- @if($errors->has('charge_date'))
+                <div class="error" style="color:red">{{ $errors->first('charge_date') }}</div>
+                @endif --}}
             </div>
             <div class="col-md-6">
                 <div class="form-group">
@@ -132,9 +164,13 @@
                     ],
                     isset($subProgramData->overdue_interest_borne_by) ? $subProgramData->overdue_interest_borne_by : null,
                     ['id' => 'level_charges',
+                    'name' => 'level_charges',
                     'class'=>'form-control',
                     ])
                     !!}
+                    {{-- @if($errors->has('level_charges'))
+                    <div class="error" style="color:red">{{ $errors->first('level_charges') }}</div>
+                    @endif --}}
                 </div>
             </div>
         </div>

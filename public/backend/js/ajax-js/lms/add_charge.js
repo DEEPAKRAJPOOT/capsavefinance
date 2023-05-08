@@ -266,7 +266,7 @@
          var chrgT = $('.chrgT').val();
         var chrg_calculation_type  =  $("input[name='chrg_calculation_type']:checked"). val();
       
-       if ($('form#chargesForm').validate().form()) {
+       if ($('#chargesForm').validate().form()) {
         $("#msgprogram").html('');
         $("#chrgMsg").html('');
         $("#user_id" ).rules( "add", {
@@ -289,6 +289,12 @@
           required: true,
           messages: {
           required: "Please enter amount",
+          }
+          });
+        $("#level_charges" ).rules( "add", {
+          required: true,
+          messages: {
+          required: "Please Select",
           }
           });
         

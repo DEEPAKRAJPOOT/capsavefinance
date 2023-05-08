@@ -20,6 +20,7 @@ use App\Inv\Repositories\Contracts\MasterInterface as InvMasterRepoInterface;
 use Illuminate\Support\Facades\Crypt;
 use App\Inv\Repositories\Contracts\Traits\ActivityLogTrait;
 use App\Inv\Repositories\Models\Lms\PaymentApportionment;
+use Illuminate\Support\Facades\Validator;
 
 class ChargeController extends Controller
 {
@@ -121,6 +122,13 @@ class ChargeController extends Controller
        { 
         DB::beginTransaction();
         try { 
+            // $validator = Validator::make($request->all() , [
+            //     'level_charges' => 'required',
+            // ]);
+            // if ($validator->fails()){
+            //     // return Helper::sendResponse(0, $validator->errors()->first() , 200);
+            //     return redirect()->back()->withInput($request->all())->withErrors($validator->errors());
+            // }
             $getUserState = $this->lmsRepo->getUserAddress($request->app_id);
             $comAddrState = $this->lmsRepo->companyAdress();
             $getAmount =  str_replace(',', '', $request->amount);
@@ -259,7 +267,6 @@ class ChargeController extends Controller
                         'entry_type' => 0,
                         "trans_date" => ($request['charge_date']) ? Carbon::createFromFormat('d/m/Y', $request['charge_date'])->format('Y-m-d') : '',
                         "trans_type" => $getTransType->id,
-                        "level_charges" =>$request->level_charges,
                         "pay_from" => $request['pay_from']
                     ];
                     $res =   $this->lmsRepo->saveCharge($arr);

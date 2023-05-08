@@ -625,7 +625,6 @@ class InvoiceController extends Controller {
                 $controller->generateDebitNote($anchorIntList, $userId, 'IA');
                 unset($anchorIntList);
             }
-
             $customerChrgList = Transactions::whereIn('invoice_disbursed_id',$invDisbIds)
             ->whereHas('transType', function($query){ $query->where('chrg_master_id','!=','0'); })
             ->where('user_id',$userId)
@@ -637,7 +636,7 @@ class InvoiceController extends Controller {
             ->pluck('trans_id')
             ->toArray();
             if(!empty($customerChrgList)){
-                $controller->generateDebitNote($customerChrgList, $userId, 'IC');
+                $controller->generateDebitNote($customerChrgList, $userId, 'CC');
                 unset($customerChrgList);
             }
 
@@ -652,7 +651,7 @@ class InvoiceController extends Controller {
             ->pluck('trans_id')
             ->toArray();
             if(!empty($anchorChrgList)){
-                $controller->generateDebitNote($anchorChrgList, $userId, 'IA');
+                $controller->generateDebitNote($anchorChrgList, $userId, 'CA');
                 unset($anchorChrgList);
             }
         }

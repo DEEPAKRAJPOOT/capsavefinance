@@ -398,7 +398,7 @@ class userInvoiceController extends Controller
         $invoiceType = substr($invoice_type,0,1);
         $invoiceBorneBy = $invoiceType = 'C' ? 1:2;
         $data = [
-            'company_data' => $company_data,
+                'company_data' => $company_data,
                 'billingDetails' => $billing_data,
                 'origin_of_recipient' => $origin_of_recipient, 
                 'intrest_charges' => $intrest_charges,
@@ -406,8 +406,8 @@ class userInvoiceController extends Controller
                 'registeredCompany' => $registeredCompany,
                 'invoice_type'=>$invoice_type,
                 'invoiceBorneBy'=>$invoiceBorneBy,
-                'custId'=>$custDetails['customer_id'] ?? '',
-               'custName'=>$custDetails['f_name'].' '.$custDetails['l_name'] ?? ''
+                'custId'=>$custId ?? '',
+                'custName'=>$custName ?? ''
         ];
         $view = $this->viewInvoiceAsPDF($data);
         return response()->json(['status' => 1,'view' => base64_encode($view)]); 

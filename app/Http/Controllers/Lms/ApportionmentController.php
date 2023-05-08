@@ -1101,7 +1101,7 @@ class ApportionmentController extends Controller
             $transactionList = [];
 
             foreach ($transactionsRunning as $key => $trans) {
-                $lastPostedTrans = Transactions::where('trans_running_id',$trans->trans_running_id)
+                $lastPostedTrans = Transactions::with('invoiceDisbursed:invoice_disbursed_id,invoice_id','invoiceDisbursed.invoice:invoice_id,program_id','invoiceDisbursed.invoice.program:prgm_id,interest_borne_by,overdue_interest_borne_by')->where('trans_running_id',$trans->trans_running_id)
                 ->where('entry_type', $trans->entry_type)
                 ->where('trans_type', $trans->trans_type)
                 ->orderBy('trans_date','desc')
