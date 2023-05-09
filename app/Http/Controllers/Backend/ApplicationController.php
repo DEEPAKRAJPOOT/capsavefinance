@@ -144,6 +144,7 @@ class ApplicationController extends Controller
 			}
 
 			$states = State::getStateList()->get();
+			
 			$locationType = LocationType::getLocationDropDown();
 			$product_types = $this->masterRepo->getProductDataList();
 			//dd($business_info->gst->pan_gst_hash);
@@ -152,7 +153,7 @@ class ApplicationController extends Controller
 			$segmentList = $this->appRepo->getSegmentDropDown()->toArray();
 			if ($business_info) {
 				return view('backend.app.company_details')
-				
+
 						->with(['business_info'=>$business_info, 'states'=>$states, 'product_ids'=> $product_ids])
 						->with('user_id',$userId)
 						->with('product_types',$product_types)
