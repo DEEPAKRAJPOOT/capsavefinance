@@ -2844,7 +2844,7 @@ if ($err) {
         ini_set('memory_limit',-1);
         $invoice_data = $this->invRepo->getAllManageInvoice($this->request,7);
         $invoice = $dataProvider->getBackendInvoiceList($this->request, $invoice_data);
-        $invoice = $invoice->getData(true);
+        $invoice = $invoice->getData(true); //extract data
         foreach ($invoice['data'] as &$inv) {
             $inv['upfront_interest'] = $this->calculateUpfrontInterest($inv);
         }
@@ -2870,7 +2870,7 @@ if ($err) {
         $invoice_data = $this->invRepo->getAllManageInvoice($this->request,8);
         // dd($invoice_data->first());
         $invoice = $dataProvider->getBackendInvoiceListApprove($this->request, $invoice_data);
-        $invoice = $invoice->getData(true);
+        $invoice = $invoice->getData(true); //extract data
         foreach ($invoice['data'] as &$inv) {
             $inv['upfront_interest'] = $this->calculateUpfrontInterest($inv);
         }
@@ -2930,7 +2930,7 @@ if ($err) {
         }
 
         $invoice = $dataProvider->getBackendInvoiceListDisbursedQue($this->request, $invoice_data,$IsOverdueArray, $isLimitExpiredArray,$isLimitExceedArray, $isAnchorLimitExceededArray);
-        $invoice = $invoice->getData(true);
+        $invoice = $invoice->getData(true); //extract data
         foreach ($invoice['data'] as &$inv) {
             $inv['upfront_interest'] = $this->calculateUpfrontInterest($inv);
         }
@@ -3980,7 +3980,7 @@ if ($err) {
                 'benchmark_date' => $offer->benchmark_date,
                 'margin' => $margin,
               ];
-              // Convert the "$offerData" object to a JSON string
+              //Convert the "$offerData" object to a JSON string
               $offerDataJson = base64_encode(json_encode($offerData));
         }
         return response()->json(['status' => 1,'tenor' => $getTenor['tenor'],'tenor_old_invoice' =>$getTenor['tenor_old_invoice'],'limit' => $limit,'remain_limit' =>$remainAmount,'is_adhoc' => $is_adhoc,'margin' => $margin,'offerData' => $offerDataJson]);

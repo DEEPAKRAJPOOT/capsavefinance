@@ -162,7 +162,7 @@ class InvoiceController extends Controller {
         $get_program = $this->invRepo->getLimitProgram($aid);
         $get_program_limit = $this->invRepo->geAnchortLimitProgram($aid);
         $getBulkInvoice = $this->invRepo->getAllBulkInvoice();
-        foreach ($getBulkInvoice as &$invoice) {
+        foreach ($getBulkInvoice as &$invoice) { //Data
             $invoice['upfront_interest'] = $this->calculateUpfrontInterest($invoice);// add the upfront interest to the invoice
         }
         return view('backend.invoice.bulk_invoice')->with(['get_bus' => $get_bus, 'anchor_list' => $getAllInvoice,'anchor' => $chkUser->id,'id' =>  $aid,'limit' => $get_program_limit,'get_program' =>$get_program,'getBulkInvoice' =>$getBulkInvoice]);
@@ -818,7 +818,7 @@ class InvoiceController extends Controller {
             $upfrontInterest = '';
             if(!empty($attributes['offer_data']) && $attributes['offer_data']){
                 $result['program_offer'] = json_decode(base64_decode($attributes['offer_data']),true);
-                if (!empty($result['program_offer'])){
+                if (!empty($result['program_offer'])){ 
                     $upfrontInterest = $this->calculateUpfrontInterest($result);
                     $upfrontInterest = (!empty($upfrontInterest)) ? ' (Upfront Interest Amount: '.$upfrontInterest.')' : '';
                 }
