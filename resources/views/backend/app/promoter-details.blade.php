@@ -23,17 +23,17 @@
     <ul class="sub-menu-main pl-0 m-0">
         @can('company_details')
         <li>
-            <a href="{{ route('company_details', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')]) }}" >Business Information</a>
+            <a href="{{ route('company_details', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id'),'user_id' => request()->get('user_id')]) }}" >Business Information</a>
         </li>
         @endcan 
         @can('promoter_details')
         <li>
-            <a href="{{ route('promoter_details', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')]) }}" class="active">Management Information</a>
+            <a href="{{ route('promoter_details', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id'),'user_id' => request()->get('user_id')]) }}" class="active">Management Information</a>
         </li>
         @endcan 
         @can('documents')
         <li>
-            <a href="{{ route('documents', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')]) }}">Documents</a>
+            <a href="{{ route('documents', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id'),'user_id' => request()->get('user_id')]) }}">Documents</a>
         </li>
         @endcan        
     </ul>
@@ -46,6 +46,7 @@
                         <input type="hidden" name="app_id" id="app_id"  value="{{ (!empty($appId)) ? $appId : '' }}" >
                         <input type="hidden" name="biz_id" id="biz_id"  value="{{ (!empty($bizId)) ? $bizId : '' }}" >   
                         <input type="hidden" id="rowcount" value="{{count($ownerDetails)}}">
+                        <input type="hidden" id="user_id" value="{{(!empty($user_id)) ? $user_id : '' }}">
 
                         @php ($i = 0)
                         @php ($j = 0)

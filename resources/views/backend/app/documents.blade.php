@@ -22,17 +22,17 @@
     <ul class="sub-menu-main pl-0 m-0">
         @can('company_details')
 		<li>
-			<a href="{{ route('company_details', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')]) }}" >Business Information</a>
+			<a href="{{ route('company_details', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id'),'user_id' => request()->get('user_id')]) }}" >Business Information</a>
 		</li>
         @endcan 
         @can('promoter_details')
 		<li>
-			<a href="{{ route('promoter_details', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')]) }}">Management Information</a>
+			<a href="{{ route('promoter_details', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id'),'user_id' => request()->get('user_id')]) }}">Management Information</a>
 		</li>
         @endcan 
         @can('documents')
 		<li>
-			<a href="{{ route('documents', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')]) }}" class="active">Documents</a>
+			<a href="{{ route('documents', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id'),'user_id' => request()->get('user_id')]) }}" class="active">Documents</a>
 		</li>
         @endcan        
 	</ul>
@@ -137,6 +137,7 @@
                                 @csrf
                                 <input type="hidden" name="biz_id" value="{{ request()->get('biz_id') }}">
                                 <input type="hidden" name="app_id" value="{{ request()->get('app_id') }}">                                    
+                                <input type="hidden" name="user_id" value="{{ request()->get('user_id') }}">                                    
                                 <!--<input type="button" value="Back" class="btn btn-warning" onclick="window.location.href = 'promoter-details'">-->
                                 @if(request()->get('view_only'))
                                 @can('application_save')
@@ -153,6 +154,9 @@
                 <a data-toggle="modal" data-target="#uploadDocument" data-url ="{{route('show_upload_document', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')]) }}" data-height="300px" data-width="100%" data-placement="top" class="add-btn-cls float-right" id="openUploadDocument" style="display: none;"><i class="fa fa-plus"></i>Show Upload Document</a>
                 @endcan
                 <input type="hidden" name="uploadDocId" id="uploadDocId" value="" >
+                <input type="hidden" name="app_id" id="app_id" value="{{ $app_id }}" >
+                <input type="hidden" name="biz_id" id="app_id" value="{{ $biz_id }}" >
+                <input type="hidden" name="user_id" id="app_id" value="{{ $user_id }}" >
             </div>
         </div>
     </div>

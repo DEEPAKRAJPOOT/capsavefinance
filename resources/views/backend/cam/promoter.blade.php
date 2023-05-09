@@ -16,6 +16,7 @@
                             @csrf
                              <input type="hidden" name="app_id" id="app_id" value="{{isset($attribute['app_id']) ? $attribute['app_id'] : ''}}" />
                             <input type="hidden" name="biz_id" id="biz_id" value="{{isset($attribute['biz_id']) ? $attribute['biz_id'] : ''}}" />
+                            <input type="hidden" name="user_id" id="user_id" value="{{isset($user_id) ? $user_id : ''}}" />
                
                      <div class="data">
                         <h2 class="sub-title bg">Management Information</h2>

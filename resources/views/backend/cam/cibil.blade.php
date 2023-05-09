@@ -117,6 +117,7 @@
                   <input type="hidden" name="app_id" value="{{isset($arrRequest['app_id']) ? $arrRequest['app_id'] : ''}}" />             
                 <input type="hidden" name="biz_id" value="{{isset($arrRequest['biz_id']) ? $arrRequest['biz_id'] : ''}}" />
                 <input type="hidden" name="cam_hygiene_id" value="{{isset($arrHygieneData->cam_hygiene_id) ? $arrHygieneData->cam_hygiene_id : ''}}" />
+                <input type="hidden" name="user_id" value="{{isset($user_id) ? $user_id : ''}}" />
                   <table class="table overview-table">
                      <tbody>
                         <tr class="sub-title bg">

@@ -25,6 +25,7 @@
       @csrf
       <input type="hidden" name="app_id" value="{{ request()->get('app_id') }}"> 
       <input type="hidden" name="biz_id" value="{{ request()->get('biz_id') }}"> 
+      <input type="hidden" name="user_id" value="{{ $user_id }}"> 
       <input type="hidden" name="cam_reviewer_summary_id" value="{{isset($reviewerSummaryData->cam_reviewer_summary_id) ? $reviewerSummaryData->cam_reviewer_summary_id : ''}}" />                                                                          
       <div class="card mt-4">
          <div class="card-body ">
