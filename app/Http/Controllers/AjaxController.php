@@ -3974,11 +3974,14 @@ if ($err) {
         $margin = $offer && $offer->margin ? $offer->margin : 0;
         $offerDataJson = null;
         if ($offer){
+            $currentDate =  \Helpers::getSysStartDate();
+            $curDate = Carbon::parse($currentDate)->setTimezone(config('common.timezone'))->format('Y-m-d');
             $offerData = [
                 'interest_rate' => $offer->interest_rate ?? 0,
                 'payment_frequency' => $offer->payment_frequency,
                 'benchmark_date' => $offer->benchmark_date,
                 'margin' => $margin,
+                'currentDate' => $curDate,
               ];
               //Convert the "$offerData" object to a JSON string
               $offerDataJson = base64_encode(json_encode($offerData));

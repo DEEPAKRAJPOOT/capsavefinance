@@ -159,6 +159,7 @@
                            <span  id="tenorMsg" style="color:red;"></span>
                        </div>
                        <div class="text-right mt-2" id="ApprovePro">
+                        <span id="upFrontAmount" class="mr-3"></span>
                            <input type="hidden" readonly="readonly" class="getTenor" id="supplier_id" name="supplier_id">
                             <input type="hidden" id="pro_limit_hide" name="pro_limit_hide">
                            <input type="hidden" value="" id="prgm_offer_id" name="prgm_offer_id">
@@ -167,6 +168,7 @@
                              <input type="hidden" value="" id="exception" name="exception">
                              <input type="hidden" value="" id="tenor_old_invoice" name="tenor_old_invoice">
                              <input type="hidden" value="" id="offer_data" name="offer_data"> 
+                             <input type="button" id="calculateUpfrontInt" class="btn btn-primary btn-sm mr-5 hide" value="Calculate Upfront Interest">
                             <input type="reset"    class="btn btn-secondary btn-sm" value="Cancel">
                            <input type="submit" id="submit"   class="btn btn-primary ml-2 btn-sm" value="Submit">
                        </div>
