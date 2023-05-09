@@ -579,12 +579,17 @@
     if (!offerData || offerData.payment_frequency != 1) {
       return null;
     }
+    $("#upFrontAmount").show();
     var invoice_due_date  = $('#invoice_due_date').val();
     var invoice_date = $('#invoice_date').val();
     var invoice_approve_amount = $("#invoice_approve_amount").val();
     var invoice_approve_amount = parseInt(invoice_approve_amount.replace(/\,/g,''));
     if (!invoice_due_date || !invoice_date || !invoice_approve_amount) {
-      return $("#upFrontAmount").empty().html('<b style="color:red;">Invoice Date, Invoice Due Date, Invoice Amount is required to Calculate Upfront Interest Amount</b>');
+      $("#upFrontAmount").empty().html('<b style="color:red;">Invoice Date, Invoice Due Date, Invoice Amount is required to Calculate Upfront Interest Amount</b>').show();
+      setTimeout(function(){
+          $("#upFrontAmount").hide();
+      }, 5000); // hide after 5 seconds
+      return false;
     }
     var tenor = findDaysWithDate(invoice_due_date, invoice_date);
     var margin = calMargin(invoice_approve_amount, offerData.margin);
