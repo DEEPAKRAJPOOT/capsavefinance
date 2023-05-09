@@ -37,8 +37,6 @@ class MaturityInvoiceDueAlert extends Command
      */
     public function handle()
     {
-        ini_set("memory_limit", "-1");
-        ini_set('max_execution_time', 10000);
         \App::make('App\Http\Controllers\Backend\ReportController')->maturityAlertReport();
     }
 }

@@ -27,6 +27,7 @@ use App\Inv\Repositories\Contracts\InvoiceInterface as InvoiceInterface;
 use App\Inv\Repositories\Models\Lms\OutstandingReportLog;
 use App\Inv\Repositories\Models\Lms\UserInvoice;
 use App\Inv\Repositories\Models\Lms\ReconReportLog;
+use App\Mail\SendEmail;
 
 class ReportController extends Controller
 {
@@ -1164,6 +1165,8 @@ class ReportController extends Controller
 	 */
 	public function maturityAlertReport() 
 	{
+		set_time_limit(10000);
+        ini_set("memory_limit", "-1");
 		try {
 			$anchor_id = null;
 			$anchorNameList = array();
@@ -1208,6 +1211,8 @@ class ReportController extends Controller
 	 */
 	public function maturityOverdueAlertReport() 
 	{
+		set_time_limit(10000);
+        ini_set("memory_limit", "-1");
 		try {
 			$anchor_id = null;
 			$anchorNameList = array();
@@ -1251,31 +1256,51 @@ class ReportController extends Controller
 			return;
 		}
 		$mail_body = implode(PHP_EOL, $array);
-		Mail::send('email', ['baseUrl'=>env('REDIRECT_URL',''),'varContent' => $mail_body,
-                ],
-                function ($message) use ($subject, $email_content, $mail_body) {
-					
-				if(!empty(env('CRONINVOICE_SEND_MAIL_TO'))){
-					$email = explode(',', env('CRONINVOICE_SEND_MAIL_TO'));
-				}
-				if(!empty(env('CRONINVOICE_SEND_MAIL_CC_TO'))){
-					$message->cc(explode(',', env('CRONINVOICE_SEND_MAIL_CC_TO')));
-				}
-				if(!empty(env('CRONINVOICE_SEND_MAIL_BCC_TO'))){
-					$message->bcc(explode(',', env('CRONINVOICE_SEND_MAIL_BCC_TO')));
-				}
-                $message->from(config('common.FRONTEND_FROM_EMAIL'), config('common.FRONTEND_FROM_EMAIL_NAME'));
-                $message->to($email, '')->subject($subject);
-                $mailContent = [
-                    'email_from' => config('common.FRONTEND_FROM_EMAIL'),
-                    'email_to' => $email,
-                    'email_type' => $this->func_name,
-                    'name' => $user['name'] ?? NULL,
-                    'subject' => $subject,
-                    'body' => $mail_body,
-                ];
-                FinanceModel::logEmail($mailContent);
-            });
+		$mail_body ='<table class="wrapper" width="100%" cellpadding="0" cellspacing="0" style="font-family: Avenir, Helvetica, sans-serif; margin: 0 auto; padding: 20px; width:100%;">
+		<tr>
+              <td
+                style="font-family: Calibri !important; box-sizing: border-box; font-size: 0.917rem !important; text-align: left; padding: 10px 10px 10px 0px; padding: 2px 5px;font-size: 0.917rem !important;line-height: 18px;vertical-align: top;">
+                '.$mail_body.'
+              </td>
+            </tr></table>';
+			$email = $cc = $bcc = [];
+		if(!empty(env('CRONINVOICE_SEND_MAIL_TO'))){
+			$email = explode(',', env('CRONINVOICE_SEND_MAIL_TO'));
+		}
+		if(!empty(env('CRONINVOICE_SEND_MAIL_CC_TO'))){
+			$cc = explode(',', env('CRONINVOICE_SEND_MAIL_CC_TO'));
+		}
+		if(!empty(env('CRONINVOICE_SEND_MAIL_BCC_TO'))){
+			$bcc = explode(',', env('CRONINVOICE_SEND_MAIL_BCC_TO'));
+		}
+		if (empty($email) || !is_array($email)) {
+			return;
+		}
+		$to = [
+			[
+				'email' => $email, //$data["email"]
+				'name' => $user['name'] ?? NULL,
+			]
+		];
+		$baseUrl = env('REDIRECT_URL','');
+		$mailData = [
+			'email_to' => $email, //$data["email"]
+			'email_bcc' => $bcc ?? NULL,
+			'email_cc' => $cc ?? NULL,
+			'mail_subject' => $subject,
+			'mail_body' => $mail_body,
+			'base_url' => $baseUrl,
+		];
+		$mailLogData = [
+			'email_from' => config('common.FRONTEND_FROM_EMAIL'),
+			'email_type' => 'sendAnStringFromArr',
+			'name' => $user['name'] ?? NULL,
+		];
+		// Serialize the data
+		$mailDataSerialized = serialize($mailData);
+		$mailLogDataSerialized = serialize($mailLogData);
+		// Queue the email job
+		Mail::to($to)->cc($cc)->bcc($bcc)->queue(new SendEmail($mailDataSerialized, $mailLogDataSerialized));
 	}
 
 	public function downloadOverdueReportFromLogs(Request $request)
