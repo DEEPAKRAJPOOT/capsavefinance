@@ -1324,15 +1324,71 @@ class Transactions extends BaseModel {
                 });
             }
         }
-        if($invoiceType == 'IC'){
-            $sql->whereHas('invoiceDisbursed.invoice.program', function($newQuery1){
-                $newQuery1->where('interest_borne_by',2);
-            });
-        }elseif($invoiceType == 'IA'){
-            $sql->whereHas('invoiceDisbursed.invoice.program', function($newQuery1){
-                $newQuery1->where('interest_borne_by',1);
-            });
-        }
+        $sql->where(function($query) use ($invoiceType) {
+            if ($invoiceType == 'IC') {
+                $query->whereHas('transType', function($newQuery) {
+                    $newQuery->whereIn('id',[config('lms.TRANS_TYPE.INTEREST')]);
+                })
+                ->whereHas('invoiceDisbursed.invoice.program', function($newQuery) {
+                    $newQuery->where('interest_borne_by',2);
+                })
+                ->orWhere(function($newQuery) use ($invoiceType) {
+                    $newQuery->whereHas('transType', function($innerQuery) {
+                        $innerQuery->whereIn('id',[config('lms.TRANS_TYPE.INTEREST_OVERDUE')]);
+                    })
+                    ->whereHas('invoiceDisbursed.invoice.program', function($innerQuery) {
+                        $innerQuery->where('overdue_interest_borne_by',2);
+                    });
+                });
+            } elseif ($invoiceType == 'IA') {
+                $query->whereHas('transType', function($newQuery) {
+                    $newQuery->whereIn('id',[config('lms.TRANS_TYPE.INTEREST')]);
+                })
+                ->whereHas('invoiceDisbursed.invoice.program', function($newQuery) {
+                    $newQuery->where('interest_borne_by',1);
+                })
+                ->orWhere(function($newQuery) use ($invoiceType) {
+                    $newQuery->whereHas('transType', function($innerQuery) {
+                        $innerQuery->whereIn('id',[config('lms.TRANS_TYPE.INTEREST_OVERDUE')]);
+                    })
+                    ->whereHas('invoiceDisbursed.invoice.program', function($innerQuery) {
+                        $innerQuery->where('overdue_interest_borne_by',1);
+                    });
+                });
+            }
+        });$sql->where(function($query) use ($invoiceType) {
+            if ($invoiceType == 'IC') {
+                $query->whereHas('transType', function($newQuery) {
+                    $newQuery->whereIn('id',[config('lms.TRANS_TYPE.INTEREST')]);
+                })
+                ->whereHas('invoiceDisbursed.invoice.program', function($newQuery) {
+                    $newQuery->where('interest_borne_by',2);
+                })
+                ->orWhere(function($newQuery) use ($invoiceType) {
+                    $newQuery->whereHas('transType', function($innerQuery) {
+                        $innerQuery->whereIn('id',[config('lms.TRANS_TYPE.INTEREST_OVERDUE')]);
+                    })
+                    ->whereHas('invoiceDisbursed.invoice.program', function($innerQuery) {
+                        $innerQuery->where('overdue_interest_borne_by',2);
+                    });
+                });
+            } elseif ($invoiceType == 'IA') {
+                $query->whereHas('transType', function($newQuery) {
+                    $newQuery->whereIn('id',[config('lms.TRANS_TYPE.INTEREST')]);
+                })
+                ->whereHas('invoiceDisbursed.invoice.program', function($newQuery) {
+                    $newQuery->where('interest_borne_by',1);
+                })
+                ->orWhere(function($newQuery) use ($invoiceType) {
+                    $newQuery->whereHas('transType', function($innerQuery) {
+                        $innerQuery->whereIn('id',[config('lms.TRANS_TYPE.INTEREST_OVERDUE')]);
+                    })
+                    ->whereHas('invoiceDisbursed.invoice.program', function($innerQuery) {
+                        $innerQuery->where('overdue_interest_borne_by',1);
+                    });
+                });
+            }
+        });
         // dd($sql->get('invoiceDisbursed'));
         // if($invoiceType == 'IC_33'){
         //     $sql->whereHas('invoiceDisbursed.invoice.program', function($newQuery2){

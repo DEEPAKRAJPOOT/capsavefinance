@@ -572,6 +572,20 @@ class InvoiceController extends Controller {
                     $transData['link_trans_id'] = $createTransaction->trans_id;
                     $intrstCdtTrnsData = $this->createTransactionData($value['disbursal']['user_id'], $transData, config('lms.TRANS_TYPE.INVOICE_PROCESSING_FEE'), 1);
                     $createTransaction = $this->lmsRepo->saveTransaction($intrstCdtTrnsData);
+                    $arr = [   
+                        'app_id' => $value['invoice']['app_id'],
+                        "prgm_id" => $value['invoice']['program_offer']['program']['prgm_id'],
+                        'trans_id' => $transData['parent_trans_id'],
+                        "chrg_master_id" =>$chrgData->id,
+                        "percent" => $chrgData->gst_percentage,
+                        "chrg_applicable_id" =>  $chrgData->chrg_applicable_id,
+                        "amount" =>   $chrgData->chrg_calculation_amt,
+                        // "virtual_acc_id" =>  $this->lmsRepo->getVirtualAccIdByUserId($request->user_id),
+                        "level_charges" =>$value['invoice']['program_offer']['program']['interest_borne_by'],
+                        // 'created_by' =>  $id,
+                        'created_at' =>  Carbon::now(),
+                    ];
+                    $chrgTransId = $this->lmsRepo->saveChargeTrans($arr);
                 }
 
                 /// Margin transaction $tranType = 10
