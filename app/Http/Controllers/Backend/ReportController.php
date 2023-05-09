@@ -1256,14 +1256,8 @@ class ReportController extends Controller
 			return;
 		}
 		$mail_body = implode(PHP_EOL, $array);
-		$mail_body ='<table class="wrapper" width="100%" cellpadding="0" cellspacing="0" style="font-family: Avenir, Helvetica, sans-serif; margin: 0 auto; padding: 20px; width:100%;">
-		<tr>
-              <td
-                style="font-family: Calibri !important; box-sizing: border-box; font-size: 0.917rem !important; text-align: left; padding: 10px 10px 10px 0px; padding: 2px 5px;font-size: 0.917rem !important;line-height: 18px;vertical-align: top;">
-                '.$mail_body.'
-              </td>
-            </tr></table>';
-			$email = $cc = $bcc = [];
+		$mail_body ='<table class="wrapper" width="100%" cellpadding="0" cellspacing="0" style="font-family: Avenir, Helvetica, sans-serif; margin: 0 auto; padding: 20px; width:100%;"><tr><td style="font-family: Calibri !important; box-sizing: border-box; font-size: 0.917rem !important; text-align: left; padding: 10px 10px 10px 0px; padding: 2px 5px;font-size: 0.917rem !important;line-height: 18px;vertical-align: top;">'.$mail_body.'</td></tr></table>';
+		$email = $cc = $bcc = [];
 		if(!empty(env('CRONINVOICE_SEND_MAIL_TO'))){
 			$email = explode(',', env('CRONINVOICE_SEND_MAIL_TO'));
 		}
