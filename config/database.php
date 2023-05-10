@@ -107,6 +107,7 @@ return [
             'username' => env('DB_USERNAME2', 'forge'),
             'password' => env('DB_PASSWORD2', ''),
             'unix_socket' => env('DB_SOCKET2', ''),
+            'prefix' => env('DB_PREFIX', ''),
             'charset' => 'utf8mb4',
             'collation' => 'utf8mb4_unicode_ci',
             'strict' => false,
