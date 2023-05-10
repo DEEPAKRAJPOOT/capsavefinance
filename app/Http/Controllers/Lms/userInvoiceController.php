@@ -873,7 +873,7 @@ class userInvoiceController extends Controller
                 'invoice_type' => $invoiceCode,
                 'invoice_borne_by' => $borneBy,
                 'invoice_cat' => '1',
-                'invoice_type_name' => $invoiceTypeName == "C" ? 1 : 2, 
+                'invoice_type_name' => $invoiceTypeName, 
                 'invoice_no' => $newInvoiceNo,
                 'inv_financial_year' =>$InvoiceNoArr[2] ?? NULL,
                 'inv_serial_no' => $invSerialNo,

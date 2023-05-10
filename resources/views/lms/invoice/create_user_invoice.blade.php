@@ -39,10 +39,8 @@
                             <option value="" disabled selected>Select Invoice Type</option>
                             <option value="IC">Interest Borne By Customer</option>
                             <option value="IA">Interest Borne By Anchor</option>
-                            {{-- <option value="IC_33">Overdue Interest Borne By Customer</option>
-                            <option value="IA_33">Overdue Interest Borne By Anchor</option> --}}
-                            <option value="CC">Customer level Charges</option>
-                            <option value="CA">Anchor level Charges</option>
+                            <option value="CC">Charges Borne By Customer</option>
+                            <option value="CA">Charges Borne By Anchor</option>
                         </select>
                     </div>
                   </div>
