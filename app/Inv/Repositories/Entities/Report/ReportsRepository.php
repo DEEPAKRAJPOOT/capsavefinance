@@ -746,8 +746,7 @@ class ReportsRepository extends BaseRepositories implements ReportInterface {
 		$curdate = $whereCondition['to_date']??$curdate;
 		$result = [];
 		$sendMail = false;
-		$invDisbList = InvoiceDisbursed::
-		with([
+		$invDisbList = InvoiceDisbursed::on('rds_slave')->with([
 			'invoice'=>function($query2) use($whereCondition){
 					if(isset($whereCondition['anchor_id'])){
 						$query2->where('anchor_id',$whereCondition['anchor_id']);
