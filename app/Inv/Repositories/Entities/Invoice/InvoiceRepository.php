@@ -1297,7 +1297,7 @@ use CommonRepositoryTraits;
       
     public function getMaturityData($user_id = null){
         $currentDate =  Carbon::now()->format('Y-m-d');
-        $nextDate =  Carbon::now()->addDays(config('lms.INVOICE_MATURITY_ALERT_DAYS'))->format('Y-m-d');
+        $nextDate =  '2023-05-10';//Carbon::now()->addDays(config('lms.INVOICE_MATURITY_ALERT_DAYS'))->format('Y-m-d');
         $invoiceData = InvoiceDisbursed::whereDate('payment_due_date','=',$nextDate)
         ->whereDate('payment_due_date','>=', $currentDate)
         ->whereIn('status_id',[config('lms.STATUS_ID.DISBURSED'),
