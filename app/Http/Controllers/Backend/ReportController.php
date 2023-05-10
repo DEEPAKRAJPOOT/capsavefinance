@@ -1218,7 +1218,7 @@ class ReportController extends Controller
 			$anchorNameList = array();
 			$emailIds = array();
 			// $anchorList = Anchor::where('is_active','1')->get();
-			$userList = LmsUser::get();
+			$userList = LmsUser::take(1)->get();
 			$invoiceFound = false;
 			foreach($userList as $key=>$user){
 				$data = $this->invRepo->getMaturityOverdueData($user->user_id);
