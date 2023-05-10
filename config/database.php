@@ -98,8 +98,7 @@ return [
                 \PDO::ATTR_EMULATE_PREPARES => true
             ]
         ],
-
-        'mysql3' => [
+        'rds_slave' => [
             'driver' => 'mysql',
             'host' => env('DB_HOST2', '127.0.0.1'),
             'port' => env('DB_PORT2', '3306'),
@@ -110,6 +109,7 @@ return [
             'prefix' => env('DB_PREFIX', ''),
             'charset' => 'utf8mb4',
             'collation' => 'utf8mb4_unicode_ci',
+            'prefix' => env('DB_PREFIX2', ''),
             'strict' => false,
             'engine' => null, 
             'options'   => [
