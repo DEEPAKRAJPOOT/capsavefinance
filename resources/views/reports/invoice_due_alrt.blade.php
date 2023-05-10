@@ -5,7 +5,7 @@
     <tr>
       <td>
         <table align="center" border="0" cellpadding="0" cellspacing="0" width="600"
-          style="width:100px; background-color: #ffffff; color: #514d6a; padding: 40px; line-height: 28px;"
+          style="width:100%; background-color: #ffffff; color: #514d6a; padding: 40px; line-height: 28px;"
           bgcolor="#ffffff">
 
           <tr>
