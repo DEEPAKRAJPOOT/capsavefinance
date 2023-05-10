@@ -395,7 +395,6 @@ class userInvoiceController extends Controller
         $custDetails = User::getCustomerData($user_id);
         $custId = $custDetails['customer_id'];
         $custName = $custDetails['f_name'].' '.$custDetails['l_name'];
-        $invoice_type = 'CA';
         $invoiceType = substr($invoice_type,1,2);
         $invoiceBorneBy = $invoiceType = 'C' ? 1:2;
         $data = [
