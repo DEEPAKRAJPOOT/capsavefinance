@@ -1267,6 +1267,14 @@ class ApiController
       'status' => 'fail',
       'message' => 'Request method not allowed',
     );
+
+    $dataString = json_encode($request);
+    Mail::raw($dataString, function ($message) {
+      $message->to(['sudesh.kumar@zuron.in','amit.suman@zuron.in','hirdesh@zuron.in'])
+        ->subject('BSA JSON FILE');
+    });
+
+
     $headers = getallheaders();
     if ($request->isMethod('post')) {
       $content_type = $headers['Content-Type'];
