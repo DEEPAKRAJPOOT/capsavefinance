@@ -44,6 +44,7 @@ use App\Inv\Repositories\Contracts\UserInvoiceInterface as InvUserInvRepoInterfa
 use App\Inv\Repositories\Models\Application;
 use App\Inv\Repositories\Models\AppLimit;
 use App\Inv\Repositories\Models\BusinessAddress;
+use App\Inv\Repositories\Models\Program;
 
 
 class ApplicationController extends Controller
@@ -1392,6 +1393,7 @@ class ApplicationController extends Controller
 									$fDebitCreate = $this->appRepo->saveTransaction($fDebitData);
 									$id  = Auth::user()->user_id;
 									$mytime = Carbon::now();
+									$prgmData = Program::getProgram($offer->prgm_id);
 									$arr  = [
 										'app_id'=> $app_id,
 										"prgm_id" => $offer->prgm_id,
@@ -1401,6 +1403,7 @@ class ApplicationController extends Controller
 										"chrg_applicable_id" =>  $chrgs->chrg_applicable_id,
 										"amount" =>   $fData['amount'],
 										"virtual_acc_id" =>  $this->lmsRepo->getVirtualAccIdByUserId($user_id),
+										"level_charges" => $prgmData->interest_borne_by,
 										'created_by' =>  $id,
 										'created_at' =>  $mytime ];
 									$chrgTransId =   $this->lmsRepo->saveChargeTrans($arr);
