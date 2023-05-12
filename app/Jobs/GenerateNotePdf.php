@@ -139,7 +139,8 @@ class GenerateNotePdf implements ShouldQueue
                 'invoice_type_name' => $invoice_type_name,
                 'invoiceBorneBy' => $invoiceBorneBy,
                 'custId' => $invData->customer_id ?? '',
-                'custName' => $invData->customer_name ?? ''
+                'custName' => $invData->customer_name ?? '',
+                'anchorName' => $invData->anchor_name ?? '',
             ];
 
             view()->share($data);

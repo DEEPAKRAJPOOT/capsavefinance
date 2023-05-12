@@ -64,7 +64,7 @@
                                               </div>
                                               <div class="col-md-12" id="cust_div1">
                                                 <div class="form-group">
-                                                    <label class="m-0">Customer Name: <span id="cust_name">{{ $custDetails['f_name'].' '.$custDetails['l_name'] }}</span></label>
+                                                    <label class="m-0">Customer Name: <span id="cust_name">{{ $custDetails['biz_entity_name'] }}</span></label>
                                                 </div>
                                               </div>
                                               <div class="col-md-12">

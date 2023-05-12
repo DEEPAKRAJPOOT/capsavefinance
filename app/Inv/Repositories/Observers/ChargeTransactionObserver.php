@@ -27,7 +27,8 @@ class ChargeTransactionObserver
 
         if($appId && $userId && $chrgTransaction->trans_id){
             $controller = app()->make('App\Http\Controllers\Lms\userInvoiceController');
-            $controller->generateDebitNote([$chrgTransaction->trans_id], $userId, $invType, $appId);
+            $controller->generateDebitNote([$chrgTransaction->trans_id], $userId, $invType);
+            // $controller->generateDebitNote([$chrgTransaction->trans_id], $userId, $invType, $appId);
         } 
     }
 

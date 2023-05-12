@@ -392,9 +392,11 @@ class userInvoiceController extends Controller
         $inv_data = $this->_calculateInvoiceTxns($txnsData, $is_state_diffrent, false, 1);
         $intrest_charges = $inv_data[0];
         $total_sum_of_rental = $inv_data[1];
+        $anchorDetails = AnchorUser::getAnchorsDetails($user_id);
         $custDetails = User::getCustomerData($user_id);
         $custId = $custDetails['customer_id'];
-        $custName = $custDetails['f_name'].' '.$custDetails['l_name'];
+        $custName = $custDetails['biz_entity_name'];
+        $anchorName = $anchorDetails['comp_name'];
         $invoiceType = substr($invoice_type,1,2);
         $invoiceBorneBy = $invoiceType = 'C' ? 1:2;
         $data = [
@@ -407,7 +409,8 @@ class userInvoiceController extends Controller
                 'invoice_type'=>$invoice_type,
                 'invoiceBorneBy'=>$invoiceBorneBy,
                 'custId'=>$custId ?? '',
-                'custName'=>$custName ?? ''
+                'custName'=>$custName ?? '',
+                'anchorName'=>$anchorName ?? '',
         ];
         $view = $this->viewInvoiceAsPDF($data);
         return response()->json(['status' => 1,'view' => base64_encode($view)]); 
@@ -849,7 +852,8 @@ class userInvoiceController extends Controller
                     'biz_gst_state_code' => substr($anchorDetails['gst_no'],0,2),
                     'gst_addr' => $anchorDetails['comp_addr'].','.$anchorDetails['comp_city'].','.$anchorDetails['name'].','.$anchorDetails['comp_zip'],
                     'customer_id' => $custDetails['customer_id'],
-                    'customer_name' => $custDetails['f_name'].' '.$custDetails['l_name']
+                    'customer_name' => $custDetails['biz_entity_name'],
+                    'anchor_name' => $anchorDetails['comp_name']
                 ];
             }else{
                 $billingDetails = [
@@ -859,6 +863,7 @@ class userInvoiceController extends Controller
                     'gst_addr' => $billing_data['address'],
                     'customer_id' => NULL,
                     'customer_name' => '',
+                    'anchor_name' => '',
                 ];
             }
 
@@ -894,7 +899,8 @@ class userInvoiceController extends Controller
                 'biz_gst_state_code' => $billingDetails['biz_gst_state_code'] ?? NULL, 
                 'gst_addr' => $billingDetails['gst_addr'] ?? NULL, 
                 'customer_id' => $billingDetails['customer_id'] ?? NULL, 
-                'customer_name' => $billingDetails['customer_name'] ?? NULL
+                'customer_name' => $billingDetails['customer_name'] ?? NULL,
+                'anchor_name' => $billingDetails['anchor_name'] ?? NULL
             ];
             $invoiceResp = $this->UserInvRepo->saveUserInvoice($userInvoiceData);
             if(!empty($invoiceResp->user_invoice_id)){
@@ -954,7 +960,7 @@ class userInvoiceController extends Controller
             $success = [];
             $error = [];
             $reference_no = '';
-            $invoice_date = $invoiceDate ?? Carbon::now()->format('Y-m-d H:i:s');
+            $invoice_date = $invoiceDate ?? Carbon::now()->format('Y-m-d');
             $due_date = $dueDate ?? Carbon::now()->addDays(7)->format('Y-m-d H:i:s');
             $registeredCompany  = $this->UserInvRepo->getCompanyRegAddr();
             if (empty($registeredCompany) || $registeredCompany->isEmpty()) {
@@ -1023,13 +1029,11 @@ class userInvoiceController extends Controller
             $invoiceTypeOld  = $invoiceType;
 
             $invCat = $inv_data[2];
-            // $invoiceType = "I";
-            if ($invCat == "NZ" && $invoiceType == "IA") {
-                $invoiceType = "CA";
-            }elseif($invCat == "NZ" && $invoiceType == "IC"){
-                $invoiceType = "CC";
-            }
-
+            $borneBy = substr($invoiceType,1,2)  == 'A' ? 1 : 2;
+            $invoiceType = ($borneBy == 1) ? "IA" : "IC";
+            $invoiceType = ($invCat == "NZ") ? (($borneBy == 1) ? "CA" : "CC") : $invoiceType;
+            $invoiceCode = substr($invoiceType,0,1);
+            
             $invSerialNo = null;
             $newInvoiceNo = $origin_of_recipient['state_code'] . '/' . $origin_of_recipient['financial_year'] . '/' . $invCat;
 
@@ -1039,9 +1043,7 @@ class userInvoiceController extends Controller
             $created_at = Carbon::now();
             $created_by = Auth::user()->user_id ?? null;
 
-            $invoiceCode = substr($invoiceType,0,1);
-            $invoiceTypeName = substr($invoiceType,0,1)  == 'C' ? 1 : 2;
-            $borneBy = substr($invoiceType,1,2)  == 'A' ? 1 : 2;
+            
             $billingDetails = [];
             if($borneBy == 1){
                 $anchorDetails = AnchorUser::getAnchorsDetails($userId);
@@ -1052,7 +1054,8 @@ class userInvoiceController extends Controller
                     'biz_gst_state_code' => substr($anchorDetails['gst_no'],0,2),
                     'gst_addr' => $anchorDetails['comp_addr'].','.$anchorDetails['comp_city'].','.$anchorDetails['name'].','.$anchorDetails['comp_zip'],
                     'customer_id' => $custDetails['customer_id'],
-                    'customer_name' => $custDetails['f_name'].' '.$custDetails['l_name']
+                    'customer_name' => $custDetails['biz_entity_name'],
+                    'anchor_name' => $anchorDetails['comp_name']
                 ];
             }else{
                 $billingDetails = [
@@ -1062,6 +1065,7 @@ class userInvoiceController extends Controller
                     'gst_addr' => $billing_data['address'],
                     'customer_id' => NULL,
                     'customer_name' => '',
+                    'anchor_name' => '',
                 ];
             }
             $userInvoiceData = [
@@ -1095,7 +1099,8 @@ class userInvoiceController extends Controller
                 'biz_gst_state_code' => $billingDetails['biz_gst_state_code'] ?? NULL, 
                 'gst_addr' => $billingDetails['gst_addr'] ?? NULL, 
                 'customer_id' => $billingDetails['customer_id'] ?? NULL, 
-                'customer_name' => $billingDetails['customer_name'] ?? NULL
+                'customer_name' => $billingDetails['customer_name'] ?? NULL,
+                'anchor_name' => $billingDetails['anchor_name'] ?? NULL
             ];
             $invoiceResp = $this->UserInvRepo->saveUserInvoice($userInvoiceData);
 
@@ -1265,7 +1270,8 @@ class userInvoiceController extends Controller
                     'biz_gst_state_code' => substr($anchorDetails['gst_no'],0,2),
                     'gst_addr' => $anchorDetails['comp_addr'].','.$anchorDetails['comp_city'].','.$anchorDetails['name'].','.$anchorDetails['comp_zip'],
                     'customer_id' => $custDetails['customer_id'],
-                    'customer_name' => $custDetails['f_name'].' '.$custDetails['l_name']
+                    'customer_name' => $custDetails['biz_entity_name'],
+                    'anchor_name' => $anchorDetails['comp_name']
                 ];
             }else{
                 $billingDetails = [
@@ -1275,6 +1281,7 @@ class userInvoiceController extends Controller
                     'gst_addr' => $billing_data['address'],
                     'customer_id' => NULL,
                     'customer_name' => '',
+                    'anchor_name' => '',
                 ];
             }
             $userInvoiceData = [
@@ -1311,7 +1318,8 @@ class userInvoiceController extends Controller
                 'biz_gst_state_code' => $billingDetails['biz_gst_state_code'] ?? NULL, 
                 'gst_addr' => $billingDetails['gst_addr'] ?? NULL, 
                 'customer_id' => $billingDetails['customer_id'] ?? NULL, 
-                'customer_name' => $billingDetails['customer_name'] ?? NULL
+                'customer_name' => $billingDetails['customer_name'] ?? NULL,
+                'anchor_name' => $billingDetails['anchor_name'] ?? NULL,
             ];
             $invoiceResp = $this->UserInvRepo->saveUserInvoice($userInvoiceData);
 
@@ -1479,7 +1487,8 @@ class userInvoiceController extends Controller
                     'biz_gst_state_code' => substr($anchorDetails['gst_no'],0,2),
                     'gst_addr' => $anchorDetails['comp_addr'].','.$anchorDetails['comp_city'].','.$anchorDetails['name'].','.$anchorDetails['comp_zip'],
                     'customer_id' => $custDetails['customer_id'],
-                    'customer_name' => $custDetails['f_name'].' '.$custDetails['l_name']
+                    'customer_name' => $custDetails['biz_entity_name'],
+                    'anchor_name' => $anchorDetails['comp_name']
                 ];
             }else{
                 $billingDetails = [
@@ -1489,6 +1498,7 @@ class userInvoiceController extends Controller
                     'gst_addr' => $billing_data['address'],
                     'customer_id' => NULL,
                     'customer_name' => '',
+                    'anchor_name' => '',
                 ];
             }
             $userInvoiceData = [
@@ -1526,7 +1536,8 @@ class userInvoiceController extends Controller
                 'biz_gst_state_code' => $billingDetails['biz_gst_state_code'] ?? NULL, 
                 'gst_addr' => $billingDetails['gst_addr'] ?? NULL, 
                 'customer_id' => $billingDetails['customer_id'] ?? NULL, 
-                'customer_name' => $billingDetails['customer_name'] ?? NULL
+                'customer_name' => $billingDetails['customer_name'] ?? NULL,
+                'anchor_name' => $billingDetails['anchor_name'] ?? NULL
             ];
             $invoiceResp = $this->UserInvRepo->saveUserInvoice($userInvoiceData);
 

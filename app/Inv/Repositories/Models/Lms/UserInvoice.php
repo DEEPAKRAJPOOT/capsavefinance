@@ -79,6 +79,7 @@ class UserInvoice extends BaseModel {
         'is_active',
         'customer_id',
         'customer_name',
+        'anchor_name',
         'file_id',
         'job_id',
         'created_by',

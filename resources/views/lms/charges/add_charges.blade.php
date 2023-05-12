@@ -156,7 +156,7 @@
             </div>
             <div class="col-md-6">
                 <div class="form-group">
-                    <label for="txtCreditPeriod"> Level Charges <span class="error_message_label">*</span> </label>
+                    <label for="txtCreditPeriod">Charges Borne By<span class="error_message_label">*</span> </label>
                     {!!
                     Form::select('level_charges',
                     [

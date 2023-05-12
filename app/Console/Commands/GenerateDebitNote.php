@@ -57,29 +57,95 @@ class GenerateDebitNote extends Command
         ->where('entry_type','0')
         ->where('invoice_disbursed_id','!=','NULL')
         ->where('is_invoice_generated','0');
-        if($invoiceType == 'IA_9'){
-            $transList->whereHas('invoiceDisbursed.invoice.program', function($newQuery1){
-                $newQuery1->where('interest_borne_by',1);
-            });
-        }elseif($invoiceType == 'IC_9'){
-            $transList->whereHas('invoiceDisbursed.invoice.program', function($newQuery1){
-                $newQuery1->where('interest_borne_by',2);
-            });
-        }
-        if($invoiceType == 'IA_33'){
-            $transList->whereHas('invoiceDisbursed.invoice.program', function($newQuery2){
-                $newQuery1->where('overdue_interest_borne_by',1);
-            });
-        }elseif($invoiceType == 'IC_33'){
-            $transList->whereHas('invoiceDisbursed.invoice.program', function($newQuery2){
-                $newQuery1->where('overdue_interest_borne_by',2);
-            });
-        }
-        $transList->whereHas('transType', function($query){
-            $query->where('chrg_master_id','>','0')
-            ->orWhereIn('id',[config('lms.TRANS_TYPE.INTEREST'),config('lms.TRANS_TYPE.INTEREST_OVERDUE')]);
+        $transList->where(function($query) use ($invoiceType) {
+            if ($invoiceType == 'IC') {
+                $query->whereHas('transType', function($newQuery) {
+                    $newQuery->whereIn('id',[config('lms.TRANS_TYPE.INTEREST')]);
+                })
+                ->whereHas('invoiceDisbursed.invoice.program', function($newQuery) {
+                    $newQuery->where('interest_borne_by',2);
+                })
+                ->orWhere(function($newQuery) use ($invoiceType) {
+                    $newQuery->whereHas('transType', function($innerQuery) {
+                        $innerQuery->whereIn('id',[config('lms.TRANS_TYPE.INTEREST_OVERDUE')]);
+                    })
+                    ->whereHas('invoiceDisbursed.invoice.program', function($innerQuery) {
+                        $innerQuery->where('overdue_interest_borne_by',2);
+                    });
+                });
+            } elseif ($invoiceType == 'IA') {
+                $query->whereHas('transType', function($newQuery) {
+                    $newQuery->whereIn('id',[config('lms.TRANS_TYPE.INTEREST')]);
+                })
+                ->whereHas('invoiceDisbursed.invoice.program', function($newQuery) {
+                    $newQuery->where('interest_borne_by',1);
+                })
+                ->orWhere(function($newQuery) use ($invoiceType) {
+                    $newQuery->whereHas('transType', function($innerQuery) {
+                        $innerQuery->whereIn('id',[config('lms.TRANS_TYPE.INTEREST_OVERDUE')]);
+                    })
+                    ->whereHas('invoiceDisbursed.invoice.program', function($innerQuery) {
+                        $innerQuery->where('overdue_interest_borne_by',1);
+                    });
+                });
+            }
+        });$transList->where(function($query) use ($invoiceType) {
+            if ($invoiceType == 'IC') {
+                $query->whereHas('transType', function($newQuery) {
+                    $newQuery->whereIn('id',[config('lms.TRANS_TYPE.INTEREST')]);
+                })
+                ->whereHas('invoiceDisbursed.invoice.program', function($newQuery) {
+                    $newQuery->where('interest_borne_by',2);
+                })
+                ->orWhere(function($newQuery) use ($invoiceType) {
+                    $newQuery->whereHas('transType', function($innerQuery) {
+                        $innerQuery->whereIn('id',[config('lms.TRANS_TYPE.INTEREST_OVERDUE')]);
+                    })
+                    ->whereHas('invoiceDisbursed.invoice.program', function($innerQuery) {
+                        $innerQuery->where('overdue_interest_borne_by',2);
+                    });
+                });
+            } elseif ($invoiceType == 'IA') {
+                $query->whereHas('transType', function($newQuery) {
+                    $newQuery->whereIn('id',[config('lms.TRANS_TYPE.INTEREST')]);
+                })
+                ->whereHas('invoiceDisbursed.invoice.program', function($newQuery) {
+                    $newQuery->where('interest_borne_by',1);
+                })
+                ->orWhere(function($newQuery) use ($invoiceType) {
+                    $newQuery->whereHas('transType', function($innerQuery) {
+                        $innerQuery->whereIn('id',[config('lms.TRANS_TYPE.INTEREST_OVERDUE')]);
+                    })
+                    ->whereHas('invoiceDisbursed.invoice.program', function($innerQuery) {
+                        $innerQuery->where('overdue_interest_borne_by',1);
+                    });
+                });
+            }
         });
         $transList = $transList->get();
+        // if($invoiceType == 'IA_9'){
+        //     $transList->whereHas('invoiceDisbursed.invoice.program', function($newQuery1){
+        //         $newQuery1->where('interest_borne_by',1);
+        //     });
+        // }elseif($invoiceType == 'IC_9'){
+        //     $transList->whereHas('invoiceDisbursed.invoice.program', function($newQuery1){
+        //         $newQuery1->where('interest_borne_by',2);
+        //     });
+        // }
+        // if($invoiceType == 'IA_33'){
+        //     $transList->whereHas('invoiceDisbursed.invoice.program', function($newQuery2){
+        //         $newQuery1->where('overdue_interest_borne_by',1);
+        //     });
+        // }elseif($invoiceType == 'IC_33'){
+        //     $transList->whereHas('invoiceDisbursed.invoice.program', function($newQuery2){
+        //         $newQuery1->where('overdue_interest_borne_by',2);
+        //     });
+        // }
+        // $transList->whereHas('transType', function($query){
+        //     $query->where('chrg_master_id','>','0')
+        //     ->orWhereIn('id',[config('lms.TRANS_TYPE.INTEREST'),config('lms.TRANS_TYPE.INTEREST_OVERDUE')]);
+        // });
+        // $transList = $transList->get();
         $billData = [];
         foreach($transList as $trans){
             $billType = null;
