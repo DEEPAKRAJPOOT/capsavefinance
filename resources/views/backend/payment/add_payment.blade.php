@@ -488,7 +488,6 @@ cursor: pointer;
         $.validator.addMethod("uniqueUtrNoByCustomerId",
             function(value, element, params) {
                 var check;
-                console.log(check);
                 var result = true;
                 var data = {utr_no : value, _token: messages.token};
                 data['user_id'] = $('#user_id').val();
@@ -505,7 +504,7 @@ cursor: pointer;
                 if(result){
                     var utrNo = value;
                     if(utrNo != ''){
-                        console.log('aaaa');
+                        // console.log('aaaa');
                         var data = {utr_no : utrNo, _token: messages.token};
                         data['user_id'] = $('#user_id').val();
                         $.ajax({
@@ -662,7 +661,7 @@ cursor: pointer;
                     },
                     date_of_payment:{
                         required:true,
-                        checkPaymentDate:true,
+                        // checkPaymentDate:true,
                     },
                     amount:{
                         required:true, 
