@@ -460,7 +460,7 @@ class InvoiceController extends Controller {
                 $oldTimeZone = trim(strtolower(date_default_timezone_get()));
                 date_default_timezone_set("UTC");
                 $eventDate = Helpers::getSysStartDate();
-                $fundedDate = \Carbon\Carbon::parse($fundedDate)->format('Y-m-d');
+                $fundedDate = \Carbon\Carbon::parse(str_replace('/','-',$fundedDate))->format('Y-m-d');
                 $invoiceDetails = [
                     'invoice_id' => $value['invoice']['invoice_id'],
                     'invoice_disbursed_id' => $value['invoice_disbursed_id'],
