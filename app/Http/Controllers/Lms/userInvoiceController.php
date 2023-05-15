@@ -839,9 +839,12 @@ class userInvoiceController extends Controller
             $bank_id = bankDetailIsOfRegisteredCompanyInInvoice() ? $registeredCompany['bank_account_id'] : $company_data['bank_id'];
 
             $invoiceType = $invoice_type;
-            $invoiceCode = substr($invoiceType,0,1);
             $invoiceTypeName = substr($invoiceType,0,1)  == 'C' ? 1 : 2;
+            $invCat = $inv_data[2];
             $borneBy = substr($invoiceType,1,2)  == 'A' ? 1 : 2;
+            $invoiceType = ($borneBy == 1) ? "IA" : "IC";
+            $invoiceType = ($invCat == "NZ") ? (($borneBy == 1) ? "CA" : "CC") : $invoiceType;
+            $invoiceCode = substr($invoiceType,0,1);
             $billingDetails = [];
             if($borneBy == 1){
                 $anchorDetails = AnchorUser::getAnchorsDetails($user_id);
@@ -1241,12 +1244,10 @@ class userInvoiceController extends Controller
             $invoiceTypeName = substr($invoiceType,0,1) == "C" ? 1 : 2;
             
             $invCat = $inv_data[2];
-            // $invoiceType = "I";
-            if ($invCat == "CNZ" && $invoiceType == "IA") {
-                $invoiceType = "CA";
-            }elseif($invCat == "CNZ" && $invoiceType == "IC"){
-                $invoiceType = "CC";
-            }
+            $borneBy = substr($invoiceType,1,2)  == 'A' ? 1 : 2;
+            $invoiceType = ($borneBy == 1) ? "IA" : "IC";
+            $invoiceType = ($invCat == "NZ") ? (($borneBy == 1) ? "CA" : "CC") : $invoiceType;
+            $invoiceCode = substr($invoiceType,0,1);
 
             $invSerialNo = null;
             $newInvoiceNo = $origin_of_recipient['state_code'] . '/' . $origin_of_recipient['financial_year'] . '/' . $invCat;
@@ -1257,9 +1258,6 @@ class userInvoiceController extends Controller
             $created_at = Carbon::now();
             $created_by = Auth::user()->user_id ?? null;
 
-            $invoiceCode = substr($invoiceType,0,1);
-            $invoiceTypeName = substr($invoiceType,0,1)  == 'C' ? 1 : 2;
-            $borneBy = substr($invoiceType,1,2)  == 'A' ? 1 : 2;
             $billingDetails = [];
             if($borneBy == 1){
                 $anchorDetails = AnchorUser::getAnchorsDetails($userId);
@@ -1458,12 +1456,10 @@ class userInvoiceController extends Controller
             $invoiceTypeName = substr($invoiceType,0,1) == "C" ? 1 : 2;
             
             $invCat = $inv_data[2];
-            // $invoiceType = "I";
-            if ($invCat == "DNZ" && $invoiceType == "IA"){
-                $invoiceType = "CA";
-            }elseif($invCat == "DNZ" && $invoiceType == "IC"){
-                $invoiceType = "CC";
-            }
+            $borneBy = substr($invoiceType,1,2)  == 'A' ? 1 : 2;
+            $invoiceType = ($borneBy == 1) ? "IA" : "IC";
+            $invoiceType = ($invCat == "NZ") ? (($borneBy == 1) ? "CA" : "CC") : $invoiceType;
+            $invoiceCode = substr($invoiceType,0,1);
 
             $invSerialNo = null;
             $newInvoiceNo = $origin_of_recipient['state_code'] . '/' . $origin_of_recipient['financial_year'] . '/' . $invCat;
@@ -1474,9 +1470,6 @@ class userInvoiceController extends Controller
             $created_at = Carbon::now();
             $created_by = Auth::user()->user_id ?? null;
 
-            $invoiceCode = substr($invoiceType,0,1);
-            $invoiceTypeName = substr($invoiceType,0,1)  == 'C' ? 1 : 2;
-            $borneBy = substr($invoiceType,1,2)  == 'A' ? 1 : 2;
             $billingDetails = [];
             if($borneBy == 1){
                 $anchorDetails = AnchorUser::getAnchorsDetails($userId);
