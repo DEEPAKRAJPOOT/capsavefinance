@@ -13,14 +13,22 @@
    <strong>
    <span>BILLING ADDRESS:</span><br />
    @if($invoiceBorneBy == 1)
-   <span style="line-height: 1.5;">Customer Id: {{ $custId }}</span><br />
-   <span style="line-height: 1.5;">Customer Name: {{ $custName }}</span><br />
-   @endif
+   <span style="line-height: 1.5;">Anchor Name: {{ $anchorName }}</span><br />
+   <span style="line-height: 1.5;">{{$billingDetails['address']}}</span><br />
+   <span style="line-height: 1.5;">GSTIN: {{$billingDetails['gstin_no']}}</span><br />
+   <span style="line-height: 1.5;">PAN Number: {{$billingDetails['pan_no']}}</span><br />
+   <span style="line-height: 1.5;">State Code: {{ $billingDetails['biz_gst_state_code'] }}</span><br /><br />
+   @else
    <span style="line-height: 1.5;">{{$billingDetails['name']}}</span><br />
    <span style="line-height: 1.5;">{{$billingDetails['address']}}</span><br />
    <span style="line-height: 1.5;">GSTIN: {{$billingDetails['gstin_no']}}</span><br />
    <span style="line-height: 1.5;">PAN Number: {{$billingDetails['pan_no']}}</span><br />
-   <span style="line-height: 1.5;">State Code: {{ $billingDetails['biz_gst_state_code'] }}</span>
+   <span style="line-height: 1.5;">State Code: {{ $billingDetails['biz_gst_state_code'] }}</span><br /><br />
+   @endif
+   @if($invoiceBorneBy == 1)
+          <span style="line-height: 1.5;">Customer Id: {{ $custId }}</span><br />
+          <span style="line-height: 1.5;">Customer Name: {{ $custName }}</span><br />
+          @endif
    </strong>
 </span>
 <span style="font-family:Book Antiqua;float: right;width: 45%;text-align: right;font-size: 9px;">
