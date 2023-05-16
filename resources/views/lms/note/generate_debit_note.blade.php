@@ -22,12 +22,10 @@
        <hr />
        <h2  style="font-size: 12px;text-align: center; margin: 5px 0 5px;"><strong><u>{{($invoice_type == 'I')?'Tax Invoice':'Bill of Supply'}}</u></strong></h2>
        <span style="font-family:Book Antiqua;padding-left: 6px;margin-bottom: 10px;border-left: 6px; float: left;width: 50%; font-size: 9px;">
-         {{-- {{ dd($custDetails['biz_entity_name']) }} --}}
           <strong>
           <span>BILLING ADDRESS:</span><br />
           @if($invoiceBorneBy == 1)
           <span style="line-height: 1.5;">Anchor Name: {{ $anchorName }}</span><br />
-          {{-- <span style="line-height: 1.5;">Customer Name: {{ $custName }}</span><br /> --}}
           @endif
           <span style="line-height: 1.5;">{{$billingDetails['name']}}</span><br />
           <span style="line-height: 1.5;">{{$billingDetails['address']}}</span><br />

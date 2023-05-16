@@ -389,7 +389,7 @@ class userInvoiceController extends Controller
                 'customer_name' => $custDetails['biz_entity_name'],
                 'anchor_name' => $anchorDetails['comp_name'],
                 'state_id' => $company_data['state_id'],
-                'name' => '',
+                'name' => $custDetails['biz_entity_name'],
                 'state_name' => ''
     ];
         }else{
