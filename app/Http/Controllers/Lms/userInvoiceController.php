@@ -365,21 +365,14 @@ class userInvoiceController extends Controller
         $billingDetail = $this->_getBillingDetail($biz_addr_id);
         $anchorDetails = AnchorUser::getAnchorsDetails($user_id);
         $custDetails = User::getCustomerData($user_id);
-        // $anchorDetails = [
-        //             'pan_no' => $anchorDetails['pan_no'],
-        //             'biz_gst_no' => $anchorDetails['gst_no'],
-        //             'biz_gst_state_code' => substr($anchorDetails['gst_no'],0,2),
-        //             'gst_addr' => $anchorDetails['comp_addr'].','.$anchorDetails['comp_city'].','.$anchorDetails['name'].','.$anchorDetails['comp_zip'],
-        //             'customer_id' => $custDetails['customer_id'],
-        //             'customer_name' => $custDetails['biz_entity_name'],
-        //             'anchor_name' => $anchorDetails['comp_name']
-        // ];
-        // dd($anchorDetails);
         if ($billingDetail['status'] != 'success') {
            return response()->json(['status' => 0,'message' => $billingDetail['message']]); 
         }
-        $borneBy = substr($invoice_type,1,2)  == 'A' ? 1 : 2;
-        if($borneBy == 1){
+        $invoiceBorneBy = substr($invoice_type,1,2)  == 'A' ? 1 : 2;
+        if($invoiceBorneBy == 1){
+            $custId = $custDetails['customer_id'];
+            $custName = $custDetails['biz_entity_name'];
+            $anchorName = $anchorDetails['comp_name'];
             $billing_data = [
                 'pan_no' => $anchorDetails['pan_no'],
                 'gstin_no' => $anchorDetails['gst_no'],
@@ -391,11 +384,10 @@ class userInvoiceController extends Controller
                 'state_id' => $company_data['state_id'],
                 'name' => $custDetails['biz_entity_name'],
                 'state_name' => ''
-    ];
+            ];
         }else{
             $billing_data = $billingDetail['data'];
         }
-        // dd($company_data['state_id']);
         $companyStateId = $company_data['state_id'];
         $userStateId = $billing_data['state_id'];
 
@@ -421,20 +413,10 @@ class userInvoiceController extends Controller
         $inv_data = $this->_calculateInvoiceTxns($txnsData, $is_state_diffrent, false, 1);
         $intrest_charges = $inv_data[0];
         $total_sum_of_rental = $inv_data[1];
-        // $anchorDetails = AnchorUser::getAnchorsDetails($user_id);
-        // $custDetails = User::getCustomerData($user_id);
-        $custId = $custDetails['customer_id'];
-        $custName = $custDetails['biz_entity_name'];
-        $anchorName = $anchorDetails['comp_name'];
+      
         $invoiceType = substr($invoice_type,1,2);
-        $invoiceBorneBy = $invoiceType = 'C' ? 1:2;
         
-        // if($borneBy == 1){
-
-        // }else{
-            
-        // }
-        $data = [
+            $data = [
                 'company_data' => $company_data,
                 'billingDetails' => $billing_data,
                 'origin_of_recipient' => $origin_of_recipient, 
@@ -446,7 +428,8 @@ class userInvoiceController extends Controller
                 'custId'=>$custId ?? '',
                 'custName'=>$custName ?? '',
                 'anchorName'=>$anchorName ?? '',
-        ];
+            ];
+        
         $view = $this->viewInvoiceAsPDF($data);
         return response()->json(['status' => 1,'view' => base64_encode($view)]); 
     }
