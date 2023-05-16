@@ -245,17 +245,17 @@
       $("#limit_type").prop("checked", false);
       $("#adhoc_msg").hide();
       var anchor_id =  $("#anchor_id").val(); 
+      $("#offer_data").val('');
+      $('#text_payment_frequency').empty();
+      $('#text_benchmark_date').empty();
+      $("#upFrontAmount").empty().hide();
+      $('#calculateUpfrontInt').addClass('hide');
       if(anchor_id=='')
       {
             $("#pro_limit").empty();
              $("#pro_limit_hide").empty();
              $("#pro_remain_limit").empty();
              $("#program_id").html("<option value=''>No data found</option>");
-             $("#offer_data").val('');
-             $('#text_payment_frequency').empty();
-            $('#text_benchmark_date').empty();
-            $("#upFrontAmount").empty();
-            $('#calculateUpfrontInt').addClass('hide');
             return false;
       }
       $("#program_id").empty();
@@ -331,17 +331,17 @@
       $("#limit_type").prop("checked", false);
       $("#adhoc_msg").hide();
       $("#invoice_date").val('');
+      $("#offer_data").val('');
+      $('#text_payment_frequency').empty();
+      $('#text_benchmark_date').empty();
+      $("#upFrontAmount").empty().hide();
+      $('#calculateUpfrontInt').addClass('hide');
       var program_id =  $(this).val(); 
       var anchor_id =  $("#anchor_id").val(); 
       if(program_id=='')
       {
           $("#pro_limit").empty();
           $("#pro_remain_limit").empty();
-          $("#offer_data").val('');
-          $('#text_payment_frequency').empty();
-          $('#text_benchmark_date').empty();
-          $("#upFrontAmount").empty();
-          $('#calculateUpfrontInt').addClass('hide');
           return false; 
       }
       $("#supplier_id").empty();
@@ -465,6 +465,7 @@
                         $("#pro_limit_hide").val(data.remain_limit);  
                         $("#margin").val(data.margin);
                         $('#calculateUpfrontInt').addClass('hide');
+                        $('#upFrontAmount').addClass('hide');
                         if (data.offerData !== null) {
                           // Parse the JSON string into an object
                           const decodedOfferData = atob(data.offerData);
@@ -472,14 +473,15 @@
                           if (offerData.payment_frequency != null){
                             switch (offerData.payment_frequency) {
                               case '1':
-                                 textPayFre = ' (Payment Frequency - Upfront)';
+                                 textPayFre = '<b>Payment Frequency :</b> Upfront';
                                  $('#calculateUpfrontInt').removeClass('hide');
+                                 $('#upFrontAmount').removeClass('hide');
                                 break;
                               case '2':
-                                textPayFre = ' (Payment Frequency - Monthly)';
+                                textPayFre = '<b>Payment Frequency :</b> Monthly';
                                 break;
                               case '3':
-                                textPayFre = ' (Payment Frequency - Rear Ended)';
+                                textPayFre = '<b>Payment Frequency :</b> Rear Ended';
                                 break;
                               default:
                                 // Handle the case where the payment frequency is not recognized
@@ -491,10 +493,10 @@
                           if (offerData.benchmark_date != null){
                               switch (offerData.benchmark_date) {
                                 case '1':
-                                  textBencMarDate = ' (Benchmark Date - Invoice Date)';
+                                  textBencMarDate = '<b>Benchmark Date :</b> Invoice Date';
                                   break;
                                 case '2':
-                                  textBencMarDate = ' (Benchmark Date - Date of discounting)';
+                                  textBencMarDate = '<b>Benchmark Date :</b> Date of discounting';
                                   break;
                                 default:
                                   // Handle the case where the payment frequency is not recognized
@@ -602,7 +604,10 @@
     }
     var upfrontInterest = calculateInterest(fundedAmount, interestRate, tenor);
     // console.log(upfrontInterest,fundedAmount, interestRate, tenor);
-    return $("#upFrontAmount").empty().html('<b style="color:rgb(5, 88, 19);">Upfront Interest Amount: '+upfrontInterest.toFixed(2)+'</b>');
+    $("#upFrontAmount").empty().html(
+      '<b style="color:rgb(5, 88, 19);">Upfront Interest Amount: ' + upfrontInterest.toFixed(2) + '</b>,&nbsp;&nbsp;' +
+      '<b style="color:rgb(5, 88, 19);">Upfront Interest Days: ' + tenor + '</b>'
+    );    
   }
   // Define the calMargin and calInterest functions as needed.
   function calculateInterest(principalAmt, interestRate, tenorDays) {
