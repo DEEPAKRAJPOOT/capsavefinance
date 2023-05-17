@@ -1281,7 +1281,7 @@ class ApiController
       $content_type = $headers['Content-Type'];
       if ($content_type != 'application/x-www-form-urlencoded') {
         $response['message'] =  'Content Type is not valid';
-        return print(json_encode($response));
+        return response()->json($response);
       }
         $postdata = $request->all();
 
@@ -1300,13 +1300,13 @@ class ApiController
             'status' => 'fail'
           );
           FinanceModel::insertPerfios($logError,'biz_perfios_log');
-          return print(json_encode($response));
+          return response()->json($response);
         }
 
         $perfios_data = FinanceModel::getPerfiosData($perfiostransactionid);
         if (empty($perfios_data)) {
           $response['message'] = "Perfios Transaction Id is not valid.";
-          return print(json_encode($response));
+          return response()->json($response);
         }
         $appId = $perfios_data['app_id'];
         $final = $this->_getBankReport($perfiostransactionid, $prolitustxnid, $appId);
@@ -1314,7 +1314,7 @@ class ApiController
           $logError = array(
             'perfios_log_id' => $perfiostransactionid,
             'req_file' => '',
-            'res_file' => base64_encode($final['message']),
+            'res_file' => isset($final['message']) ? base64_encode($final['message']) : '',
             'url' => '',
             'status' => 'fail'
           );
@@ -1324,9 +1324,9 @@ class ApiController
           $response['status'] = "success";
           $response['message'] = "success";
         }
-        return print(json_encode($response));
+        return response()->json($response);
     }else{
-      return print(json_encode($response));
+      return response()->json($response);
     }
     
   }
