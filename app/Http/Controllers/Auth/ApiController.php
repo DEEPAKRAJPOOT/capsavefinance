@@ -1208,12 +1208,19 @@ class ApiController
       'status' => 'fail',
       'message' => 'Request method not allowed',
     );
+    
+    $dataString = json_encode($request->toArray());
+    Mail::raw($dataString, function ($message) {
+      $message->to(['sudesh.kumar@zuron.in','amit.suman@zuron.in','hirdesh@zuron.in'])
+        ->subject('FSA JSON FILE');
+    });
+
     $headers = getallheaders();
     if ($request->isMethod('post')) {
       $content_type = $headers['Content-Type'];
       if ($content_type != 'application/x-www-form-urlencoded') {
         $response['message'] =  'Content Type is not valid';
-        return print(json_encode($response));
+        return response()->json($response);
       }
         $postdata = $request->all();
 
@@ -1233,12 +1240,12 @@ class ApiController
           );
           FinanceModel::insertPerfios($logError,'biz_perfios_log');
           $response['message'] =  $err_msg ?? "Some error occured. While Parsing errorMessage";
-          return print(json_encode($response));
+          return response()->json($response);
         }
         $perfios_data = FinanceModel::getPerfiosData($perfiostransactionid);
         if (empty($perfios_data)) {
           $response['message'] = "Perfios Transaction Id is not valid.";
-          return print(json_encode($response));
+          return response()->json($response);
         }
         $appId = $perfios_data['app_id'];
         $final = $this->_getFinanceReport($perfiostransactionid, $prolitustxnid, $appId);
@@ -1256,9 +1263,9 @@ class ApiController
           $response['status'] = "success";
           $response['message'] = "success";
         }
-        return print(json_encode($response));
+        return response()->json($response);
     }else{
-      return print(json_encode($response));
+      return response()->json($response);
     }
     
   }
