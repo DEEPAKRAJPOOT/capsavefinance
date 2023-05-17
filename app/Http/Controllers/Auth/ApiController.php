@@ -1209,11 +1209,11 @@ class ApiController
       'message' => 'Request method not allowed',
     );
     
-    // $dataString = json_encode($request->toArray());
-    // Mail::raw($dataString, function ($message) {
-    //   $message->to(['sudesh.kumar@zuron.in','amit.suman@zuron.in','hirdesh@zuron.in'])
-    //     ->subject('FSA JSON FILE');
-    // });
+    $dataString = json_encode($request->toArray());
+    Mail::raw($dataString, function ($message) {
+      $message->to(['sudesh.kumar@zuron.in','amit.suman@zuron.in','hirdesh@zuron.in'])
+        ->subject('FSA JSON FILE');
+    });
 
     $headers = getallheaders();
     if ($request->isMethod('post')) {
