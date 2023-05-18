@@ -527,6 +527,8 @@ class FinanceController extends Controller {
                             $bankCode = 19;
                         }elseif($fetchedArr['bank'] == 'Yes Bank' && $fetchedArr['bank_acc_no'] == '007884600002532'){
                             $bankCode = 11;
+                        }elseif($fetchedArr['bank'] == 'IDFC Bank' && $fetchedArr['bank_acc_no'] == '10124986882'){
+                            $bankCode = 24;
                         }
                     }elseif($fetchedArr['voucher_type'] == 'Receipt'){
                         if($entry_type == 'credit'){
@@ -546,6 +548,8 @@ class FinanceController extends Controller {
                             $bankCode = 19;
                         }elseif($fetchedArr['company_bank_name'] == 'Yes Bank' && $fetchedArr['company_bank_acc'] == '007884600002532'){
                             $bankCode = 11;
+                        }elseif($fetchedArr['company_bank_name'] == 'IDFC Bank' && $fetchedArr['company_bank_acc'] == '10124986882'){
+                            $bankCode = 24;
                         }
                     }
                    
