@@ -11,10 +11,11 @@ use App\Inv\Repositories\Models\Master\BorrowerLimit;
 use App\Inv\Repositories\Models\BizInvoice;
 use App\Inv\Repositories\Entities\User\Exceptions\BlankDataExceptions;
 use App\Inv\Repositories\Entities\User\Exceptions\InvalidDataTypeExceptions;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class AppBorrowerLimit extends BaseModel
 {
-
+    use SoftDeletes;
     /**
      * The database table used by the model.
      *
@@ -50,6 +51,7 @@ class AppBorrowerLimit extends BaseModel
      *
      * @var array
      */
+    // protected $dates = ['deleted_at'];
 
 
     // protected $softDelete = true; 
@@ -68,7 +70,7 @@ class AppBorrowerLimit extends BaseModel
         'created_by',
         'created_at',
         'updated_at',
-        'updated_by'
+        'updated_by',
     ];
 
      /*

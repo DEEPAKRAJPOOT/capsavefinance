@@ -7,6 +7,7 @@ use Mail;
 use Carbon\Carbon;
 use Event;
 use Datetime;
+use App\Helpers\Helper;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Contracts\Ui\DataProviderInterface;
@@ -63,7 +64,10 @@ use App\Inv\Repositories\Models\Lms\OutstandingReportLog;
 use App\Inv\Repositories\Models\BizInvoice;
 use App\Inv\Repositories\Models\Lms\UserInvoice;
 use App\Inv\Repositories\Models\Lms\ReconReportLog;
-
+use App\Inv\Repositories\Contracts\UcicUserInterface as InvUcicUserRepoInterface;
+use App\Inv\Repositories\Models\AppGroupDetail;
+use App\Inv\Repositories\Models\UcicUser;
+use App\Inv\Repositories\Models\UcicUserUcic;
 
 class AjaxController extends Controller {
 
@@ -78,12 +82,14 @@ class AjaxController extends Controller {
     protected $invRepo;
     protected $docRepo;
     protected $lms_repo;
+    protected $ucicuser_repo;
+    protected $appRepo;
     use ApplicationTrait;
     use LmsTrait;
     use ActivityLogTrait;
 
 
-    function __construct(Request $request, InvUserRepoInterface $user, InvAppRepoInterface $application,InvMasterRepoInterface $master, InvoiceInterface $invRepo,InvDocumentRepoInterface $docRepo, FinanceInterface $finRepo, InvLmsRepoInterface $lms_repo, InvUserInvRepoInterface $UserInvRepo, ReportInterface $reportsRepo) {
+    function __construct(Request $request, InvUserRepoInterface $user, InvAppRepoInterface $application,InvMasterRepoInterface $master, InvoiceInterface $invRepo,InvDocumentRepoInterface $docRepo, FinanceInterface $finRepo, InvLmsRepoInterface $lms_repo, InvUserInvRepoInterface $UserInvRepo, ReportInterface $reportsRepo, InvUcicUserRepoInterface $ucicuser_repo) {
         // If request is not ajax, send a bad request error
         if (!$request->ajax() && strpos(php_sapi_name(), 'cli') === false) {
             abort(400);
@@ -100,6 +106,8 @@ class AjaxController extends Controller {
         $this->reportsRepo = $reportsRepo;
         $this->middleware('checkEodProcess');
         $this->middleware('checkBackendLeadAccess');
+        $this->ucicuser_repo = $ucicuser_repo;
+        $this->appRepo = $application;
     }
 
     /**
@@ -4570,7 +4578,7 @@ if ($err) {
 
     public function getGroupCompanyExposure(Request $request ){
         $groupId = $request->get('groupid');
-        $arrData = GroupCompanyExposure::where(['group_Id'=>$groupId, 'is_active'=>1])->groupBy('group_company_name')->get();
+        $arrData = AppGroupDetail::where(['group_id' => $groupId,'status' => 1])->groupBy('borrower')->get();
         return response()->json($arrData);
     }
 
@@ -4610,13 +4618,14 @@ if ($err) {
       return $data;
     }
     
-    public function updateGroupCompanyExposure(Request $request ){
-        $group_company_expo_id = $request->get('group_company_expo_id');
-        $arrData = GroupCompanyExposure::where("group_company_expo_id", $group_company_expo_id)->update(['is_active' => 2]);
-        if($arrData){
-            $status = true; 
-        }else{
-          $status = false;
+    public function updateGroupCompanyExposure(Request $request){
+        $group_company_expo_id = (int) $request->get('app_group_detail_id');
+        $status = false;
+
+        $appGrpDetail = AppGroupDetail::where("app_group_detail_id", $group_company_expo_id)->first();
+        if ($appGrpDetail) {
+            $status = $appGrpDetail->update(['is_deleted' => 1]);
+            $status = $appGrpDetail->delete();
         }
         return response()->json($status);
     }
@@ -6158,6 +6167,57 @@ if ($err) {
                                 Helpers::updateAppCurrentStatus($app_id, config('common.mst_status_id.OFFER_LIMIT_APPROVED'));
                                 $msg = 'Approval mail copy has been successfully uploaded and moved the next stage (Sales).';
                                 $isFinalSubmit = 1;
+
+                                $appId = $request->app_id;
+                                //Start Update UCIC Data for when OFFER_LIMIT_APPROVED
+                                if(Helper::isAppApprByAuthorityForGroup($appId)) {
+                                    $groupId = $this->appRepo->getGroupIdByAppId((int) $appId);
+                                    
+                                    $pan_no = $appData->business->pan->pan_gst_hash;
+                                    $ucicData = $this->ucicuser_repo->getUcicData(['pan_no' => $pan_no]);
+                                    if ($ucicData) {
+                                        $userUcicId = $ucicData->user_ucic_id ?? null;
+                                        if ($userUcicId) {
+                                            $product_ids = [];
+                                            $attr = [];
+                                            $business_info = $this->appRepo->getApplicationById($appData->biz_id);
+                                            if (!empty($appData->products)) {
+                                                foreach ($appData->products as $product) {
+                                                    $product_ids[$product->pivot->product_id]= array(
+                                                    "loan_amount" => $product->pivot->loan_amount,
+                                                    "tenor_days" => $product->pivot->tenor_days
+                                                    );
+                                                }
+                                            }
+                                            $businessInfo = $this->ucicuser_repo->formatBusinessInfoDb($business_info, $product_ids);
+                                            $ownerPanApi = $this->userRepo->getOwnerApiDetail(['biz_id' => $appData->biz_id]);
+                                            $documentData = \Helpers::makeManagementInfoDocumentArrayData($ownerPanApi);
+                                            $managementData = $this->ucicuser_repo->formatManagementInfoDb($ownerPanApi, null);
+                                            $managementInfo = array_merge($managementData, $documentData);
+                                            $this->ucicuser_repo->saveApplicationInfofinal($userUcicId, $businessInfo, $managementInfo, $appData->app_id, $appData->user_id);
+                                            $attr['user_id'] = $appData->user_id;
+                                            $attr['app_id'] = $appData->app_id;
+                                            $results = $this->ucicuser_repo->getUcicData($attr);
+                                            if ($results) {
+                                                $attr['is_sync'] = 0;
+                                                $this->ucicuser_repo->update($attr, $userUcicId);
+                                                $whereucic['user_id'] = $appData->user_id;
+                                                $whereucic['app_id']  = $appData->app_id;
+                                                $ucicuserData = UcicUserUcic::getUcicUserData($whereucic);
+                                                if (!$ucicuserData) {
+                                                    $ucicNewDataucic['ucic_id'] = $userUcicId;
+                                                    $ucicNewDataucic['user_id'] = $appData->user_id;
+                                                    $ucicNewDataucic['app_id'] = $appData->app_id;
+                                                    $ucicNewDataucic['group_id'] = $groupId;
+                                                    $ucicuserucicData = UcicUserUcic::create($ucicNewDataucic);
+                                                }
+                                                Helpers::approveAppGroupDetails((int) $groupId, (int) $appData->app_id);
+                                                Helpers::saveGroupDetailsToUcic((int) $appData->user_id, (int) $appData->app_id, (int) $groupId);
+                                            }
+                                        }
+                                    }
+                                }
+                                //End Update UCIC Data for when OFFER_LIMIT_APPROVED
                             }
                         }
                     }
@@ -6469,4 +6529,226 @@ if ($err) {
         $overdueReportLogs = ReconReportLog::orderBy('id','desc')->get();
         return $dataProvider->getReconReportLogs($this->request, $overdueReportLogs);
     }
+    
+    public function getData(DataProviderInterface $dataProvider) {
+        $ucicList = $this->ucicuser_repo->getUcicUserApp();
+        $data = $dataProvider->getUcicList($this->request, $ucicList);
+        return $data;
+    }
+
+    //Master Group List
+    public function getAllGroupList(DataProviderInterface $dataProvider) 
+    {
+        $groups = $this->masterRepo->getAllNewGroup();
+        $data = $dataProvider->getAllGroupsData($this->request, $groups);
+        return $data;
+    }
+
+    public function checkUniqueGroupName(Request $request)
+    {
+        $groupName = $request->get('name');
+        $groupId = $request->has('group_id') ? $request->get('group_id') : null;
+        $result = $this->masterRepo->checkGroupName($groupName, $groupId);
+        $result = isset($result[0]) ? ['status' => 1] : ['status' => 0];
+        return response()->json($result); 
+    }
+    
+    public function checkGroupNameSuggestions(Request $request)
+    {
+        $result = false;
+        if ($request->has('group_name')) {
+            $groupName = substr(trim($request->get('group_name')), 0, 3);
+            $result = $this->masterRepo->checkGroupNameSuggestions($groupName);
+        }
+        $resultData = $result ? ['status' => 1, 'data' => $result] : ['status' => 0];
+        return response()->json($resultData); 
+    }
+
+    public function getAllGroupUcicList(DataProviderInterface $dataProvider, Request $request)
+    {
+        $groupId = $request->group_id;
+        $groupUcicData = \Helpers::getGroupAppList($groupId);
+
+        $total_sanction_amt = 0;
+        $total_outstanding_amt = 0;
+        foreach ($groupUcicData as $key => $value) {
+            $total_sanction_amt += ($value->sanction > 0) ? $value->sanction : 0;
+            $total_outstanding_amt += ($value->outstanding > 0) ? $value->outstanding : 0;
+        }
+      
+        $data = $dataProvider->getGroupUcicData($this->request, $groupUcicData);
+        $data = $data->getData(true);
+        $data['total_sanction_amt'] = "₹ ".number_format($total_sanction_amt);
+        $data['total_outstanding_amt'] = "₹ ".number_format($total_outstanding_amt);
+        return new JsonResponse($data);
+    }
+
+    public function getGroupUcicUsersData(DataProviderInterface $dataProvider, Request $request)
+    {
+        $groupId = (int) $request->group_id;
+        $appId = (int) $request->app_id;
+        $results = [];
+        $totalExposureAmt = 0;
+        $groupSaveStatus = true;
+        if ($groupId && $appId) {
+            $isAppApprovedBy = \Helpers::isAppApprByAuthorityForGroup($appId);
+            $resultData = \Helpers::getGroupBorrowers($groupId, $appId, $isAppApprovedBy);
+            $results = $resultData['results'];
+            $totalExposureAmt = $resultData['totalExposureAmt'];
+            $groupSaveStatus = $resultData['groupSaveStatus'];
+        }
+        $data = $dataProvider->getGroupUcicBorrowerData($this->request, $results);
+       // dd($data,$appId);
+        $data = $data->getData(true);
+        $data['total_exposure_amt'] = $totalExposureAmt;
+        $data['groupSaveStatus'] = $groupSaveStatus;
+        return new JsonResponse($data);
+    }
+    
+    public function getUcicCodeData(Request $request)
+    {
+       // dd($request->returnurl);
+        $ucicCode = $request->ucic;
+        $data = ['status' => 0];
+        
+        if (!$ucicCode) {
+            return new JsonResponse($data);
+        }
+        
+        $ucicDetails = UcicUser::where('ucic_code', $ucicCode)->first();
+        
+        
+        if (!$ucicDetails) {
+            return new JsonResponse($data);
+        }
+        
+        $ucicId = $ucicDetails->user_ucic_id;
+        $appId = $ucicDetails->app_id;
+        $userId = $ucicDetails->user_id;
+        if($appId == '') {
+            return new JsonResponse($data);
+        } else {
+            $appData = $this->application->getAppData($appId);
+        }
+        if (!$ucicId) {
+            return new JsonResponse($data);
+        }
+        
+        $result = $this->copyApplicationUcic($userId, $appId, $appData->biz_id, 0, $ucicId, false, $request->user_id);
+        //$this->ucicuser_repo->copyUcicData($userId, $appId, $appData->biz_id, null, null, 0);
+        if (!isset($result['new_app_id'])) {
+            return new JsonResponse($data);
+        }
+
+        // Uncomment the following code if needed.
+        
+        $newAppId = $result['new_app_id'];
+        $newBizId = $result['new_biz_id'];
+        $newUserId = $result['new_user_id'];
+
+        if(isset($ucicDetails) && isset($newAppId)){
+            UcicUserUcic::firstOrCreate(
+                [
+                'app_id' => $newAppId, 
+                'ucic_id' => $ucicDetails->user_ucic_id
+            ],[
+                'ucic_id' => $ucicDetails->user_ucic_id,
+                'user_id' => $newUserId ?? NULL,
+                'app_id' => $newAppId  ?? NULL,
+                'group_id' => $ucicDetails->group_id
+                ]       
+            );
+        }
+
+        if($request->returnurl == "frontendurl") {
+            $redirectUrl = route('business_information_open', ['user_id' => $userId,'app_id' => $newAppId, 'biz_id' => $newBizId]);
+        } else {
+            $redirectUrl = route('company_details', ['user_id' => $userId,'app_id' => $newAppId, 'biz_id' => $newBizId]);
+        }
+
+        $data = [
+            'status' => 1,
+            'redirectUrl' => $redirectUrl,
+        ];
+        /*
+        if ($ucicData && $newAppId) {
+            $ucicData->update(['app_id' => $newAppId]);
+        }
+        */
+        return new JsonResponse($data);
+    }
+
+    //CHECKING BANKING STATEMENT API STATUS
+    public function checkBankingStatementStatus(Request $request) {
+        $appId =  (int) $this->request->get('appId');
+        $perfios_log_id =  $this->request->get('perfios_log_id');
+        $pending_rec = $this->finRepo->getBsaFsaData($appId,'1007', 1);
+        if($pending_rec)
+        {
+            $perfiosLogId = $pending_rec->perfios_log_id ?? NULL;
+            $callBackMessage = '';
+            if (isset($perfiosLogId)) {
+                $callbackResp = $this->finRepo->getBsaFsaCallBackResponse($perfiosLogId);
+                if (!empty($callbackResp)) {
+                    $callBackMessage = base64_decode($callbackResp->res_file);
+                }
+            }
+            if (($pending_rec->status == 'success' || $pending_rec->status == 'fail') && !empty($callBackMessage)){
+                $resStatus =($pending_rec->status == 'success')  ? 1 : 0;
+                $controller = app()->make('App\Http\Controllers\Backend\CamController');
+                $nameArr = $controller->getLatestFileName($appId, 'banking', 'xlsx');
+                $file_name = $nameArr['curr_file'];
+                //$file_path = "storage/user/docs/$appId/banking/$file_name";
+                if(!empty($file_name) && file_exists(storage_path("app/public/user/docs/$appId/banking/".$file_name))) {
+                    $final_res['file_url'] = Storage::url('user/docs/'.$appId.'/banking/'.$file_name);
+                    return response()->json(['status' => 1, 'value'=>$final_res, 'response_status'=>$resStatus]);
+                } else {
+                    return response()->json(['status' => 0,'value'=>'File is not generated yet.','response_status'=>'404']);
+                }
+            }else{
+                return response()->json(['status' => 0,'value'=>'Perfios response is empty.','response_status'=>'404']);
+            } 
+        }
+        else
+        {
+            return response()->json(['status' => 0,'value'=>'Perfios data is not found.','response_status'=>'404']); 
+        }
+     }
+
+     //CHECKING Financial STATEMENT API STATUS
+    public function checkFinancialStatementStatus(Request $request) {
+        $appId =  (int) $this->request->get('appId');
+        $perfios_log_id =  $this->request->get('perfios_log_id');
+        $pending_rec = $this->finRepo->getBsaFsaData($appId,'1005', 2);
+        if($pending_rec)
+        {
+            $perfiosLogId = $pending_rec->perfios_log_id ?? NULL;
+            $callBackMessage = '';
+            if (isset($perfiosLogId)) {
+                $callbackResp = $this->finRepo->getBsaFsaCallBackResponse($perfiosLogId);
+                if (!empty($callbackResp)) {
+                    $callBackMessage = base64_decode($callbackResp->res_file);
+                }
+            }
+            if (($pending_rec->status == 'success' || $pending_rec->status == 'fail') && !empty($callBackMessage)){
+                $resStatus =($pending_rec->status == 'success')  ? 1 : 0;
+                $controller = app()->make('App\Http\Controllers\Backend\CamController');
+                $nameArr = $controller->getLatestFileName($appId, 'finance', 'xlsx');
+                $file_name = $nameArr['curr_file'];
+                //$file_path = "storage/user/docs/$appId/finance/$file_name";
+                if(!empty($file_name) && file_exists(storage_path("app/public/user/docs/$appId/finance/".$file_name))) {
+                    $final_res['file_url'] = Storage::url('user/docs/'.$appId.'/finance/'.$file_name);
+                    return response()->json(['status' => 1, 'value'=>$final_res, 'response_status'=>$resStatus]);
+                } else {
+                    return response()->json(['status' => 0,'value'=>'File is not generated yet.','response_status'=>'404']);
+                }
+            }else{
+                return response()->json(['status' => 0,'value'=>'Perfios response is empty.','response_status'=>'404']);
+            } 
+        }
+        else
+        {
+            return response()->json(['status' => 0,'value'=>'Perfios data is not found.','response_status'=>'404']); 
+        }
+     }
 }

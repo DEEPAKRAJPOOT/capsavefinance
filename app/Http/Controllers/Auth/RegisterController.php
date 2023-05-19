@@ -287,14 +287,7 @@ use RegistersUsers,
             $data = [];
             $arrFileData = [];
             $arrFileData = $request->all();
-            //echo "ddddssssd"; exit;
-            //Saving data into database
             $AnchorData = $this->userRepo->getAnchorByPan($arrFileData['pan_no']);                        
-//            dd($AnchorData,'fdfjk');
-            if($AnchorData && $AnchorData->pan_no){                    
-                //$arrFileData['h_anchor_id'] = $AnchorData->anchor_id;                
-            }
-            
             $user = $this->create($arrFileData);
             /// dd($user);
             if ($user) {
@@ -389,6 +382,22 @@ use RegistersUsers,
     }
 
     /**
+     * Show the consent Thanks page.
+     *
+     * @return \Illuminate\Http\Response
+     */
+
+    public function showConsentThanksForm(){
+
+        $userId = Session::has('userId') ? Session::get('userId') : 0;
+        $userArr = [];
+        if ($userId > 0) {
+            $userArr = $this->userRepo->find($userId);
+        }
+        return view('auth.consent-thanks', compact('userArr'));
+    }
+
+    /**
      * Show the application OTP page.
      *
      * @return \Illuminate\Http\Response
@@ -399,16 +408,25 @@ use RegistersUsers,
         $date = new DateTime;
         $currentDate = $date->format('Y/m/d H:i:s');
         if (isset($token) && !empty($token)) {
-            $email = Crypt::decrypt($token);
+            $decryptedData = Crypt::decrypt($token);
+            if(is_array($decryptedData) && isset($decryptedData['otp_route'])){
+                $email = $decryptedData['email'];
+                $redirectUrl = $decryptedData['otp_route'];
+                $otp_type = 2;
+                $decryptedData['otp_type'] = $otp_type;
+                $token = Crypt::encrypt($decryptedData);
+            }else{
+                $email = Crypt::decrypt($token);
+                $redirectUrl = 'verify_otp';
+                $otp_type = 1;
+            }
+            $tokenarr['otp_type'] = $otp_type;
+            $tokenarr['redirectUrl'] = $redirectUrl;
             $tokenarr['token'] = $token;
             $userArr = $this->userRepo->getUserByEmailforOtp($email);
         }
     
         if (isset($userArr)) {
-            /* if ($userId > 0) {
-              $userArr = $this->userRepo->find($userId);
-              } */
-
             return view('auth.otp', compact('userArr'), compact('tokenarr'));
         } else {
             return redirect()->route('/otp');
@@ -532,55 +550,98 @@ use RegistersUsers,
     public function verifyotpUser(Request $request) {
 
         $otp = $request->get('otp');
-        $email = Crypt::decrypt($request->get('token'));
+        $token = $request->get('token');
+        $otp_type = $request->get('otp_type');
+        if($otp_type == '1'){
+          $email = Crypt::decrypt($request->get('token'));
+          $message = trans('error_messages.enter_corr_otp');
+        }else if($otp_type == '2'){
+          $tokenData = Crypt::decrypt($request->get('token'));
+          $email = $tokenData['email'];
+          $message = trans('error_messages.enter_consent_corr_otp');
+        }
+          
         
         try {
             if (isset($otp) && !empty($otp)) {
 
                 /////Get user id behalf of email////////////
                 $userDetails = $this->userRepo->getUserByEmail($email);
-                $userCheckArr = $this->userRepo->getUserByOPT($otp, $userDetails->user_id);
-
+                $isOtpExpired = false;
+                if($otp_type == '2'){
+                    if(isset($tokenData['biz_owner_id']) && !empty($tokenData['biz_owner_id'])){
+                        $bizOwner = $this->application->getBizOwnerDataByOwnerId($tokenData['biz_owner_id']);
+                        $userCheckArr = $this->userRepo->getConsentUserByOTP($otp, $bizOwner->user_id,$tokenData['biz_owner_id']);
+                        $whereC=['otp_no'=>$otp, 'user_id'=>$bizOwner->user_id,'biz_owner_id'=>$tokenData['biz_owner_id'],'is_otp_expired'=>1,'activity_id'=>94];
+                    }else{
+                        $userCheckArr = $this->userRepo->getConsentUserByOTP($otp, $userDetails->user_id);
+                        $whereC=['otp_no'=>$otp, 'user_id'=>$userDetails->user_id,'is_otp_expired'=>1,'activity_id'=>94];
+                    }
+                   $isOtpExpired = $this->userRepo->getOtpExpired($whereC);
+                }else{
+                    $userCheckArr = $this->userRepo->getUserByOPT($otp, $userDetails->user_id);
+                }
                 if ($userCheckArr != false) {
                     /* if ($userCheckArr->status == config('inv_common.USER_STATUS.Active')) {
                       return redirect(route('otp'))->withErrors(trans('error_messages.email_already_verified'));
                       } */
                     $userId = (int) $userCheckArr->user_id;
-                    $userMailArr = [];
-                    $userArr = [];
-
-                    $date = new DateTime;
-                    $currentDate = $date->format('Y-m-d H:i:s');
-                    $userArr['is_otp_verified'] = 1;
-                    $userArr['is_otp_resent'] = 0;
-                    $userArr['otp_verified_updatetime'] = $currentDate;
-                    $userArr['is_active'] = 1;
-                    $userCheckArr = $this->userRepo->getfullUserDetail($userId);
-                    $this->userRepo->save($userArr, $userId);
-                    $arrAnchUser['token']='';                   
-                    $this->userRepo->updateAnchorUserByEmailId($userCheckArr->email, $arrAnchUser);
-                    $userMailArr['name'] = $userCheckArr->f_name . ' ' . $userCheckArr->l_name;
-                    $userMailArr['email'] = $userCheckArr->email;
-                    if(Auth::loginUsingId($userDetails->user_id)) {
-                        
-                        if ($userDetails->is_pwd_changed != 1) {
-                            return redirect()->route('changepassword');
+                    $otp_trans_id = (int) $userCheckArr->otp_trans_id;
+                    if($otp_type == '1'){
+                        $userMailArr = [];
+                        $userArr = [];
+                        $date = new DateTime;
+                        $currentDate = $date->format('Y-m-d H:i:s');
+                        $userArr['is_otp_verified'] = 1;
+                        $userArr['is_otp_resent'] = 0;
+                        $userArr['otp_verified_updatetime'] = $currentDate;
+                        $userArr['is_active'] = 1;
+                        $userCheckArr = $this->userRepo->getfullUserDetail($userId);
+                        $this->userRepo->save($userArr, $userId);
+                        $arrAnchUser['token']='';                   
+                        $this->userRepo->updateAnchorUserByEmailId($userCheckArr->email, $arrAnchUser);
+                        $userMailArr['name'] = $userCheckArr->f_name . ' ' . $userCheckArr->l_name;
+                        $userMailArr['email'] = $userCheckArr->email;
+                        if(Auth::loginUsingId($userDetails->user_id)) {
+                            
+                            if ($userDetails->is_pwd_changed != 1) {
+                                return redirect()->route('changepassword');
+                            }
+                            
+                            $appData = $this->application->checkAppByPan($userId); 
+                            if ($appData) {
+                                //Session::flash('message', trans('error_messages.active_app_check'));                            
+                                return redirect()->route('front_application_list');
+                            } else {
+                                return redirect()->route('business_information_open');
+                            }       
                         }
-                        
-                        $appData = $this->application->checkAppByPan($userId); 
-                        if ($appData) {
-                            //Session::flash('message', trans('error_messages.active_app_check'));                            
-                            return redirect()->route('front_application_list');
-                        } else {
-                            return redirect()->route('business_information_open');
-                        }       
+                    }else{
+                        $ckycConsentData = [
+                            'status' => 1
+                        ];
+                        $where = ['user_id'=>$userId, 'otp_trans_id'=>$otp_trans_id];
+                        $result = $this->userRepo->updateotpConsent($ckycConsentData, $where);
+                        if($result){
+                            $arrUpdateOtp = [];
+                            $arrUpdateOtp['is_otp_expired'] = 1;
+                            $arrUpdateOtp['is_otp_resent'] = 3;
+                            $this->userRepo->updateOtp($arrUpdateOtp, (int) $otp_trans_id);
+                            return redirect()->route('consentthanks');
+                        }else{
+                            return redirect(route('otp', ['token' => $token]))->withErrors(trans('error_messages.data_not_found'));
+                        }
                     }
-                    //return redirect()->route('login_open');
                 } else {
-                    return redirect(route('otp', ['token' => Crypt::encrypt($email)]))->withErrors(trans('error_messages.enter_corr_otp'));
+                    $tokenData = $otp_type == '2' ? $tokenData : $email;
+                    if ($isOtpExpired && $otp_type == '2'){
+                        return redirect(route('otp', ['token' => Crypt::encrypt($tokenData)]))->withErrors(trans('error_messages.consent_otp_expired'));
+                    }
+                    return redirect(route('otp', ['token' => Crypt::encrypt($tokenData)]))->withErrors($message);
                 }
             } else {
-                return redirect(route('otp', ['token' => Crypt::encrypt($email)]))->withErrors(trans('error_messages.data_not_found'));
+                $tokenData = $otp_type == '2' ? $tokenData : $email;
+                return redirect(route('otp', ['token' => Crypt::encrypt($tokenData)]))->withErrors(trans('error_messages.data_not_found'));
             }
         } catch (DecryptException $ex) {
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
@@ -588,7 +649,15 @@ use RegistersUsers,
     }
 
     public function resendotpUser(Request $request) {
-        $email = Crypt::decrypt($request->get('token'));
+        $decryptedData = Crypt::decrypt($request->get('token'));
+        
+        if(is_Array($decryptedData)){
+            $email = $decryptedData['email'];
+            $otp_type = (int)$decryptedData['otp_type'];
+        }else{
+            $email = $decryptedData;
+            $otp_type = 1;
+        }
         $userMailArr = [];
         $i = 0;
         $userCheckArr = $this->userRepo->getuserByEmail($email);
@@ -600,8 +669,19 @@ use RegistersUsers,
         $otpArr = [];
         //$Otpstring = Helpers::randomOTP();
         $Otpstring = mt_rand(1000, 9999);
-        $countOtp = $this->userRepo->getOtps($userId)->toArray();
-        //dd($countOtp);
+        if(is_Array($decryptedData) && isset($decryptedData['otp_type']) && $decryptedData['otp_type'] == 2){
+            if(isset($decryptedData['biz_owner_id']) && !empty($decryptedData['biz_owner_id'])){
+                $bizOwner = $this->application->getBizOwnerDataByOwnerId($decryptedData['biz_owner_id']);
+                $where = ['user_id'=>(int)$bizOwner->user_id,'biz_owner_id'=>$decryptedData['biz_owner_id']];
+            }else{
+                $where = ['user_id'=>(int)$userId];
+            }
+            $countOtp = $this->userRepo->getConsentOtps($where)->toArray();
+        }else{
+            $countOtp = $this->userRepo->getOtps($userId)->toArray();
+        }
+        
+        
         if (!empty($countOtp)) {
             $firstData = $countOtp[0]['otp_exp_time'];
             $updatedTime = new DateTime($firstData);
@@ -610,63 +690,171 @@ use RegistersUsers,
             $hours = $interval->format('%h');
             $minutes = $interval->format('%i');
             $expireTime = ($hours * 60 + $minutes);
-
             if ($expireTime >= 30) {
                 $this->userRepo->updateOtpByExpiry(['is_otp_expired' => 1], $userId);
                 $this->userRepo->updateOtpByExpiry(['is_otp_resent' => 3], $userId);
 
+                if(is_Array($decryptedData) && isset($decryptedData['biz_owner_id']) && !empty($decryptedData['biz_owner_id'])){
+                    $otpArr['biz_owner_id'] = $decryptedData['biz_owner_id']; 
+                }
                 $otpArr['otp_no'] = $Otpstring;
-                $otpArr['activity_id'] = 1;
+                $otpArr['activity_id'] = ($otp_type == 2)?94:1;
                 $otpArr['user_id'] = $userId;
                 $otpArr['is_otp_expired'] = 0;
                 $otpArr['is_otp_resent'] = 0;
                 $otpArr['otp_exp_time'] = $currentDate;
                 $otpArr['is_verified'] = 1;
                 $otpArr['mobile_no'] = $userCheckArr->mobile_no;
-                $this->userRepo->saveOtp($otpArr);
-                $userMailArr['name'] = $name =$userCheckArr->f_name . ' ' . $userCheckArr->l_name;
-                $userMailArr['email'] = $userCheckArr->email;
-                $userMailArr['otp'] = $Otpstring;
-                $gupshup = new Gupshup_lib();
-                $mobile_no = $userCheckArr->mobile_no;
-                $otp_msg = "Dear $name,\r\n OTP:$Otpstring is your otp to verify your mobile on Capsave.\r\n Regards";
+                $otpSaved = $this->userRepo->saveOtp($otpArr);
+                if($otp_type == 2){
+                  
+                    $ckycConsentData = [
+                        'otp_trans_id' => $otpSaved
+                    ];
+                    $app = $userCheckArr->app ? $userCheckArr->app : null;
+                    $business = $app && $app->business ? $app->business : null;
+                    if(isset($decryptedData['biz_owner_id']) && !empty($decryptedData['biz_owner_id'])){
+                        $bizOwner = $this->application->getBizOwnerDataByOwnerId($decryptedData['biz_owner_id']);
+                        $is_consentotp['biz_owner_id'] = $decryptedData['biz_owner_id'];
+                        $userCheckArr=(object)array();
+                        $userCheckArr->f_name = $bizOwner->first_name ?? '';
+                        $userCheckArr->l_name = $bizOwner->last_name ?? '';
+                        $userCheckArr->email =  trim($bizOwner->email);
+                        $userCheckArr->biz_owner_id =  $decryptedData['biz_owner_id'];
+                        $userCheckArr->mobile_no = $bizOwner->mobile_no;
+                        $userCheckArr->user_id = $bizOwner->user_id;
+                        $where = ['user_id'=>$bizOwner->user_id,'biz_owner_id'=>$decryptedData['biz_owner_id']];
+                        $this->userRepo->updateotpConsent($ckycConsentData, $where);
+                    }else{
+                        $this->userRepo->updateBusinessotpConsent($ckycConsentData, $userId);
+                    }
+                    $is_consentotp['email'] = $decryptedData['email'];
+                    $is_consentotp['otp_route'] = 'verify_otp_consent';
 
-                $otp_resp = $gupshup->api_call(['mobile'=>$mobile_no, 'message' => $otp_msg]);
+                    $mailUrl = config('proin.frontend_uri') . '/otp/'.Crypt::encrypt($is_consentotp);
+                    $ckycConsentMailArr['name'] = trim($userCheckArr->f_name) . ' ' . trim($userCheckArr->l_name);
+                    $ckycConsentMailArr['email'] =  trim($userCheckArr->email);
+                    $ckycConsentMailArr['url'] = $mailUrl;
+                    $ckycConsentMailArr['otp'] = $Otpstring;
+                    $ckycConsentMailArr['ckyc_app_code'] = ($app && $app->app_code) ? $app->app_code : '';
+                    $ckycConsentMailArr['ckyc_biz_name'] = ($business && $business->biz_entity_name) ? $business->biz_entity_name : '';
+                    Event::dispatch("user.sendconsentotp", serialize($ckycConsentMailArr));
+                    return redirect(route('otp', ['token' => Crypt::encrypt($decryptedData)]))->withErrors(trans('success_messages.otp_sent_messages'));
 
-                Event::dispatch("user.sendotp", serialize($userMailArr));
-                return redirect(route('otp', ['token' => Crypt::encrypt($email)]))->withErrors(trans('success_messages.otp_sent_messages'));
+                }else{
+
+                    $userMailArr['name'] = $name =$userCheckArr->f_name . ' ' . $userCheckArr->l_name;
+                    $userMailArr['email'] = $userCheckArr->email;
+                    $userMailArr['otp'] = $Otpstring;
+                    $gupshup = new Gupshup_lib();
+                    $mobile_no = $userCheckArr->mobile_no;
+                    $otp_msg = "Dear $name,\r\n OTP:$Otpstring is your otp to verify your mobile on Capsave.\r\n Regards";
+    
+                    $otp_resp = $gupshup->api_call(['mobile'=>$mobile_no, 'message' => $otp_msg]);
+    
+                    Event::dispatch("user.sendotp", serialize($userMailArr));
+                    return redirect(route('otp', ['token' => Crypt::encrypt($email)]))->withErrors(trans('success_messages.otp_sent_messages'));
+                }
+                
             } else {
-                $countOtp = $this->userRepo->getOtps($userId)->toArray();
+                
+                if(is_Array($decryptedData) && isset($decryptedData['otp_type']) && $decryptedData['otp_type'] == 2){
+                    if(isset($decryptedData['biz_owner_id']) && !empty($decryptedData['biz_owner_id'])){
+                        $bizOwner = $this->application->getBizOwnerDataByOwnerId($decryptedData['biz_owner_id']);
+                        $where = ['user_id'=>(int)$bizOwner->user_id,'biz_owner_id'=>$decryptedData['biz_owner_id']];
+                    }else{
+                        $where = ['user_id'=>(int)$userId];
+                    }
+                    $countOtp = $this->userRepo->getConsentOtps($where)->toArray();
+                }else{
+                    $countOtp = $this->userRepo->getOtps($userId)->toArray();
+                }
+
                 if (isset($countOtp) && count($countOtp) >= 3) {
-                    return redirect(route('otp', ['token' => Crypt::encrypt($email)]))->withErrors(trans('success_messages.otp_attempts_finish'));
+                    $decryptedData = $otp_type == '2' ? $decryptedData : $email;
+                    return redirect(route('otp', ['token' => Crypt::encrypt($decryptedData)]))->withErrors(trans('success_messages.otp_attempts_finish'));
                 } else {
-                    $prev_otp = $this->userRepo->getOtpsbyActive($userId)->toArray();
+                    
+                    if(is_Array($decryptedData) && isset($decryptedData['otp_type']) && $decryptedData['otp_type'] == 2){
+                        if(isset($decryptedData['biz_owner_id']) && !empty($decryptedData['biz_owner_id'])){
+                            $bizOwner = $this->application->getBizOwnerDataByOwnerId($decryptedData['biz_owner_id']);
+                            $where = ['user_id'=>(int)$bizOwner->user_id,'biz_owner_id'=>$decryptedData['biz_owner_id']];
+                        }else{
+                            $where = ['user_id'=>(int)$userId];
+                        }
+                        $prev_otp = $this->userRepo->getConsentOtpsbyActive($where)->toArray();
+                    }else{
+                        $prev_otp = $this->userRepo->getOtpsbyActive($userId)->toArray();
+                    }
+
+                   
+                    $savedOtp = null;
                     if (isset($prev_otp) && count($prev_otp) == 1) {
                         $arrUpdateOtp = [];
                         $arrUpdateOtp['is_otp_expired'] = 1;
                         $arrUpdateOtp['otp_exp_time'] = $currentDate;
                         //dd($prev_otp[0]['otp_trans_id']);
                         $this->userRepo->updateOtp($arrUpdateOtp, (int) $prev_otp[0]['otp_trans_id']);
+                        if(is_Array($decryptedData) && isset($decryptedData['biz_owner_id']) && !empty($decryptedData['biz_owner_id'])){
+                            $otpArr['biz_owner_id'] = $decryptedData['biz_owner_id']; 
+                        }
                         $otpArr['otp_no'] = $Otpstring;
-                        $otpArr['activity_id'] = 1;
+                        $otpArr['activity_id'] = ($otp_type == 2)?94:1;
                         $otpArr['user_id'] = $userId;
                         $otpArr['is_otp_expired'] = 0;
                         $otpArr['is_otp_resent'] = 0;
                         $otpArr['otp_exp_time'] = $currentDate;
                         $otpArr['is_verified'] = 1;
                         $otpArr['mobile_no'] = $userCheckArr->mobile_no;
-                        $this->userRepo->saveOtp($otpArr);
+                       $savedOtp =  $this->userRepo->saveOtp($otpArr);
                     }
-                    $userMailArr['name'] = $name = $userCheckArr->f_name . ' ' . $userCheckArr->l_name;
-                    $userMailArr['email'] = $userCheckArr->email;
-                    $userMailArr['otp'] = $Otpstring;
-                    $gupshup = new Gupshup_lib();
-                    $mobile_no = $userCheckArr->mobile_no;
-                    $otp_msg = "Dear $name,\r\n OTP:$Otpstring is your otp to verify your mobile on Capsave.\r\n Regards";
+                    if($otp_type == 2){
+                        $ckycConsentData = [
+                            'otp_trans_id' => $savedOtp
+                        ];
+                        $app = $userCheckArr->app ? $userCheckArr->app : null;
+                        $business = $app && $app->business ? $app->business : null;
+                        if(isset($decryptedData['biz_owner_id']) && !empty($decryptedData['biz_owner_id'])){
+                            $is_consentotp['biz_owner_id'] = $decryptedData['biz_owner_id'];
+                            $bizOwner = $this->application->getBizOwnerDataByOwnerId($decryptedData['biz_owner_id']);
+                            $userCheckArr=(object)array();
+                            $userCheckArr->f_name = $bizOwner->first_name ?? '';
+                            $userCheckArr->l_name = $bizOwner->last_name ?? '';
+                            $userCheckArr->email =  trim($bizOwner->email);
+                            $userCheckArr->biz_owner_id =  $decryptedData['biz_owner_id'];
+                            $userCheckArr->mobile_no = $bizOwner->mobile_no;
+                            $userCheckArr->user_id = $bizOwner->user_id;
+                            $where = ['user_id'=>$bizOwner->user_id,'biz_owner_id'=>$decryptedData['biz_owner_id']];
+                            $this->userRepo->updateotpConsent($ckycConsentData, $where);
+                        }else{
+                            $this->userRepo->updateBusinessotpConsent($ckycConsentData, $userId);
+                        }
+                        $is_consentotp['email'] = $decryptedData['email'];
+                        $is_consentotp['otp_route'] = 'verify_otp_consent';
+    
+                        $mailUrl = config('proin.frontend_uri') . '/otp/'.Crypt::encrypt($is_consentotp);
+                        $ckycConsentMailArr['name'] = trim($userCheckArr->f_name) . ' ' . trim($userCheckArr->l_name);
+                        $ckycConsentMailArr['email'] =  trim($userCheckArr->email);
+                        $ckycConsentMailArr['url'] = $mailUrl;
+                        $ckycConsentMailArr['otp'] = $Otpstring;
+                        $ckycConsentMailArr['ckyc_app_code'] = ($app && $app->app_code) ? $app->app_code : '';
+                        $ckycConsentMailArr['ckyc_biz_name'] = ($business && $business->biz_entity_name) ? $business->biz_entity_name : '';
+                        Event::dispatch("user.sendconsentotp", serialize($ckycConsentMailArr));
+                        return redirect(route('otp', ['token' => Crypt::encrypt($decryptedData)]))->withErrors(trans('success_messages.otp_sent_messages'));
+    
+                    }else{
+                        $userMailArr['name'] = $name = $userCheckArr->f_name . ' ' . $userCheckArr->l_name;
+                        $userMailArr['email'] = $userCheckArr->email;
+                        $userMailArr['otp'] = $Otpstring;
+                        $gupshup = new Gupshup_lib();
+                        $mobile_no = $userCheckArr->mobile_no;
+                        $otp_msg = "Dear $name,\r\n OTP:$Otpstring is your otp to verify your mobile on Capsave.\r\n Regards";
 
-                    $otp_resp = $gupshup->api_call(['mobile'=>$mobile_no, 'message' => $otp_msg]);
-                    Event::dispatch("user.sendotp", serialize($userMailArr));
-                    return redirect(route('otp', ['token' => Crypt::encrypt($email)]))->withErrors(trans('success_messages.otp_sent_messages'));
+                        $otp_resp = $gupshup->api_call(['mobile'=>$mobile_no, 'message' => $otp_msg]);
+                        Event::dispatch("user.sendotp", serialize($userMailArr));
+                        return redirect(route('otp', ['token' => Crypt::encrypt($email)]))->withErrors(trans('success_messages.otp_sent_messages'));
+                    }
+                    
                 }
             }
         }
@@ -742,14 +930,13 @@ use RegistersUsers,
         $result['message'] = '';
         $result['status'] = true;
         $result['validate'] = $validate;
-
         $whereCond=[];
         $whereCond[] = ['email', '=', $email];
         $whereCond[] = ['anchor_id', '=', $assocAnchId];
         $whereCond[] = ['is_registered', '=', '1'];
         $anchUserData = $this->userRepo->getAnchorUserData($whereCond);
         if (isset($anchUserData[0])) {
-            $result['validate'] = 1;
+            $result['validate'] = 0;
             $result['status'] = false;
             $result['message'] = trans('success_messages.existing_email');
             return response()->json($result);
@@ -759,11 +946,32 @@ use RegistersUsers,
             $whereCond[] = ['pan_no', '!=', $pan];
             $whereCond[] = ['is_registered', '=', '1'];
             $AnchorData = $this->userRepo->getAnchorUserData($whereCond);             
-            if (isset($AnchorData[0])) {                
-                $result['validate'] = 1;
+            if (isset($AnchorData[0])) { 
+                $result['validate'] = 0;
                 $result['status'] = false;
                 $result['message'] = trans('success_messages.existing_email');
                 return response()->json($result);
+            } else {
+                $whereCond=[];       
+                $whereCond[] = ['pan_no', '=', $pan];
+                $whereCond[] = ['is_registered', '=', '1'];
+                $whereCond[] = ['anchor_id', '=', $assocAnchId];
+                $AnchorData = $this->userRepo->getAnchorUserData($whereCond); 
+                if(!isset($AnchorData[0])) {
+                    $whereCond=[];       
+                    $whereCond[] = ['pan_no', '=', $pan];
+                    $whereCond[] = ['email', '=', $email];
+                    $whereCond[] = ['is_registered', '=', '1'];
+                    $AnchorData =   $this->userRepo->getNonAnchorUserData($whereCond);  
+                   }
+                if (isset($AnchorData[0])) { 
+                    $result['validate'] = 0;
+                    $result['status'] = false;
+                    $click_here = "<a href='".url('/')."'>Click here</a>";
+                    $result['message'] = 'User already registered with this Pan no.<br> Please '. $click_here .' to login with old credentials.';
+                    return response()->json($result);
+                } 
+
             }
         }
         
@@ -775,6 +983,7 @@ use RegistersUsers,
         $AnchorData = $this->userRepo->getAnchorUserData($whereCond);        
         if (!empty($pan) && isset($AnchorData[0])) {
             $result['validate'] = '0';
+            $result['status'] = false;
             $result['message'] = trans('success_messages.register_different_anchor');
             return response()->json($result);
         }
@@ -921,10 +1130,110 @@ use RegistersUsers,
     public function getExistPanUserStatusForNonAnchorLead(Request $req)
     {
         $pan    = $req->get('pan');
+        $email    = $req->get('email');
         $status = $this->userRepo->getNonAnchorLeadByPan(trim($pan));
+        if(!$status) {
+                $whereCond=[];       
+                $whereCond[] = ['pan_no', '=', $pan];
+                $whereCond[] = ['is_registered', '=', '1'];
+                $checkstatus = $this->userRepo->getAnchorUserData($whereCond);
+                $status = isset($checkstatus[0]) ? true : false;
+                if(!$status) {
+                    $whereCond=[]; 
+                    $whereCond[] = ['email', '=', $email];      
+                    $whereCond[] = ['pan_no', '=', $pan];
+                    $whereCond[] = ['is_registered', '=', '1'];
+                    $checkstatus = $this->userRepo->getAnchorUserData($whereCond);
+                    $status = isset($checkstatus[0]) ? true : false; 
+                    if($status) {
+                        $click_here = "<a href='".url('/')."'>Click here</a>"; 
+                        $result['validate'] = $status ? '0' : '1';        
+                        $result['message'] = 'User already registered with this Pan no.<br> Please '. $click_here .' to login with old credentials.';
+                        return response()->json($result);
+                    }
+                }
+        } else {
+            $whereCond=[];       
+            $whereCond[] = ['pan_no', '=', $pan];
+            $whereCond[] = ['email', '=', $email];
+            $whereCond[] = ['is_registered', '=', '1'];
+            $AnchorData =   $this->userRepo->getNonAnchorUserData($whereCond);
+            if (isset($AnchorData[0])) { 
+                $result['validate'] = 0;
+                $result['status'] = false;
+                $click_here = "<a href='".url('/')."'>Click here</a>";
+                $result['message'] = 'User already registered with this Pan no.<br> Please '. $click_here .' to login with old credentials.';
+                return response()->json($result);
+            } 
+
+        }
         $result['validate'] = $status ? '0' : '1';        
-        $result['message']  = $status ? trans('error_messages.pan_already_exists') : '';        
+        $result['message']  = $status ?  : '';        
+        return response()->json($result);
+    }
+
+
+    public function checkExistUserPanNonAnchor(Request $request)
+    {
+        $email = $request->get('email');
+        $pan = $request->get('pan');
+        $assocAnchId = $request->get('anchor_id');
+        $validate = $request->get('validate');
+        $result = [];
+        $result['message'] = '';
+        $result['status'] = true;
+        $result['validate'] = $validate;
+        $whereCond=[];
+        $whereCond[] = ['email', '=', $email];
+        $whereCond[] = ['anchor_id', '=', $assocAnchId];
+        $whereCond[] = ['is_registered', '=', '1'];
+        $anchUserData = $this->userRepo->getAnchorUserData($whereCond);
+        if (isset($anchUserData[0])) {
+            $result['validate'] = 0;
+            $result['status'] = false;
+            $result['message'] = trans('success_messages.existing_email');
+            return response()->json($result);
+        } else {        
+            $whereCond=[];       
+            $whereCond[] = ['email', '=', $email];
+            $whereCond[] = ['pan_no', '!=', $pan];
+            $whereCond[] = ['is_registered', '=', '1'];
+            $AnchorData = $this->userRepo->getAnchorUserData($whereCond);             
+            if (isset($AnchorData[0])) { 
+                $result['validate'] = 0;
+                $result['status'] = false;
+                $result['message'] = trans('success_messages.existing_email');
+                return response()->json($result);
+            } else {
+                $whereCond=[];       
+                $whereCond[] = ['pan_no', '=', $pan];
+                $whereCond[] = ['is_registered', '=', '1'];
+                $whereCond[] = ['anchor_id', '=', $assocAnchId];
+                $AnchorData = $this->userRepo->getAnchorUserData($whereCond); 
+                if (isset($AnchorData[0])) { 
+                    $result['validate'] = 0;
+                    $result['status'] = false;
+                    $click_here = "<a href='".url('/')."'>Click here</a>";
+                    $result['message'] = 'User already registered with this Pan no.<br> Please '. $click_here .' to login with old credentials.';
+                    return response()->json($result);
+                }
+
+            }
+        }
         
+        $whereCond=[];
+        $whereCond[] = ['pan_no', '=', $pan];         
+        $whereCond[] = ['email', '=', $email];
+        $whereCond[] = ['anchor_id', '!=', $assocAnchId];
+        $whereCond[] = ['is_registered', '=', '1'];
+        $AnchorData = $this->userRepo->getAnchorUserData($whereCond);        
+        if (!empty($pan) && isset($AnchorData[0])) {
+            $result['validate'] = '0';
+            $result['status'] = false;
+            $result['message'] = trans('success_messages.register_different_anchor');
+            return response()->json($result);
+        }
+                
         return response()->json($result);
     }
 }

@@ -316,7 +316,7 @@ function uploadFile(app_id,id)
             arr[i++] = $(this).val();
         });
         if (arr.length == 0) {
-            alert('Please select atleast one checked');
+            alert('Please select at-least one invoice');
             return false;
         }
         if (confirm('Are you sure? You want to approve it.'))

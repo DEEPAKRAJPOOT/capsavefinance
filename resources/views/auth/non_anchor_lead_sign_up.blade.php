@@ -202,24 +202,28 @@ var messages={
         });
              
         $('#pan_no').on('blur', function (event) { 
-            $.ajax({
-                url: messages.check_exist_user_pan_url,
-                type: 'POST',
-                datatype: 'json',
-                async: false,
-                cache: false,
-                data: {
-                    pan : $('#pan_no').val(),
-                    _token : messages.token
-                },
-                success: function(response){
-                    if (response.validate == '0') {
-                        $(".check_exist_user_pan").html(response.message);
-                    } else {
-                        $(".check_exist_user_pan").html("");
+            if($('#pan_no').val()!='') {
+               var email = $('#email').val();
+                $.ajax({
+                    url: messages.check_exist_user_pan_url,
+                    type: 'POST',
+                    datatype: 'json',
+                    async: false,
+                    cache: false,
+                    data: {
+                        pan : $('#pan_no').val(),
+                        email : email,
+                        _token : messages.token
+                    },
+                    success: function(response){
+                        if (response.validate == '0') {
+                            $(".check_exist_user_pan").html(response.message);
+                        } else {
+                            $(".check_exist_user_pan").html("");
+                        }
                     }
-                }
-            });
+                });
+            }
             
         });
             
@@ -232,7 +236,7 @@ var messages={
             $('input.pan_no').each(function () {
                 $(this).rules("add",
                     {
-                        required: false,
+                        required: true,
                         maxlength: 10,
                         panValidator: true,
                         messages: {'panValidator': 'Please enter correct PAN No.'}

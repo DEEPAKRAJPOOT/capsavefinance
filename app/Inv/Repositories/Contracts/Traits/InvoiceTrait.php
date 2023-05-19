@@ -1106,7 +1106,14 @@ trait InvoiceTrait
       $get_TDS_Payment  =  Payment::where(['user_id' => $attr['user_id'],'action_type' =>3])->count();
       $get_TDS_Payment_File = Payment::where(['user_id' => $attr['user_id'],'action_type' =>3])->where('file_id','<>', 0)->count();
       $getReject =   BizInvoice::whereIn('status_id',[7,8,9,11,28])->where(['supplier_id' =>$attr['user_id']])->get();
-      if($getBank > 0)
+      
+      $activeAppCnt = Application::where('user_id',$attr['user_id'])->whereIn('curr_status_id',[20,21,22,23,25,45,46,48,49,55,56])->count();
+
+      if($activeAppCnt > 0){
+        $data['msg']  = 'You cannot close this account as there are some active applications. Please close or reject.';
+        $data['status'] = 0;
+      }
+      elseif($getBank > 0)
       {
          $data['msg']  = 'You cannot close this account as some invoices are sent to bank for disbursal.';
          $data['status'] = 0;
@@ -1147,7 +1154,7 @@ trait InvoiceTrait
         $create_uid = Auth::user()->user_id;
         $getLogId = LmsUsersLog::create(['user_id' => $uid,'status_id' => 35,'created_by' => $create_uid,'created_at' => $cDate]);
         UserDetail::where(['user_id' => $uid])->update(['is_active' => 0,'lms_users_log_id' => $getLogId->lms_users_log_id]);
-       
+        User::where(['user_id' => $uid])->update(['is_active' => 0]);
    }
    ////////////////* offer margin amount  **//////////////
    public static function invoiceMargin($inv_details)

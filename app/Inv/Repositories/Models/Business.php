@@ -79,6 +79,11 @@ class Business extends BaseModel
         'org_id',        
         'msme_type',
         'msme_no',
+        'label_1',
+        'label_2',
+        'label_3',
+        'email',
+        'mobile',
         'created_by',
         'created_at',
         'updated_at',
@@ -92,7 +97,7 @@ class Business extends BaseModel
         'date_of_in_corp'=>Carbon::createFromFormat('d/m/Y', $attributes['incorporation_date'])->format('Y-m-d'),
         'entity_type_id'=>$attributes['entity_type_id'],
         'nature_of_biz'=>$attributes['biz_type_id'],
-        'turnover_amt'=>($attributes['biz_turnover'])? str_replace(',', '', $attributes['biz_turnover']): 0,
+        'turnover_amt'=>(isset($attributes['biz_turnover']) && $attributes['biz_turnover'])? str_replace(',', '', $attributes['biz_turnover']): 0,
        // 'tenor_days'=>$attributes['tenor_days'],
         'biz_constitution'=>$attributes['biz_constitution'],
         'biz_segment'=>$attributes['segment'],
@@ -102,7 +107,12 @@ class Business extends BaseModel
         'created_by'=>Auth::user()->user_id,
         'is_gst_manual'=>$attributes['is_gst_manual'],
         'msme_type' => $attributes['msme_type'],
-        'msme_no' => $attributes['msme_no'],            
+        'msme_no' => $attributes['msme_no'],
+        'label_1' => $attributes['label']['1'] ?? '',
+        'label_2' => $attributes['label']['2'] ?? '',
+        'label_3' => $attributes['label']['3'] ?? '',            
+        'email' => $attributes['email'] ?? '',
+        'mobile' => $attributes['mobile'] ?? '',
         ]);
 
         $bpga = BizPanGstApi::create([
@@ -141,7 +151,7 @@ class Business extends BaseModel
             ]);
 
         //entry for all GST against the PAN
-        if($attributes['pan_api_res']) {
+        if($attributes['pan_api_res'] ?? NULL) {
             $pan_api_res = explode(',', rtrim($attributes['pan_api_res'],','));
             $data = [];
             foreach ($pan_api_res as $key=>$value) {
@@ -158,7 +168,7 @@ class Business extends BaseModel
             BizPanGst::insert($data);
         }
 
-        if($attributes['cin_api_res']) {
+        if($attributes['cin_api_res'] ?? NULL) {
             $cin_api_res = explode(',', rtrim($attributes['cin_api_res'],','));
             $dataCin = [];
             foreach ($cin_api_res as $key=>$value) {
@@ -262,7 +272,7 @@ class Business extends BaseModel
 
     public static function getCompanyDataByBizId($biz_id)
     {
-        $arrData = self::select('biz.biz_id','biz.biz_entity_name','biz_pan_gst.pan_gst_hash','biz.cibil_score','biz_pan_gst.cin', 'biz.is_cibil_pulled')
+        $arrData = self::select('biz.biz_id','biz.biz_entity_name','biz_pan_gst.pan_gst_hash','biz.cibil_score','biz_pan_gst.cin', 'biz.is_cibil_pulled','biz.date_of_in_corp')
         ->join('biz_pan_gst', 'biz_pan_gst.biz_pan_gst_id', '=', 'biz.panno_pan_gst_id')
         ->where('biz.biz_id', $biz_id)
         ->get();
@@ -300,6 +310,11 @@ class Business extends BaseModel
         'msme_type' => $attributes['msme_type'],
         'msme_no' => $attributes['msme_no'],
         'updated_by'=>Auth::user()->user_id,
+        'label_1' => $attributes['label']['1'] ?? '',
+        'label_2' => $attributes['label']['2'] ?? '',
+        'label_3' => $attributes['label']['3'] ?? '',
+        'email' => $attributes['email'] ?? '',
+        'mobile' => $attributes['mobile'] ?? '',
         ]);
 
         if(isset($attributes['is_gst_manual']) && $attributes['is_gst_manual']=='1'){
@@ -458,13 +473,27 @@ class Business extends BaseModel
     }
     
     public static function getBizDataByPan($pan, $userId=null) {
-        $query = self::select('biz.biz_id','biz.biz_entity_name','biz_pan_gst.pan_gst_hash','biz.cibil_score','biz_pan_gst.cin', 'biz.is_cibil_pulled')
-        ->join('biz_pan_gst', 'biz_pan_gst.biz_pan_gst_id', '=', 'biz.panno_pan_gst_id')                
+        $query = self::select('users.user_id as user_id','users.mobile_no as mobile_no','users.email as email','biz.biz_id','biz.biz_entity_name','biz_pan_gst.pan_gst_hash','biz.cibil_score','biz_pan_gst.cin', 'biz.is_cibil_pulled','biz.msme_no')
+        ->join('biz_pan_gst', 'biz_pan_gst.biz_pan_gst_id', '=', 'biz.panno_pan_gst_id')
+        ->join('users', 'users.user_id','=','biz.user_id')                
         ->where('biz_pan_gst.pan_gst_hash', $pan);
         if (!is_null($userId)) {
             $query->where('biz.user_id', $userId);
         }         
         $arrData = $query->get();
+        return $arrData;
+    }
+
+    public static function getlatestBizDataByPan($pan, $userId=null){
+
+        $query = self::select('users.user_id as user_id','users.mobile_no as mobile_no','users.email as email','biz.biz_id','biz.biz_entity_name','biz_pan_gst.pan_gst_hash','biz.cibil_score','biz_pan_gst.cin', 'biz.is_cibil_pulled','biz.msme_no')
+        ->join('biz_pan_gst', 'biz_pan_gst.biz_pan_gst_id', '=', 'biz.panno_pan_gst_id')
+        ->join('users', 'users.user_id','=','biz.user_id')                
+        ->where('biz_pan_gst.pan_gst_hash', $pan);
+        if (!is_null($userId)) {
+            $query->where('biz.user_id', $userId);
+        }         
+        $arrData = $query->orderBy('biz.biz_id','DESC')->first();
         return $arrData;
     }
 

@@ -17,6 +17,7 @@ return [
         'shared_detail' => 'Shared Details',
         'status' => 'Status',
         'action' => 'Action',
+        'ucic_code' => 'UCIC Code',
     ],
     'mange_program' => [
         'manage_program' => 'Manage Program',

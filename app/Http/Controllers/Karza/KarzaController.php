@@ -10,6 +10,7 @@ use App\Inv\Repositories\Models\User;
 use Auth;
 use Illuminate\Http\Request;
 use App\Inv\Repositories\Contracts\UserInterface as InvUserRepoInterface;
+use App\Inv\Repositories\Contracts\UcicUserInterface as InvUcicUserRepoInterface;
 use App\Inv\Repositories\Contracts\ApplicationInterface as InvAppRepoInterface;
 use Session;
  
@@ -17,10 +18,12 @@ class KarzaController extends Controller
 {
     protected $appRepo;
     protected $userRepo;
+    protected $ucicuser_repo;
 
-    public function __construct(InvAppRepoInterface $app_repo, InvUserRepoInterface $user_repo){
+    public function __construct(InvAppRepoInterface $app_repo, InvUserRepoInterface $user_repo ,InvUcicUserRepoInterface $ucicuser_repo){
         $this->userRepo = $user_repo;
         $this->appRepo = $app_repo;
+        $this->ucicuser_repo = $ucicuser_repo;
     }
     
     /**
@@ -155,9 +158,14 @@ class KarzaController extends Controller
                                            'biz_api_log_id' => $createApiLog['biz_api_log_id'],
                                            'created_by' => Auth::user()->user_id,
                                           ]);
-                            if($createBizApi){
-
-                                 return response()->json(['message' =>trans('success_messages.basic_saved_successfully'),'status' => 1, 'value' => $createApiLog['biz_api_log_id']]);
+                            if($createBizApi){ 
+                                $ucicData = $this->ucicuser_repo->getUcicData(['user_id' => $user_id]);
+                                $data = [
+                                    'biz_api_id' =>  $createBizApi['biz_api_id'],
+                                    'id_no' => $requestPan['pan']
+                                ];
+                                \Helpers::updateIdNoToUcic($ucicData, $requestPan['ownerid'], $requestPan['doc_type_name'], $data, $requestPan['app_id']);
+                                return response()->json(['message' =>trans('success_messages.basic_saved_successfully'),'status' => 1, 'value' => $createApiLog['biz_api_log_id']]);
                            } 
                            else 
                           {
@@ -216,8 +224,13 @@ class KarzaController extends Controller
                                            'created_by' => Auth::user()->user_id,
                                           ]);
                             if($createBizApi){
-
-                                 return response()->json(['message' =>trans('success_messages.basic_saved_successfully'),'status' => 1, 'value' => $createApiLog['biz_api_log_id']]);
+                                $ucicData = $this->ucicuser_repo->getUcicData(['user_id' => $user_id]);
+                                $data = [
+                                    'biz_api_id' =>  $createBizApi['biz_api_id'],
+                                    'id_no' => $requestvoterf['epic_no']
+                                ];
+                                \Helpers::updateIdNoToUcic($ucicData, $requestvoterf['ownerid'], $requestvoterf['doc_type_name'], $data, $requestvoterf['app_id']);
+                                return response()->json(['message' =>trans('success_messages.basic_saved_successfully'),'status' => 1, 'value' => $createApiLog['biz_api_log_id']]);
                            } 
                            else 
                           {
@@ -273,8 +286,13 @@ class KarzaController extends Controller
                                            'created_by' => Auth::user()->user_id,
                                           ]);
                             if($createBizApi){
-
-                                 return response()->json(['message' =>trans('success_messages.basic_saved_successfully'),'status' => 1, 'value' => $createApiLog['biz_api_log_id']]);
+                                $ucicData = $this->ucicuser_repo->getUcicData(['user_id' => $user_id]);
+                                $data = [
+                                    'biz_api_id' =>  $createBizApi['biz_api_id'],
+                                    'id_no' => $requestDl['dl_no']
+                                ];
+                                \Helpers::updateIdNoToUcic($ucicData, $requestDl['ownerid'], $requestDl['doc_type_name'], $data, $requestDl['app_id']);
+                                return response()->json(['message' =>trans('success_messages.basic_saved_successfully'),'status' => 1, 'value' => $createApiLog['biz_api_log_id']]);
                            } 
                            else 
                           {
@@ -320,7 +338,7 @@ class KarzaController extends Controller
                {
                    $userData  =  User::getUserByAppId($requestPassport['app_id']);
                    $user_id    =  $userData->user_id;
-                   $createBizApi= BizApi::create(['user_id' =>$user_id, 
+                   $createBizApi = BizApi::create(['user_id' =>$user_id, 
                                             'biz_id' =>   $requestPassport['biz_id'],
                                             'biz_owner_id' => $requestPassport['ownerid'],
                                             'type' => 6,
@@ -330,8 +348,13 @@ class KarzaController extends Controller
                                            'created_by' => Auth::user()->user_id,
                                           ]);
                             if($createBizApi){
-
-                                 return response()->json(['message' =>trans('success_messages.basic_saved_successfully'),'status' => 1, 'value' => $createApiLog['biz_api_log_id']]);
+                                $ucicData = $this->ucicuser_repo->getUcicData(['user_id' => $user_id]);
+                                $data = [
+                                    'biz_api_id' =>  $createBizApi['biz_api_id'],
+                                    'id_no' => $requestPassport['fileNo']
+                                ];
+                                \Helpers::updateIdNoToUcic($ucicData, $requestPassport['ownerid'], $requestPassport['doc_type_name'], $data, $requestPassport['app_id']);
+                                return response()->json(['message' =>trans('success_messages.basic_saved_successfully'),'status' => 1, 'value' => $createApiLog['biz_api_log_id']]);
                            } 
                            else 
                           {
@@ -361,18 +384,37 @@ class KarzaController extends Controller
     {
         $requestArr   = $request->all();
         try{
-          $result =  $KarzaApi->checkBizPanToGst($requestArr);
-          $res = json_decode($result,1);
-          if($res['statusCode'] == 101){
-            $pgapiId = \DB::table('biz_pan_gst_api')->insertGetId([
-                'file_name' => $requestArr['pan'].' PAN to GST for Business',
-                'status' => 1,
-                'created_at' => \Carbon\Carbon::now(),
-                'created_by' => Auth::user()->user_id,
-              ]);
-          }
-          //$res =   json_encode(array('requestId' => $requestPassport['fileNo'],'dob' => $requestPassport['dob']));
-          return response()->json(['response' =>$res]);
+            $result =  $KarzaApi->checkBizPanToGst($requestArr);
+            $res = json_decode($result,1);
+            if($res['statusCode'] == 101){
+                $pgapiId = \DB::table('biz_pan_gst_api')->insertGetId([
+                    'file_name' => $requestArr['pan'].' PAN to GST for Business',
+                    'status' => 1,
+                    'created_at' => \Carbon\Carbon::now(),
+                    'created_by' => Auth::user()->user_id,
+                ]);
+            }
+
+            $whereCond=[];       
+            $whereCond['pan_no'] = $requestArr['pan'];
+            $whereCond['user_id'] = $requestArr['userID'];
+            
+            $userData  = $this->userRepo->getNonAnchorUserData($whereCond);
+            if (!isset($userData[0])) {
+                $userData  = $this->userRepo->getAnchorUserData($whereCond); 
+            }
+
+            if(!isset($userData[0])) {
+                return false; 
+            }
+            $ucicData = $this->ucicuser_repo->createUpdateUcic(['pan_no' => $requestArr['pan'], 'user_id' => $userData[0]['user_id'] ?? null]);
+
+            $ucicNewData=[];
+            $ucicNewData['pan_no'] = $ucicData->pan_no ?? $requestArr['pan'];
+            $ucicNewData['ucic_code'] = $ucicData->ucic_code ?? '';
+            $ucicNewData['user_id'] = $userData[0]['user_id'] ?? '';
+
+          return response()->json(['response' =>$res,'ucic_code'=>$ucicNewData['ucic_code'], 'user_id' => $userData[0]['user_id']]);
         }catch (Exception $e){
           return false;
         }      

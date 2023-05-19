@@ -59,5 +59,10 @@ return [
     'lead_assigned' => 'Leads assigned successfully.',
     'app_assigned' => 'Application assigned successfully.',
     'validate_limit_expired_found' => 'You can\'t sanctioned this application because limit is already expired.',
+    'user_otp_consent_sent' => 'CKYC OTP consent sent to company\'s email id.',
+    'user_manual_consent' => 'CKYC Manual consent uploaded successfully.',
+    'ckyc_pulled_success' => 'CKYC pulled Successfully !',
+    'partner_otp_consent_sent'=>'CKYC OTP consent sent to Partner\'s email id.',
+    'already_pulled'=>'You have already processed CKYC for this User !',
 ];
 

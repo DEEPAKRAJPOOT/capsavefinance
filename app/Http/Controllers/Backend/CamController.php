@@ -2,67 +2,73 @@
 
 namespace App\Http\Controllers\Backend;
 
+use DB;
 use Auth;
 use Mail;
 use Helpers;
 use Session;
 use Storage;
-use PDF as DPDF;
 use PHPExcel;
-use DB;
-use PHPExcel_IOFactory;
+use Validator;
+use PDF as DPDF;
 use Carbon\Carbon;
-use App\Mail\ReviewerSummary;
 use App\Libraries\Pdf;
-use App\Libraries\Perfios_lib;
+use App\Helpers\Helper;
+use PHPExcel_IOFactory;
 use App\Libraries\Bsa_lib;
-use App\Libraries\MobileAuth_lib;
-use App\Libraries\Gupshup_lib;
-use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Hash;
-use App\Http\Requests\AnchorInfoRequest;
-use App\Http\Requests\FinanceInformationRequest as FinanceRequest;
-use App\Inv\Repositories\Models\FinanceModel;
-use App\Inv\Repositories\Models\Business;
-use App\Inv\Repositories\Models\BizOwner;
+use App\Mail\ReviewerSummary;
+use App\Libraries\Gupshup_lib;
+use App\Libraries\Perfios_lib;
+use App\Libraries\MobileAuth_lib;
+use App\Http\Controllers\Controller;
 use App\Inv\Repositories\Models\Cam;
-use App\Inv\Repositories\Models\BusinessAddress;
-use App\Inv\Repositories\Models\CamHygiene;
-use App\Inv\Repositories\Models\AppBizFinDetail;
-use App\Inv\Repositories\Models\CamReviewerSummary;
-use App\Inv\Repositories\Models\AppProgramLimit;
-use App\Inv\Repositories\Models\GroupCompanyExposure;
-use App\Inv\Repositories\Models\Master\Group;
-use App\Inv\Repositories\Models\AppProgramOffer;
+use Illuminate\Support\Facades\Hash;
+use App\Inv\Repositories\Models\Anchor;
+use PhpOffice\PhpSpreadsheet\IOFactory;
+use App\Http\Requests\AnchorInfoRequest;
+use App\Inv\Repositories\Models\AppLimit;
+use App\Inv\Repositories\Models\BizOwner;
+use App\Inv\Repositories\Models\Business;
+use App\Inv\Repositories\Models\BizPanGst;
 use App\Inv\Repositories\Models\OfferPTPQ;
-use App\Inv\Repositories\Models\AppApprover;
+use App\Inv\Repositories\Models\CamHygiene;
 use App\Inv\Repositories\Models\UserAppDoc;
-use App\Inv\Repositories\Models\CamReviewSummPrePost;
-use App\Inv\Repositories\Contracts\ApplicationInterface as InvAppRepoInterface;
-use App\Inv\Repositories\Contracts\UserInterface as InvUserRepoInterface;
-use App\Inv\Repositories\Contracts\DocumentInterface as InvDocumentRepoInterface;
-use App\Inv\Repositories\Contracts\MasterInterface as InvMasterRepoInterface;
-use App\Inv\Repositories\Contracts\FinanceInterface as InvFinanceRepoInterface;
+use App\Inv\Repositories\Models\AppApprover;
+use App\Inv\Repositories\Models\Application;
+use App\Inv\Repositories\Models\AppStatusLog;
+use App\Inv\Repositories\Models\FinanceModel;
+use App\Inv\Repositories\Models\Master\Group;
+use App\Inv\Repositories\Models\UcicUserUcic;
+use App\Inv\Repositories\Models\AppGroupDetail;
+use App\Inv\Repositories\Models\AppSecurityDoc;
+use App\Inv\Repositories\Models\DocumentMaster;
+use App\Inv\Repositories\Models\AppBizFinDetail;
+use App\Inv\Repositories\Models\AppProgramLimit;
+use App\Inv\Repositories\Models\AppProgramOffer;
+use App\Inv\Repositories\Models\BusinessAddress;
 use App\Inv\Repositories\Contracts\Traits\CamTrait;
-use App\Inv\Repositories\Contracts\Traits\CommonTrait;
-use App\Inv\Repositories\Models\CamReviewSummRiskCmnt;
-use App\Inv\Repositories\Models\Master\GroupCompany;
+use App\Inv\Repositories\Models\AppProgramOfferDsa;
 //use App\Inv\Repositories\Models\BankWorkCapitalFacility;
 //use App\Inv\Repositories\Models\BankTermBusiLoan;
 //use App\Inv\Repositories\Models\BankAnalysis;
 //date_default_timezone_set('Asia/Kolkata');
-use Validator;
+use App\Inv\Repositories\Models\CamReviewerSummary;
+use App\Inv\Repositories\Models\Master\GroupCompany;
+use App\Inv\Repositories\Models\CamReviewSummPrePost;
+use App\Inv\Repositories\Models\GroupCompanyExposure;
+use App\Inv\Repositories\Contracts\Traits\CommonTrait;
+use App\Inv\Repositories\Models\CamReviewSummRiskCmnt;
 use App\Inv\Repositories\Contracts\Traits\ActivityLogTrait;
 use App\Inv\Repositories\Contracts\Traits\ApplicationTrait;
-use App\Inv\Repositories\Models\Anchor;
-use App\Inv\Repositories\Models\AppProgramOfferDsa;
-use App\Inv\Repositories\Models\AppSecurityDoc;
-use App\Inv\Repositories\Models\DocumentMaster;
-use App\Inv\Repositories\Models\Application;
-use PhpOffice\PhpSpreadsheet\IOFactory;
-use App\Inv\Repositories\Models\AppLimit;
-use App\Inv\Repositories\Models\AppStatusLog;
+use App\Http\Requests\FinanceInformationRequest as FinanceRequest;
+use App\Inv\Repositories\Contracts\UserInterface as InvUserRepoInterface;
+use App\Inv\Repositories\Contracts\MasterInterface as InvMasterRepoInterface;
+use App\Inv\Repositories\Contracts\ApplicationInterface as InvAppRepoInterface;
+use App\Inv\Repositories\Contracts\FinanceInterface as InvFinanceRepoInterface;
+use App\Inv\Repositories\Contracts\DocumentInterface as InvDocumentRepoInterface;
+use App\Inv\Repositories\Contracts\UcicUserInterface as InvUcicUserRepoInterface;
+
 class CamController extends Controller
 {
     use ApplicationTrait;
@@ -77,7 +83,7 @@ class CamController extends Controller
     protected $genBlankfinJSON = TRUE;
     protected $financeRepo;
 
-    public function __construct(InvAppRepoInterface $app_repo, InvUserRepoInterface $user_repo, InvDocumentRepoInterface $doc_repo, Pdf $pdf, InvMasterRepoInterface $mstRepo, InvFinanceRepoInterface $finance_repo){
+    public function __construct(InvAppRepoInterface $app_repo, InvUserRepoInterface $user_repo, InvDocumentRepoInterface $doc_repo, Pdf $pdf, InvMasterRepoInterface $mstRepo, InvFinanceRepoInterface $finance_repo,InvUcicUserRepoInterface $ucicuser_repo){
         $this->appRepo = $app_repo;
         $this->application = $app_repo;
         $this->userRepo = $user_repo;
@@ -87,6 +93,7 @@ class CamController extends Controller
         $this->middleware('auth');
         $this->middleware('checkBackendLeadAccess');
         $this->financeRepo = $finance_repo;
+        $this->ucicuser_repo = $ucicuser_repo;
     }
 
     /**
@@ -102,6 +109,7 @@ class CamController extends Controller
 		        $user_id = $appData->user_id;
             $arrBizData = Business::getApplicationById($arrRequest['biz_id']);
             $arrOwnerData = BizOwner::getCompanyOwnerByBizId($arrRequest['biz_id']);
+            $arrOwner = [];
             foreach ($arrOwnerData as $key => $arr) {
                   $arrOwner[$key] =  $arr['first_name'];
             }
@@ -112,8 +120,11 @@ class CamController extends Controller
             if(isset($arrEntityData['name'])){
                   $arrBizData['legalConstitution'] = $arrEntityData['name'];
             }
+             if(isset($arrBizData['panno_pan_gst_id']) && $arrBizData['is_pan_verified'] == 1) {
+              $BizPanData =  BizPanGst::getBizPanGstData(['biz_pan_gst_id' => $arrBizData['panno_pan_gst_id']]);
+              $BizPanData = $BizPanData[0]['pan_gst_hash'];
+             }
             $userData = $this->userRepo->getUserDetail($arrBizData['user_id']);
-            // dd($userData);
             $whereCondition = [];
             $whereCondition['anchor_id'] = $userData['anchor_id'];
             $prgmData = $this->appRepo->getProgramData($whereCondition);
@@ -140,34 +151,36 @@ class CamController extends Controller
             }else{
               $checkDisburseBtn='';
             }
+
+            $appData = '';
             $arrGroupCompany = array();
-            if(isset($arrCamData['group_company']) && is_numeric($arrCamData['group_company'])){
-              $arrGroupCompany = GroupCompanyExposure::where(['group_Id'=>$arrCamData['group_company'], 'app_id'=>$arrRequest['app_id'], 'is_active'=>1] )->get()->toArray();
-              $arrMstGroup =  Group::where('id', (int)$arrCamData['group_company'])->first()->toArray();
-             if(!empty($arrMstGroup)){
-               $arrCamData['group_company'] = $arrMstGroup['name'];
-             }
-            }
-
-
-            if(!empty($arrGroupCompany)){
-                $temp = array();
-                $arrUserData = $this->userRepo->find($arrGroupCompany['0']['updated_by'], '');
-                $arrCamData->By_updated = "$arrUserData->f_name $arrUserData->l_name";
-                $total = 0;
-                foreach ($arrGroupCompany as $key => $value) {
-                  $total = $total + $value['proposed_exposure'] + $value['outstanding_exposure'];
-                  if($arrBizData->biz_entity_name == $value['group_company_name']){
-                      $temp[] = $value;
-                      unset($arrGroupCompany[$key]);
-                  }
+            $allNewGroups =  $this->mstRepo->getAllNewActiveGroup();
+            if(isset($arrRequest['app_id']) && is_numeric($arrRequest['app_id'])){
+              $groupId = NULL;
+              $oldAppGroupName = NULL;
+              $appId = $arrRequest['app_id'];
+              $appData = $this->appRepo->getAppData($appId);
+              $isAppApproved = Helper::isAppApprByAuthorityForGroup($appId);
+              if($isAppApproved){
+                if($appData->is_old_app == '1'){
+                  $oldAppGroupName =  Group::where('id', (int)$arrCamData['group_company'])->limit(1)->value('name');
+                }else{
+                  $groupId = $this->appRepo->getGroupIdByAppId($appId);
                 }
-                if(!empty($temp)){
-                  $arrGroupCompany = array_merge($temp, $arrGroupCompany);
+              }else{
+                $ucicDataByPan = $this->ucicuser_repo->getUcicData(['pan_no' => $BizPanData]);
+                $groupId = $ucicDataByPan->group_id ?? NULL;
+                if(!$groupId){
+                  $groupId = $this->appRepo->getGroupIdByAppId($appId);
                 }
-                $arrCamData['total_exposure_amount'] = round($total,2);
+                unset($ucicDataByPan);
+              }
             }
-            $getAppDetails = $this->appRepo->getAppData($arrRequest['app_id']);
+              
+            $arrCamData['group_id'] = $groupId;
+            $arrCamData['oldAppGroupName'] = $oldAppGroupName;
+
+            $getAppDetails  = $this->appRepo->getAppData($arrRequest['app_id']);
             $current_status = ($getAppDetails) ? $getAppDetails['curr_status_id'] : '';
             $activeGroup =  $this->mstRepo->getAllActiveGroup();
             $productType = [1 => 'Supply Chain', 2 => 'Term Loan', 3=> 'Leasing'];
@@ -182,7 +195,10 @@ class CamController extends Controller
                 'arrGroupCompany'=>$arrGroupCompany,
                 'activeGroup' => $activeGroup,
                 'productType' => $productType,
-                'user_id' => $user_id
+                'user_id' => $user_id,
+                'allNewGroups' => $allNewGroups,
+                'appData' => $appData,
+                'isAppApproved' => $isAppApproved,
                 ]);
         } catch (Exception $ex) {
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
@@ -214,46 +230,9 @@ class CamController extends Controller
                     $arrCamData['debt_on'] =  Carbon::createFromFormat('d/m/Y', request()->get('debt_on'))->format('Y-m-d');
            }
 
-           if(isset($arrCamData['group_company'])){
-               $masterGroupData= array(
-                   'name'=> $arrCamData['group_company'],
-                   'is_active' => '1',
-                   'created_by'=>Auth::user()->user_id
-               );
-                  
-               $arrMstGroup = Group::updateOrcreate($masterGroupData)->toArray();
-               $arrCamData['group_company'] = $arrMstGroup['id'];
-
-               
-               
-               // dd($arrCamData);
-               if(isset($arrCamData['group_company_name']))
-               {
-
-                 //GroupCompanyExposure::where('group_Id', $arrMstGroup['id'])->delete();
-                   foreach($arrCamData['group_company_name'] as $key => $groupCompanyName) {
-                      $inputArr= array(
-                         'biz_id'=> $arrCamData['biz_id'] ,
-                         'app_id'=> $arrCamData['app_id'],
-                         'group_Id'=> $arrMstGroup['id'],
-                         'group_company_name'=> $groupCompanyName ?? null,
-                         'sanction_limit'=> isset($arrCamData['sanction_limit'][$key]) ? $arrCamData['sanction_limit'][$key] : null ,
-                         'outstanding_exposure'=> isset($arrCamData['outstanding_exposure'][$key]) ? $arrCamData['outstanding_exposure'][$key] : null,
-                         
-                         'created_by'=>$userId
-                     );  
-                       if(isset($arrCamData['proposed_exposure'][$key])){
-                          $inputArr['proposed_exposure'] = $arrCamData['proposed_exposure'][$key];
-                       }
-                       if(isset($arrCamData['group_company_expo_id'][$key])){
-                          $group_company_expo_id = $arrCamData['group_company_expo_id'][$key];
-                       }else{
-                          $group_company_expo_id = null;
-                       }
-                      GroupCompanyExposure::updateOrcreate(['group_company_expo_id' => $group_company_expo_id], $inputArr);
-                   }
-               }
-           }
+          if(isset($arrCamData['group_id'])){
+            \Helpers::saveAppGroupDetailData($arrCamData);
+          }
 
            $whereActivi['activity_code'] = 'cam_information_save';
            $activity = $this->mstRepo->getActivity($whereActivi);
@@ -1837,11 +1816,11 @@ class CamController extends Controller
      */
     public function approveOffer(Request $request)
     {
+      \DB::beginTransaction();
         try {
             $appId = $request->get('app_id');
             $bizId = $request->get('biz_id');
             $userId = $request->has('user_id') ? $request->get('user_id') : null;
-            \DB::beginTransaction();
             $appData = $this->appRepo->getAppData($appId);
             if ($appData && in_array($appData->app_type, [3]) ) {
 								$parentAppId = $appData->parent_app_id;
@@ -1903,6 +1882,64 @@ class CamController extends Controller
                         //update approve status in offer table after all approver approve the offer.
                         $this->appRepo->changeOfferApprove((int)$app_id);
                         Helpers::updateAppCurrentStatus($app_id, config('common.mst_status_id.OFFER_LIMIT_APPROVED'));
+                        // freeze group exposure data
+                        $isAppApprovedByAllApprs = Helpers::isAppApprByAuthorityForGroup($appId);
+                        if ($isAppApprovedByAllApprs) {
+                            $groupId = $this->appRepo->getGroupIdByAppId($appId);
+                            $appData = $this->appRepo->getAppData($appId);
+                            $current_status = ($appData) ? $appData->curr_status_id : '';
+                            if($current_status == config('common.mst_status_id.OFFER_LIMIT_APPROVED')){
+                            
+                            //Start Update UCIC Data for when OFFER_LIMIT_APPROVED
+                            if(Helper::isAppApprByAuthorityForGroup($appId)) {
+                              $pan_no = $appData->business->pan->pan_gst_hash;
+                              $ucicData = $this->ucicuser_repo->getUcicData(['pan_no' => $pan_no]);
+                              if($ucicData) {
+                                $userUcicId = $ucicData->user_ucic_id ?? null;
+                                if ($userUcicId) {
+                                  $product_ids = [];
+                                  $attrUcic    = [];
+                                  $business_info = $this->appRepo->getApplicationById($appData->biz_id);
+                                  if (!empty($appData->products)) {
+                                    foreach ($appData->products as $product) {
+                                      $product_ids[$product->pivot->product_id]= array(
+                                      "loan_amount" => $product->pivot->loan_amount,
+                                      "tenor_days" => $product->pivot->tenor_days
+                                      );
+                                    }
+                                  }
+                                  $businessInfo = $this->ucicuser_repo->formatBusinessInfoDb($business_info, $product_ids);
+                                  $ownerPanApi = $this->userRepo->getOwnerApiDetail(['biz_id' => $appData->biz_id]);
+                                  $documentData = \Helpers::makeManagementInfoDocumentArrayData($ownerPanApi);
+                                  $managementData = $this->ucicuser_repo->formatManagementInfoDb($ownerPanApi, null);
+                                  $managementInfo = array_merge($managementData, $documentData);
+                                  $this->ucicuser_repo->saveApplicationInfofinal($userUcicId, $businessInfo, $managementInfo, $appData->app_id, $appData->user_id);
+                                  $attrUcic['user_id'] = $appData->user_id;
+                                  $attrUcic['app_id'] = $appData->app_id;
+                                  
+                                  $results = $this->ucicuser_repo->getUcicData($attrUcic);
+                                  if ($results) {
+                                    $attrUcic['is_sync'] = 0;
+                                    $this->ucicuser_repo->update($attrUcic, $userUcicId);
+                                    $whereucic['user_id'] = $appData->user_id;
+                                    $whereucic['app_id']  = $appData->app_id;
+                                    $ucicuserData = UcicUserUcic::getUcicUserData($whereucic);
+                                    if (!$ucicuserData){
+                                        $ucicNewDataucic['ucic_id'] = $userUcicId;
+                                        $ucicNewDataucic['user_id'] = $appData->user_id;
+                                        $ucicNewDataucic['app_id'] = $appData->app_id;
+                                        $ucicNewDataucic['group_id'] = $groupId;
+                                        $ucicuserucicData = UcicUserUcic::create($ucicNewDataucic);
+                                    }
+                                    Helpers::approveAppGroupDetails($groupId, $appData->app_id);
+                                    Helpers::saveGroupDetailsToUcic((int) $appData->user_id, $appData->app_id, $groupId);
+                                  }
+                                }
+                              }
+                            }
+                            //End Update UCIC Data for when OFFER_LIMIT_APPROVED
+                          }
+                        }
                     }
                 }
             }
@@ -2689,8 +2726,10 @@ class CamController extends Controller
         $viewData = $this->getCamReportData($request);
         $app_id = $request->get('app_id');
         $biz_id = $request->get('biz_id');
-		    $user_id = $viewData['arrBizData']['user_id'];
-        return view('backend.cam.viewCamReport')->with($viewData,$app_id,$biz_id)->with('user_id',$user_id);
+		    $user_id = $viewData['arrBizData']->user_id;
+        return view('backend.cam.viewCamReport')
+        ->with($viewData,$app_id,$biz_id)
+        ->with('user_id',$user_id);
       } catch (Exception $ex) {
           return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
       }

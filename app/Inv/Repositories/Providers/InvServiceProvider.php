@@ -83,5 +83,10 @@ class InvServiceProvider extends ServiceProvider
             'App\Inv\Repositories\Contracts\ReportInterface',
             'App\Inv\Repositories\Entities\Report\ReportsRepository'
         );
+
+        $this->app->bind(
+            'App\Inv\Repositories\Contracts\UcicUserInterface',
+            'App\Inv\Repositories\Entities\User\UcicUserRepository'
+        );
     }
 }

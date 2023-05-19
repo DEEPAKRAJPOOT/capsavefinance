@@ -4,6 +4,7 @@ namespace App\Libraries\Ui;
 use Helpers;
 use GuzzleHttp\Client;
 use GuzzleHttp\RequestOptions;
+use GuzzleHttp\Exception\RequestException;
 use Carbon\Carbon;
 
 class KarzaApi {
@@ -288,7 +289,7 @@ class KarzaApi {
             //$baseUrl = 'https://gst.karza.in'; //config('proin.karza_auth_api_url');
            // $apiKey = config('proin.karza_auth_api_key');
 
-            $api_url = config('proin.get_karza_suffix_url');;
+            $api_url = config('proin.get_karza_suffix_url');
             $baseUrl = config('proin.karza_auth_api_url');
             $apiKey = config('proin.karza_auth_api_key');
            // dd($api_url,$baseUrl, $apiKey);
@@ -377,4 +378,79 @@ class KarzaApi {
         }
     }
 
+     /**
+     * Search CKYC Request from Karza API
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function searchCKYCRequest($request){
+        try{
+
+            $api_url = config('proin.get_karza_ckyc_suffix_url').'/search';
+            $baseUrl = config('proin.karza_auth_api_url');
+            $apiKey = config('proin.karza_auth_api_key');
+            $options = [
+                'base_uri' => $baseUrl,
+                'json' => [
+                    'idType' => 'pan',
+                    'idValue'=> $request['idValue'],
+                    'consent' => 'Y',
+                    'cersaiResponseRequired' => false,
+                    "decryptedXmlRequired" => false,
+                    "getMultipleRecord" => 'Y'
+                   ],
+                'headers' => [
+                    'cache-control' => "no-cache",
+                    'Content-Type' => "application/json",
+                    'x-karza-key' => $apiKey  //env('KARZA_AUTHENTICATION_API_KEY')
+                ]
+            ];
+            $response = $this->client->post($api_url, $options);
+            $response = $response->getBody()->getContents();
+            return $response; 
+        } catch (RequestException $e) {
+            $res = $e->getResponse();
+            return $res->getBody()->getContents();
+        }
+    }
+
+     /**
+     * download CKYC Request from Karza API
+     *
+     * @return \Illuminate\Http\Response
+     */
+
+    public function downloadCKYCRequest($request){
+        try{
+            $api_url = config('proin.get_karza_ckyc_suffix_url').'/download';
+            $baseUrl = config('proin.karza_auth_api_url');
+            $apiKey = config('proin.karza_auth_api_key');
+            $options = [
+                'base_uri' => $baseUrl,
+                'json' => [
+                    'ckycId' => $request['ckycId'],
+                    'dob'=> $request['dob'],
+                    'birthYear'=> $request['birthYear'],
+                    'consent' => 'Y',
+                    'cersaiResponseRequired' => false,
+                    "decryptedXmlRequired" => false,
+                    "getMultipleRecord" => 'Y',
+                    "getMultipleImages"=>true
+                ],
+                'headers' => [
+                    'cache-control' => "no-cache",
+                    'Content-Type' => "application/json",
+                    'x-karza-key' => $apiKey  //env('KARZA_AUTHENTICATION_API_KEY')
+                ]
+            ];
+            $response = $this->client->post($api_url, $options);
+            $response = $response->getBody()->getContents();
+            return $response; 
+
+        } catch (RequestException $e) {
+            $res = $e->getResponse();
+            return $res->getBody()->getContents();
+        }
+
+    }
 }

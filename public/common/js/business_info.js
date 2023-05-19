@@ -18,6 +18,7 @@ function copyAddress(id,th){
 $(document).ready(function(){
 	$('.pan-verify').on('click',function(){
 		let pan_no = $('input[name=biz_pan_number]').val().trim();
+		let user_id = $('#userId').val().trim();
 		if(pan_no.length != 10){
 			$('input[name=biz_pan_number] +span').remove();
 			$('input[name=biz_pan_number]').after('<span class="text-danger error">Enter valid PAN Number</span>');
@@ -27,18 +28,20 @@ $(document).ready(function(){
 		$.ajax({
 			url: messages.biz_pan_to_gst_karza,//https://gst.karza.in/prod/v1/search
 			type: "POST",
-			data: {"pan": pan_no,"_token": messages.token},
+			data: {"pan": pan_no,"_token": messages.token, "userID":user_id},
 			dataType:'json',
 			error:function (xhr, status, errorThrown) {
 				$('.isloader').hide();
     			alert(errorThrown);
 			},
-			success: function(res){
-                          
+			success: function(res){ 
+				ucic_code = res.ucic_code; 
+				user_id = res.user_id;		  
 				res = res.response;
 				if(res == null){
 					$('.isloader').hide();
 				}else if(res['statusCode'] == 101){
+					$('#ucic_code').val(ucic_code);
 					$(".span_gst_text").hide();
 					$(".span_gst_select").show();
 					setUnsetError(0);
@@ -56,6 +59,7 @@ $(document).ready(function(){
 						$('input[name=is_gst_manual]').val('1');
 			    	}
 			    }else{
+					$('#ucic_code').val(ucic_code);
 					$(".span_gst_select").hide();
 					$(".span_gst_text").show();		
 					$("select[name='biz_cin']").hide();
@@ -64,6 +68,15 @@ $(document).ready(function(){
 					$('input[name=is_gst_manual]').val('1');			
 			    	replaceAlert('No GST associated with the entered PAN.', 'error');
 			    }
+				if (typeof messages !== 'undefined' && messages.hasOwnProperty('get_ucic_data') && messages.get_ucic_data !== '') {
+					if (!$.isEmptyObject(ucic_code)) {
+						console.log(ucic_code);
+						console.log(user_id);
+						console.log(messages.returnurl)
+						//alert(messages.returnurl);
+						getUcicCodeData(ucic_code,user_id,messages.returnurl);
+					}
+				}
 			    $('.isloader').hide();
 			  }
 		});
@@ -218,7 +231,9 @@ function checkValidation(){
 	unsetError('#product_type_3_tenor');	
 	unsetError('select[name=msme_type]');
 	unsetError('input[name=msme_no]');
-        
+	unsetError('input[name=email]');
+	unsetError('input[name=mobile]');
+	  
 	let flag = true;
 	let is_gst_manual = $('input[name=is_gst_manual]').val().trim();
 	let biz_pan_number = $('input[name=biz_pan_number]').val().trim();
@@ -263,6 +278,8 @@ function checkValidation(){
         let busi_pan_comm_date = $('input[name=busi_pan_comm_date]').val();
 	let msme_type = $('select[name=msme_type]').val();
 	let msme_number = $('input[name=msme_no]').val().trim();
+	let email = $('input[name=email]').val().trim();
+	let mobile = $('input[name=mobile]').val().trim();
 
 	if(biz_pan_number.length != 10){
 		setError('input[name=biz_pan_number]', 'Enter valid PAN Number');
@@ -420,6 +437,30 @@ function checkValidation(){
 		flag = false;
 	}
 
+	if (email.length == '') {
+		setError('input[name=email]', 'Enter Email Address');
+		flag = false;
+	} else if (emailExtention(email) == null) {
+		setError('input[name=email]', 'Please enter valid email');
+		flag = false;
+	} else if (mobile.length > 100) {
+		setError('input[name=email]', 'Email Address should not greater than 100 characters');
+		flag = false;
+	}
+
+	
+
+	if (mobile.length == '') {
+		setError('input[name=mobile]', 'Enter Mobile No');
+		flag = false;
+	} else if(mobile.length < 10) {
+		setError('input[name=mobile]', 'Mobile No should be 10 digits');
+		flag = false;
+	} else if (mobile.length > 10) {
+		setError('input[name=mobile]', 'Mobile No should not greater than 10 digits');
+		flag = false;
+	}
+
 	if(flag){
 		return true;
 	}else{
@@ -551,3 +592,34 @@ function handleIndustryChange(intdustval,subIndId, segmentId){
 		}
 	});
 };
+
+function emailExtention(value) {
+	return value.match(/^[a-zA-Z0-9_\.%\+\-]+@[a-zA-Z0-9\.\-]+\.[a-zA-Z]{2,}$/);
+}
+
+function getUcicCodeData(ucic_code,user_id, returnurl) {
+	if ($.isEmptyObject(ucic_code)) {
+		alert('Empty UCIC CODE');
+		return false;			
+	}
+	$('.isloader').show();
+	$.ajax({
+	  url: messages.get_ucic_data,
+	  type: "POST",
+	  dataType: 'json',
+	  data: {"ucic": ucic_code,"_token": messages.token, "user_id":user_id,"returnurl":returnurl},
+	  success: function(responseData) {
+	  if (responseData.status == 1){
+		$('form#business_information_form input[name=is_auto_populated_ucic_data]').val('1');
+			window.location.href = responseData.redirectUrl;
+		}else{
+			$('form#business_information_form input[name=is_auto_populated_ucic_data]').val('0');
+		}
+		$('.isloader').hide();
+	  },
+	  error: function(xhr, textStatus, errorThrown) {
+		$('.isloader').hide();
+		alert(errorThrown);
+	  }
+	});
+}

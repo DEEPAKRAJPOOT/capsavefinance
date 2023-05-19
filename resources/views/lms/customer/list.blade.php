@@ -22,13 +22,13 @@
     <div class="card">
         <div class="card-body">       
             <div class="row">
-                <div class="col-md-4">
+                <div class="col-md-5">
                     {!!
                     Form::text('search_keyword',
                     null,
                     [
                     'class' => 'form-control',
-                    'placeholder' => 'Search by First name, Last name and Email',
+                    'placeholder' => 'Search by Entity Name, Email and UCIC Code',
                     'id'=>'search_keyword'
                     ])
                     !!}
@@ -56,6 +56,7 @@
 	                                        <thead>
 	                                        	<tr role="row">                                                   
                                                     <th >Cust ID</th>       
+                                                    <th >UCIC Code</th>
                                                     <th >App ID</th>       
 		                                     		<th >Virtual ID</th>		
 		                                     		<th >Customer Detail</th>

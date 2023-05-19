@@ -379,7 +379,7 @@ class DocumentRepository implements DocumentInterface
             throw new BlankDataExceptions('No Data Found');
         }
         
-        return UserFile::find($FileId);;
+        return UserFile::find($FileId);
     }
     
     

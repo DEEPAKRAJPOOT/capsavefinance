@@ -202,6 +202,9 @@ try {
                 {
                     data: 'anchor_limit'
                 },
+                {
+                    data: 'program_type'
+                },
                 //{
                 //    data: 'reason'
                 //},
@@ -509,13 +512,15 @@ try {
                     anchor_limit: {
                         required: true,
                         notLessThan : "#utilized_amount",
+                        anchorLimitCheck: true
                         //validateReason : "#old_anchor_limit"
                     },                    
                     anchor_sub_limit: {
                         required: true,
                         lessThan: (!messages.is_fungible ? "#anchor_limit_re" : "#anchor_limit"),
                         notLessThan : "#utilized_amount",
-                        validateReason : "#old_anchor_sub_limit"
+                        validateReason : "#old_anchor_sub_limit",
+                        anchorSubLimitCheck: true,
                         // min: 1,
                         // number: true
                     },
@@ -757,6 +762,67 @@ try {
         $("#reject_btn").on('click', function(){            
             $("#is_reject").val("1");
         });
+
+        $.validator.addMethod('anchorLimitCheck', function (value, element, param) {
+            var totalAmnt = messages.total_limit;
+            // var subLimitAmnt = messages.sub_limit;
+            var subLimit = messages.utilized_limit;
+            var prgmId = messages.prgm_id;
+            var totalAnchorSubLimit = $("#anchor_sub_limit").val();
+            var totalSubLimit = totalAnchorSubLimit.replace(/,/g, "");
+            var subLimitAmnt = (+totalSubLimit) + (+subLimit);
+            // console.log(totalSubLimit,subLimitAmnt,subLimit);
+            var parent_prgm_id = messages.parent_prgm_id;
+            var modifyReason = messages.modify_reason;
+            var status = messages.prgm_status;
+            // if(prgmId == parent_prgm_id){
+            //     var utilizedLimit = messages.sub_limit;
+            // }else{
+            //     var utilizedLimit  = messages.utilized_limit;
+            // }
+            // alert(status);
+            var val = value.replace(/,/g, "");
+            // console.log(val,subLimitAmnt);
+            // var remaingAmnt = totalAmnt - utilizedLimit;
+            // console.log(val,subLimitAmnt);
+            // if(modifyReason != ''){
+                if(parseInt(val) < parseInt(subLimitAmnt) ){
+                    return false;
+                }else{
+                    return true;
+                }
+            // }
+            // return true
+        }, "Anchor Limit amount should not be less than utilized limit.");
+
+        $.validator.addMethod('anchorSubLimitCheck', function (value, element, param) {
+            // var totalAmnt = messages.total_limit;
+            var prgmId = messages.prgm_id;
+            var parent_prgm_id = messages.parent_prgm_id;
+            var isEdit = messages.is_edit;
+            // var utilizedLimitAmnt = messages.utilized_limit;
+            var totalAnchorLimit = $("#anchor_limit").val();
+            var totalLimit = totalAnchorLimit.replace(/,/g, "");
+            var totalLimitAmnt = parseInt(totalAnchorLimit);
+            var val = value.replace(/,/g, "");
+            // console.log(utilizedLimitAmnt);
+            if(prgmId == parent_prgm_id){
+                var utilizedLimit = messages.sub_limit;
+            }else{
+                var utilizedLimit  = messages.utilized_limit;
+            }
+
+            var remaingAmnt = totalLimit - utilizedLimit;
+            // console.log(totalLimit,utilizedLimit,remaingAmnt);
+            // if(prgmId == parent_prgm_id){
+                if(parseInt(val) > parseInt(remaingAmnt) ){
+                    return false;
+                }else{
+                    return true;
+                }
+            // }
+            // return true;
+        }, "Limit amount should not be more than anchor limit.");
     });
 } catch (e) {
     if (typeof console !== 'undefined') {

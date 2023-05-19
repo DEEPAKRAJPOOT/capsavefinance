@@ -457,4 +457,14 @@ class Program extends BaseModel {
     {
         return $this->hasMany('App\Inv\Repositories\Models\Program', 'parent_prgm_id', 'prgm_id');
     }
+
+    public static  function getActiveProgram($prgm_id)
+    {
+         return self::where(['prgm_id' => $prgm_id,'status' => 1])->first(); 
+    }
+
+    public static  function getAnchorTotalLimit($prgm_id)
+    {
+         return self::where(['prgm_id' => $prgm_id])->first(); 
+    }
 }

@@ -222,4 +222,30 @@ class BusinessAddress extends BaseModel
         $address = BusinessAddress::whereHas('activeFiAddressApp')->where('biz_id', $biz_id)->where('addr_1', '<>', null)->where('is_active', 1)->get();
         return $address;
     }
+
+    public static function ownaddress($biz_owner_id, $biz_id, $address_type)
+    {
+        $result =  self::select(
+            'biz_addr.addr_1 as Address',
+            'biz.user_id as Customer_id',
+            'biz_addr.city_name as City',
+            'biz_addr.biz_addr_id',
+            'mst_state.name as State',
+            'biz_addr.pin_code as Pincode',
+            'biz_addr.is_default',
+            'biz_addr.rcu_status',
+            'biz_addr.is_active'
+        )
+            ->join('mst_state', 'mst_state.id', '=', 'biz_addr.state_id')
+            ->join('biz', 'biz.biz_id', '=', 'biz_addr.biz_id')
+            ->where('biz_addr.biz_owner_id', '=', $biz_owner_id)
+            ->where('biz_addr.biz_id', $biz_id)
+            ->whereNotNull('addr_1')
+            ->whereNotNull('city_name')
+            ->whereNotNull('pin_code');
+            if($address_type != null){
+                $result->whereIn('biz_addr.address_type', $address_type);
+            }
+        return $result->first();
+    }
 }

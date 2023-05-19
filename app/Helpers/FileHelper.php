@@ -529,4 +529,38 @@ public function exportCsv($data=[],$columns=[],$fileName='',$extraDataArray=[])
       return $errorMessage[$errorMessageID];
     }
 
+    public function csvToArrayWithSeparator($filename = '', $delimiter = ',')
+    {
+      $respArray = [
+        'status' => 'success',
+        'message' => 'success',
+        'data' => [],
+      ];
+      try{
+        if (!file_exists($filename) || !is_readable($filename))
+          return false;
+
+        $header = null;
+        if (($handle = fopen($filename, 'r')) !== false)
+        {
+          $rows=1;
+          while (($row = fgetcsv($handle, 1000, $delimiter)) !== false)
+          {
+            $num = count($row);
+            if (!$header){
+              $header = $row;
+            }else{
+              $respArray['data'][] = array_combine($header, $row);
+            }
+            $rows++;
+          }
+          fclose($handle);
+        }
+      }catch(\Exception $e){
+        $respArray['data'] = [];
+        $respArray['status'] = 'fail';
+        $respArray['message'] = str_replace($filename, '', $e->getMessage());
+      }
+      return $respArray;
+    }
 }

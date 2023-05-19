@@ -59,7 +59,7 @@
                     @can('getAnalysis')
                      <a href="javascript:void(0)" class="btn btn-success btn-sm <?php echo $class_enable ?>">Get Analysis</a>
                      @endcan
-                  @endif  
+                  @endif   
                   </div> 
                   <div class="clearfix"></div>
                   <br/>
@@ -367,6 +367,7 @@
    appurl = '{{URL::route("getAnalysis") }}';
    process_url = '{{URL::route("process_banking_statement") }}';
    _token = "{{ csrf_token() }}";
+   checkBSAStatus = '{{URL::route("check_bsa_status") }}';
 </script>
 <script type="text/javascript">
     function maxPercent(input) {
@@ -412,18 +413,12 @@
                    $('#bank_doc_' + key).append('<small class="error" id="append_'+ key +'">'+ $errors[key] +'</small>');
                });
             }
-            if (result['status']) {
-               //window.open(result['value']['file_url'], '_blank');
-            } else if(result['status'] == 0){
-                 
-            }
 
             getAnalysis.removeClass('disabled').html('<i class="fa fa-refresh" aria-hidden="true"></i> Refresh');
             getAnalysis.attr('onclick', 'window.location.reload()').removeClass('getAnalysis');
             
          },
          error:function(error) {
-            // body...
             getAnalysis.removeAttr('onclick').addClass('getAnalysis').removeClass('disabled').text('Get Analysis');
          },
          complete: function() {
@@ -442,7 +437,6 @@
     $(document).on('click', '.process_stmt', function(argument) {
       var biz_perfios_id = $(this).attr('pending');
       getReport(biz_perfios_id);
-      //window.location.reload();
    })
 
     function getReport(biz_perfios_id) {
@@ -464,8 +458,6 @@
             $(".isloader").hide();
             if (result['status']) {
              window.open(result['value']['file_url'], '_blank');
-            }else if(result['status'] == 0){
-                 
             }
             processStmt.removeClass('disabled').html('<i class="fa fa-refresh" aria-hidden="true"></i> Refresh');
             processStmt.attr('onclick', 'window.location.reload()').removeClass('process_stmt');
@@ -508,6 +500,76 @@
           },
        })
     }
+   
+   async function checkBsaStatus(buttonType, retries = 30) {
+      const data = {appId, _token};
+      const processStmt = $('.process_stmt');
+      const getAnalysis = $('.getAnalysis');
+      try {
+         if (buttonType == 'process_button') {
+            processStmt.removeAttr('onclick').addClass('process_stmt').addClass('disabled').html('<i class="fa fa-spinner" aria-hidden="true"></i> Please wait...');
+         } else {
+            getAnalysis.removeAttr('onclick').addClass('getAnalysis').addClass('disabled').html('<i class="fa fa-spinner" aria-hidden="true"></i> Please wait...');
+         }
+         const response = await $.ajax({
+            url: checkBSAStatus,
+            type: 'POST',
+            data: data,
+            dataType: 'json'
+         });
+         if (response.status === 0) {
+            if (buttonType == 'process_button') {
+               processStmt.addClass('disabled').html('<i class="fa fa-spinner" aria-hidden="true"></i> Please wait...');
+            } else {
+               getAnalysis.addClass('disabled').html('<i class="fa fa-spinner" aria-hidden="true"></i> Please wait...');
+            }
+            if (retries > 0) {
+               await new Promise(resolve => setTimeout(resolve, 5000));
+               await checkBsaStatus(buttonType, retries - 1);
+            } else {
+               const errorMsg = "Maximum number of retries reached. Please check the status of your bank statement analysis.";
+               const html = '<div class="alert-danger alert" role="alert"> <span><i class="fa fa-bell fa-lg" aria-hidden="true"></i></span><button type="button" class="close" data-dismiss="alert" aria-label="Close"> <span aria-hidden="true">×</span> </button>'+errorMsg+'</div>';
+               $("#pullMsg").html(html);
+               $(".isloader").hide();
+               if (buttonType == 'process_button') {
+                  processStmt.removeAttr('onclick').addClass('process_stmt').removeClass('disabled').text('Process');
+               } else {
+                  getAnalysis.removeAttr('onclick').addClass('getAnalysis').removeClass('disabled').text('Get Analysis');
+               }
+            }
+         } else {
+            $(".isloader").hide();
+            if (response.status) {
+               if (response.response_status == 1){
+                  if (buttonType == 'process_button'){
+                     processStmt.removeClass('disabled').html('<i class="fa fa-refresh" aria-hidden="true"></i> Refresh');
+                     processStmt.attr('onclick', 'window.location.reload()').removeClass('process_stmt');
+                  }else {
+                     getAnalysis.removeClass('disabled').html('<i class="fa fa-refresh" aria-hidden="true"></i> Refresh');
+                     getAnalysis.attr('onclick', 'window.location.reload()').removeClass('getAnalysis');
+                  }
+                  window.open(response.value.file_url, '_blank');
+               }else{
+                  if (buttonType == 'process_button'){
+                     processStmt.removeAttr('onclick').addClass('process_stmt').removeClass('disabled').text('Process');
+                  }else {
+                     getAnalysis.removeAttr('onclick').addClass('getAnalysis').removeClass('disabled').text('Get Analysis');
+                  }
+               }
+            }
+         }
+      } catch (error) {
+         const errorMsg = "Error during AJAX call: " + error.statusText + " - " + error.status;
+         const html = '<div class="alert-danger alert" role="alert"> <span><i class="fa fa-bell fa-lg" aria-hidden="true"></i></span><button type="button" class="close" data-dismiss="alert" aria-label="Close"> <span aria-hidden="true">×</span> </button>'+errorMsg+'</div>';
+         $("#pullMsg").html(html);
+         $(".isloader").hide();
+         if (buttonType == 'process_button') {
+            processStmt.removeAttr('onclick').addClass('process_stmt').removeClass('disabled').text('Process');
+         } else {
+            getAnalysis.removeAttr('onclick').addClass('getAnalysis').removeClass('disabled').text('Get Analysis');
+         }
+      }
+}
 </script>
 <script>
       var ckeditorOptions =  {

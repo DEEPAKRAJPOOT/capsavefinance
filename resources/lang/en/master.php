@@ -274,6 +274,11 @@ return [
             'message1' => 'Thank you for signing up with us!',
             'message2' => 'We have sent you an verification link on your email ID. Please verify your email ID to complete your registration.'
         ],
+
+        'consentThanksPage' => [
+            'message1' => 'Thank you, Your OTP consent has been verified !',
+            'message2' => ' We appreciate your financial relationship with us. We are fetching your CKYC to make easy approval for you.'
+        ],
       
     //awards form lang file
         'awardsForm' => [

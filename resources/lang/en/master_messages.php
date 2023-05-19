@@ -37,5 +37,8 @@ return [
     'security_document_add_success' => 'Security Document Type added successfully',
     'security_document_edit_success' => 'Security Document Type updated successfully',    
     'borrower_limit_success' => 'Borrower Limit updated successfully',  
+    'group_add_success' => 'Group added successfully.',
+    'group_edit_success' => 'Group updated successfully.',
+    'group_approved_success' => 'Group approved successfully.',
 ];
 

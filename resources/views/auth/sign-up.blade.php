@@ -227,13 +227,15 @@ var messages={
                         email : $('#email').val(),
                         pan : $('#pan_no').val(),
                         anchor_id : $("#h_anchor_id").val(),
-                        validate : '0',
+                        validate : '1',
                         _token : messages.token
                     },
                     success: function(response){
                         if (response.validate == '0') {
                             $(".check_exist_user_pan").html(response.message);
-                        } else {
+                            $("#SaveUser").prop("disabled",true);
+                        } else if(response.status === true){
+                            $("#SaveUser").prop("disabled",false);
                             $(".check_exist_user_pan").html("");
                         }
                     }

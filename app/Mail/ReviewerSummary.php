@@ -20,6 +20,9 @@ use App\Inv\Repositories\Models\AppProgramOffer;
 use App\Inv\Repositories\Models\Business;
 use App\Inv\Repositories\Models\CamReviewSummRiskCmnt;
 use App\Inv\Repositories\Models\AppSecurityDoc;
+use App\Inv\Repositories\Models\Cam;
+use App\Inv\Repositories\Models\Master\NewGroup;
+
 use App\Inv\Repositories\Models\Application;
 
 class ReviewerSummary extends Mailable
@@ -82,7 +85,8 @@ class ReviewerSummary extends Mailable
         } 
         
         //Get PreOffer Docs
-        $appRepo = \App::make('App\Inv\Repositories\Contracts\ApplicationInterface');   
+        $appRepo = \App::make('App\Inv\Repositories\Contracts\ApplicationInterface');  
+        $user    = \App::make('App\Inv\Repositories\Contracts\UserInterface'); 
         $appProductIds = [];
         $appProducts = $appRepo->getApplicationProduct($appId);
         foreach($appProducts->products as $product){
@@ -149,7 +153,47 @@ class ReviewerSummary extends Mailable
             }
         }*/
 
+        //////group exp
+        $arrCamData = Cam::where('biz_id','=',$bizId)->where('app_id','=',$appId)->first();
+        if(!empty($arrCamData)){
+            $arrUserData = $user->find($arrCamData->updated_by, '');
+            $arrCamData->By_updated = "$arrUserData->f_name $arrUserData->l_name";
+        }
+        
+
+
+        if(isset($arrCamData['t_o_f_security_check'])){
+            $arrCamData['t_o_f_security_check'] = explode(',', $arrCamData['t_o_f_security_check']);
+        }
+        $arrGroupCompany = array();
+        if(isset($appId) && is_numeric($appId)){
+         
+          $appGrpDetailsAppId = $appId;
+          $groupId = $appRepo->getGroupIdByAppId($appGrpDetailsAppId);
+
+          $isAppApprovedBy = \Helpers::isAppApprByAuthorityForGroup($appGrpDetailsAppId);
+          $resultData = \Helpers::getGroupBorrowers($groupId, (int) $appGrpDetailsAppId, $isAppApprovedBy);
+          $appGrpBorrowers = $resultData['results'];
+          $appGrpBorrowers = json_decode(json_encode($appGrpBorrowers), true);
+          
+
+          if (count($appGrpBorrowers) && $groupId) {
+            $group = NewGroup::find($groupId);
+            foreach($appGrpBorrowers as $appGrpBorrower) {
+              $appGrpBorrower['group_name'] = $group->group_name;
+              $arrGroupCompany[] = $appGrpBorrower;
+            }
+            $arrCamData->total_exposure_amount = round($resultData['totalExposureAmt'], 2);
+          }
+          
+        }
+
+
+        /////group expo end
+
         $email = $this->view('emails.reviewersummary.reviewersummarymail', [
+            'arrCamData'=> $arrCamData,
+            'arrGroupCompany' => $arrGroupCompany,
             'limitOfferData'=> $limitOfferData,
             'reviewerSummaryData'=> $reviewerSummaryData,
             'offerPTPQ' => $offerPTPQ,

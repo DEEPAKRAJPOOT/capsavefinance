@@ -47,6 +47,9 @@ use App\Inv\Repositories\Models\AppSecurityDoc;
 use App\Inv\Repositories\Models\TallyFactVoucher;
 use App\Inv\Repositories\Models\Lms\Transactions;
 use App\Inv\Repositories\Models\TransFactVoucher;
+use App\Inv\Repositories\Models\AppGroupDetail;
+use App\Inv\Repositories\Models\UcicUser;
+use App\Inv\Repositories\Models\UcicUserUcic;
 
 class Helper extends PaypalHelper
 {
@@ -1060,7 +1063,7 @@ class Helper extends PaypalHelper
                 return 0;
             }            
             $roleData = self::getUserRole();
-            if (isset($roleData[0]) && $roleData[0]->is_superadmin == 1) return 1;            
+            if ((isset($roleData[0]) && $roleData[0]->is_superadmin == 1) || isset($roleData[0]) && $roleData[0]->is_allapp_access == '1') return 1;            
             
             if (isset($roleData[0]) && $roleData[0]->id == 12) {
                 $where=[];
@@ -1469,6 +1472,9 @@ class Helper extends PaypalHelper
         } else if ($type == 'PAYMENTID') {
             $prefix = config('common.idprefix.'.$type);
             $formatedId = $prefix . sprintf('%09d', $idValue);            
+        }else if ($type == 'UCIC') {
+            $prefix = config('common.idprefix.'.$type);
+            $formatedId = $prefix . sprintf('%07d', $idValue);
         }
         return $formatedId;
     }    
@@ -2245,6 +2251,96 @@ class Helper extends PaypalHelper
         return $inputArr;
     }
 
+    public static function ckycUploadDocument($attributes, $userInfo){
+
+        if(isset($attributes['imageInfo'])){
+            $imageType = $attributes['type'];
+            $extension = $attributes['imageInfo']['imageExtension'];
+            $base64_str = $attributes['imageInfo']['image'];//substr($attributes['imageInfo']['image'], strpos($attributes['imageInfo']['image'], ",")+1);
+        }else{
+            $extension = $attributes['imageExtension'];
+            $imageType = $attributes['imageType'];
+            $base64_str = $attributes['image'];//substr($attributes['image'], strpos($attributes['image'], ",")+1);
+        }
+        $imageDetails['file_type'] = $imageType;
+        if(isset($userInfo['biz_owner_id'])){
+            $user_img_prefix = 'ckyc_'.$userInfo['user_id'].'_'.$userInfo['biz_owner_id'];
+        }else{
+            $user_img_prefix = 'ckyc_'.$userInfo['user_id'];
+        }
+        $img_name =  $user_img_prefix.'_'.time().rand(10,100).'.'.$extension;
+        
+        
+        $image = base64_decode($base64_str);
+        if (!Storage::disk('s3')->exists('Development/ckycdoc/business/identityDetails/'.$userInfo['user_id'])) {
+            Storage::disk('s3')->makeDirectory('Development/ckycdoc/business/identityDetails/'.$userInfo['user_id'], 0777, true);
+        }
+        $path = Storage::disk('s3')->put('Development/ckycdoc/business/identityDetails/'.$userInfo['user_id'] . '/'.$img_name, $image, null);
+        $inputArr['file_path'] = 'Development/ckycdoc/business/identityDetails/'.$userInfo['user_id'] . '/'.$img_name;
+        $inputArr['file_type'] = $imageType;
+        $inputArr['file_name'] = $img_name;
+        $inputArr['file_size'] = 0;
+        $inputArr['file_encp_key'] =  md5('2');
+        $inputArr['created_by'] = 1;
+        $inputArr['updated_by'] = 1;
+        
+        return $inputArr;
+    }
+
+    public static function ckycJsonResponseAsDocument($response,$userInfo){
+
+        if(isset($userInfo['biz_owner_id'])){
+            $user_img_prefix = 'ckyc_res_'.$userInfo['user_id'].'_'.$userInfo['biz_owner_id'];
+        }else{
+            $user_img_prefix = 'ckyc_res_'.$userInfo['user_id'];
+        }
+        $fileName =  $user_img_prefix.'_'.time().rand(10,100).'.json';
+        if (!Storage::exists('Development/ckycdoc/ckyc-response/'.$userInfo['user_id'])) {
+           Storage::makeDirectory('Development/ckycdoc/ckyc-response/'.$userInfo['user_id'], 0777, true);
+        }
+
+        $uploaded = Storage::disk('s3')->put('Development/ckycdoc/ckyc-response/'. $userInfo['user_id'] .'/' . $fileName, $response);
+        if($uploaded){
+            $inputArr['file_path'] = 'Development/ckycdoc/ckyc-response/'. $userInfo['user_id'] .'/' . $fileName;
+        }
+        $inputArr['file_type'] = 'Json';
+        $inputArr['file_name'] = $fileName;
+        $inputArr['file_size'] = 0;
+        $inputArr['file_encp_key'] =  md5('2');
+        $inputArr['created_by'] = 1;
+        $inputArr['updated_by'] = 1;
+
+        return $inputArr;
+    }
+
+    /*public static function ckycdetailsUploadDocument($attributes, $userInfo){
+
+       
+        $extension = $attributes['imageExtension'];
+        if(isset($userInfo['biz_owner_id'])){
+            $user_img_prefix = 'ckyc_'.$userInfo['user_id'].'_'.$userInfo['biz_owner_id'];
+        }else{
+            $user_img_prefix = 'ckyc_'.$userInfo['user_id'];
+        }
+        $img_name =  $user_img_prefix.'_'.time().'.'.$extension;
+        $base64_str = substr($attributes['image'], strpos($attributes['image'], ",")+1);
+        $image = base64_decode($base64_str);
+        if (!Storage::disk('s3')->exists('/Development/ckycdoc/business/identityDetails/'.$userInfo['user_id'])) {
+            Storage::disk('s3')->makeDirectory('/Development/ckycdoc/business/identityDetails/'.$userInfo['user_id'], 0777, true);
+        }
+        $path = Storage::disk('public')->put('/Development/ckycdoc/business/identityDetails/'.$userInfo['user_id'] . '/'.$img_name, $image, null);
+        $inputArr['file_path'] = '/Development/ckycdoc/business/identityDetails/'.$userInfo['user_id'] . '/'.$img_name;
+        $inputArr['file_type'] = $attributes['imageType'];
+        $inputArr['file_name'] = $img_name;
+        $inputArr['file_size'] = 0;
+        $inputArr['file_encp_key'] =  md5('2');
+        $inputArr['created_by'] = 1;
+        $inputArr['updated_by'] = 1;
+
+        return $inputArr;
+
+    }*/
+
     public static function getCompanyBankAccList()
     {
         $bank_acc = UserBankAccount::getCompanyBankAccList();
@@ -2898,5 +2994,505 @@ class Helper extends PaypalHelper
 
     public static function getTransfactVoucherNumber($trans_id){
         return TransFactVoucher::getTransFactVoucher($trans_id);
+    }
+
+    public static function uploadUCICFile($attributes, $ucicId)
+    {
+        $inputArr = [];
+        if(!empty($attributes['doc_file'])) {
+            if ($attributes['doc_file']) {
+                if (!Storage::exists('/public/ucic/' . $ucicId)) {
+                    Storage::makeDirectory('/public/ucic/' . $ucicId, 0777, true);
+                }
+                $path = Storage::disk('public')->put('/ucic/' . $ucicId, $attributes['doc_file'], null);
+                $inputArr['file_path'] = $path;
+            }
+        }
+        $inputArr['file_type'] = !empty($attributes['doc_file']) ? $attributes['doc_file']->getClientMimeType() : '';
+        $inputArr['file_name'] = !empty($attributes['doc_file']) ? $attributes['doc_file']->getClientOriginalName() : '';
+        $inputArr['file_size'] = !empty($attributes['doc_file']) ? $attributes['doc_file']->getClientSize() : '';
+        $inputArr['file_encp_key'] =  md5('2');
+        $inputArr['created_by'] = 1;
+        $inputArr['updated_by'] = 1;
+
+        return $inputArr;
+    }
+    
+    public static function generateGroupCode($group_id)
+    {
+        $groupId = sprintf('%07d', $group_id);
+        $groupCode = 'GRP'.$groupId;
+        return $groupCode;
+    }
+    
+    public static function isAppApprByAuthorityForGroup($app_id)
+    {
+        $app = Application::find($app_id);
+        $isAppApproved = false;
+        //After Application Approval
+        if(in_array($app->curr_status_id, [ 21,22,25,50,51,48 ])){
+            $isAppApproved = true;
+        }
+
+        //Before Application Approval
+        elseif(in_array($app->curr_status_id, [ 49,20,56,55,23 ])){
+            $isAppApproved = false;
+        }
+
+        //Exception Case
+        elseif(in_array($app->curr_status_id, [ 43,44,45,46 ])){
+            $isAppApproved = true;
+        }
+
+        return $isAppApproved;
+    }
+
+    public static function saveAppGroupDetailData($arrData)
+    {
+        if(isset($arrData['group']))
+        {
+            $appId = (int) $arrData['app_id'];
+            $status = 0;
+            foreach($arrData['group'] as $key => $groupData) {
+                $biz = Business::find($groupData['borrower']);
+                $inputArr = array(
+                    'app_id' => $appId,
+                    'biz_app_id' => $groupData['biz_app_id'],
+                    'biz_id' => $groupData['borrower'],
+                    'borrower' => $biz->biz_entity_name,
+                    'sanction' => str_replace(',', '',$groupData['sanction']) ?? 0,
+                    'outstanding' => str_replace(',', '',$groupData['outstanding']) ?? 0,
+                    'proposed' => str_replace(',', '',$groupData['proposed']) ?? 0,
+                    'group_id' => $arrData['group_id'],
+                    'status' => $status,
+                    'product_id ' => $groupData['product_type'],
+                    'ucic_id' => $groupData['ucic_id'],
+                );
+                $inputArr['final_sanction'] = $inputArr['sanction'];
+                $inputArr['final_outstanding'] = $inputArr['outstanding'];
+
+                UcicUserUcic::where('app_id',$appId)->update(['group_id' => $arrData['group_id']]);
+                AppGroupDetail::updateOrcreate(['app_id' => $appId, 'biz_app_id' => $groupData['biz_app_id'], 'product_id' => $groupData['product_type']], $inputArr);
+            }
+            AppGroupDetail::where('app_id', $appId)->whereNotIn('group_id', [$arrData['group_id']])->delete();
+        }
+    }
+
+    public static function saveGroupDetailsToUcic($userId, $appId, $groupId)
+    {
+        $ucicData = UcicUser::where(['user_id' => $userId])->first();
+        if ($ucicData && $groupId) {
+            $ucicData->update([
+                'group_id' => $groupId,
+                'updated_info_src' => 1
+            ]);
+        }
+    }
+        
+    public static function updateIdNoToUcic($ucicData, $ownerId, $key, $data, $appId)
+    {
+        $ucicManagementData = $ucicData && $ucicData->management_info ? json_decode($ucicData->management_info, true) : [];
+        if (!$ucicManagementData) {
+            $ucicManagementData['document_upload'][$ownerId][$key]['id_no'] = $data['id_no'];
+            $ucicManagementData['document_upload'][$ownerId][$key]['is_verify'] = true;
+            $ucicManagementData['document_upload'][$ownerId][$key]['biz_api_id'] = $data['biz_api_id'];
+            $ucicManagementData['document_upload'][$ownerId][$key]['biz_api_log_id'] = $data['biz_api_log_id'] ?? null;
+        }else {
+            $documents = $ucicManagementData['document_upload'] ?? [];
+            $documents = isset($documents[$ownerId]) ? $documents[$ownerId] : [];
+            $documentData = isset($documents[$key]) ? $documents[$key] : [];
+            $documentData['id_no'] = $data['id_no'];
+            $documentData['is_verify'] = true;
+            $documentData['biz_api_id'] = $data['biz_api_id'];
+            $documents[$key] = $documentData;
+            $ucicManagementData['document_upload'][$ownerId] = $documents;
+        }
+
+        if ($ucicData) {
+            $ucicData->update([
+                'management_info' => json_encode($ucicManagementData)
+            ]);
+        }
+    }
+    
+    public static function updateOrDeleteDocFileToUcic($ucicData, $ownerId, $key, $fileId, $filePath, $appId, $source, $update = true, $delete = false)
+    {
+        $ucicManagementData = json_decode($ucicData->management_info, true);
+        if (!$ucicManagementData) {
+            $ucicManagementData['document_upload'][$ownerId][$key]['is_ovd_enabled'] = $update && !$delete ? 1 : ((!$update && $delete) ? 0 : 0);
+            $ucicManagementData['document_upload'][$ownerId][$key]['file']['id'] = $update && !$delete ? $fileId : ((!$update && $delete) ? null : null);
+            $ucicManagementData['document_upload'][$ownerId][$key]['file']['path'] = $update && !$delete ? $filePath : ((!$update && $delete) ? null : null);
+        }else{
+            $doc_id_no = ['pan_card' => 2, 'driving_license' => 31, 'voter_id' => 30, 'passport' => 32, 'photo' => 22, 'aadhar_card' => 34, 'telephone_bill' => 38, 'electricity_bill' => 37];
+            $documents = $ucicManagementData['document_upload'] ?? [];
+            $documents = $documents[$ownerId] ?? [];
+            $documentData = $documents[$key] ?? [];
+            $documentData['is_ovd_enabled'] = $update && !$delete ? 1 : ((!$update && $delete) ? 0 : 0);
+            $documentData['file']['id'] = $update && !$delete ? $fileId : ((!$update && $delete) ? null : null);
+            $documentData['file']['path'] = $update && !$delete ? $filePath : ((!$update && $delete) ? null : null);
+            // $documentData['id_no'] = null;
+            $documentData['doc_id'] = $doc_id_no[$key];
+            $documents[$key] = $documentData;
+            $ucicManagementData['document_upload'][$ownerId] = $documents;
+        }
+        $ucicData->update([
+            'management_info' => json_encode($ucicManagementData)
+        ]);
+    }
+
+    public static function makeManagementInfoDocumentArrayData($ownersData)
+    {
+        $ownersArrayData = [];        
+        foreach($ownersData as $ownerData)
+        {
+            $ownersArrayData["document_upload"][$ownerData->biz_owner_id] = self::setManagementInfoDocumentData($ownerData);
+        }
+        return $ownersArrayData;
+    }
+
+    public static function setManagementInfoDocumentData($owner)
+    {
+        $docData = [];
+        if ($owner->pan_card && !isset($docData['pan_card']['id_no'])) {
+            $docData['pan_card']['id_no'] = $owner->pan_card;
+            $docData['pan_card']['is_verify'] = false;
+        }
+        if ($owner->voter_id && !isset($docData['voter_id']['id_no'])) {
+            $docData['voter_id']['id_no'] = $owner->voter_id;
+            $docData['voter_id']['is_verify'] = false;
+        }
+        if ($owner->driving_license && !isset($docData['driving_license']['id_no'])) {
+            $docData['driving_license']['id_no'] = $owner->driving_license;
+            $docData['driving_license']['is_verify'] = false;
+        }
+        if ($owner->passport && !isset($docData['passport']['id_no'])) {
+            $docData['passport']['id_no'] = $owner->passport;
+            $docData['passport']['is_verify'] = false;
+        }
+
+        foreach ($owner->document as $document) {
+            switch ($document->doc_id) {
+                case 2:
+                    $docData['pan_card'] = self::setDocFileData($document);
+                    $docData['pan_card']['id_no'] = $docData['pan_card']['id_no'] ?? null;
+                    $docData['pan_card']['doc_id'] = 2;
+                break;
+                case 31:
+                    $docData['driving_license'] = self::setDocFileData($document);
+                    $docData['driving_license']['id_no'] = $docData['driving_license']['id_no'] ?? null;
+                    $docData['driving_license']['doc_id'] = 31;
+                break;
+                case 30:
+                    $docData['voter_id'] = self::setDocFileData($document);
+                    $docData['voter_id']['id_no'] = $docData['voter_id']['id_no'] ?? null;
+                    $docData['voter_id']['doc_id'] = 30;
+                break;
+                case 32:
+                    $docData['passport'] = self::setDocFileData($document);
+                    $docData['passport']['id_no'] = $docData['passport']['id_no'] ?? null;
+                    $docData['passport']['doc_id'] = 32;
+                break;
+                case 22:
+                    $docData['photo'] = self::setDocFileData($document);
+                    $docData['photo']['doc_id'] = 22;
+                break;
+                case 34:
+                    $docData['aadhar_card'] = self::setDocFileData($document);
+                    $docData['aadhar_card']['doc_id'] = 34;
+                break;
+                case 38:
+                    $docData['telephone_bill'] = self::setDocFileData($document);
+                    $docData['telephone_bill']['doc_id'] = 38;
+                break;
+                case 37:
+                    $docData['electricity_bill'] = self::setDocFileData($document);
+                    $docData['electricity_bill']['doc_id'] = 37;
+                break;
+
+                default:
+                    break;
+            }
+        }
+
+        foreach ($owner->businessApi as $bizApi) {
+            $docIdNo = $bizApi->karza ? (json_decode($bizApi->karza->req_file, true)['requestId'] ?? "") : "";
+            switch ($bizApi->type) {
+                case 3:
+                    $docData['pan_card']['biz_api_id'] = $bizApi->biz_api_id ?? null; 
+                    $docData['pan_card']['id_no'] = isset($docData['pan_card']['id_no']) && $docIdNo == $docData['pan_card']['id_no'] ? $docData['pan_card']['id_no'] : $docIdNo;
+                    $docData['pan_card']['is_verify'] = isset($docData['pan_card']['id_no']) && $docIdNo == $docData['pan_card']['id_no'] ? true : true;
+                    break;
+                case 4:
+                    $docData['voter_id']['biz_api_id'] = $bizApi->biz_api_id ?? null;
+                    $docData['voter_id']['id_no'] = isset($docData['voter_id']['id_no']) && $docIdNo == $docData['voter_id']['id_no'] ? $docData['voter_id']['id_no'] : $docIdNo;
+                    $docData['voter_id']['is_verify'] = isset($docData['voter_id']['id_no']) && $docIdNo == $docData['voter_id']['id_no'] ? true : true;
+                    break;
+                case 5:
+                    $docData['driving_license']['biz_api_id'] = $bizApi->biz_api_id ?? null;
+                    $docData['driving_license']['id_no'] = isset($docData['driving_license']['id_no']) && $docIdNo == $docData['driving_license']['id_no'] ? $docData['driving_license']['id_no'] : $docIdNo;
+                    $docData['driving_license']['is_verify'] = isset($docData['driving_license']['id_no']) && $docIdNo == $docData['driving_license']['id_no'] ? true : true;
+                    break;
+                case 6:
+                    $docData['passport']['biz_api_id'] = $bizApi->biz_api_id ?? null;
+                    $docData['passport']['id_no'] = isset($docData['passport']['id_no']) && $docIdNo == $docData['passport']['id_no'] ? $docData['passport']['id_no'] : $docIdNo;
+                    $docData['passport']['is_verify'] = isset($docData['passport']['id_no']) && $docIdNo == $docData['passport']['id_no'] ? true : true;
+                    break;    
+                default:
+                    break;
+            }
+        }
+        
+        return $docData;
+    }
+
+    public static function setDocFileData($document)
+    {
+        $docFileData["file"]['id'] = $document->userFile->file_id && $document->is_ovd_enabled == 1 ? $document->userFile->file_id : null;
+        $docFileData["file"]['path'] = $document->userFile->file_path && $document->is_ovd_enabled == 1 ? Storage::url($document->userFile->file_path) : null;
+        $docFileData["is_ovd_enabled"] = $document->is_ovd_enabled ?? 0;
+        return $docFileData;
+    }
+
+    public static function approvalStatusOfAppForGroupExpoInArray()
+    {
+        $approvedStatus = [
+                            config('common.mst_status_id.OFFER_LIMIT_APPROVED'),
+                            config('common.mst_status_id.OFFER_ACCEPTED'),
+                            config('common.mst_status_id.SANCTION_LETTER_GENERATED'),
+                            config('common.mst_status_id.APP_SANCTIONED')
+                        ];
+        return $approvedStatus;
+    }
+
+    public static function getGroupBorrowers($groupId, $appId, $isAppApprovedBy = true)
+    {
+        $appData = Application::getAppData($appId);
+
+        if($isAppApprovedBy){
+            $results = (array) DB::select('SELECT app_group_detail_id, borrower, product_id, biz_id, biz_app_id, sanction, outstanding, proposed, ucic_id FROM rta_app_group_detail where app_id = ?',[$appId]);
+        }else {
+            $results = (array) DB::select('call get_group_borrower_details(?)',array($groupId));
+        }
+
+        $resultData = self::modifyResultData($results, $appId, $groupId, $isAppApprovedBy);
+        
+        $totalExposureAmt = $resultData['totalExposureAmt'];
+        $groupSaveStatus = $resultData['groupSaveStatus'];
+
+        unset($resultData['totalExposureAmt']);
+        unset($resultData['groupSaveStatus']);
+        
+        return ['results' => $results, 'totalExposureAmt' => $totalExposureAmt, 'groupSaveStatus' => $groupSaveStatus];
+    }
+
+    public static function modifyResultData(&$resultData, $appId, $groupId, $isAppApprovedBy)
+    {
+        $groupSaveStatus = true;
+        $appData = Application::getAppData($appId);
+        $ucicUserId = $appData->ucicUserUcic->ucic_id ?? null;
+        $appGroupData = AppGroupDetail::where('app_id', $appId)->get();
+        $productIds = $appData->appProducts()->pluck('product_id')->toArray() ?? [];
+        
+        $currentAppGroup = [];
+        if(!$isAppApprovedBy){      
+            // Pre-filled Data 
+            if(count($resultData) > 0){
+                foreach ($resultData as $key => $data) {
+                    $resultData[$key]->proposed = 0;
+                    $resultData[$key]->app_id = $appId;
+                    $resultData[$key]->user_id = $data->user_id ?? $appData->user_id ?? NULL;
+                    $resultData[$key]->ucic_id = $data->ucic_id ?? $ucicUserId;
+                    $resultData[$key]->editable = false;
+                    /**
+                     * 1 => Supply Chain
+                     * 2 => Term Loan
+                     * 3 => Leasing
+                     */
+                    if(in_array($data->product_id, [2,3])){
+                        $resultData[$key]->outstanding = 0;
+                        // Get User filled data for current application
+                        $apgDataOutstanding = $appGroupData->where('product_id',$data->product_id)->where('ucic_id',$data->ucic_id);
+                        
+                        if($apgDataOutstanding->count() > 0){
+                            $resultData[$key]->outstanding = $apgDataOutstanding->sum('outstanding');;
+                        }else{
+                            // Get auto filled data baised on latest application data
+                            $prefillOutstanding = AppGroupDetail::where('product_id',$data->product_id)->where('ucic_id',$data->ucic_id)->where('is_latest',1)->sum('outstanding');
+                            $resultData[$key]->outstanding = $prefillOutstanding;
+                        }
+                    }
+
+                    if($data->ucic_id == $ucicUserId && in_array($data->product_id,$productIds)){
+                        $resultData[$key]->editable = true;
+                        $currentAppGroup[$data->product_id]  = $resultData[$key];
+                        unset($resultData[$key]);
+                        continue;
+                    }
+                }
+            }
+
+            // accending sort by borrower
+            if(count($resultData) > 0){
+                usort($resultData, function ($data1, $data2) {
+                    return $data1->borrower <=> $data2->borrower;
+                });
+            }else{
+                $resultData = [];
+            }
+
+            
+            if(count($productIds)) {
+                rsort($productIds);
+                foreach($productIds as $key => $productId) {
+                    $cagd = $appGroupData->where('product_id',$productId)->where('ucic_id',$ucicUserId)->first();
+                    if(isset($currentAppGroup[$productId])){
+                        $currentAppGroup[$productId]->proposed =  $cagd->proposed ?? null;
+                        $object = $currentAppGroup[$productId];
+                    }else{
+                        $newArray = [
+                            "borrower" => $cagd->borrower ?? $appData->business->biz_entity_name,
+                            "product_id" => $productId,
+                            "biz_app_id" => $appId,
+                            "biz_id" => $cagd->biz_id ?? $appData->biz_id,
+                            "sanction" => $cagd->sanction ?? null,
+                            "outstanding" => $cagd->outstanding ?? null,
+                            "proposed" => $cagd->proposed ?? null,
+                            "app_id" => $appId,
+                            "group_id" => $groupId,
+                            "user_id" => $appData->user_id,
+                            "ucic_id" => $ucicUserId,
+                            "editable" => true
+                        ];
+                        $object = (object) $newArray;
+                    }
+                    array_unshift($resultData, $object);
+                }
+            }
+        }
+
+        $totalExposureAmt = 0;
+        foreach($resultData as $key => $result)
+        {
+            if($isAppApprovedBy){ 
+                $resultData[$key]->editable = false;
+            }
+            switch ($result->product_id) {
+                case 1: // supply chain
+                    $totalExposureAmt += ($result->sanction ?? 0) + ($result->proposed ?? 0);
+                    break;
+                case 2: // term loan
+                    $totalExposureAmt += ($result->outstanding ?? 0) + ($result->proposed ?? 0);
+                    break;
+                case 3: // leasing
+                    $totalExposureAmt += ($result->outstanding ?? 0) + ($result->proposed ?? 0);
+                    break;
+            }
+        }
+
+        return ['groupSaveStatus' => $groupSaveStatus, 'totalExposureAmt' => $totalExposureAmt];
+    }
+
+    public static function approveAppGroupDetails($groupId, $appId)
+    {
+        $productIds = AppProgramLimit::whereHas('offer',function($query){
+            $query->where('is_approve',1)->where('is_active','1');
+        })->where('app_id',$appId)->pluck('product_id')->toArray();
+
+        AppGroupDetail::where('group_id',$groupId)->where('app_id',$appId)->whereColumn('app_id','biz_app_id')->whereNotIn('product_id',$productIds)->delete();
+        AppGroupDetail::where('group_id',$groupId)->where('app_id',$appId)->update(['is_latest' => 1,'status' => 1, 'freezed_at' => Carbon::now()->format('Y-m-d H:i:s')]);
+        AppGroupDetail::where('group_id',$groupId)->where('app_id','<>',$appId)->update(['is_latest' => 0]);
+    }
+
+    public static function changeGroupLatestApp($appId,$groupId = NULL){
+        try {
+            if(is_null($groupId)){
+                $groupId = AppGroupDetail::where('app_id', $appId)->limit(1)->value('group_id'); 
+            }
+            $previousAppId = AppGroupDetail::where('group_id',$groupId)->where('app_id','<>',$appId)->whereHas('app',function($query){
+                $query->whereIn('curr_status_id',[21,22,25,48,50,51]);
+            })->orderBy('freezed_at','desc')->limit(1)->value('app_id');
+            if($previousAppId){
+                AppGroupDetail::where('app_id', $previousAppId)->update(['is_latest'=>1]);
+                AppGroupDetail::where('app_id', $appId)->update(['is_latest'=>0]);
+            }
+            return 1;
+        } catch (\Throwable $th) {
+            throw $th;
+        }
+    }
+
+    public static function unApproveAppGroupDetails($appId)
+    {
+        self::changeGroupLatestApp($appId);
+        AppGroupDetail::where('app_id', $appId)->delete();
+    }
+    
+    public static function getGroupAppList($groupId)
+    {
+        $groupUcicData = (array) \DB::select('call get_group_borrower_details(?)',array($groupId));
+        foreach ($groupUcicData as $key => $data) {
+            /**
+             * 1 => Supply Chain
+             * 2 => Term Loan
+             * 3 => Leasing
+             */
+            if(in_array($data->product_id, [2,3])){
+                $groupUcicData[$key]->outstanding = 0;
+                $apgDataOutstanding = AppGroupDetail::where('product_id',$data->product_id)->where('ucic_id',$data->ucic_id)->where('is_latest',1)->sum('outstanding');
+                // Get auto filled data baised on latest application data
+                $groupUcicData[$key]->outstanding = $apgDataOutstanding;
+            }
+        }
+        
+        return $groupUcicData;
+    }    
+
+    public static function getuciciCode($appidId)
+    {
+        $UcicCodeData = \DB::table('user_ucic')
+                    ->select('user_ucic.ucic_code','user_ucic.user_ucic_id','user_ucic.app_id','user_ucic.business_info')
+                    ->from('user_ucic')
+                    ->join('user_ucic_user', 'user_ucic_user.ucic_id', '=', 'user_ucic.user_ucic_id')
+                    ->where('user_ucic_user.app_id', $appidId)
+                    ->first();
+        return $UcicCodeData;
+    }
+
+    public static function getucicCode($MaxUcicnumber)
+    {
+        $export = explode('UCC',$MaxUcicnumber);
+        return $export[1]+1;
+    }
+
+    public static function convertToMillions($amount) {
+        if(is_numeric($amount)) {
+            $result = $amount / 1000000;
+            $result = (floor($result * 100) / 100);    
+        }else{
+            $result = 0;
+        }
+        return sprintf("%.2f", $result);
+    }
+
+    public static function getUcicApp($ucicCode)
+    {
+        $ucicData = UcicUser::getUcicApp($ucicCode);
+        return $ucicData;
+    }
+
+    public static function getuciciCodeByPan($panNo)
+    {
+        $UcicCodeData = \DB::table('user_ucic')
+                    ->select('user_ucic.ucic_code','user_ucic.user_ucic_id','user_ucic.app_id')
+                    ->from('user_ucic')
+                    ->where('user_ucic.pan_no', $panNo)
+                    ->first();
+        return $UcicCodeData;
+    }
+   
+    public static function getAnchorDetails($userId){
+        $anchId = Anchor::where('sales_user_id',$userId)->get('anchor_id');
+        return $anchId;
+        
     }
 }

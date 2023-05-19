@@ -39,7 +39,10 @@ use App\Inv\Repositories\Models\Master\Voucher;
 use App\Inv\Repositories\Models\Master\LocationType;
 use App\Inv\Repositories\Models\Master\SecurityDocument;
 use App\Inv\Repositories\Models\Master\Group;
-
+use App\Inv\Repositories\Models\Master\NewGroup;
+use App\Inv\Repositories\Models\Master\MakerChecker;
+use App\Inv\Repositories\Models\UcicUser;
+use App\Inv\Repositories\Models\AppGroupDetail;
 
 /**
  * 
@@ -1023,5 +1026,74 @@ class MasterRepository extends BaseRepositories implements MasterInterface
 
     public function getAllActiveGroup(){
         return Group::getAllActiveGroup();
+    }
+    /**
+     * Get All group 
+     * 
+     * @return type
+     */
+    public function getAllNewGroup() 
+    {
+        return NewGroup::getAllGroup();
+    }
+
+    /**
+     * Check unique group name
+     * 
+     * @param array $attributes
+     * @param array $whereCond
+     * @return type
+     */
+    public function checkGroupName($groupName, $groupId)
+    {
+        return NewGroup::checkGroupName($groupName, $groupId);
+    }
+
+    /**
+     * Create and update group
+     * 
+     * @param array $attributes
+     * @param int $id
+     * @return type
+     */
+    public function updateOrCreateNewGroup($attributes, $id = null) 
+    {
+        return NewGroup::updateOrCreateGroup($attributes, (int) $id);
+    }
+
+    /**
+     * Get group By Id
+     * 
+     * @param int $id
+     * @return type
+     */
+    public function getNewGroupById($id) 
+    {
+        return NewGroup::getGroupById((int) $id);
+    }
+
+    public function saveMakerChecker($attributes)
+    {
+        return MakerChecker::create($attributes);
+    }
+
+    public function checkGroupNameSuggestions($groupName)
+    {
+        return NewGroup::checkGroupNameSuggestions($groupName);
+    }
+
+    public function checkGroupIsApproved($groupId)
+    {
+        return MakerChecker::checkGroupIsApproved($groupId);        
+    }
+
+    public function getAllNewActiveGroup($whereIn = [])
+    {
+        return NewGroup::getAllActiveGroup($whereIn);
+    }
+
+    public function getAllNewGroupUcicData($groupId)
+    {
+        return AppGroupDetail::getUcicDataByGroupId($groupId);
     }
 }

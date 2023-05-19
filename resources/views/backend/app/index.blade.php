@@ -37,15 +37,22 @@
     <div class="card">
         <div class="card-body">
             <div class="row">
-
-                <div class="col-md-3">
+                <div class="col-md-2">
+                    <select class="form-control" name="search_type">
+                        <option value="2">App Id</option>
+                        <option value="1">Pan No</option>
+                        <option value="3">UCIC Code</option>
+                        <option value="4">Entity Name</option>
+                    </select>
+                </div>
+                <div class="col-md-4">
 
                     {!!
                     Form::text('search_keyword',
                     null,
                     [
                     'class' => 'form-control',
-                    'placeholder' => 'Search by App Id, Entity Name and Pan',
+                    'placeholder' => 'Search by App Id, Entity Name, Pan and UCIC Code',
                     'id'=>'by_name'
                     ])
                     !!}
@@ -70,7 +77,7 @@
                     'class'=>'form-control'))
                     !!}
                 </div> 
-                <!--
+               {{--  <!--
                 <div class="col-md-4">
 
                     {!!
@@ -81,7 +88,7 @@
                     'class'=>'form-control'))
                     !!}
                 </div>    
-                -->
+                --> --}}
                 <button type="button" id="searchbtn" class="btn btn-success btn-sm float-right">Search</button>
            </div>
            <div class="row">     
@@ -94,6 +101,7 @@
                                         <thead>
                                             <tr role="row">
                                                 <th style="width:6%">{{ trans('backend.app_list_head.app_id') }}</th>
+                                                <th style="width:10%">{{ trans('backend.app_list_head.ucic_code') }}</th>
                                                 <th style="width:20%">{{ trans('backend.app_list_head.biz_name') }}</th>
                                                 <th style="width:12%">{{ trans('backend.app_list_head.name') }}</th>
                                                 <th style="width:9%">{{ trans('backend.app_list_head.contact') }}</th>
@@ -160,5 +168,5 @@
     };
 </script>
 <script src="{{ asset('common/js/jquery.validate.js') }}"></script>
-<script src="{{ asset('backend/js/ajax-js/application.js') }}" type="text/javascript"></script>
+<script src="{{ asset('backend/js/ajax-js/application.js?v=2') }}" type="text/javascript"></script>
 @endsection

@@ -1592,4 +1592,49 @@ Route::group(
         'as' => 'lms_get_recon_report',
         'uses' => 'AjaxController@getReconReportByMail'
     ]);
+    /*Start Group route*/
+    Route::post('get-ajax-all-group-list',[
+        'as' => 'get_all_group_list',
+        'uses' => 'AjaxController@getAllGroupList'
+    ]);
+
+    Route::post('unique-group-name', [
+        'as' => 'check_unique_group_name',
+        'uses' => 'AjaxController@checkUniqueGroupName'
+    ]);
+    
+    Route::post('check-group-name-suggestions', [
+        'as' => 'check_group_name_suggestions',
+        'uses' => 'AjaxController@checkGroupNameSuggestions'
+    ]);
+
+    Route::post('get-group-ucic-list', [
+        'as' => 'get_group_ucic_list',
+        'uses' => 'AjaxController@getAllGroupUcicList'
+    ]);
+
+    Route::post('get-ucic', [
+        'as' => 'get_ucic',
+        'uses' => 'AjaxController@getData'
+    ]);
+    
+    Route::get('get-group-exposure-ucic-user-data', [
+        'as' => 'get_group_exposure_ucic_user_data',
+        'uses' => 'AjaxController@getGroupUcicUsersData'
+    ]);
+
+    Route::post('get-code-ucic-data', [
+        'as' => 'get_ucic_code_data',
+        'uses' => 'AjaxController@getUcicCodeData'
+    ]);
+
+    Route::post('check-bsa-status', [
+        'as' => 'check_bsa_status',
+        'uses' => 'AjaxController@checkBankingStatementStatus'
+    ]);
+    
+    Route::post('check-fsa-status', [
+        'as' => 'check_fsa_status',
+        'uses' => 'AjaxController@checkFinancialStatementStatus'
+    ]);
 });

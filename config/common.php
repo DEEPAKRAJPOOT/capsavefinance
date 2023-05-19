@@ -296,6 +296,7 @@ return [
         'REFUND' => 'REF',
         'LEADID' => 'CAP',
         'PAYMENTID' => 'CAPPI',
+        'UCIC' => 'UCC',
     ],
     'chrg_trigger_list' => [
         '3' => 'None',
@@ -382,5 +383,8 @@ return [
     ],
     'LENEVO_ANCHOR_ID' => '53',
     'LENOVO_NEW_LEAD_CRON_MAIL_TO' => env('LENOVO_NEW_LEAD_CRON_MAIL_TO', ''),
+    'USER_STATUS' => [
+        'ACCOUNT_CLOSURE' => '35'
+    ]
 ];
  

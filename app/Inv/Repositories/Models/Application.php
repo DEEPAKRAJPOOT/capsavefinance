@@ -73,6 +73,7 @@ class Application extends BaseModel
         'renewal_status',
         'is_child_sanctioned',
         'reactivate_parent_app',
+        'is_old_app',
         'app_code',
         'created_by',
         'created_at',
@@ -82,9 +83,16 @@ class Application extends BaseModel
 
     public function business()
     {
-        return $this->belongsTo('App\Inv\Repositories\Models\Business', 'biz_id');
+        return $this->belongsTo('App\Inv\Repositories\Models\Business', 'biz_id', 'biz_id');
     }
     
+    public function ucicUser(){
+        return $this->belongsTo('App\Inv\Repositories\Models\UcicUser','user_id', 'user_id');
+    }
+
+    public function ucicUserUcic(){
+        return $this->belongsTo('App\Inv\Repositories\Models\UcicUserUcic','app_id', 'app_id');
+    } 
     
      /**
      * join with app limit table to get limit amount for application
@@ -148,6 +156,9 @@ class Application extends BaseModel
         $roleData = User::getBackendUser(\Auth::user()->user_id);
         $curUserId = \Auth::user()->user_id;
         $userArr = Helpers::getChildUsersWithParent($curUserId);
+        if($roleData[0]->is_allapp_access !== '1') {
+            $userArr[] = 1;
+        }
         $query = self::select('app.user_id','app.app_id', 'app.app_code' ,'app.curr_status_id', 'biz.biz_entity_name', 'biz.biz_id', 
                 'app.status','app_assign.to_id', 'users.anchor_id', 'users.is_buyer as user_type', 'app.renewal_status', 'app.app_type',
                 DB::raw("CONCAT_WS(' ', rta_users.f_name, rta_users.l_name) AS assoc_anchor"),
@@ -157,11 +168,15 @@ class Application extends BaseModel
                 'users.email',
                 'users.mobile_no',                
                 'app_assign.sharing_comment', 'assignee_r.name as assignee_role', 'from_r.name as from_role',
-                'app_assign.app_assign_id', 'app.parent_app_id', 'note.note_data as reason', 'note.note_id','anchor_user.pan_no','mst_status.status_name')
+                'app_assign.app_assign_id', 'app.parent_app_id', 'note.note_data as reason', 'note.note_id','anchor_user.pan_no','mst_status.status_name', 
+                'non_anchor_leads.pan_no as nonAnchorPanNo','user_ucic.ucic_code as ucic_code','user_ucic.user_ucic_id as user_ucic_id' )
                 ->join('users', 'users.user_id', '=', 'app.user_id')  
                 ->join('biz', 'app.biz_id', '=', 'biz.biz_id')
                 ->leftjoin('note','app.app_id', '=', 'note.app_id')
-                ->leftjoin('mst_status','app.curr_status_id', '=', 'mst_status.id');
+                ->leftjoin('mst_status','app.curr_status_id', '=', 'mst_status.id')
+                ->leftjoin('user_ucic_user', 'app.app_id','=','user_ucic_user.app_id')
+                ->leftjoin('user_ucic', 'user_ucic_user.ucic_id','=','user_ucic.user_ucic_id');
+               
         if ($roleData[0]->id == 11) {            
         $query  = $query->leftJoin('app_assign', function ($join) use($roleData, $curUserId, $userArr) {
                     $join->on('app.app_id', '=', 'app_assign.app_id');                    
@@ -172,17 +187,22 @@ class Application extends BaseModel
                 ->leftJoin('roles as assignee_r', 'assignee_ru.role_id', '=', 'assignee_r.id')
                 ->leftJoin('role_user as from_ru', 'app_assign.from_id', '=', 'from_ru.user_id')
                 ->leftJoin('roles as from_r', 'from_ru.role_id', '=', 'from_r.id')
-                ->leftJoin('anchor_user', 'anchor_user.user_id', '=', 'app.user_id');
+                ->leftJoin('anchor_user', 'anchor_user.user_id', '=', 'app.user_id')
+                ->leftJoin('non_anchor_leads', 'non_anchor_leads.user_id', '=', 'users.user_id');
                 
                 $query->where('anchor_user.anchor_id', \Auth::user()->anchor_id);            
         } else {
         $query  = $query->join('app_assign', function ($join) use($roleData, $curUserId, $userArr) {
                     $join->on('app.app_id', '=', 'app_assign.app_id');
-                    if ($roleData[0]->is_superadmin != 1) {
+                    if ($roleData[0]->is_superadmin != 1 && $roleData[0]->is_allapp_access !== '1') {
                         //$join->on('app_assign.to_id', '=', DB::raw($curUserId));
                         $join->whereIn('app_assign.to_id', $userArr);
                         $join->where('app_assign.is_deleted', DB::raw("0"));
                         
+                    } else if($roleData[0]->is_allapp_access === '1') {
+                        $join->on('app_assign.is_owner', '=', DB::raw("1"));
+                        $join->whereNotNull('app_assign.to_id');
+                        $join->where('app_assign.is_deleted', DB::raw("0"));
                     } else {
                         $join->on('app_assign.is_owner', '=', DB::raw("1"));
                         $join->whereNotNull('app_assign.to_id');
@@ -195,7 +215,8 @@ class Application extends BaseModel
                 ->join('roles as assignee_r', 'assignee_ru.role_id', '=', 'assignee_r.id')
                 ->leftJoin('role_user as from_ru', 'app_assign.from_id', '=', 'from_ru.user_id')
                 ->leftJoin('roles as from_r', 'from_ru.role_id', '=', 'from_r.id')    
-                ->leftJoin('anchor_user', 'anchor_user.user_id', '=', 'app.user_id');
+                ->leftJoin('anchor_user', 'anchor_user.user_id', '=', 'app.user_id')
+                ->leftJoin('non_anchor_leads', 'non_anchor_leads.user_id', '=', 'users.user_id');
         }
                 //$query->where('users.anchor_user_id', \Auth::user()->user_id);            
                 //$query->where('users.anchor_id', \Auth::user()->anchor_id);              
@@ -950,13 +971,19 @@ class Application extends BaseModel
                 ->leftJoin('anchor_user', 'anchor_user.user_id', '=', 'app.user_id') 
                 ->join(DB::raw('(SELECT rta_anchor_user.pan_no FROM rta_anchor_user WHERE user_id = ?) AS rta_a'), function( $join ) {
                     $join->on( 'anchor_user.pan_no', '=', 'a.pan_no' );
-                })                                
+                })
                 ->setBindings([$userId])
                 ->whereIn('app.status', [0,1])
                 ->whereNotIn('app.curr_status_id', $appStatusList)        
                 ->first();
-                       
-        return ($appData && $appData->app_id ? true : false);    
+
+        $appProductIds = $appData ? $appData->appProducts()->pluck('product_id')->toArray() : [];
+        if ($appData && in_array(config('common.PRODUCT.TERM_LOAN'), $appProductIds) || in_array(config('common.PRODUCT.LEASE_LOAN'), $appProductIds)) {
+            if (in_array($appData->curr_status_id, [config('common.mst_status_id.OFFER_ACCEPTED')])) {
+                return false;
+            }
+        }
+        return ($appData && $appData->app_id ? true : false);
      }
 
      public static function getSanctionApp() 
@@ -993,7 +1020,7 @@ class Application extends BaseModel
         } else {
             $usersIds = AnchorUser::getUsersByPan($userId);
         }
-        
+
         $appData = self::select('app.user_id','app.app_id','app_product.loan_amount', 'users.f_name', 'users.m_name', 'users.l_name', 'users.email', 'users.mobile_no', 'biz.biz_entity_name', 'biz.biz_id', 'app.status', 'users.anchor_id', 'users.is_buyer as user_type', 'app.created_at','anchor_user.pan_no', 'app.curr_status_id','mst_status.status_name')
                 ->join('biz', 'app.biz_id', '=', 'biz.biz_id')
                 ->join('users', 'app.user_id', '=', 'users.user_id')
@@ -1073,4 +1100,73 @@ class Application extends BaseModel
                        
         return ($appData ? $appData : null);        
     }
+
+    public function appStatusLogs() {
+        return $this->hasMany('App\Inv\Repositories\Models\AppStatusLog', 'app_id', 'app_id');
+    }
+
+    public function appGroupDetails() {
+        return $this->hasMany('App\Inv\Repositories\Models\AppGroupDetail', 'app_id', 'app_id');
+    }
+
+    public function appProducts() {
+        return $this->hasMany('App\Inv\Repositories\Models\AppProduct', 'app_id', 'app_id');
+    }
+
+    public function nonAnchorLead() {
+        return $this->belongsTo('App\Inv\Repositories\Models\NonAnchorLead', 'user_id', 'user_id');
+    }
+
+    public static function checkAppByPanForNonAnchorLeads($userId)
+    {
+        $appStatusList = [
+            config('common.mst_status_id.APP_REJECTED'),
+            config('common.mst_status_id.APP_CANCEL'),
+            config('common.mst_status_id.OFFER_ACCEPTED')
+        ];
+        $appData = self::whereHas('nonAnchorLead', function ($query) use($userId) {
+                        $query->where('user_id', $userId);
+                    })
+                    ->whereIn('app.status', [0,1])
+                    ->whereNotIn('app.curr_status_id', $appStatusList)
+                    ->first();
+
+        return ($appData && $appData->app_id ? true : false);
+    }
+
+    public function mstStatus()
+    {
+        return $this->belongsTo('App\Inv\Repositories\Models\Master\Status', 'curr_status_id');     
+    }
+
+    public function parentApplication()
+    {
+        return $this->hasOne('App\Inv\Repositories\Models\Application', 'app_id', 'parent_app_id');     
+    }
+
+
+    public static function getUcicUserApp($appId)
+    {
+        /**
+         * Check id is not blank
+         */
+        if (empty($appId)) {
+            throw new BlankDataExceptions(trans('error_message.no_data_found'));
+        }
+
+        /**
+         * Check id is not an integer
+         */
+        if (!is_int($appId)) {
+            throw new InvalidDataTypeExceptions(trans('error_message.invalid_data_type'));
+        }
+
+        $appData = self::select('app.*')  
+            ->join('user_ucic', 'app.app_id', '=', 'user_ucic.app_id')
+            ->where('app.app_id', $appId)
+            ->first();
+        return ($appData ? $appData : null);     
+    }
+
+    
 }

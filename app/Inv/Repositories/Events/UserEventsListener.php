@@ -232,7 +232,41 @@ class UserEventsListener extends BaseEvent
         }
     }
 
-    
+    public function onSendConsentOtp($user) {
+        $this->func_name = __FUNCTION__; 
+        $user = unserialize($user);
+        $email_content = EmailTemplate::getEmailTemplate("OTP_CONSENT_SEND");
+        if ($email_content) {
+            $mail_body = str_replace(
+                ['%name', '%otp','%url'],
+                [ucwords($user['name']),$user['otp'],$user['url']],
+                $email_content->message
+            );
+            Mail::send('email', ['baseUrl'=>env('REDIRECT_URL',''),'varContent' => $mail_body,
+                ],
+                function ($message) use ($user, $email_content, $mail_body) {
+                $email = $user["email"];
+                $emailBcc = \Helpers::ccOrBccEmailsArray($email_content->bcc);
+                $emailCc = \Helpers::ccOrBccEmailsArray($email_content->cc);
+                $mail_subject = str_replace(['%app_id','%biz_name'], [$user['ckyc_app_code'] ?? '',$user['ckyc_biz_name'] ?? ''], $email_content->subject);
+                $message->bcc($emailBcc);
+                $message->cc($emailCc);
+                $message->from(config('common.FRONTEND_FROM_EMAIL'), config('common.FRONTEND_FROM_EMAIL_NAME'));
+                $message->to($email, $user["name"])->subject($mail_subject);
+                $mailContent = [
+                    'email_from' => config('common.FRONTEND_FROM_EMAIL'),
+                    'email_to' => $email,
+                    'email_type' => $this->func_name,
+                    'name' => $user['name'],
+                    'subject' => $mail_subject,
+                    'body' => $mail_body,
+                    'email_bcc' => $emailBcc,
+                    'email_cc' => $emailCc,
+                ];
+                FinanceModel::logEmail($mailContent);
+            });
+        }
+    }    
     
     public function onForgotPassword($user) {
         $this->func_name = __FUNCTION__;
@@ -1838,6 +1872,11 @@ class UserEventsListener extends BaseEvent
        $events->listen(
             'user.sendotp',
             'App\Inv\Repositories\Events\UserEventsListener@onSendOtp'
+        );
+
+        $events->listen(
+            'user.sendconsentotp',
+            'App\Inv\Repositories\Events\UserEventsListener@onSendConsentOtp'
         );
         
         $events->listen(

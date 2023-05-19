@@ -101,7 +101,7 @@ class OutstandingReportMonthly extends Command
                 OutstandingReportMonthlyModel::create([
                     'report_log_id' => $reportLogId, 
                     'Batch No' => $batchNo,
-                    'UCIC ID' => '',
+                    'UCIC ID' => $dataRecord['UCIC ID'],
                     'Customer Name' => $dataRecord['Customer Name'],
                     'Customer ID' => $dataRecord['Customer ID'],
                     'Anchor Name' => $dataRecord['Anchor Name'],

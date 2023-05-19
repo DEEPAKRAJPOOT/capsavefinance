@@ -152,7 +152,7 @@
           <tbody>
                 <tr>
                   <td><b>Anchor Name: </b> </td>
-                  <td>{{ isset($supplyOffer->anchorData) ? $supplyOffer->anchorData : null }}</td>
+                  <td>{{ isset($supplyOffer->anchorData) ? str_replace("{}", "--", $supplyOffer->anchorData) : null }}</td>
                   <td><b>Anchor Total Limit: </b> </td>
                   <td>INR {{ isset($supplyOffer->programData->anchor_limit) ? number_format($supplyOffer->programData->anchor_limit) : null }}</td>
                 </tr>
@@ -236,7 +236,6 @@
               <tr>
                   <td><b>Bench Mark Date: </b></td>
                   <td colspan="3">{{getBenchmarkType($supplyOffer->benchmark_date)}}</td>
-                  
               </tr>
               <tr>
                   <td><b>Investment Payment Frequency: </b></td>

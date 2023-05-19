@@ -22,6 +22,9 @@ use App\Inv\Repositories\Models\Master\Group;
 use App\Inv\Repositories\Models\CamReviewSummRiskCmnt;
 use App\Inv\Repositories\Models\AppSecurityDoc;
 use App\Inv\Repositories\Models\Application;
+use App\Inv\Repositories\Models\AppGroupDetail;
+use App\Inv\Repositories\Models\Master\NewGroup;
+
 trait CamTrait
 {
     protected function getCamReportData(Request $request){
@@ -30,8 +33,8 @@ trait CamTrait
             $postCondArr = [];
             $positiveRiskCmntArr = [];
             $negativeRiskCmntArr = [];
-            $arrRequest['biz_id'] = $bizId = $request->get('biz_id');
-            $arrRequest['app_id'] = $appId = $request->get('app_id');
+            $arrRequest['biz_id'] = $bizId = (int) $request->get('biz_id');
+            $arrRequest['app_id'] = $appId = (int) $request->get('app_id');
             $json_files = $this->getLatestFileName($appId,'finance', 'json');
             $arrStaticData = array();
             $arrStaticData['rentalFrequency'] = array('1'=>'Yearly','2'=>'Bi-Yearly','3'=>'Quarterly','4'=>'Monthly');
@@ -115,6 +118,29 @@ trait CamTrait
                     $arrCamData['t_o_f_security_check'] = explode(',', $arrCamData['t_o_f_security_check']);
                 }
                 $arrGroupCompany = array();
+                $applicationData 	 = $this->appRepo->getAppData($arrRequest['app_id']);
+                if($applicationData->is_old_app == 0) {
+                if(isset($arrRequest['app_id']) && is_numeric($arrRequest['app_id'])){
+                  $appGrpDetailsAppId = $arrRequest['app_id'];
+                  $groupId = $this->appRepo->getGroupIdByAppId($appGrpDetailsAppId);
+
+                  $resultData = \Helpers::getGroupBorrowers($groupId, $appGrpDetailsAppId, true);
+                  
+                  $appGrpBorrowers = $resultData['results'];
+                  $appGrpBorrowers = json_decode(json_encode($appGrpBorrowers), true);
+                  //dd($appGrpBorrowers, $groupId);
+                  
+
+                  if (count($appGrpBorrowers) && $groupId) {
+                    $group = NewGroup::find($groupId);
+                    foreach($appGrpBorrowers as $appGrpBorrower) {
+                      $appGrpBorrower['group_name'] = $group->group_name;
+                      $arrGroupCompany[] = $appGrpBorrower;
+                    }
+                    $arrCamData->total_exposure_amount = round($resultData['totalExposureAmt'], 2);
+                  }
+                }
+              } else {
                 if(isset($arrCamData['group_company']) && is_numeric($arrCamData['group_company'])){
                   $arrGroupCompany = GroupCompanyExposure::where(['group_Id'=>$arrCamData['group_company'], 'app_id' => $arrRequest['app_id'], 'is_active'=>1])->get()->toArray();
                   $arrMstGroup =  Group::where('id', $arrCamData['group_company'])->first()->toArray();
@@ -138,7 +164,8 @@ trait CamTrait
                     $arrCamData['total_exposure_amount'] = round($total,2);
                 }
 
-                 //dd($arrGroupCompany);
+              }
+
                 /*start code for approve button */
                 $approveStatus = $this->appRepo->getApproverStatus(['app_id'=>$appId, 'approver_user_id'=>Auth::user()->user_id, 'is_active'=>1]);
                 $currStage = Helpers::getCurrentWfStage($appId);                
@@ -262,6 +289,7 @@ trait CamTrait
                     'data'=> $data,
                     'anchorRelationData' => $anchorRelationData,
                     'borrowerLimitData'=>$borrowerLimitData,
+                    'appData' => $appData
                 ];
       } catch (Exception $ex) {
           return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));

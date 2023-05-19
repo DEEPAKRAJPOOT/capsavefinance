@@ -194,4 +194,8 @@ class LmsUser extends Authenticatable
         return $this->belongsTo('App\Inv\Repositories\Models\User','created_by', 'user_id');
     }    
     
+    public function application()
+    {
+        return $this->hasOne('App\Inv\Repositories\Models\Application', 'app_id', 'app_id');
+    }
 }

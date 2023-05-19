@@ -18,6 +18,7 @@ try {
                 "url": messages.get_applications, // json datasource
                 "method": 'POST',
                 data: function (d) {
+                    d.search_type = $('select[name=search_type]').val();
                     d.search_keyword = $('input[name=search_keyword]').val();
                     d.is_assign = $('select[name=is_assign]').val();
                     d.status = $('select[name=status]').val();
@@ -32,6 +33,7 @@ try {
             },
            columns: [
                 {data: 'app_code'},
+                {data: 'ucic_code'},
                 {data: 'biz_entity_name'},
                 {data: 'name'},
                 {data: 'contact'},

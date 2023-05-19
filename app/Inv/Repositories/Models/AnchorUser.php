@@ -106,13 +106,19 @@ class AnchorUser extends BaseModel {
      * @return type
      */
     public static function getAllAnchorUsers($datatable=false) {
+        $userArr = \Helpers::getChildUsersWithParent(\Auth::user()->user_id);
         $roleData = User::getBackendUser(\Auth::user()->user_id);
+        if($roleData[0]->name == 'Sales'){
+            $anchorId = \Helpers::getAnchorDetails(\Auth::user()->user_id);
+        }else{
+            $anchorId = \Auth::user()->anchor_id;
+        }
         DB::enableQueryLog();
-        $result = self::select('anchor_user.*', 'anchor.comp_name')
-             ->join('anchor', 'anchor_user.anchor_id', '=', 'anchor.anchor_id');
-        
+        $result = self::select('anchor_user.*', 'anchor.comp_name','anchor.sales_user_id')
+             ->leftJoin('anchor', 'anchor_user.anchor_id', '=', 'anchor.anchor_id');
+
         if ($roleData[0]->is_superadmin != 1) {        
-             $result->where('anchor_user.anchor_id', \Auth::user()->anchor_id);
+             $result->whereIn('anchor_user.anchor_id', $anchorId);
              //$result->where('anchor_user.created_by', \Auth::user()->user_id);
         }
         if (!$datatable) {

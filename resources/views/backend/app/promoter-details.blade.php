@@ -17,25 +17,29 @@
 @if(is_null($edit))
 @include('layouts.backend.partials.admin-subnav')
 @endif
+@php $view_only = request()->get('view_only');
+if($is_all_app_access === '1')
+  $view_only = 1;
+@endphp
 <!-- partial -->
 <div class="content-wrapper">
 
     <ul class="sub-menu-main pl-0 m-0">
         @can('company_details')
         <li>
-            <a href="{{ route('company_details', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id'),'user_id' => request()->get('user_id')]) }}" >Business Information</a>
+            <a href="{{ route('company_details', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')]) }}" >Business Information</a>
         </li>
         @endcan 
         @can('promoter_details')
         <li>
-            <a href="{{ route('promoter_details', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id'),'user_id' => request()->get('user_id')]) }}" class="active">Management Information</a>
+            <a href="{{ route('promoter_details', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')]) }}" class="active">Management Information</a>
         </li>
         @endcan 
         @can('documents')
         <li>
-            <a href="{{ route('documents', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id'),'user_id' => request()->get('user_id')]) }}">Documents</a>
+            <a href="{{ route('documents', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')]) }}">Documents</a>
         </li>
-        @endcan        
+        @endcan       
     </ul>
     <div class="row grid-margin mt-3 mb-2">
         <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-4">
@@ -46,825 +50,632 @@
                         <input type="hidden" name="app_id" id="app_id"  value="{{ (!empty($appId)) ? $appId : '' }}" >
                         <input type="hidden" name="biz_id" id="biz_id"  value="{{ (!empty($bizId)) ? $bizId : '' }}" >   
                         <input type="hidden" id="rowcount" value="{{count($ownerDetails)}}">
-                        <input type="hidden" id="user_id" value="{{(!empty($user_id)) ? $user_id : '' }}">
 
                         @php ($i = 0)
                         @php ($j = 0)
-                        @php ($main = [])
-                        @php ($main1 = [])
-                        @if(count($ownerDetails) > 0) 
-                        @foreach($ownerDetails as $key=>$row)    @php ($i++)
-
-                       
-
-                        <div class="form-fields custom-promoter">
-                            @csrf
-                            <?php
-                            array_push($main, array('panNo' => null, 'dlNo' => null, 'voterNo' => null, 'passNo' => null,'mobileNo' => null,'mobileOtpNo' => null,'panVerifyNo' =>null));
-                            array_push($main1, array('panNoFile' => null, 'dlNoFile' => null, 'voterNoFile' => null, 'passNoFile' => null, 'aadharFile' => null, 'electricityFile' => null, 'telephoneFile' => null));
-
-                            // dd($row->businessApi);
-                            /* for get api response file data   */
-                            foreach ($row->businessApi as $row1) {
-
-                                if ($row1->type == 3) {
-                                    $main[$key]['panNo'] = json_decode($row1->karza->req_file);
-                                } else if ($row1->type == 5) {
-                                    $main[$key]['dlNo'] = json_decode($row1->karza->req_file);
-                                } else if ($row1->type == 4) {
-                                    $main[$key]['voterNo'] = json_decode($row1->karza->req_file);
-                                } else if ($row1->type == 6) {
-                                    $main[$key]['passNo'] = json_decode($row1->karza->req_file);
-                                }
-                                else if ($row1->type == 7) {
-                                    $main[$key]['mobileNo'] = json_decode($row1->karza->req_file);
-                                }
-                                 else if ($row1->type == 8) {
-                                    $main[$key]['mobileOtpNo'] = json_decode($row1->karza->req_file);
-                                }
-                                  else if ($row1->type == 9) {
-                                    $main[$key]['panVerifyNo'] = json_decode($row1->karza->req_file);
-                                }
-                                
-                            } 
-                       
-                                /* for get document file data   */
-
-                                $main1[$key]['panNoFileStatus'] = 0;
-                                $main1[$key]['panNoFileOVD'] = 0;
-                                $main1[$key]['dlNoFileStatus'] = 0;
-                                $main1[$key]['dlNoFileOVD'] = 0;
-                                $main1[$key]['voterNoFileStatus'] = 0;
-                                $main1[$key]['voterNoFileOVD'] = 0;
-                                $main1[$key]['passNoFileStatus'] = 0;
-                                $main1[$key]['passNoFileOVD'] = 0;
-                                $main1[$key]['photoFileStatus'] = 0;
-                                $main1[$key]['photoFileOVD'] = 0;
-                                $main1[$key]['aadharFileStatus'] = 0;
-                                $main1[$key]['aadharFileOVD'] = 0;
-                                $main1[$key]['electricityFileStatus'] = 0;
-                                $main1[$key]['electricityFileOVD'] = 0;
-                                $main1[$key]['telephoneFileStatus'] = 0;
-                                $main1[$key]['telephoneFileOVD'] = 0;
-                            foreach ($row->document as $row2) {
-                                if ($row2->doc_id == 2) {
-                                    $main1[$key]['panNoFile'] = $row2->userFile->file_path;
-                                    $main1[$key]['panNoFileID'] = $row2->userFile->file_id;
-                                    $main1[$key]['panNoFileStatus'] = $row2->userFile->is_active;
-                                    $main1[$key]['panNoFileOVD'] = $row2->is_ovd_enabled;
-                                } else if ($row2->doc_id == 31) {
-
-                                    $main1[$key]['dlNoFile'] = $row2->userFile->file_path;
-                                    $main1[$key]['dlNoFileID'] = $row2->userFile->file_id;
-                                    $main1[$key]['dlNoFileStatus'] = $row2->userFile->is_active;
-                                    $main1[$key]['dlNoFileOVD'] = $row2->is_ovd_enabled;
-                                } else if ($row2->doc_id == 30) {
-
-                                    $main1[$key]['voterNoFile'] = $row2->userFile->file_path;
-                                    $main1[$key]['voterNoFileID'] = $row2->userFile->file_id;
-                                    $main1[$key]['voterNoFileStatus'] = ($row2->userFile->is_active)?1:0;
-                                    $main1[$key]['voterNoFileOVD'] = $row2->is_ovd_enabled;
-                                } else if ($row2->doc_id == 32) {
-                                    $main1[$key]['passNoFile'] = $row2->userFile->file_path;
-                                    $main1[$key]['passNoFileID'] = $row2->userFile->file_id;
-                                    $main1[$key]['passNoFileStatus'] = $row2->userFile->is_active;
-                                    $main1[$key]['passNoFileOVD'] = $row2->is_ovd_enabled;
-                                } else if ($row2->doc_id == 22) {
-
-                                    $main1[$key]['photoFile'] = $row2->userFile->file_path;
-                                    $main1[$key]['photoFileID'] = $row2->userFile->file_id;
-                                    $main1[$key]['photoFileStatus'] = $row2->userFile->is_active;
-                                    $main1[$key]['photoFileOVD'] = $row2->is_ovd_enabled;
-                                } else if ($row2->doc_id == 34) {
-
-                                    $main1[$key]['aadharFile'] = $row2->userFile->file_path;
-                                    $main1[$key]['aadharFileID'] = $row2->userFile->file_id;
-                                    $main1[$key]['aadharFileStatus'] = $row2->userFile->is_active;
-                                    $main1[$key]['aadharFileOVD'] = $row2->is_ovd_enabled;
-                                }else if ($row2->doc_id == 37) {
-
-                                    $main1[$key]['electricityFile'] = $row2->userFile->file_path;
-                                    $main1[$key]['electricityFileID'] = $row2->userFile->file_id;
-                                    $main1[$key]['electricityFileStatus'] = $row2->userFile->is_active;
-                                    $main1[$key]['electricityFileOVD'] = $row2->is_ovd_enabled;
-                                }else if ($row2->doc_id == 38) {
-
-                                    $main1[$key]['telephoneFile'] = $row2->userFile->file_path;
-                                    $main1[$key]['telephoneFileID'] = $row2->userFile->file_id;
-                                    $main1[$key]['telephoneFileStatus'] = $row2->userFile->is_active;
-                                    $main1[$key]['telephoneFileOVD'] = $row2->is_ovd_enabled;
-                                }
-                            }
-                            ?>
-                            <div class="col-md-12">
-                                <h5 class="card-title form-head pr-2">Management Information ({{isset($row->first_name) ? $i : '1'}})
-                                    @can('delete_management_info')
-                                        @if(count($ownerDetails) > 1 && $appData->status == 0 || count($ownerDetails) > 1 && $appData->status > 0 && \Helpers::isChangeAppStatusAllowed($appData->curr_status_id))
-                                        <span class="float-right"><a href="javascript:void(0)" class=" text-danger" onclick="deleteManagementInfo({{ $row->biz_owner_id }})"><i class="fa fa-trash"></i></a></span>
-                                        @endif
-                                    @endcan
-                                </h5>
-
-                                <div class="row">
-                                    <div class="col-md-4">
-                                        <div class="form-group">
-                                            <label for="txtCreditPeriod" class="d-block"> Name
-
-                                                <span class="mandatory">*</span>
-                                                
-<!--                                                <span class="pull-right d-flex align-items-center"><input type="checkbox" name="is_promoter[]" data-id="{{isset($row->first_name) ? $i : '1'}}" id="is_promoter{{isset($row->first_name) ? $i : '1'}}" {{($row->is_promoter==1) ?  "checked='checked'" : ''}} value="{{($row->is_promoter==1) ?  '1' : '0'}}" class="is_promoter mr-2">
-                                                    <span class="white-space-nowrap">Is Promoter</span></span>-->
-                                            </label>
-                                            <input type="hidden" name="ownerid[]" id="ownerid{{isset($row->first_name) ? $i : '1'}}" value="{{$row->biz_owner_id}}">   
-                                            <input type="text" name="first_name[]" id="first_name{{isset($row->first_name) ? $i : '1'}}" vname="first_name1" value="{{$row->first_name}}" class="form-control first_name" placeholder="Enter First Name" >
-                                        </div>
-                                    </div>
-                                    <div class="col-md-2">
-                                      <div class="form-group password-input">
-                                          <label for="txtPassword">Owner Type
-                                          </label>
-                                          <select class="form-control is_promoter" name="applicant_type[]" id="applicant_type{{isset($row->first_name) ? $i : '1'}}">
-
-                                              <option value="" selected="selected"> Select Owner Type</option>
-                                              <option value="1" @if($row->applicant_type==1)  selected="selected" @endif> Is Promoter </option>
-                                              <option value="2" @if($row->applicant_type==2)  selected="selected" @endif> Key Management Person </option>
-                                              <option value="3" @if($row->applicant_type==3)  selected="selected" @endif> Co-Borrower </option>
-                                              <option value="4" @if($row->applicant_type==4)  selected="selected" @endif> Guarantor </option>
-                                          </select>
-                                      </div>
-                                    </div>
-                                      <div class="col-md-2">
-                                        <div class="form-group password-input">
-                                            <label for="txtPassword">Shareholding (%)
-
-                                              
-                                            </label>
-                                              <input type="hidden" name="isShareCheck[]" id="isShareCheck{{isset($row->first_name) ? $i : '1'}}" value="{{($row->applicant_type==1) ?  '1' : '0'}}">
-                                            
-                                            <input type="text"  id="share_per{{isset($row->first_name) ? $i : '1'}}" name="share_per[]" data-id="{{isset($row->first_name) ? $i : '1'}}" maxlength="6"  value="{{($row->share_per=='0.00') ? '' : $row->share_per}}" class="form-control share_per"  placeholder="Enter Shareholder" >
-                                            <span class="error" id="shareCheck{{isset($row->first_name) ? $i : '1'}}"></span> 
-                                        </div>
-                                    </div>
-                                   
-                                    <div class="col-md-4">
-                                        <div class="form-group password-input">
-                                            <label for="txtPassword">DOB
-                                                <span class="mandatory">*</span>
-                                            </label>
-                                            <input type="text" readonly="readonly" name="date_of_birth[]" id="date_of_birth{{isset($row->first_name) ? $i : '1'}}" value="{{ ($row->date_of_birth) ? date('d/m/Y', strtotime($row->date_of_birth)) : '' }}" class="form-control date_of_birth datepicker-dis-fdate"  placeholder="Enter Date Of Birth" >
-                                        </div>
-                                    </div>
-
-                                </div>
-
-                                <div class="row">
-
-                                    <div class="col-md-4">
-                                        <div class="form-group password-input">
-                                            <label for="txtPassword">Gender
-                                                <span class="mandatory">*</span>
-                                            </label>
-                                            <select class="form-control gender" name="gender[]" id="gender{{isset($row->first_name) ? $i : '1'}}">
-
-                                                <option value=""> Select Gender</option>
-                                                <option value="1" @if($row->gender==1)  selected="selected" @endif> Male </option>
-                                                <option value="2" @if($row->gender==2)  selected="selected" @endif>Female </option>
-                                                <option value="3" @if($row->gender==3)  selected="selected" @endif>Other </option>
-                                            </select>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-4">
-                                        <div class="form-group">
-                                            <label for="txtCreditPeriod">PAN Number
-                                                <span class="mandatory">{{($is_lease==0) ? '*' : '' }}</span>
-                                                <span class="text-success" id="successpanverify{{isset($row->first_name) ? $i : '1'}}" style="display:{{ (isset($main[$j]['panVerifyNo']->requestId)) ? 'inline' : 'none' }}"><i class="fa fa-check-circle" aria-hidden="true"></i> <i>Verified Successfully</i> </span>
-                                                <span class="text-danger" id="failurepanverify{{isset($row->first_name) ? $i : '1'}}" style="display:none;"><i class="fa fa-close" aria-hidden="true"></i> <i>Not Verified</i> </span>
-                                            
-                                            </label>
-                                            @can('show_pan_verify_data')
-                                              <a data-toggle="modal" id="ppanStatusVeriView{{isset($row->first_name) ? $i : '1'}}" data-target="#modalPromoter9" data-height="400px" data-width="100%" accesskey=""data-url ="{{route('show_pan_verify_data',['type'=>9,'ownerid' => $row->biz_owner_id ])}}" style="display:{{isset($main[$j]['panVerifyNo']->requestId) ? 'inline' : 'none'}}"> <button class="btn-upload btn-sm" type="button" title="View Details (Veirfy Pan Status)" data-id="{{isset($row->first_name) ? $i : '1'}}" data-type="3"> <i class="fa fa-eye"></i></button>
+                        @if(count($manInfoData) > 0)
+                            @foreach($manInfoData as $key => $manInfo)
+                                @php ($i++)
+                                @php( $manInfoDoc = $manInfoDocData['document_upload'][$manInfo['owner_id']] ?? [])
+                                <div class="form-fields custom-promoter">
+                                    @csrf
+                                    <div class="col-md-12">
+                                        <h5 class="card-title form-head pr-2">Management Information ({{isset($manInfo['name']) ? $i : '1'}})
+                                            @can('delete_management_info')
+                                                @if(count($ownerDetails) > 1 && $appData->status == 0 || count($ownerDetails) > 1 && $appData->status > 0 && \Helpers::isChangeAppStatusAllowed($appData->curr_status_id))
+                                                <span class="float-right"><a href="javascript:void(0)" class=" text-danger" onclick="deleteManagementInfo({{ $manInfo['owner_id'] }})"><i class="fa fa-trash"></i></a></span>
+                                                @endif
                                             @endcan
-                                            <div class="relative">
-                                            @if(request()->get('view_only'))
-                                            @can('chk_user_pan_karza')
-                                            <a href="javascript:void(0);" data-id="{{isset($row->first_name) ? $i : '1'}}" id="pan_verify{{isset($row->first_name) ? $i : '1'}}" class="verify-owner-no promoter_pan_verify" style="pointer-events:{{isset($main[$j]['panVerifyNo']->requestId) ? 'none' : '' }}">{{isset($main[$j]['panVerifyNo']->requestId) ?  'Verified' : 'Verify' }}</a>
-                                            @endcan
-                                            @endif
-                                            <input type="text" name="pan_no[]" id="pan_no{{isset($row->first_name) ? $i : '1'}}" value="{{isset($main[$j]['panVerifyNo']->requestId) ?  $main[$j]['panVerifyNo']->requestId : $row->pan_number }}" class="form-control pan_no" placeholder="Enter Pan Number" {{(isset($main[$j]['panVerifyNo']->requestId)) ? 'readonly' : '' }}>
-                                            </div>
-                                            <input name="response[]" id="response{{isset($row->first_name) ? $i : '1'}}" type="hidden" value="">                       
-                                        </div>
-                                    </div>
-                                 <!--    
-                                  <div class="col-md-4">
-                                        <div class="form-group">
-                                            <label for="txtEmail">Educational Qualification
+                                        </h5>
 
-                                            </label>
-                                            <input type="text" name="edu_qualification[]" id="edu_qualification{{isset($row->first_name) ? $i : '1'}}" value="{{$row->edu_qualification}}" class="form-control edu_qualification"  placeholder="Enter Education Qualification">
-                                        </div>
-                                    </div>
-                                 -->
-                                  <div class="col-md-4">
-                                        <div class="form-group">
-                           <label for="txtEmail">Designation    <span class="mandatory"></span>
-
-
-                                            </label>
-                                            <input type="text" name="designation[]" id="designation{{isset($row->first_name) ? $i : '1'}}" value="{{$row->designation}}" class="form-control designation"  placeholder="Enter Designation">
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="row">
-                                    <div class="col-md-4">
-                                        <div class="form-group">
-                                                 <label for="txtEmail">Other Ownerships
-                                                 </label>
-                                                 <input type="text" name="other_ownership[]" id="other_ownership{{isset($row->first_name) ? $i : '1'}}" value="{{$row->other_ownership}}" class="form-control other_ownership"  placeholder="Other Ownership">
-                                             </div>
-                                     </div>
-                                  
-                                    <div class="col-md-8">
-                                        <div class="form-group">
-                                            <label for="txtCreditPeriod">Address
-                                                <span class="mandatory">*</span>
-                                            </label>
-                                            <textarea  style="height: 35px;" class="form-control textarea address" placeholder="Enter Address" name="owner_addr[]" id="address{{isset($row->first_name) ? $i : '1'}}">{{isset($row->address->addr_1) ? $row->address->addr_1 : ''}}</textarea>
-                                        </div>
-                                    </div>
-                                
-                                </div>
-                                <div class="row">
-                                    <div class="col-md-4"> 
-                                    <div class="form-group INR">
-                                                 <label for="txtEmail">Networth
-                                                 </label>
-                                                 <div class="relative">
-                                                 <a href="javascript:void(0);" class="remaining"><i class="fa fa-inr" aria-hidden="true"></i></a>
-                                                 <input type="text" name="networth[]" maxlength='15' id="networth{{isset($row->first_name) ? $i : '1'}}" value="{{number_format($row->networth)}}" class="form-control networth"  placeholder="Enter Networth">
-                                                 </div>
-                                             </div>
-                                    </div>
-                                        <div class="col-md-2">
-                                            <div class="form-group">
-                                                <label for="txtEmail">Mobile <span class="mandatory">{{($is_lease==0) ? '*' : '' }}</span></label> 
-                                             <input type="text" name="mobile_no[]"  {{isset($main[$j]['mobileNo']->mobile) ? 'readonly' : '' }} maxlength="10" id="mobile_no{{isset($row->first_name) ? $i : '1'}}" value="{{ isset($main[$j]['mobileNo']->mobile) ? $main[$j]['mobileNo']->mobile : $row->mobile }}" class="form-control mobileveri"  placeholder="Enter Mobile no">
-                                              
-                                             <span class="text-success float-left findMobileverify" id="v5successpanverify{{isset($row->first_name) ? $i : '1'}}"> <i class="fa fa-{{isset($main[$j]['mobileNo']->mobile) ? 'check-circle' : '' }}" aria-hidden="true"></i><i>{{isset($main[$j]['mobileNo']->mobile) ? 'Verified Successfully' : '' }}</i> </span>
-                                                <span class="text-danger float-left" id="v5failurepanverify{{isset($row->first_name) ? $i : '1'}}"> </span>
-                                                
-                                             
-                                            </div>
-                                        </div>
-                                    <div class="col-md-4">
-                                        <div class="form-group" >
-                                            <label class="d-block">&nbsp;</label> 
-                                            @can('mobile_verify')
-                                            <a data-toggle="modal" id="pMobileVeriView{{isset($row->first_name) ? $i : '1'}}" data-target="#modalPromoter7" data-height="400px" data-width="100%" accesskey="" data-url ="{{ route('mobile_verify',['type' => 7,'ownerid' => $row->biz_owner_id]) }}" style="display:{{isset($main[$j]['mobileNo']->mobile) ? 'inline' : 'none'}}"> <button class="btn-upload btn-sm" type="button" title="View Details (Verify without OTP)" data-id="{{isset($row->first_name) ? $i : '1'}}" data-type="7"> <i class="fa fa-eye"></i></button></a>
-                                            @endcan
-                                            @if(request()->get('view_only'))
-                                            @can('verify_mobile')
-                                            <a class="btn btn-primary  btn-sm verify_mobile_no" data-id="{{isset($row->first_name) ? $i : '1'}}" name="verify_mobile_no" id="verify_mobile_no{{isset($row->first_name) ? $i : '1'}}" style="color:white;bottom: 15px;top: auto;  display:{{ (isset($main[$j]['mobileNo']->mobile)) ? 'none' : ''}}" > {{ isset($main[$j]['mobileNo']->mobile) ? 'Verified' : 'Verify without OTP' }}</a>
-                                            @endcan
-                                            @can('sent_otp_mobile')
-                                            <a class="btn btn-primary btn-sm ml-2 sen_otp_to_mobile" data-id="{{isset($row->first_name) ? $i : '1'}}" name="verify_mobile_otp_no" id="verify_mobile_otp_no{{isset($row->first_name) ? $i : '1'}}" style="color:white;bottom: 15px;top: auto; display:{{ (isset($main[$j]['mobileOtpNo']->request_id)) ? 'none' : ''}}" > {{ isset($main[$j]['mobileOtpNo']->request_id) ? 'Verified' : 'Verify with OTP' }}</a> 
-                                            @endcan
-                                            @endif
-
-                                        </div>
-                                           </div>
-                                    <div class="col-md-2" id="toggleOtp{{isset($row->first_name) ? $i : '1'}}" style="display:none">
-                                        <div class="form-group" >
-                                               
-                                                <label for="txtEmail">OTP <span class="mandatory">*</span></label> 
-                                                <div class="relative">
-                                                @can('verify_otp_mobile')
-                                                    <a class="verify-owner-no verify-show verify_otp" name="verify_otp" data-id="{{isset($row->first_name) ? $i : '1'}}"> {{isset($main[$j]['mobileOtpNo']->request_id) ?  'Verified' : 'Verify' }}</a>
-                                                    @endcan
-                                                    <input type="text" name="otp_no[]"   maxlength="6" id="verify_otp_no{{isset($row->first_name) ? $i : '1'}}" value="" class="form-control mobileotpveri"  placeholder="Enter OTP" >
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                <div class="form-group">
+                                                    <label for="txtCreditPeriod" class="d-block"> Name <span class="mandatory">*</span> </label>
+                                                    <input type="hidden" name="ownerid[]" id="ownerid{{isset($manInfo['name']) ? $i : '1'}}" value="{{ $manInfo['owner_id'] }}">
+                                                    <input type="text" name="first_name[]" id="first_name{{isset($manInfo['name']) ? $i : '1'}}" vname="first_name1" value="{{$manInfo['name']}}" class="form-control first_name" placeholder="Enter First Name" >
                                                 </div>
-                                               <span class="text-success float-left" id="v6successpanverify{{isset($row->first_name) ? $i : '1'}}"> {{isset($main[$j]['mobileNo']->request_id) ? 'Verified Successfully' : '' }} </span>
-                                                <span class="text-danger float-left" id="v6failurepanverify{{isset($row->first_name) ? $i : '1'}}"> </span>
-                                                
                                             </div>
-                                      </div>  
-                                    <div class="col-md-2">
-                                         <div class="form-group" id="pOtpVeriView{{isset($row->first_name) ? $i : '1'}}" style="display:{{isset($main[$j]['mobileOtpNo']->request_id) ? 'inline' : 'none'}}">
-                                             <label class="d-block" >Verified  OTP</label> 
-                                             @can('mobile_otp_view')
-                                             <a data-toggle="modal"  data-target="#modalPromoter8" data-height="400px" data-width="100%" accesskey=""data-url ="{{route('mobile_otp_view',['type'=> 8,'ownerid' => $row->biz_owner_id ])}}"> <button class="btn-upload btn-sm" type="button" title="View Detail (Verify with OTP)" data-id="{{isset($row->first_name) ? $i : '1'}}" data-type="8"> <i class="fa fa-eye"></i></button></a>
-                                        @endcan
-                                      </div>
-                                    </div>
+                                    
+                                            <div class="col-md-2">
+                                                <div class="form-group password-input">
+                                                    <label for="txtPassword">Owner Type </label>
+                                                    <select class="form-control is_promoter" name="applicant_type[]" id="applicant_type{{isset($manInfo['name']) ? $i : '1'}}">
+                                                        <option value="" selected="selected"> Select Owner Type</option>
+                                                        <option value="1" @if($manInfo['owner_type'] == 1)  selected="selected" @endif> Is Promoter </option>
+                                                        <option value="2" @if($manInfo['owner_type'] == 2)  selected="selected" @endif> Key Management Person </option>
+                                                        <option value="3" @if($manInfo['owner_type'] == 3)  selected="selected" @endif> Co-Borrower </option>
+                                                        <option value="4" @if($manInfo['owner_type'] == 4)  selected="selected" @endif> Guarantor </option>
+                                                        <option value="5" @if($manInfo['owner_type'] == 5)  selected="selected" @endif> Authorised Signatory  </option>
+                                                    </select>
+                                                </div>
+                                            </div>
 
-                           
-                                </div>
-                                <!--<div class="row">
-                                    <div class="col-md-4">
-                                        <div class="form-group">
-                                            <label for="txtCreditPeriod">CKYC Ref No
-                                              
-                                            </label>
-                                            <input type="text" name="ckyc_ref_no[]" id="ckyc_ref_no{{isset($row->first_name) ? $i : '1'}}" value="{{$row->ckyc_ref_no ? $row->ckyc_ref_no : ''}}" class="form-control" placeholder="Enter CKYC Ref No." >
+                                            <div class="col-md-2">
+                                                <div class="form-group password-input">
+                                                    <label for="txtPassword">Shareholding (%)</label>
+                                                    <input type="hidden" name="isShareCheck[]" id="isShareCheck{{isset($manInfo['name']) ? $i : '1'}}" value="{{($manInfo['owner_type'] == 1) ?  '1' : '0'}}">
+                                                    <input type="text"  id="share_per{{isset($manInfo['name']) ? $i : '1'}}" name="share_per[]" data-id="{{isset($manInfo['name']) ? $i : '1'}}" maxlength="6"  value="{{($manInfo['shareholding'] == '0.00') ? '' : $manInfo['shareholding']}}" class="form-control share_per"  placeholder="Enter Shareholder" >
+                                                    <span class="error" id="shareCheck{{isset($manInfo['name']) ? $i : '1'}}"></span> 
+                                                </div>
+                                            </div>
+
+                                            <div class="col-md-4">
+                                                <div class="form-group password-input">
+                                                    <label for="txtPassword">DOB <span class="mandatory">*</span> </label>
+                                                    <input type="text" readonly="readonly" name="date_of_birth[]" id="date_of_birth{{isset($manInfo['name']) ? $i : '1'}}" value="{{ ($manInfo['dob']) ? date('d/m/Y', strtotime($manInfo['dob'])) : '' }}" class="form-control date_of_birth datepicker-dis-fdate"  placeholder="Enter Date Of Birth" >
+                                                </div>
+                                            </div>
                                         </div>
-                                    </div> 
-                                </div>-->
-                                <div class="row">
-                                    <div class="col-md-12">
-                                        <div class="form-group">
-                                            <label for="txtCreditPeriod">Comment
-                                              
-                                            </label>
-                                            <textarea class="form-control textarea" placeholder="Enter Comment" name="comment[]" id="comment{{isset($row->first_name) ? $i : '1'}}">{{$row->comment}}</textarea>
+
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                <div class="form-group password-input">
+                                                    <label for="txtPassword">Gender <span class="mandatory">*</span></label>
+                                                    <select class="form-control gender" name="gender[]" id="gender{{isset($manInfo['name']) ? $i : '1'}}">
+                                                        <option value=""> Select Gender</option>
+                                                        <option value="1" @if($manInfo['gender']==1)  selected="selected" @endif> Male </option>
+                                                        <option value="2" @if($manInfo['gender']==2)  selected="selected" @endif>Female </option>
+                                                        <option value="3" @if($manInfo['gender']==3)  selected="selected" @endif>Other </option>
+                                                    </select>
+                                                </div>
+                                            </div>
+
+                                            <div class="col-md-4">
+                                                <div class="form-group">
+                                                    <label for="txtCreditPeriod">PAN Number
+                                                        <span class="mandatory">{{($is_lease==0) ? '*' : '' }}</span>
+                                                        <span class="text-success" id="successpanverify{{isset($manInfo['name']) ? $i : '1'}}" style="display:{{ !empty($manInfo['is_pan_verified']) && $manInfo['is_pan_verified'] ? 'inline' : 'none' }}">
+                                                            <i class="fa fa-check-circle" aria-hidden="true"></i> 
+                                                            <i>Verified Successfully</i> 
+                                                        </span>
+                                                        <span class="text-danger" id="failurepanverify{{isset($manInfo['name']) ? $i : '1'}}" style="display:none;">
+                                                            <i class="fa fa-close" aria-hidden="true"></i> 
+                                                            <i>Not Verified</i> 
+                                                        </span>
+                                                    </label>
+                                                    @can('show_pan_verify_data')
+                                                        <a data-toggle="modal" id="ppanStatusVeriView{{isset($manInfo['name']) ? $i : '1'}}" data-target="#modalPromoter9" data-height="400px" data-width="100%" accesskey=""data-url ="{{route('show_pan_verify_data',['type'=>9,'ownerid' => $manInfo['owner_id'] ])}}" style="display:{{!empty($manInfo['is_pan_verified']) && $manInfo['is_pan_verified'] ? 'inline' : 'none'}}"> 
+                                                            <button class="btn-upload btn-sm" type="button" title="View Details (Veirfy Pan Status)" data-id="{{isset($manInfo['name']) ? $i : '1'}}" data-type="3"> 
+                                                                <i class="fa fa-eye"></i>
+                                                            </button>
+                                                        </a>
+                                                    @endcan
+                                                    <div class="relative">
+                                                    @if($view_only)
+                                                        @can('chk_user_pan_karza')
+                                                            <a href="javascript:void(0);" data-id="{{isset($manInfo['name']) ? $i : '1'}}" id="pan_verify{{isset($manInfo['name']) ? $i : '1'}}" class="verify-owner-no promoter_pan_verify" style="pointer-events:{{!empty($manInfo['is_pan_verified']) && $manInfo['is_pan_verified'] ? 'none' : '' }}">{{!empty($manInfo['is_pan_verified']) && $manInfo['is_pan_verified'] ?  'Verified' : 'Verify' }}</a>
+                                                        @endcan
+                                                    @endif
+                                                    <input type="text" name="pan_no[]" id="pan_no{{isset($manInfo['name']) ? $i : '1'}}" value="{{!empty($manInfo['pan_no']) ?  $manInfo['pan_no'] : '' }}" class="form-control pan_no" placeholder="Enter Pan Number" {{!empty($manInfo['is_pan_verified']) && $manInfo['is_pan_verified'] ? 'readonly' : '' }}>
+                                                    </div>
+                                                    <input name="response[]" id="response{{isset($manInfo['name']) ? $i : '1'}}" type="hidden" value="">                       
+                                                </div>
+                                            </div>
+
+                                            <div class="col-md-4">
+                                                <div class="form-group">
+                                                    <label for="txtEmail">Designation <span class="mandatory"></span> </label>
+                                                    <input type="text" name="designation[]" id="designation{{isset($manInfo['name']) ? $i : '1'}}" value="{{$manInfo['designation']}}" class="form-control designation"  placeholder="Enter Designation">
+                                                </div>
+                                            </div>
                                         </div>
-                                    </div> 
-                                </div>
 
-                                <h5 class="card-title form-head-h5 mt-3 mb-0 pb-0">Document  <!--<small style="color:red"> * </small> --></h5>	
-                                <!-- <i  style="color:red"> (minimum one document upload)</i> -->
-                                <div class="row mt-2 mb-4">
-                                    <div class="col-md-12">
-                                        <div class="prtm-full-block">       
-                                            <div class="prtm-block-content">
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                <div class="form-group">
+                                                    <label for="txtEmail">Other Ownerships</label>
+                                                    <input type="text" name="other_ownership[]" id="other_ownership{{isset($manInfo['name']) ? $i : '1'}}" value="{{$manInfo['other_ownership']}}" class="form-control other_ownership"  placeholder="Other Ownership">
+                                                </div>
+                                            </div>
 
-                                                <table class="table table-striped table-hover">
-                                                    <thead class="thead-primary">
-                                                        <tr>
-                                                            <th class="text-left">S.No</th>
-                                                            <th>Document Name</th>
-                                                            <th>Document ID No.</th>
-                                                            <th colspan="2">Action</th>
-                                                        </tr>
-                                                    </thead> 
-                                                    <tbody>
-                                                        <tr>
-                                                            <td class="text-left">1</td>
-                                                            <td width="30%">Pan Card</td>
-                                                            <td width="30%" >
-                                                                <div class="col-md-12">
-                                                                    @if(request()->get('view_only'))
-                                                                    @can('chk_user_pan_status_karza')
-                                                                    <a href="javascript:void(0);" id='ppan{{isset($row->first_name) ? $i : '1'}}' data-id="{{isset($row->first_name) ? $i : '1'}}" class="verify-owner-no verify-show veripan" style="top:0px; pointer-events:{{ (isset($main[$j]['panNo']->requestId)) ? 'none' : ''}}">{{ isset($main[$j]['panNo']->requestId) ? 'Verified' : 'Verify' }}</a>
-                                                                    @endcan
-                                                                    @endif
-                                                                    <input type="text" {{isset($main[$j]['panNo']->requestId) ? "readonly='readonly'" : '' }} value="{{ isset($main[$j]['panNo']->requestId) ? $main[$j]['panNo']->requestId : $row->pan_card }}"  name="veripan[]" id="veripan{{isset($row->first_name) ? $i : '1'}}"  class="form-control verifydl"  placeholder="Enter PAN Number">
-                                                                    <span class="text-success float-left" id="v1successpanverify{{isset($row->first_name) ? $i : '1'}}" style="display:{{isset($main[$j]['panNo']->requestId) ? 'inline' : 'none'}}"><i class="fa fa-check-circle" aria-hidden="true"></i> <i>Verified Successfully</i> </span>
-                                                                    <span class="text-danger float-left" id="v1failurepanverify{{isset($row->first_name) ? $i : '1'}}" style="display:none;"><i class="fa fa-close" aria-hidden="true"></i> <i>Not Verified</i> </span>
+                                            <div class="col-md-8">
+                                                <div class="form-group">
+                                                    <label for="txtCreditPeriod">Address <span class="mandatory">*</span> </label>
+                                                    <textarea  style="height: 35px;" class="form-control textarea address" placeholder="Enter Address" name="owner_addr[]" id="address{{isset($manInfo['name']) ? $i : '1'}}">{{$manInfo['address'] ?? ''}}</textarea>
+                                                </div>
+                                            </div>
+                                        </div>
 
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                <div class="form-group INR">
+                                                    <label for="txtEmail">Networth </label>
+                                                    <div class="relative">
+                                                        <a href="javascript:void(0);" class="remaining"><i class="fa fa-inr" aria-hidden="true"></i></a>
+                                                        <input type="text" name="networth[]" maxlength='15' id="networth{{isset($manInfo['name']) ? $i : '1'}}" value="{{number_format(($manInfo['networth'] ?? 0))}}" class="form-control networth"  placeholder="Enter Networth">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-3">
+                                                <div class="form-group">
+                                                    <label for="txtEmail">Email </label>
+                                                <input type="text" name="email[]"  id="email{{isset($manInfo['name']) ? $i : '1'}}" value="{{ $manInfo['email'] ?? '' }}" class="form-control email"  placeholder="Enter Email">
+                                                </div>
+                                            </div>
+                                            <div class="col-md-2">
+                                                <div class="form-group">
+                                                    <label for="txtEmail">Mobile <span class="mandatory">{{($is_lease==0) ? '*' : '' }}</span></label> 
+                                                    <input type="text" name="mobile_no[]"  {{isset($manInfo['mobileNo']->mobile) ? 'readonly' : '' }} maxlength="10" id="mobile_no{{isset($manInfo['name']) ? $i : '1'}}" value="{{ isset($manInfo['mobileNo']->mobile) ? $manInfo['mobileNo']->mobile : $manInfo['mobile'] ?? '' }}" class="form-control mobileveri"  placeholder="Enter Mobile no">
+                                                    <span class="text-success float-left findMobileverify" id="v5successpanverify{{isset($manInfo['name']) ? $i : '1'}}"> 
+                                                        <i class="fa fa-{{isset($manInfo['mobileNo']->mobile) ? 'check-circle' : '' }}" aria-hidden="true"></i>
+                                                        <i>{{isset($manInfo['mobileNo']->mobile) ? 'Verified Successfully' : '' }}</i> 
+                                                    </span>
+                                                    <span class="text-danger float-left" id="v5failurepanverify{{isset($manInfo['name']) ? $i : '1'}}"> </span>
+                                                </div>
+                                            </div>
+
+                                            <div class="col-md-3">
+                                                <div class="form-group" >
+                                                    <label class="d-block">&nbsp;</label>
+                                                    @can('mobile_verify')
+                                                    <a data-toggle="modal" id="pMobileVeriView{{isset($manInfo['name']) ? $i : '1'}}" data-target="#modalPromoter7" data-height="400px" data-width="100%" accesskey="" data-url ="{{ route('mobile_verify',['type' => 7,'ownerid' => $manInfo['owner_id']]) }}" style="display:{{isset($manInfo['mobileNo']->mobile) ? 'inline' : 'none'}}">
+                                                        <button class="btn-upload btn-sm" type="button" title="View Details (Verify without OTP)" data-id="{{isset($manInfo['name']) ? $i : '1'}}" data-type="7">
+                                                            <i class="fa fa-eye"></i>
+                                                        </button>
+                                                    </a>
+                                                    @endcan
+                                                    @if($view_only)
+                                                        @can('verify_mobile')
+                                                        <a class="btn btn-primary  btn-sm verify_mobile_no" data-id="{{isset($manInfo['name']) ? $i : '1'}}" name="verify_mobile_no" id="verify_mobile_no{{isset($manInfo['name']) ? $i : '1'}}" style="color:white;bottom: 15px;top: auto;  display:{{ (isset($manInfo['mobileNo']->mobile)) ? 'none' : ''}}" >
+                                                            {{ isset($manInfo['mobileNo']->mobile) ? 'Verified' : 'Verify without OTP' }}</a>
+                                                        @endcan
+                                                        @can('sent_otp_mobile')
+                                                        <a class="btn btn-primary btn-sm ml-2 sen_otp_to_mobile" data-id="{{isset($manInfo['name']) ? $i : '1'}}" name="verify_mobile_otp_no" id="verify_mobile_otp_no{{isset($manInfo['name']) ? $i : '1'}}" style="color:white;bottom: 15px;top: auto; display:{{ (isset($manInfo['mobileOtpNo']['request_id'])) ? 'none' : ''}}" >
+                                                            {{ isset($manInfo['mobileOtpNo']['request_id']) ? 'Verified' : 'Verify with OTP' }}</a>
+                                                        @endcan
+                                                    @endif
+                                                </div>
+                                            </div>
+
+                                            <div class="col-md-2" id="toggleOtp{{isset($manInfo['name']) ? $i : '1'}}" style="display:none">
+                                                <div class="form-group" >
+                                                    <label for="txtEmail">OTP <span class="mandatory">*</span></label>
+                                                    <div class="relative">
+                                                        @can('verify_otp_mobile')
+                                                            <a class="verify-owner-no verify-show verify_otp" name="verify_otp" data-id="{{isset($manInfo['name']) ? $i : '1'}}"> {{isset($manInfo['mobileOtpNo']['request_id']) ?  'Verified' : 'Verify' }}</a>
+                                                        @endcan
+                                                        <input type="text" name="otp_no[]" maxlength="6" id="verify_otp_no{{isset($manInfo['name']) ? $i : '1'}}" value="" class="form-control mobileotpveri"  placeholder="Enter OTP" >
+                                                    </div>
+                                                    <span class="text-success float-left" id="v6successpanverify{{isset($manInfo['name']) ? $i : '1'}}"> {{isset($manInfo['mobileNo']['request_id']) ? 'Verified Successfully' : '' }} </span>
+                                                    <span class="text-danger float-left" id="v6failurepanverify{{isset($manInfo['name']) ? $i : '1'}}"> </span>
+                                                </div>
+                                            </div>
+
+                                            <div class="col-md-2">
+                                                <div class="form-group" id="pOtpVeriView{{isset($manInfo['name']) ? $i : '1'}}" style="display:{{isset($manInfo['mobileOtpNo']['request_id']) ? 'inline' : 'none'}}">
+                                                    <label class="d-block" >Verified  OTP</label>
+                                                    @can('mobile_otp_view')
+                                                        <a data-toggle="modal"  data-target="#modalPromoter8" data-height="400px" data-width="100%" accesskey=""data-url ="{{route('mobile_otp_view',['type'=> 8,'ownerid' => $manInfo['owner_id'] ])}}"> <button class="btn-upload btn-sm" type="button" title="View Detail (Verify with OTP)" data-id="{{isset($manInfo['name']) ? $i : '1'}}" data-type="8"> <i class="fa fa-eye"></i></button></a>
+                                                    @endcan
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="row">
+                                            <div class="col-md-12">
+                                                <div class="form-group">
+                                                    <label for="txtCreditPeriod">Comment </label>
+                                                    <textarea class="form-control textarea" placeholder="Enter Comment" name="comment[]" id="comment{{isset($manInfo['name']) ? $i : '1'}}">{{$manInfo['comment']}}</textarea>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <h5 class="card-title form-head-h5 mt-3 mb-0 pb-0">Document</h5>
+                                        <div class="row mt-2 mb-4">
+                                            <div class="col-md-12">
+                                                <div class="prtm-full-block">
+                                                    <div class="prtm-block-content">
+                                                        <table class="table table-striped table-hover">
+                                                            <thead class="thead-primary">
+                                                                <tr>
+                                                                    <th class="text-left">S.No</th>
+                                                                    <th>Document Name</th>
+                                                                    <th>Document ID No.</th>
+                                                                    <th colspan="2">Action</th>
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody>
+                                                                <tr>
+                                                                    <td class="text-left">1</td>
+                                                                    <td width="30%">Pan Card</td>
+                                                                    <td width="30%" >
+                                                                        <div class="col-md-12">
+                                                                            @if($view_only)
+                                                                                @can('chk_user_pan_status_karza')
+                                                                                    <a href="javascript:void(0);" id='ppan{{isset($manInfo['name']) ? $i : '1'}}' data-id="{{isset($manInfo['name']) ? $i : '1'}}" class="verify-owner-no verify-show veripan" style="top:0px; pointer-events:{{ !empty($manInfoDoc['pan_card']['is_verify']) && $manInfoDoc['pan_card']['is_verify'] ? 'none' : ''}}" data-doc_type_name="pan_card">{{ !empty($manInfoDoc['pan_card']['is_verify']) && $manInfoDoc['pan_card']['is_verify'] ? 'Verified' : 'Verify' }}</a>
+                                                                                @endcan
+                                                                            @endif
+                                                                            <input type="text" {{ !empty($manInfoDoc['pan_card']['is_verify']) && $manInfoDoc['pan_card']['is_verify'] ? "readonly" : '' }} value="{{ !empty($manInfoDoc['pan_card']['id_no']) ? $manInfoDoc['pan_card']['id_no'] : ($manInfo['pan_card'] ?? '') }}"  name="veripan[]" id="veripan{{isset($manInfo['name']) ? $i : '1'}}"  class="form-control verifydl"  placeholder="Enter PAN Number">
+                                                                            <span class="text-success float-left" id="v1successpanverify{{isset($manInfo['name']) ? $i : '1'}}" style="display:{{!empty($manInfoDoc['pan_card']['is_verify']) && $manInfoDoc['pan_card']['is_verify'] ? 'inline' : 'none'}}"><i class="fa fa-check-circle" aria-hidden="true"></i> <i>Verified Successfully</i> </span>
+                                                                            <span class="text-danger float-left" id="v1failurepanverify{{isset($manInfo['name']) ? $i : '1'}}" style="display:none;"><i class="fa fa-close" aria-hidden="true"></i> <i>Not Verified</i> </span>
+                                                                        </div>
+                                                                    </td>
+                                                                    <td width="14%">
+
+                                                                        <div class="file-browse float-left position-seta">
+                                                                        @can('show_pan_data')
+                                                                            <a data-toggle="modal" id="ppanVeriView{{isset($manInfo['name']) ? $i : '1'}}" data-target="#modalPromoter" data-height="400px" data-width="100%" accesskey=""data-url ="{{route('show_pan_data',['type'=>3,'ownerid' => $manInfo['owner_id'] ])}}" style="display:{{!empty($manInfoDoc['pan_card']['is_verify']) && $manInfoDoc['pan_card']['is_verify'] ? 'inline' : 'none'}}"> <button class="btn-upload btn-sm" type="button" title="View Details (Pan Status)" data-id="{{isset($manInfo['name']) ? $i : '1'}}" data-type="3"> <i class="fa fa-eye"></i></button>
+                                                                            </a>
+                                                                        @endcan
+                                                                            @if(!empty($manInfoDoc['pan_card']['file']['id']))
+                                                                            @can('download_storage_file')
+                                                                            <a  href="{{ !empty($manInfoDoc['pan_card']['file']['id']) ? route('download_storage_file', ['file_id' => $manInfoDoc['pan_card']['file']['id'] ]) : '' }}" title="download" class="btn-upload btn-sm" type="button" id="pandown{{isset($manInfo['name']) ? $i : '1'}}" style="display:{{ !empty($manInfoDoc['pan_card']['file']['id']) ? 'inline' : 'none'}}"> <i class="fa fa-download"></i></a>
+                                                                            @endcan
+                                                                            @can('view_uploaded_doc')
+                                                                            <a  href="{{ !empty($manInfoDoc['pan_card']['file']['id']) ? route('view_uploaded_doc', ['file_id' => $manInfoDoc['pan_card']['file']['id'] ]) : '' }}" title="View File" class="btn-upload btn-sm" target="_blank" type="button" id="pandown{{isset($manInfo['name']) ? $i : '1'}}" style="display:{{ !empty($manInfoDoc['pan_card']['file']['id']) ? 'inline' : 'none'}}" target="_blank"> <i class="fa fa-eye"></i></a>
+                                                                            @endcan
+                                                                            @can('protmoter_document_delete')
+                                                                            <button type="button" class="btn-upload   btn-sm" title="Delete Document" style="display:{{ !empty($manInfoDoc['pan_card']['file']['id']) ? 'inline' : 'none'}}" name="panfiles[]" id="panfiles{{isset($manInfo['name']) ? $i : '1'}}" onclick="deleteFile({{isset($manInfo['name']) ? $i : '1'}}, {{ $manInfo['owner_id'] }}, {{ !empty($manInfoDoc['pan_card']['file']['id']) ? $manInfoDoc['pan_card']['file']['id'] : 'null' }}, 2, 'pan_card')" ><i class="fa fa-times-circle-o error"></i></button>
+                                                                            @endcan
+                                                                            @endif
+                                                                        </div>
+                                                                    </td>
+                                                                    <td width="14%">
+
+                                                                        <div class="upload-btn-wrapper setupload-btn">
+                                                                            @if($view_only)
+                                                                            @can('promoter_document_save')
+                                                                            <button type='button' class="btn">Upload</button>
+                                                                            @endcan
+                                                                            @endif
+                                                                            <input type="file" class="panfile" data-id="{{isset($manInfo['name']) ? $i : '1'}}"  name="panfile[]" id="panfile{{isset($manInfo['name']) ? $i : '1'}}" onchange="uploadFile({{isset($manInfo['name']) ? $i : '1'}}, {{ $manInfo['owner_id'] }}, 2, 'pan_card')">
+                                                                            <span class="fileUpload"></span>
+                                                                            @if(!empty($manInfoDoc['pan_card']['is_ovd_enabled']) && $manInfoDoc['pan_card']['is_ovd_enabled'] == 1)
+                                                                            <span class="d-flex align-items-center">
+                                                                                <input type="checkbox" name="is_ovd[]" value="2" {{ $manInfoDoc['pan_card']['is_ovd_enabled'] == 1 ? 'checked' : 'disabled'}} class="mr-2" disabled>
+                                                                                <span class="white-space-nowrap">IS OVD Enabled</span>
+                                                                            </span>
+                                                                            @endif
+                                                                        </div>
+                                                                    </td>
+                                                                </tr>
+                                                                <tr>
+                                                                    <td class="text-left">2</td>
+                                                                    <td width="30%">Driving License</td>
+                                                                    <td width="30%" >
+                                                                        <div class="col-md-12">
+                                                                            @if($view_only)
+                                                                                @can('chk_user_dl_karza')
+                                                                                    <a href="javascript:void(0);" id='ddriving{{isset($manInfo['name']) ? $i : '1'}}' data-id="{{isset($manInfo['name']) ? $i : '1'}}" class="verify-owner-no verify-show veridl" style="top:0px; pointer-events:{{ !empty($manInfoDoc['driving_license']['is_verify']) && $manInfoDoc['driving_license']['is_verify'] ? 'none' : ''}}" data-doc_type_name="driving_license">{{ !empty($manInfoDoc['driving_license']['is_verify']) && $manInfoDoc['driving_license']['is_verify'] ? 'Verified' : 'Verify' }}</a>
+                                                                                @endcan
+                                                                            @endif
+                                                                            <input type="text" {{ !empty($manInfoDoc['driving_license']['is_verify']) && $manInfoDoc['driving_license']['is_verify'] ? "readonly" : '' }} value="{{ !empty($manInfoDoc['driving_license']['id_no']) ? $manInfoDoc['driving_license']['id_no'] : ($manInfo['driving_license'] ?? '') }}" name="verifydl[]" id="verifydl{{isset($manInfo['name']) ? $i : '1'}}" class="form-control verifydl"  placeholder="Enter DL Number">
+                                                                            <span class="text-success float-left" id="v2successpanverify{{isset($manInfo['name']) ? $i : '1'}}" style="display:{{!empty($manInfoDoc['driving_license']['is_verify']) && $manInfoDoc['driving_license']['is_verify'] ? 'inline' : 'none'}}"><i class="fa fa-check-circle" aria-hidden="true"></i> <i>Verified Successfully</i> </span>
+                                                                            <span class="text-danger float-left" id="v2failurepanverify{{isset($manInfo['name']) ? $i : '1'}}" style="display:none;"><i class="fa fa-close" aria-hidden="true"></i> <i>Not Verified</i> </span>
+                                                                        </div>
+                                                                    </td>
+                                                                    <td width="14%">
+                                                                        <div class="file-browse float-left position-seta">
+                                                                            @if($view_only)
+                                                                                @can('show_dl_data')
+                                                                                    <a data-toggle="modal" id="ddrivingVeriView{{isset($manInfo['name']) ? $i : '1'}}"  data-target="#modalPromoter1" data-height="400" data-width="100%" accesskey="" data-url="{{route('show_dl_data',['type'=>'5','ownerid' => $manInfo['owner_id'] ])}}" style="display:{{ !empty($manInfoDoc['driving_license']['is_verify']) && $manInfoDoc['driving_license']['is_verify'] ? 'inline' : 'none'}}">  <button class="btn-upload btn-sm" type="button" title="View Details (Driving License)" data-id="{{isset($manInfo['name']) ? $i : '1'}}" data-type="5" > <i class="fa fa-eye"></i></button></a>
+                                                                                @endcan
+                                                                            @endif
+                                                                            @if(!empty($manInfoDoc['driving_license']['file']['id']))
+                                                                            @can('download_storage_file')
+                                                                            <a  href="{{ !empty($manInfoDoc['driving_license']['file']['id']) ? route('download_storage_file', ['file_id' => $manInfoDoc['driving_license']['file']['id'] ]) : '' }}" class="btn-upload   btn-sm" type="button" id="dldown{{isset($manInfo['name']) ? $i : '1'}}" style="display:{{ !empty($manInfoDoc['driving_license']['file']['id']) ? 'inline' : 'none'}}" download> <i class="fa fa-download"></i></a>
+                                                                            @endcan
+                                                                            @can('view_uploaded_doc')
+                                                                            <a  href="{{ !empty($manInfoDoc['driving_license']['file']['id']) ? route('view_uploaded_doc', ['file_id' => $manInfoDoc['driving_license']['file']['id'] ]) : '' }}" title="View File" class="btn-upload   btn-sm" type="button" id="dldown{{isset($manInfo['name']) ? $i : '1'}}" style="display:{{ !empty($manInfoDoc['driving_license']['file']['id']) ? 'inline' : 'none'}}" target="_blank"> <i class="fa fa-eye"></i></a>
+                                                                            @endcan
+                                                                            @can('protmoter_document_delete')
+                                                                            <button type="button"  class="btn-upload   btn-sm" title="Delete Document" style="display:{{ !empty($manInfoDoc['driving_license']['file']['id']) ? 'inline' : 'none'}}" name="dlfiles[]" id="dlfiles{{isset($manInfo['name']) ? $i : '1'}}" onclick="deleteFile({{isset($manInfo['name']) ? $i : '1'}}, {{ $manInfo['owner_id'] }}, {{ !empty($manInfoDoc['driving_license']['file']['id']) ? $manInfoDoc['driving_license']['file']['id'] : 'null' }}, 31, 'driving_license')" ><i class="fa fa-times-circle-o error"></i></button>
+                                                                            @endcan
+                                                                            @endif
+                                                                        </div>
+                                                                    </td>
+                                                                    <td width="14%">
+                                                                        <div class="upload-btn-wrapper setupload-btn">
+                                                                            @if($view_only)
+                                                                            @can('promoter_document_save')
+                                                                            <button type='button' class="btn">Upload</button>
+                                                                            @endcan
+                                                                            @endif
+                                                                            <input type="file" name="dlfile[]" data-id="{{isset($manInfo['name']) ? $i : '1'}}"  id="dlfile{{isset($manInfo['name']) ? $i : '1'}}" class="dlfile"  onchange="uploadFile({{isset($manInfo['name']) ? $i : '1'}}, {{ $manInfo['owner_id'] }}, 31, 'driving_license')">
+                                                                            @if(!empty($manInfoDoc['driving_license']['file']['id']))
+                                                                            <span class="d-flex align-items-center">
+                                                                                <input type="checkbox" name="is_ovd[]" value="31" {{ !empty($manInfoDoc['driving_license']['is_ovd_enabled']) && $manInfoDoc['driving_license']['is_ovd_enabled'] == 1 ? 'checked' : 'disabled'}} class="mr-2" disabled>
+                                                                                <span class="white-space-nowrap">IS OVD Enabled</span>
+                                                                            </span>                                                                      
+                                                                            @endif
+                                                                            
+                                                                        </div>
+                                                                    </td>
+                                                                </tr>
+                                                                <tr>
+                                                                    <td class="text-left">3</td>
+                                                                    <td width="30%">Voter ID</td>
+                                                                    <td width="30%" >
+                                                                        <div class="col-md-12">
+                                                                            @if($view_only)
+                                                                                @can('chk_user_voterid_karza')
+                                                                                    <a href="javascript:void(0);" id='vvoter{{isset($manInfo['name']) ? $i : '1'}}' data-id="{{isset($manInfo['name']) ? $i : '1'}}" class="verify-owner-no verify-show verivoter" style="top:0px; pointer-events:{{ !empty($manInfoDoc['voter_id']['is_verify']) && $manInfoDoc['voter_id']['is_verify'] ? 'none' : ''}}" data-doc_type_name="voter_id">{{ !empty($manInfoDoc['voter_id']['is_verify']) && $manInfoDoc['voter_id']['is_verify'] ? 'Verified' : 'Verify' }}</a>
+                                                                                @endcan
+                                                                            @endif
+                                                                            <input type="text" {{!empty($manInfoDoc['voter_id']['is_verify']) && $manInfoDoc['voter_id']['is_verify'] ? "readonly" : '' }} value="{{ !empty($manInfoDoc['voter_id']['id_no']) ? $manInfoDoc['voter_id']['id_no'] : ($manInfo['voter_id'] ?? '') }}" name="verifyvoter[]" id="verifyvoter{{isset($manInfo['name']) ? $i : '1'}}"  class="form-control verifyvoter"  placeholder="Enter Voter's Epic Number">
+                                                                            <span class="text-success float-left" id="v3successpanverify{{isset($manInfo['name']) ? $i : '1'}}" style="display:{{!empty($manInfoDoc['voter_id']['is_verify']) && $manInfoDoc['voter_id']['is_verify'] ? 'inline' : 'none'}}"><i class="fa fa-check-circle" aria-hidden="true"></i> <i>Verified Successfully</i> </span>
+                                                                            <span class="text-danger float-left" id="v3failurepanverify{{isset($manInfo['name']) ? $i : '1'}}" style="display:none;"><i class="fa fa-close" aria-hidden="true"></i> <i>Not Verified</i> </span>
+                                                                        </div>
+                                                                    </td>
+                                                                    <td width="14%">
+                                                                        <div class="file-browse float-left position-seta">
+                                                                        @can('show_voter_data')
+                                                                            <a data-toggle="modal" id="vvoterVeriView{{isset($manInfo['name']) ? $i : '1'}}"  data-target="#modalPromoter2" data-height="400px" data-width="100%" accesskey=""data-url ="{{route('show_voter_data',['type'=>4,'ownerid' => $manInfo['owner_id'] ])}}" style="display:{{!empty($manInfoDoc['voter_id']['is_verify']) && $manInfoDoc['voter_id']['is_verify'] ? 'inline' : 'none'}}">   <button class="btn-upload btn-sm" type="button" title="View Details (Voter ID)" data-id="{{isset($manInfo['name']) ? $i : '1'}}" data-type="4"> <i class="fa fa-eye"></i></button></a>
+                                                                        @endcan
+                                                                            @if(!empty($manInfoDoc['voter_id']['file']['id']))
+                                                                            @can('download_storage_file')
+                                                                            <a  href="{{ !empty($manInfoDoc['voter_id']['file']['id']) ? route('download_storage_file', ['file_id' => $manInfoDoc['voter_id']['file']['id'] ]) : '' }}" class="btn-upload   btn-sm" type="button" id="voterdown{{isset($manInfo['name']) ? $i : '1'}}" style="display:{{ !empty($manInfoDoc['voter_id']['file']['id']) ? 'inline' : 'none'}}" download> <i class="fa fa-download"></i></a>
+                                                                            @endcan
+                                                                            @can('view_uploaded_doc')
+                                                                            <a  href="{{ !empty($manInfoDoc['voter_id']['file']['id']) ? route('view_uploaded_doc', ['file_id' => $manInfoDoc['voter_id']['file']['id'] ]) : '' }}" title="View File" class="btn-upload   btn-sm" type="button" id="voterdown{{isset($manInfo['name']) ? $i : '1'}}" style="display:{{ !empty($manInfoDoc['voter_id']['file']['id']) ? 'inline' : 'none'}}" target="_blank"> <i class="fa fa-eye"></i></a>
+                                                                            @endcan
+                                                                            @can('protmoter_document_delete')
+                                                                            <button type="button"  class="btn-upload   btn-sm" title="Delete Document" style="display:{{ !empty($manInfoDoc['voter_id']['file']['id']) ? 'inline' : 'none'}}" name="voterdowns[]" id="voterdowns{{isset($manInfo['name']) ? $i : '1'}}" onclick="deleteFile({{isset($manInfo['name']) ? $i : '1'}}, {{ $manInfo['owner_id'] }}, {{ !empty($manInfoDoc['voter_id']['file']['id']) ? $manInfoDoc['voter_id']['file']['id'] : 'null' }}, 30, 'voter_id')" ><i class="fa fa-times-circle-o error"></i></button>
+                                                                            @endcan
+                                                                            @endif
+                                                                        </div>
+                                                                    </td>
+                                                                    <td width="14%">
+                                                                        <div class="upload-btn-wrapper setupload-btn">
+                                                                            @if($view_only)
+                                                                            @can('promoter_document_save')
+                                                                            <button type='button' class="btn">Upload</button>
+                                                                            @endcan
+                                                                            @endif
+                                                                            <input type="file" name="voterfile[]" data-id="{{isset($manInfo['name']) ? $i : '1'}}"  class="voterfile" id="voterfile{{isset($manInfo['name']) ? $i : '1'}}"  onchange="uploadFile({{isset($manInfo['name']) ? $i : '1'}}, {{ $manInfo['owner_id'] }}, 30, 'voter_id')">
+                                                                            @if(!empty($manInfoDoc['voter_id']['is_ovd_enabled']))
+                                                                            <span class="d-flex align-items-center">
+                                                                                <input type="checkbox" name="is_ovd[]" value="30" {{ $manInfoDoc['voter_id']['is_ovd_enabled'] == 1 ? 'checked' : 'disabled'}} class="mr-2" disabled>
+                                                                                <span class="white-space-nowrap">IS OVD Enabled</span>
+                                                                            </span>   
+                                                                            @endif
+                                                                        </div>
+                                                                    </td>
+                                                                </tr>
+                                                                <tr>
+                                                                    <td class="text-left">4</td>
+                                                                    <td width="30%">Passport</td>
+                                                                    <td width="30%" >
+                                                                        <div class="col-md-12">
+                                                                            @if($view_only)
+                                                                            @can('chk_user_passport_karza')
+                                                                            <a href="javascript:void(0);" id='ppassport{{isset($manInfo['name']) ? $i : '1'}}' data-id="{{isset($manInfo['name']) ? $i : '1'}}" class="verify-owner-no verify-show veripass" style="top:0px; pointer-events:{{ (!empty($manInfoDoc['passport']['is_verify']) && $manInfoDoc['passport']['is_verify']) ? 'none' : ''}}" data-doc_type_name="passport">{{ !empty($manInfoDoc['passport']['is_verify']) && $manInfoDoc['passport']['is_verify'] ? 'Verified' : 'Verify' }}</a>
+                                                                            @endcan
+                                                                            @endif
+                                                                            <input type="text"  {{ !empty($manInfoDoc['passport']['is_verify']) && $manInfoDoc['passport']['is_verify'] ? "readonly" : '' }}  value="{{ !empty($manInfoDoc['passport']['id_no']) ? $manInfoDoc['passport']['id_no'] : ($manInfo['passport'] ?? '') }}" name="verifypassport[]" id="verifypassport{{isset($manInfo['name']) ? $i : '1'}}"  class="form-control verifypassport" placeholder="Enter File Number">
+                                                                            <span class="text-success float-left" id="v4successpanverify{{isset($manInfo['name']) ? $i : '1'}}"  style="display:{{!empty($manInfoDoc['passport']['is_verify']) && $manInfoDoc['passport']['is_verify'] ? 'inline' : 'none'}}"><i class="fa fa-check-circle" aria-hidden="true"></i> <i>Verified Successfully</i> </span>
+                                                                            <span class="text-danger float-left" id="v4failurepanverify{{isset($manInfo['name']) ? $i : '1'}}"  style="display:none;"><i class="fa fa-close" aria-hidden="true"></i> <i>Not Verified</i> </span>
+                                                                        </div>
+                                                                    </td>
+                                                                    <td width="14%">
+                                                                        <div class="file-browse float-left position-seta">
+                                                                        @can('show_pass_data')
+                                                                            <a data-toggle="modal" id="ppassportVeriView{{isset($manInfo['name']) ? $i : '1'}}" data-target="#modalPromoter3" data-height="400px" data-width="100%" accesskey=""data-url ="{{route('show_pass_data',['type'=>6,'ownerid' => $manInfo['owner_id'] ])}}"  style="display:{{!empty($manInfoDoc['passport']['is_verify']) && $manInfoDoc['passport']['is_verify'] ? 'inline' : 'none'}}">     <button class="btn-upload btn-sm" type="button" title="View Details (Passport)" data-id="{{isset($manInfo['name']) ? $i : '1'}}" data-type="6"> <i class="fa fa-eye"></i></button></a>
+                                                                        @endcan
+                                                                            @if(!empty($manInfoDoc['passport']['file']['id']))
+                                                                            @can('download_storage_file')
+                                                                            <a  href="{{ !empty($manInfoDoc['passport']['file']['id']) ? route('download_storage_file', ['file_id' => $manInfoDoc['passport']['file']['id'] ]) : '' }}" class="btn-upload   btn-sm" type="button" id="passdown{{isset($manInfo['name']) ? $i : '1'}}" style="display:{{ !empty($manInfoDoc['passport']['file']['id']) ? 'inline' : 'none'}}" download> <i class="fa fa-download"></i></a>
+                                                                            @endcan
+                                                                            @can('view_uploaded_doc')
+                                                                            <a  href="{{ !empty($manInfoDoc['passport']['file']['id']) ? route('view_uploaded_doc', ['file_id' => $manInfoDoc['passport']['file']['id'] ]) : '' }}" title="View File" class="btn-upload   btn-sm" type="button" id="passdown{{isset($manInfo['name']) ? $i : '1'}}" style="display:{{ !empty($manInfoDoc['passport']['file']['id']) ? 'inline' : 'none'}}" target="_blank"> <i class="fa fa-eye"></i></a>
+                                                                            @endcan
+                                                                            @can('protmoter_document_delete')
+                                                                            <button type="button"  class="btn-upload   btn-sm" title="Delete Document" style="display:{{ !empty($manInfoDoc['passport']['file']['id']) ? 'inline' : 'none'}}"  name="passportfiles[]" id="passportfiles{{isset($manInfo['name']) ? $i : '1'}}" onclick="deleteFile({{isset($manInfo['name']) ? $i : '1'}}, {{ $manInfo['owner_id'] }}, {{ !empty($manInfoDoc['passport']['file']['id']) ? $manInfoDoc['passport']['file']['id'] : 'null' }}, 32, 'passport')" ><i class="fa fa-times-circle-o error"></i></button>
+                                                                            @endcan
+                                                                            @endif
+                                                                        </div>
+                                                                    </td>
+                                                                    <td width="14%">
+                                                                        <div class="upload-btn-wrapper setupload-btn">
+                                                                            @if($view_only)
+                                                                            @can('promoter_document_save')
+                                                                            <button type='button' class="btn">Upload</button>
+                                                                            @endcan
+                                                                            @endif
+                                                                            <input type="file" name="passportfile[]" data-id="{{isset($manInfo['name']) ? $i : '1'}}" class="passportfile" id="passportfile{{isset($manInfo['name']) ? $i : '1'}}"  onchange="uploadFile({{isset($manInfo['name']) ? $i : '1'}}, {{ $manInfo['owner_id'] }}, 32, 'passport')">
+                                                                            @if(!empty($manInfoDoc['passport']['is_ovd_enabled']))
+                                                                            <span class="d-flex align-items-center">
+                                                                                <input type="checkbox" name="is_ovd[]" value="32" {{ $manInfoDoc['passport']['is_ovd_enabled'] == 1 ? 'checked' : 'disabled'}} class="mr-2" disabled>
+                                                                                <span class="white-space-nowrap">IS OVD Enabled</span>
+                                                                            </span>
+                                                                            @endif
+                                                                        </div>
+                                                                    </td>
+                                                                </tr>
+                                                                <tr>
+                                                                    <td class="text-left">5</td>
+                                                                    <td width="30%">Photo</td>
+                                                                    <td width="30%" >
+                                                                    </td>
+                                                                    <td width="14%">
+                                                                        <div class="file-browse float-left position-seta">
+                                                                        @if(!empty($manInfoDoc['photo']['file']['id']))
+                                                                        @can('download_storage_file')
+                                                                            <a  href="{{ !empty($manInfoDoc['photo']['file']['id']) ? route('download_storage_file', ['file_id' => $manInfoDoc['photo']['file']['id'] ]) : '' }}" class="btn-upload   btn-sm" type="button" id="photodown{{isset($manInfo['name']) ? $i : '1'}}" style="display:{{ !empty($manInfoDoc['photo']['file']['id']) ? 'inline' : 'none'}}" download> <i class="fa fa-download"></i></a>
+                                                                        @endcan
+                                                                        @can('view_uploaded_doc')
+                                                                            <a  href="{{ !empty($manInfoDoc['photo']['file']['id']) ? route('view_uploaded_doc', ['file_id' => $manInfoDoc['photo']['file']['id'] ]) : '' }}" title="View File" class="btn-upload   btn-sm" target="_blank" type="button" id="pandown{{isset($manInfo['name']) ? $i : '1'}}" style="display:{{ !empty($manInfoDoc['photo']['file']['id']) ? 'inline' : 'none'}}" target="_blank"> <i class="fa fa-eye"></i></a>
+                                                                        @endcan
+                                                                        @can('protmoter_document_delete')
+                                                                            <button type="button"  class="btn-upload   btn-sm" title="Delete Document" style="display:{{ !empty($manInfoDoc['photo']['file']['id']) ? 'inline' : 'none'}}"  name="photofiles[]" id="photofiles{{isset($manInfo['name']) ? $i : '1'}}" onclick="deleteFile({{isset($manInfo['name']) ? $i : '1'}}, {{ $manInfo['owner_id'] }}, {{ !empty($manInfoDoc['photo']['file']['id']) ? $manInfoDoc['photo']['file']['id'] : 'null' }}, 22, 'photo')" ><i class="fa fa-times-circle-o error"></i></button>
+                                                                        @endcan
+                                                                        @endif
+                                                                        </div>
+                                                                    </td>
+                                                                    <td width="14%"> 
+                                                                        <div class="upload-btn-wrapper setupload-btn">            
+                                                                            @if($view_only)
+                                                                            @can('promoter_document_save')
+                                                                            <button type='button' class="btn">Upload</button>
+                                                                            @endcan    
+                                                                            @endif
+                                                                            <input type="file" class="photofile"  name="photofile[]"  data-id="{{isset($manInfo['name']) ? $i : '1'}}"  id="photofile{{isset($manInfo['name']) ? $i : '1'}}"  onchange="uploadFile({{isset($manInfo['name']) ? $i : '1'}}, {{ $manInfo['owner_id'] }}, 22, 'photo')">
+                                                                            @if(!empty($manInfoDoc['photo']['file']['id']))
+                                                                            <span class="d-flex align-items-center">
+                                                                                <input type="checkbox" name="is_ovd[]" value="22" {{ $manInfoDoc['photo']['is_ovd_enabled'] == 1 ? 'checked' : 'disabled'}} class="mr-2" disabled>
+                                                                                <span class="white-space-nowrap">IS OVD Enabled</span>
+                                                                            </span>  
+                                                                            @endif
+                                                                        </div>
+                                                                    </td>
+                                                                </tr>
+                                                                <tr>
+                                                                    <td class="text-left">6</td>
+                                                                    <td width="30%">Aadhar Card </td>
+                                                                    <td width="30%" >
+                                                                    </td>
+                                                                    <td width="14%">
+                                                                        <div class="file-browse float-left position-seta">
+                                                                        @if(!empty($manInfoDoc['aadhar_card']['file']['id']))
+                                                                        @can('download_storage_file')
+                                                                            <a  href="{{ !empty($manInfoDoc['aadhar_card']['file']['id']) ? route('download_storage_file', ['file_id' => $manInfoDoc['aadhar_card']['file']['id'] ]) : '' }}" class="btn-upload   btn-sm" type="button" id="aadhardown{{isset($manInfo['name']) ? $i : '1'}}" style="display:{{ !empty($manInfoDoc['aadhar_card']['file']['id']) ? 'inline' : 'none'}}" download> <i class="fa fa-download"></i></a>
+                                                                        @endcan
+                                                                        @can('view_uploaded_doc')
+                                                                            <a  href="{{ !empty($manInfoDoc['aadhar_card']['file']['id']) ? route('view_uploaded_doc', ['file_id' => $manInfoDoc['aadhar_card']['file']['id'] ]) : '' }}" title="View File" class="btn-upload   btn-sm" target="_blank" type="button" id="pandown{{isset($manInfo['name']) ? $i : '1'}}" style="display:{{ !empty($manInfoDoc['aadhar_card']['file']['id']) ? 'inline' : 'none'}}" target="_blank"> <i class="fa fa-eye"></i></a>
+                                                                        @endcan
+                                                                        @can('protmoter_document_delete')
+                                                                            <button type="button"  class="btn-upload   btn-sm" title="Delete Document" style="display:{{ !empty($manInfoDoc['aadhar_card']['file']['id']) ? 'inline' : 'none'}}" name="downloadaadhars[]" id="downloadaadhars{{isset($manInfo['name']) ? $i : '1'}}" onclick="deleteFile({{isset($manInfo['name']) ? $i : '1'}}, {{ $manInfo['owner_id'] }}, {{ !empty($manInfoDoc['aadhar_card']['file']['id']) ? $manInfoDoc['aadhar_card']['file']['id'] : 'null' }}, 34, 'aadhar_card')" ><i class="fa fa-times-circle-o error"></i></button>
+                                                                        @endcan
+                                                                        @endif
+                                                                            <!-- <input type="file" class="downloadaadhar"  name="downloadaadhar[]" id="downloadaadhar{{isset($manInfo['name']) ? $i : '1'}}" dir="1" onchange="FileDetails(this.getAttribute('dir'))" multiple=""> -->
+                                                                        </div>
+                                                                    </td>
+                                                                    <td width="14%"> 
+                                                                        <div class="upload-btn-wrapper setupload-btn">                                                                
+                                                                            @if($view_only)
+                                                                            @can('promoter_document_save')
+                                                                            <button type='button' class="btn">Upload</button>
+                                                                            @endcan                                                                    
+                                                                            @endif
+                                                                            <input type="file" class="aadharfile"  name="aadharfile[]"  data-id="{{isset($manInfo['name']) ? $i : '1'}}"  id="aadharfile{{isset($manInfo['name']) ? $i : '1'}}"  onchange="uploadFile({{isset($manInfo['name']) ? $i : '1'}}, {{ $manInfo['owner_id'] }}, 34, 'aadhar_card')">
+                                                                            @if(!empty($manInfoDoc['aadhar_card']['file']['id']))
+                                                                            <span class="d-flex align-items-center">
+                                                                                <input type="checkbox" name="is_ovd[]" value="34" {{ !empty($manInfoDoc['aadhar_card']['is_ovd_enabled']) == 1 ? 'checked' : 'disabled'}} class="mr-2" disabled>
+                                                                                <span class="white-space-nowrap">IS OVD Enabled</span>
+                                                                            </span>
+                                                                            @endif
+                                                                        </div>
+                                                                    </td>
+                                                                </tr>
+                                                                <tr>
+                                                                    <td class="text-left">7</td>
+                                                                    <td width="30%">Electricity Bill </td>
+                                                                    <td width="30%" >
+                                                                    </td>
+                                                                    <td width="14%">
+                                                                        <div class="file-browse float-left position-seta">
+                                                                        @if(!empty($manInfoDoc['electricity_bill']['file']['id']))
+                                                                        @can('download_storage_file')
+                                                                            <a  href="{{ !empty($manInfoDoc['electricity_bill']['file']['id']) ? route('download_storage_file', ['file_id' => $manInfoDoc['electricity_bill']['file']['id'] ]) : '' }}" class="btn-upload   btn-sm" type="button" id="electricitydown{{isset($manInfo['name']) ? $i : '1'}}" style="display:{{ !empty($manInfoDoc['electricity_bill']['file']['id']) ? 'inline' : 'none'}}" download> <i class="fa fa-download"></i></a>
+                                                                        @endcan
+                                                                        @can('view_uploaded_doc')
+                                                                            <a  href="{{ !empty($manInfoDoc['electricity_bill']['file']['id']) ? route('view_uploaded_doc', ['file_id' => $manInfoDoc['electricity_bill']['file']['id'] ]) : '' }}" title="View File" class="btn-upload   btn-sm" target="_blank" type="button" id="pandown{{isset($manInfo['name']) ? $i : '1'}}" style="display:{{ !empty($manInfoDoc['electricity_bill']['file']['id']) ? 'inline' : 'none'}}" target="_blank"> <i class="fa fa-eye"></i></a>
+                                                                        @endcan
+                                                                        @can('protmoter_document_delete')
+                                                                            <button type="button"  class="btn-upload   btn-sm" title="Delete Document" style="display:{{ !empty($manInfoDoc['electricity_bill']['file']['id']) ? 'inline' : 'none'}}" name="downloadelectricitys[]" id="downloadelectricitys{{isset($manInfo['name']) ? $i : '1'}}" onclick="deleteFile({{isset($manInfo['name']) ? $i : '1'}}, {{ $manInfo['owner_id'] }}, {{ !empty($manInfoDoc['electricity_bill']['file']['id']) ? $manInfoDoc['electricity_bill']['file']['id'] : 'null' }}, 37, 'electricity_bill')" ><i class="fa fa-times-circle-o error"></i></button>
+                                                                        @endcan
+                                                                        @endif
+                                                                            <!-- <input type="file" class="downloadelectricity"  name="downloadelectricity[]" id="downloadelectricity{{isset($manInfo['name']) ? $i : '1'}}" dir="1" onchange="FileDetails(this.getAttribute('dir'))" multiple=""> -->
+                                                                        </div>
+                                                                    </td>
+                                                                    <td width="14%"> 
+                                                                        <div class="upload-btn-wrapper setupload-btn">
+                                                                            @if($view_only)
+                                                                            @can('promoter_document_save')
+                                                                            <button type='button' class="btn">Upload</button>
+                                                                            @endcan
+                                                                            @endif
+                                                                            <input type="file" class="electricityfile"  name="electricityfile[]"  data-id="{{isset($manInfo['name']) ? $i : '1'}}"  id="electricityfile{{isset($manInfo['name']) ? $i : '1'}}"  onchange="uploadFile({{isset($manInfo['name']) ? $i : '1'}}, {{ $manInfo['owner_id'] }}, 37, 'electricity_bill')">
+                                                                            @if(!empty($manInfoDoc['electricity_bill']['file']['id']))
+                                                                            <span class="d-flex align-items-center">
+                                                                                <input type="checkbox" name="is_ovd[]" value="37" {{ $manInfoDoc['electricity_bill']['is_ovd_enabled'] == 1 ? 'checked' : 'disabled'}} class="mr-2" disabled>
+                                                                                <span class="white-space-nowrap">IS OVD Enabled</span>
+                                                                            </span>
+                                                                            @endif
+                                                                        </div>
+                                                                    </td>
+                                                                </tr>
+                                                                <tr>
+                                                                    <td class="text-left">8</td>
+                                                                    <td width="30%">Telephone Bill </td>
+                                                                    <td width="30%" >
+                                                                    </td>
+                                                                    <td width="14%">
+                                                                        <div class="file-browse float-left position-seta">
+                                                                        @if(!empty($manInfoDoc['telephone_bill']['file']['id']))
+                                                                        @can('download_storage_file')
+                                                                            <a  href="{{ !empty($manInfoDoc['telephone_bill']['file']['id']) ? route('download_storage_file', ['file_id' => $manInfoDoc['telephone_bill']['file']['id'] ]) : '' }}" class="btn-upload   btn-sm" type="button" id="telephonedown{{isset($manInfo['name']) ? $i : '1'}}" style="display:{{ !empty($manInfoDoc['telephone_bill']['file']['id']) ? 'inline' : 'none'}}" download> <i class="fa fa-download"></i></a>
+                                                                        @endcan
+                                                                        @can('view_uploaded_doc')
+                                                                            <a  href="{{ !empty($manInfoDoc['telephone_bill']['file']['id']) ? route('view_uploaded_doc', ['file_id' => $manInfoDoc['telephone_bill']['file']['id'] ]) : '' }}" title="View File" class="btn-upload   btn-sm" target="_blank" type="button" id="pandown{{isset($manInfo['name']) ? $i : '1'}}" style="display:{{ !empty($manInfoDoc['telephone_bill']['file']['id']) ? 'inline' : 'none'}}" target="_blank"> <i class="fa fa-eye"></i></a>
+                                                                        @endcan
+                                                                        @can('protmoter_document_delete')
+                                                                            <button type="button"  class="btn-upload   btn-sm" title="Delete Document" style="display:{{ !empty($manInfoDoc['telephone_bill']['file']['id']) ? 'inline' : 'none'}}" name="downloadtelephones[]" id="downloadtelephones{{isset($manInfo['name']) ? $i : '1'}}" onclick="deleteFile({{isset($manInfo['name']) ? $i : '1'}}, {{ $manInfo['owner_id'] }}, {{ !empty($manInfoDoc['telephone_bill']['file']['id']) ? $manInfoDoc['telephone_bill']['file']['id'] : 'null' }}, 38, 'telephone_bill')" ><i class="fa fa-times-circle-o error"></i></button>
+                                                                        @endcan
+                                                                        @endif
+                                                                            <!-- <input type="file" class="downloadtelephone"  name="downloadtelephone[]" id="downloadtelephone{{isset($manInfo['name']) ? $i : '1'}}" dir="1" onchange="FileDetails(this.getAttribute('dir'))" multiple=""> -->
+                                                                        </div>
+                                                                    </td>
+                                                                    <td width="14%">
+                                                                        <div class="upload-btn-wrapper setupload-btn">
+                                                                            @if($view_only)
+                                                                            @can('promoter_document_save')
+                                                                            <button type='button' class="btn">Upload</button>
+                                                                            @endcan
+                                                                            @endif
+                                                                            <input type="file" class="telephonefile"  name="telephonefile[]"  data-id="{{isset($manInfo['name']) ? $i : '1'}}"  id="telephonefile{{isset($manInfo['name']) ? $i : '1'}}"  onchange="uploadFile({{isset($manInfo['name']) ? $i : '1'}}, {{ $manInfo['owner_id'] }}, 38, 'telephone_bill')">
+
+                                                                            @if(!empty($manInfoDoc['telephone_bill']['file']['id']) && is_numeric($manInfoDoc['telephone_bill']['file']['id']))
+                                                                            <span class="d-flex align-items-center">
+                                                                                <input type="checkbox" name="is_ovd[]" value="38" {{ $manInfoDoc['telephone_bill']['is_ovd_enabled'] == 1 ? 'checked' : 'disabled'}} class="mr-2" disabled>
+                                                                                <span class="white-space-nowrap">IS OVD Enabled</span>
+                                                                            </span>
+                                                                            @endif                                                                      
+                                                                        </div>
+                                                                    </td>
+                                                                </tr>
+                                                            </tbody>
+                                                        </table>
+
+                                                        <div class="modal" id="myModal{{isset($manInfo['name']) ? $i : '1'}}">
+                                                            <div class="modal-dialog modal-lg">
+                                                                <div class="modal-content">
+                                                                    <!-- Modal Header -->
+                                                                    <div class="modal-header">
+                                                                        <h5 id="dynamicTitle{{isset($manInfo['name']) ? $i : '1'}}"></h5>
+                                                                        <button type="button" class="close close-btns" data-dismiss="modal">×</button>
+                                                                    </div>
+                                                                    <!-- Modal body -->
+                                                                    <div class="modal-body text-left">
+                                                                        <div class="table-responsive ps ps--theme_default" data-ps-id="c019a9d0-57f7-7dd4-16ba-e6ea054ce839">
+                                                                            <span class="getBizApiRes" id="getBizApiRes{{isset($manInfo['name']) ? $i : '1'}}"></span>
+                                                                            <div class="ps__scrollbar-x-rail" style="left: 0px; bottom: 0px;"><div class="ps__scrollbar-x"  style="left: 0px; width: 0px;"></div></div><div class="ps__scrollbar-y-rail" style="top: 0px; right: 0px;"><div class="ps__scrollbar-y"  style="top: 0px; height: 0px;"></div></div></div>
+                                                                    </div>
                                                                 </div>
-                                                            </td>
-                                                            <td width="14%">
-
-                                                                <div class="file-browse float-left position-seta">
-                                                                @can('show_pan_data')
-                                                                    <a data-toggle="modal" id="ppanVeriView{{isset($row->first_name) ? $i : '1'}}" data-target="#modalPromoter" data-height="400px" data-width="100%" accesskey=""data-url ="{{route('show_pan_data',['type'=>3,'ownerid' => $row->biz_owner_id ])}}" style="display:{{isset($main[$j]['panNo']->requestId) ? 'inline' : 'none'}}"> <button class="btn-upload btn-sm" type="button" title="View Details (Pan Status)" data-id="{{isset($row->first_name) ? $i : '1'}}" data-type="3"> <i class="fa fa-eye"></i></button>
-                                                                    </a>
-                                                                @endcan
-                                                                    
-                                                                    
-                                                                    @if($main1[$key]['panNoFileStatus'] == 1)
-                                                                    @can('download_storage_file')
-                                                                    <a  href="{{ isset($main1[$j]['panNoFileID']) ? route('download_storage_file', ['file_id' => $main1[$j]['panNoFileID'] ]) : '' }}" title="download" class="btn-upload   btn-sm" type="button" id="pandown{{isset($row->first_name) ? $i : '1'}}" style="display:{{ isset($main1[$j]['panNoFile']) ? 'inline' : 'none'}}"> <i class="fa fa-download"></i></a>
-                                                                    @endcan
-                                                                    @can('view_uploaded_doc')
-                                                                    <a  href="{{ isset($main1[$j]['panNoFileID']) ? route('view_uploaded_doc', ['file_id' => $main1[$j]['panNoFileID'] ]) : '' }}" title="View File" class="btn-upload   btn-sm" target="_blank" type="button" id="pandown{{isset($row->first_name) ? $i : '1'}}" style="display:{{ isset($main1[$j]['panNoFile']) ? 'inline' : 'none'}}" target="_blank"> <i class="fa fa-eye"></i></a>
-                                                                    @endcan
-                                                                    @can('protmoter_document_delete')
-                                                                    <button type="button" class="btn-upload   btn-sm" title="Delete Document" style="display:{{ isset($main1[$j]['panNoFile']) ? 'inline' : 'none'}}" name="panfiles[]" id="panfiles{{isset($row->first_name) ? $i : '1'}}" onclick="deleteFile({{isset($row->first_name) ? $i : '1'}}, {{ $row->biz_owner_id }}, {{ isset($main1[$key]['panNoFileID']) ? $main1[$key]['panNoFileID'] : 'null' }}, 2)" ><i class="fa fa-times-circle-o error"></i></button>
-                                                                    @endcan
-                                                                    @endif
-
-                                                                    <!-- <input type="file" class="verifyfile" name="verifyfile[]" id="verifyfile{{isset($row->first_name) ? $i : '1'}}" dir="1" onchange="FileDetails(this.getAttribute('dir'))" multiple=""> -->
-                                                                </div>
-
-                                                            </td>
-                                                            <td width="14%">
-
-                                                                <div class="upload-btn-wrapper setupload-btn">
-                                                                    @if(request()->get('view_only'))
-                                                                    @can('promoter_document_save')
-                                                                    <button type='button' class="btn">Upload</button>
-                                                                    @endcan
-                                                                    @endif
-                                                                    <input type="file" class="panfile" data-id="{{isset($row->first_name) ? $i : '1'}}"  name="panfile[]" id="panfile{{isset($row->first_name) ? $i : '1'}}" onchange="uploadFile({{isset($row->first_name) ? $i : '1'}}, {{ $row->biz_owner_id }}, 2)">
-                                                                    <span class="fileUpload"></span>
-
-                                                                    @if($main1[$key]['panNoFileStatus'] == 1)
-                                                                    <span class="d-flex align-items-center">
-                                                                        <input type="checkbox" name="is_ovd[]" value="2" {{ $main1[$key]['panNoFileOVD'] == 1 ? 'checked' : 'disabled'}} class="mr-2" disabled>
-                                                                        <span class="white-space-nowrap">IS OVD Enabled</span>
-                                                                    </span>  
-                                                                    @endif
-                                                                </div> 
-                                                            </td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td class="text-left">2</td>
-                                                            <td width="30%">Driving License</td>
-                                                            <td width="30%" >
-                                                                <div class="col-md-12">
-                                                                    @if(request()->get('view_only'))
-                                                                    @can('chk_user_dl_karza')
-                                                                    <a href="javascript:void(0);" id='ddriving{{isset($row->first_name) ? $i : '1'}}' data-id="{{isset($row->first_name) ? $i : '1'}}" class="verify-owner-no verify-show veridl" style="top:0px; pointer-events:{{ (isset($main[$j]['dlNo']->requestId)) ? 'none' : ''}}">{{ isset($main[$j]['dlNo']->requestId) ? 'Verified' : 'Verify' }}</a>
-                                                                    @endcan
-                                                                    @endif
-                                                                    <input type="text" {{ isset($main[$j]['dlNo']->requestId) ? "readonly='readonly'" : '' }} value="{{ isset($main[$j]['dlNo']->requestId) ? $main[$j]['dlNo']->requestId : $row->driving_license }}" name="verifydl[]" id="verifydl{{isset($row->first_name) ? $i : '1'}}" class="form-control verifydl"  placeholder="Enter DL Number">
-
-                                                                           <span class="text-success float-left" id="v2successpanverify{{isset($row->first_name) ? $i : '1'}}" style="display:{{isset($main[$j]['dlNo']->requestId) ? 'inline' : 'none'}}"><i class="fa fa-check-circle" aria-hidden="true"></i> <i>Verified Successfully</i> </span>
-
-                                                                    <span class="text-danger float-left" id="v2failurepanverify{{isset($row->first_name) ? $i : '1'}}" style="display:none;"><i class="fa fa-close" aria-hidden="true"></i> <i>Not Verified</i> </span>
-
-                                                                </div>
-                                                            </td>
-                                                            <td width="14%">
-                                                                <div class="file-browse float-left position-seta">
-                                                                    @if(request()->get('view_only'))
-                                                                    @can('show_dl_data')
-                                                                    <a data-toggle="modal" id="ddrivingVeriView{{isset($row->first_name) ? $i : '1'}}"  data-target="#modalPromoter1" data-height="400" data-width="100%" accesskey="" data-url="{{route('show_dl_data',['type'=>'5','ownerid' => $row->biz_owner_id ])}}" style="display:{{ (isset($main[$j]['dlNo']->requestId)) ? 'inline' : 'none'}}">  <button class="btn-upload btn-sm" type="button" title="View Details (Driving License)" data-id="{{isset($row->first_name) ? $i : '1'}}" data-type="5" > <i class="fa fa-eye"></i></button></a>
-                                                                    @endcan
-                                                                    @endif
-
-                                                                    @if($main1[$key]['dlNoFileStatus'] == 1)
-                                                                    @can('download_storage_file')
-                                                                    <a  href="{{ isset($main1[$j]['dlNoFileID']) ? route('download_storage_file', ['file_id' => $main1[$j]['dlNoFileID'] ]) : '' }}" class="btn-upload   btn-sm" type="button" id="dldown{{isset($row->first_name) ? $i : '1'}}" style="display:{{ isset($main1[$j]['dlNoFile']) ? 'inline' : 'none'}}" download> <i class="fa fa-download"></i></a>
-                                                                    @endcan
-                                                                    @can('view_uploaded_doc')
-                                                                    <a  href="{{ isset($main1[$j]['dlNoFileID']) ? route('view_uploaded_doc', ['file_id' => $main1[$j]['dlNoFileID'] ]) : '' }}" title="View File" class="btn-upload   btn-sm" type="button" id="dldown{{isset($row->first_name) ? $i : '1'}}" style="display:{{ isset($main1[$j]['dlNoFile']) ? 'inline' : 'none'}}" target="_blank"> <i class="fa fa-eye"></i></a>
-                                                                    @endcan
-                                                                    @can('protmoter_document_delete')
-                                                                    <button type="button"  class="btn-upload   btn-sm" title="Delete Document" style="display:{{ isset($main1[$j]['dlNoFile']) ? 'inline' : 'none'}}" name="dlfiles[]" id="dlfiles{{isset($row->first_name) ? $i : '1'}}" onclick="deleteFile({{isset($row->first_name) ? $i : '1'}}, {{ $row->biz_owner_id }}, {{ isset($main1[$key]['dlNoFileID']) ? $main1[$key]['dlNoFileID'] : 'null' }}, 31)" ><i class="fa fa-times-circle-o error"></i></button>
-                                                                    @endcan
-                                                                    @endif
-
-                                                                    <!-- <input type="file" id="downloaddl{{isset($row->first_name) ? $i : '1'}}" name="downloaddl[]" class="downloaddl" dir="1" onchange="FileDetails(this.getAttribute('dir'))" multiple=""> -->
-                                                                    
-                                                                </div>
-
-                                                            </td>
-                                                            <td width="14%">
-
-                                                                <div class="upload-btn-wrapper setupload-btn">
-                                                                    @if(request()->get('view_only'))
-                                                                    @can('promoter_document_save')
-                                                                    <button type='button' class="btn">Upload</button>
-                                                                    @endcan
-                                                                    @endif
-                                                                    <input type="file" name="dlfile[]" data-id="{{isset($row->first_name) ? $i : '1'}}"  id="dlfile{{isset($row->first_name) ? $i : '1'}}" class="dlfile"  onchange="uploadFile({{isset($row->first_name) ? $i : '1'}}, {{ $row->biz_owner_id }}, 31)">
-
-                                                                    @if($main1[$key]['dlNoFileStatus'] == 1)
-                                                                    <span class="d-flex align-items-center">
-                                                                        <input type="checkbox" name="is_ovd[]" value="31" {{ $main1[$key]['dlNoFileOVD'] == 1 ? 'checked' : 'disabled'}} class="mr-2" disabled>
-                                                                        <span class="white-space-nowrap">IS OVD Enabled</span>
-                                                                    </span>                                                                      
-                                                                    @endif
-                                                                    
-                                                                </div>
-                                                            </td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td class="text-left">3</td>
-                                                            <td width="30%">Voter ID</td>
-                                                            <td width="30%" >
-                                                                <div class="col-md-12">
-                                                                    @if(request()->get('view_only'))
-                                                                    @can('chk_user_voterid_karza')
-                                                                    <a href="javascript:void(0);" id='vvoter{{isset($row->first_name) ? $i : '1'}}' data-id="{{isset($row->first_name) ? $i : '1'}}" class="verify-owner-no verify-show verivoter" style="top:0px; pointer-events:{{ (isset($main[$j]['voterNo']->requestId)) ? 'none' : ''}}">{{ isset($main[$j]['voterNo']->requestId) ? 'Verified' : 'Verify' }}</a>
-                                                                    @endcan
-                                                                    @endif
-                                                                    <input type="text" {{isset($main[$j]['voterNo']->requestId) ? "readonly='readonly'" : '' }} value="{{ isset($main[$j]['voterNo']->requestId) ? $main[$j]['voterNo']->requestId : $row->voter_id }}" name="verifyvoter[]" id="verifyvoter{{isset($row->first_name) ? $i : '1'}}"  class="form-control verifyvoter"  placeholder="Enter Voter's Epic Number">
-                                                                    <span class="text-success float-left" id="v3successpanverify{{isset($row->first_name) ? $i : '1'}}" style="display:{{isset($main[$j]['voterNo']->requestId) ? 'inline' : 'none'}}"><i class="fa fa-check-circle" aria-hidden="true"></i> <i>Verified Successfully</i> </span>
-
-                                                                    <span class="text-danger float-left" id="v3failurepanverify{{isset($row->first_name) ? $i : '1'}}" style="display:none;"><i class="fa fa-close" aria-hidden="true"></i> <i>Not Verified</i> </span>
-
-                                                                </div>
-                                                            </td>
-                                                            <td width="14%">
-                                                                <div class="file-browse float-left position-seta">
-                                                                @can('show_voter_data')
-                                                                    <a data-toggle="modal" id="vvoterVeriView{{isset($row->first_name) ? $i : '1'}}"  data-target="#modalPromoter2" data-height="400px" data-width="100%" accesskey=""data-url ="{{route('show_voter_data',['type'=>4,'ownerid' => $row->biz_owner_id ])}}" style="display:{{isset($main[$j]['voterNo']->requestId) ? 'inline' : 'none'}}">   <button class="btn-upload btn-sm" type="button" title="View Details (Voter ID)" data-id="{{isset($row->first_name) ? $i : '1'}}" data-type="4"> <i class="fa fa-eye"></i></button></a>
-                                                                @endcan
-                                                                    @if($main1[$key]['voterNoFileStatus'] == 1)
-                                                                    @can('download_storage_file')
-                                                                    <a  href="{{ isset($main1[$j]['voterNoFileID']) ? route('download_storage_file', ['file_id' => $main1[$j]['voterNoFileID'] ]) : '' }}" class="btn-upload   btn-sm" type="button" id="voterdown{{isset($row->first_name) ? $i : '1'}}" style="display:{{ isset($main1[$j]['voterNoFile']) ? 'inline' : 'none'}}" download> <i class="fa fa-download"></i></a>
-                                                                    @endcan
-                                                                    @can('view_uploaded_doc')
-                                                                    <a  href="{{ isset($main1[$j]['voterNoFileID']) ? route('view_uploaded_doc', ['file_id' => $main1[$j]['voterNoFileID'] ]) : '' }}" title="View File" class="btn-upload   btn-sm" type="button" id="voterdown{{isset($row->first_name) ? $i : '1'}}" style="display:{{ isset($main1[$j]['voterNoFile']) ? 'inline' : 'none'}}" target="_blank"> <i class="fa fa-eye"></i></a>
-                                                                    @endcan
-                                                                    @can('protmoter_document_delete')
-                                                                    <button type="button"  class="btn-upload   btn-sm" title="Delete Document" style="display:{{ isset($main1[$j]['voterNoFile']) ? 'inline' : 'none'}}" name="voterdowns[]" id="voterdowns{{isset($row->first_name) ? $i : '1'}}" onclick="deleteFile({{isset($row->first_name) ? $i : '1'}}, {{ $row->biz_owner_id }}, {{ isset($main1[$key]['voterNoFileID']) ? $main1[$key]['voterNoFileID'] : 'null' }}, 30)" ><i class="fa fa-times-circle-o error"></i></button>
-                                                                    @endcan
-                                                                    @endif
-
-                                                                    <!-- <input type="file" name="downloadvoter[]" class="downloadvoter" id="downloadvoter{{isset($row->first_name) ? $i : '1'}}" dir="1" onchange="FileDetails(this.getAttribute('dir'))" multiple=""> -->
-                                                                </div>
-
-                                                            </td>
-                                                            <td width="14%">
-                                                                <div class="upload-btn-wrapper setupload-btn">
-                                                                    @if(request()->get('view_only'))
-                                                                    @can('promoter_document_save')
-                                                                    <button type='button' class="btn">Upload</button>
-                                                                    @endcan
-                                                                    @endif
-                                                                    <input type="file" name="voterfile[]" data-id="{{isset($row->first_name) ? $i : '1'}}"  class="voterfile" id="voterfile{{isset($row->first_name) ? $i : '1'}}"  onchange="uploadFile({{isset($row->first_name) ? $i : '1'}}, {{ $row->biz_owner_id }}, 30)">
-
-                                                                    @if($main1[$key]['voterNoFileStatus'] == 1)
-                                                                    <span class="d-flex align-items-center">
-                                                                        <input type="checkbox" name="is_ovd[]" value="30" {{ $main1[$key]['voterNoFileOVD'] == 1 ? 'checked' : 'disabled'}} class="mr-2" disabled>
-                                                                        <span class="white-space-nowrap">IS OVD Enabled</span>
-                                                                    </span>   
-                                                                    @endif
-
-                                                                </div>
-
-                                                            </td>
-                                                        </tr>
-                                                        </tr>
-                                                        <tr>
-                                                            <td class="text-left">4</td>
-                                                            <td width="30%">Passport</td>
-                                                            <td width="30%" >
-                                                                <div class="col-md-12">
-                                                                    @if(request()->get('view_only'))
-                                                                    @can('chk_user_passport_karza')
-                                                                    <a href="javascript:void(0);" id='ppassport{{isset($row->first_name) ? $i : '1'}}' data-id="{{isset($row->first_name) ? $i : '1'}}" class="verify-owner-no verify-show veripass" style="top:0px; pointer-events:{{ (isset($main[$j]['passNo']->requestId)) ? 'none' : ''}}">{{ isset($main[$j]['passNo']->requestId) ? 'Verified' : 'Verify' }}</a>
-                                                                    @endcan
-                                                                    @endif
-                                                                    <input type="text"  {{ isset($main[$j]['passNo']->requestId) ? "readonly='readonly'" : '' }}  value="{{ isset($main[$j]['passNo']->requestId) ? $main[$j]['passNo']->requestId : $row->passport }}" name="verifypassport[]" id="verifypassport{{isset($row->first_name) ? $i : '1'}}"  class="form-control verifypassport" placeholder="Enter File Number">
-
-                                                                           <span class="text-success float-left" id="v4successpanverify{{isset($row->first_name) ? $i : '1'}}"  style="display:{{isset($main[$j]['passNo']->requestId) ? 'inline' : 'none'}}"><i class="fa fa-check-circle" aria-hidden="true"></i> <i>Verified Successfully</i> </span>
-
-                                                                    <span class="text-danger float-left" id="v4failurepanverify{{isset($row->first_name) ? $i : '1'}}"  style="display:none;"><i class="fa fa-close" aria-hidden="true"></i> <i>Not Verified</i> </span>
-
-
-                                                                </div>
-                                                            </td>
-                                                            <td width="14%">
-                                                                <div class="file-browse float-left position-seta">
-                                                                @can('show_pass_data')
-                                                                    <a data-toggle="modal" id="ppassportVeriView{{isset($row->first_name) ? $i : '1'}}" data-target="#modalPromoter3" data-height="400px" data-width="100%" accesskey=""data-url ="{{route('show_pass_data',['type'=>6,'ownerid' => $row->biz_owner_id ])}}"  style="display:{{isset($main[$j]['passNo']->requestId) ? 'inline' : 'none'}}">     <button class="btn-upload btn-sm" type="button" title="View Details (Passport)" data-id="{{isset($row->first_name) ? $i : '1'}}" data-type="6"> <i class="fa fa-eye"></i></button></a>
-                                                                @endcan
-                                                                    @if($main1[$key]['passNoFileStatus'] == 1)
-                                                                    @can('download_storage_file')
-                                                                    <a  href="{{ isset($main1[$j]['passNoFile']) ? route('download_storage_file', ['file_id' => $main1[$j]['passNoFileID'] ]) : '' }}" class="btn-upload   btn-sm" type="button" id="passdown{{isset($row->first_name) ? $i : '1'}}" style="display:{{ isset($main1[$j]['passNoFile']) ? 'inline' : 'none'}}" download> <i class="fa fa-download"></i></a>
-                                                                    @endcan
-                                                                    @can('view_uploaded_doc')
-                                                                    <a  href="{{ isset($main1[$j]['passNoFile']) ? route('view_uploaded_doc', ['file_id' => $main1[$j]['passNoFileID'] ]) : '' }}" title="View File" class="btn-upload   btn-sm" type="button" id="passdown{{isset($row->first_name) ? $i : '1'}}" style="display:{{ isset($main1[$j]['passNoFile']) ? 'inline' : 'none'}}" target="_blank"> <i class="fa fa-eye"></i></a>
-                                                                    @endcan
-                                                                    @can('protmoter_document_delete')
-                                                                    <button type="button"  class="btn-upload   btn-sm" title="Delete Document" style="display:{{ isset($main1[$j]['passNoFile']) ? 'inline' : 'none'}}"  name="passportfiles[]" id="passportfiles{{isset($row->first_name) ? $i : '1'}}" onclick="deleteFile({{isset($row->first_name) ? $i : '1'}}, {{ $row->biz_owner_id }}, {{ isset($main1[$key]['passNoFileID']) ? $main1[$key]['passNoFileID'] : 'null' }}, 32)" ><i class="fa fa-times-circle-o error"></i></button>
-                                                                    @endcan
-                                                                    @endif
-
-                                                                    <!-- <input type="file" name="downloadpassport[]" class="downloadpassport" id="downloadpassport{{isset($row->first_name) ? $i : '1'}}" dir="1" onchange="FileDetails(this.getAttribute('dir'))" multiple=""> -->
-                                                                </div>
-
-                                                            </td>
-                                                            <td width="14%">
-                                                                <div class="upload-btn-wrapper setupload-btn">
-                                                                    @if(request()->get('view_only'))
-                                                                    @can('promoter_document_save')
-                                                                    <button type='button' class="btn">Upload</button>
-                                                                    @endcan
-                                                                    @endif
-                                                                    <input type="file" name="passportfile[]" data-id="{{isset($row->first_name) ? $i : '1'}}" class="passportfile" id="passportfile{{isset($row->first_name) ? $i : '1'}}"  onchange="uploadFile({{isset($row->first_name) ? $i : '1'}}, {{ $row->biz_owner_id }}, 32)">
-
-                                                                    @if($main1[$key]['passNoFileStatus'] == 1)
-                                                                    <span class="d-flex align-items-center">
-                                                                        <input type="checkbox" name="is_ovd[]" value="32" {{ $main1[$key]['passNoFileOVD'] == 1 ? 'checked' : 'disabled'}} class="mr-2" disabled>
-                                                                        <span class="white-space-nowrap">IS OVD Enabled</span>
-                                                                    </span>
-                                                                    @endif
-
-                                                                </div>
-                                                            </td>
-                                                        </tr>
-                                                        </tr>
-                                                        <tr>
-                                                            <td class="text-left">5</td>
-                                                            <td width="30%">Photo</td>
-                                                            <td width="30%" >
-
-                                                            </td>
-                                                            <td width="14%">
-                                                                <div class="file-browse float-left position-seta">
-
-                                                                @if($main1[$key]['photoFileStatus'] == 1)
-                                                                @can('download_storage_file')
-                                                                    <a  href="{{ isset($main1[$j]['photoFileID']) ? route('download_storage_file', ['file_id' => $main1[$j]['photoFileID'] ]) : '' }}" class="btn-upload   btn-sm" type="button" id="photodown{{isset($row->first_name) ? $i : '1'}}" style="display:{{ isset($main1[$j]['photoFile']) ? 'inline' : 'none'}}" download> <i class="fa fa-download"></i></a>
-                                                                @endcan
-                                                                @can('view_uploaded_doc')
-                                                                    <a  href="{{ isset($main1[$j]['photoFileID']) ? route('view_uploaded_doc', ['file_id' => $main1[$j]['photoFileID'] ]) : '' }}" title="View File" class="btn-upload   btn-sm" target="_blank" type="button" id="pandown{{isset($row->first_name) ? $i : '1'}}" style="display:{{ isset($main1[$j]['photoFile']) ? 'inline' : 'none'}}" target="_blank"> <i class="fa fa-eye"></i></a>
-                                                                @endcan
-                                                                @can('protmoter_document_delete')
-                                                                    <button type="button"  class="btn-upload   btn-sm" title="Delete Document" style="display:{{ isset($main1[$j]['photoFile']) ? 'inline' : 'none'}}"  name="photofiles[]" id="photofiles{{isset($row->first_name) ? $i : '1'}}" onclick="deleteFile({{isset($row->first_name) ? $i : '1'}}, {{ $row->biz_owner_id }}, {{ isset($main1[$key]['photoFileID']) ? $main1[$key]['photoFileID'] : 'null' }}, 22)" ><i class="fa fa-times-circle-o error"></i></button>
-                                                                @endcan
-                                                                @endif
-
-                                                                    <!-- <input type="file" class="downloadphoto"  name="downloadphoto[]" id="downloadphoto{{isset($row->first_name) ? $i : '1'}}" dir="1" onchange="FileDetails(this.getAttribute('dir'))" multiple=""> -->
-                                                                </div>
-
-                                                            </td>
-                                                            <td width="14%"> 
-                                                                <div class="upload-btn-wrapper setupload-btn">
-                                                                    @if(request()->get('view_only'))
-                                                                    @can('promoter_document_save')
-                                                                    <button type='button' class="btn">Upload</button>
-                                                                    @endcan
-                                                                    @endif
-                                                                    <input type="file" class="photofile"  name="photofile[]"  data-id="{{isset($row->first_name) ? $i : '1'}}"  id="photofile{{isset($row->first_name) ? $i : '1'}}"  onchange="uploadFile({{isset($row->first_name) ? $i : '1'}}, {{ $row->biz_owner_id }}, 22)">
-
-                                                                    @if($main1[$key]['photoFileStatus'] == 1)
-                                                                    <span class="d-flex align-items-center">
-                                                                        <input type="checkbox" name="is_ovd[]" value="22" {{ $main1[$key]['photoFileOVD'] == 1 ? 'checked' : 'disabled'}} class="mr-2" disabled>
-                                                                        <span class="white-space-nowrap">IS OVD Enabled</span>
-                                                                    </span>  
-                                                                    @endif
-
-                                                                </div>
-                                                            </td>
-                                                        </tr>
-
-
-                                                        <tr>
-                                                            <td class="text-left">6</td>
-                                                            <td width="30%">Aadhar Card </td>
-                                                            <td width="30%" >
-
-                                                            </td>
-                                                            <td width="14%">
-                                                                <div class="file-browse float-left position-seta">
-
-                                                                @if($main1[$key]['aadharFileStatus'] == 1)
-                                                                @can('download_storage_file')
-                                                                    <a  href="{{ isset($main1[$j]['aadharFileID']) ? route('download_storage_file', ['file_id' => $main1[$j]['aadharFileID'] ]) : '' }}" class="btn-upload   btn-sm" type="button" id="aadhardown{{isset($row->first_name) ? $i : '1'}}" style="display:{{ isset($main1[$j]['aadharFile']) ? 'inline' : 'none'}}" download> <i class="fa fa-download"></i></a>
-                                                                @endcan
-                                                                @can('view_uploaded_doc')
-                                                                    <a  href="{{ isset($main1[$j]['aadharFileID']) ? route('view_uploaded_doc', ['file_id' => $main1[$j]['aadharFileID'] ]) : '' }}" title="View File" class="btn-upload   btn-sm" target="_blank" type="button" id="pandown{{isset($row->first_name) ? $i : '1'}}" style="display:{{ isset($main1[$j]['aadharFile']) ? 'inline' : 'none'}}" target="_blank"> <i class="fa fa-eye"></i></a>
-                                                                @endcan
-                                                                @can('protmoter_document_delete')
-                                                                    <button type="button"  class="btn-upload   btn-sm" title="Delete Document" style="display:{{ isset($main1[$j]['aadharFile']) ? 'inline' : 'none'}}" name="downloadaadhars[]" id="downloadaadhars{{isset($row->first_name) ? $i : '1'}}" onclick="deleteFile({{isset($row->first_name) ? $i : '1'}}, {{ $row->biz_owner_id }}, {{ isset($main1[$key]['aadharFileID']) ? $main1[$key]['aadharFileID'] : 'null' }}, 34)" ><i class="fa fa-times-circle-o error"></i></button>
-                                                                @endcan
-                                                                @endif
-
-                                                                    <!-- <input type="file" class="downloadaadhar"  name="downloadaadhar[]" id="downloadaadhar{{isset($row->first_name) ? $i : '1'}}" dir="1" onchange="FileDetails(this.getAttribute('dir'))" multiple=""> -->
-                                                                </div>
-
-                                                            </td>
-                                                            <td width="14%"> 
-                                                                <div class="upload-btn-wrapper setupload-btn">
-                                                                    @if(request()->get('view_only'))
-                                                                    @can('promoter_document_save')
-                                                                    <button type='button' class="btn">Upload</button>
-                                                                    @endcan
-                                                                    @endif
-                                                                    <input type="file" class="aadharfile"  name="aadharfile[]"  data-id="{{isset($row->first_name) ? $i : '1'}}"  id="aadharfile{{isset($row->first_name) ? $i : '1'}}"  onchange="uploadFile({{isset($row->first_name) ? $i : '1'}}, {{ $row->biz_owner_id }}, 34)">
-
-                                                                    @if($main1[$key]['aadharFileStatus'] == 1)
-                                                                    <span class="d-flex align-items-center">
-                                                                        <input type="checkbox" name="is_ovd[]" value="34" {{ $main1[$key]['aadharFileOVD'] == 1 ? 'checked' : 'disabled'}} class="mr-2" disabled>
-                                                                        <span class="white-space-nowrap">IS OVD Enabled</span>
-                                                                    </span>
-                                                                    @endif
-
-                                                                </div>
-                                                            </td>
-                                                        </tr>
-                                                                                <tr>
-                                                            <td class="text-left">7</td>
-                                                            <td width="30%">Electricity Bill </td>
-                                                            <td width="30%" >
-
-                                                            </td>
-                                                            <td width="14%">
-                                                                <div class="file-browse float-left position-seta">
-                                                                
-                                                                @if($main1[$key]['electricityFileStatus'] == 1)
-                                                                @can('download_storage_file')
-                                                                    <a  href="{{ isset($main1[$j]['electricityFileID']) ? route('download_storage_file', ['file_id' => $main1[$j]['electricityFileID'] ]) : '' }}" class="btn-upload   btn-sm" type="button" id="electricitydown{{isset($row->first_name) ? $i : '1'}}" style="display:{{ isset($main1[$j]['electricityFile']) ? 'inline' : 'none'}}" download> <i class="fa fa-download"></i></a>
-                                                                @endcan
-                                                                @can('view_uploaded_doc')
-                                                                    <a  href="{{ isset($main1[$j]['electricityFileID']) ? route('view_uploaded_doc', ['file_id' => $main1[$j]['electricityFileID'] ]) : '' }}" title="View File" class="btn-upload   btn-sm" target="_blank" type="button" id="pandown{{isset($row->first_name) ? $i : '1'}}" style="display:{{ isset($main1[$j]['electricityFile']) ? 'inline' : 'none'}}" target="_blank"> <i class="fa fa-eye"></i></a>
-                                                                @endcan
-                                                                @can('protmoter_document_delete')
-                                                                    <button type="button"  class="btn-upload   btn-sm" title="Delete Document" style="display:{{ isset($main1[$j]['electricityFile']) ? 'inline' : 'none'}}" name="downloadelectricitys[]" id="downloadelectricitys{{isset($row->first_name) ? $i : '1'}}" onclick="deleteFile({{isset($row->first_name) ? $i : '1'}}, {{ $row->biz_owner_id }}, {{ isset($main1[$key]['electricityFileID']) ? $main1[$key]['electricityFileID'] : 'null' }}, 37)" ><i class="fa fa-times-circle-o error"></i></button>
-                                                                @endcan
-                                                                @endif
-
-                                                                    <!-- <input type="file" class="downloadelectricity"  name="downloadelectricity[]" id="downloadelectricity{{isset($row->first_name) ? $i : '1'}}" dir="1" onchange="FileDetails(this.getAttribute('dir'))" multiple=""> -->
-                                                                </div>
-
-                                                            </td>
-                                                            <td width="14%"> 
-                                                                <div class="upload-btn-wrapper setupload-btn">
-                                                                    @if(request()->get('view_only'))
-                                                                    @can('promoter_document_save')
-                                                                    <button type='button' class="btn">Upload</button>
-                                                                    @endcan
-                                                                    @endif
-                                                                    <input type="file" class="electricityfile"  name="electricityfile[]"  data-id="{{isset($row->first_name) ? $i : '1'}}"  id="electricityfile{{isset($row->first_name) ? $i : '1'}}"  onchange="uploadFile({{isset($row->first_name) ? $i : '1'}}, {{ $row->biz_owner_id }}, 37)">
-
-                                                                    @if($main1[$key]['electricityFileStatus'] == 1)
-                                                                    <span class="d-flex align-items-center">
-                                                                        <input type="checkbox" name="is_ovd[]" value="37" {{ $main1[$key]['electricityFileOVD'] == 1 ? 'checked' : 'disabled'}} class="mr-2" disabled>
-                                                                        <span class="white-space-nowrap">IS OVD Enabled</span>
-                                                                    </span> 
-                                                                    @endif
-
-                                                                </div>
-                                                            </td>
-                                                        </tr>
-                                                        
-                                                                                  <tr>
-                                                            <td class="text-left">8</td>
-                                                            <td width="30%">Telephone Bill </td>
-                                                            <td width="30%" >
-
-                                                            </td>
-                                                            <td width="14%">
-                                                                <div class="file-browse float-left position-seta">
-                                                                
-                                                                @if($main1[$key]['telephoneFileStatus'] == 1)
-                                                                @can('download_storage_file')
-                                                                    <a  href="{{ isset($main1[$j]['telephoneFileID']) ? route('download_storage_file', ['file_id' => $main1[$j]['telephoneFileID'] ]) : '' }}" class="btn-upload   btn-sm" type="button" id="telephonedown{{isset($row->first_name) ? $i : '1'}}" style="display:{{ isset($main1[$j]['telephoneFile']) ? 'inline' : 'none'}}" download> <i class="fa fa-download"></i></a>
-                                                                @endcan
-                                                                @can('view_uploaded_doc')
-                                                                    <a  href="{{ isset($main1[$j]['telephoneFileID']) ? route('view_uploaded_doc', ['file_id' => $main1[$j]['telephoneFileID'] ]) : '' }}" title="View File" class="btn-upload   btn-sm" target="_blank" type="button" id="pandown{{isset($row->first_name) ? $i : '1'}}" style="display:{{ isset($main1[$j]['telephoneFile']) ? 'inline' : 'none'}}" target="_blank"> <i class="fa fa-eye"></i></a>
-                                                                @endcan
-                                                                @can('protmoter_document_delete')
-                                                                    <button type="button"  class="btn-upload   btn-sm" title="Delete Document" style="display:{{ isset($main1[$j]['telephoneFile']) ? 'inline' : 'none'}}" name="downloadtelephones[]" id="downloadtelephones{{isset($row->first_name) ? $i : '1'}}" onclick="deleteFile({{isset($row->first_name) ? $i : '1'}}, {{ $row->biz_owner_id }}, {{ isset($main1[$key]['telephoneFileID']) ? $main1[$key]['telephoneFileID'] : 'null' }}, 38)" ><i class="fa fa-times-circle-o error"></i></button>
-                                                                @endcan
-                                                                @endif
-
-                                                                    <!-- <input type="file" class="downloadtelephone"  name="downloadtelephone[]" id="downloadtelephone{{isset($row->first_name) ? $i : '1'}}" dir="1" onchange="FileDetails(this.getAttribute('dir'))" multiple=""> -->
-                                                                </div>
-
-                                                            </td>
-                                                            <td width="14%"> 
-                                                                <div class="upload-btn-wrapper setupload-btn">
-                                                                    @if(request()->get('view_only'))
-                                                                    @can('promoter_document_save')
-                                                                    <button type='button' class="btn">Upload</button>
-                                                                    @endcan
-                                                                    @endif
-                                                                    <input type="file" class="telephonefile"  name="telephonefile[]"  data-id="{{isset($row->first_name) ? $i : '1'}}"  id="telephonefile{{isset($row->first_name) ? $i : '1'}}"  onchange="uploadFile({{isset($row->first_name) ? $i : '1'}}, {{ $row->biz_owner_id }}, 38)">
-
-                                                                    @if($main1[$key]['telephoneFileStatus'] == 1)
-                                                                    <span class="d-flex align-items-center">
-                                                                        <input type="checkbox" name="is_ovd[]" value="38" {{ $main1[$key]['telephoneFileOVD'] == 1 ? 'checked' : 'disabled'}} class="mr-2" disabled>
-                                                                        <span class="white-space-nowrap">IS OVD Enabled</span>
-                                                                    </span>
-                                                                    @endif                                                                      
-                                                                </div>
-                                                            </td>
-                                                        </tr>
-                                                    </tbody>
-                                                </table>
-
-                                                <div class="modal" id="myModal{{isset($row->first_name) ? $i : '1'}}">
-                                                    <div class="modal-dialog modal-lg">
-                                                        <div class="modal-content">
-                                                            <!-- Modal Header -->
-                                                            <div class="modal-header">
-                                                                <h5 id="dynamicTitle{{isset($row->first_name) ? $i : '1'}}"></h5>
-                                                                <button type="button" class="close close-btns" data-dismiss="modal">×</button>
-                                                            </div>
-                                                            <!-- Modal body -->
-                                                            <div class="modal-body text-left">
-                                                                <div class="table-responsive ps ps--theme_default" data-ps-id="c019a9d0-57f7-7dd4-16ba-e6ea054ce839">
-                                                                    <span class="getBizApiRes" id="getBizApiRes{{isset($row->first_name) ? $i : '1'}}"></span>
-                                                                    <div class="ps__scrollbar-x-rail" style="left: 0px; bottom: 0px;"><div class="ps__scrollbar-x"  style="left: 0px; width: 0px;"></div></div><div class="ps__scrollbar-y-rail" style="top: 0px; right: 0px;"><div class="ps__scrollbar-y"  style="top: 0px; height: 0px;"></div></div></div>
                                                             </div>
                                                         </div>
                                                     </div>
                                                 </div>
-
-
                                             </div>
-                                        </div>
-                                    </div>
+                                        </div>	
+                                    </div>	
                                 </div>	
-
-				
-                            </div>	
-                        </div>	
-                        @php ($j++)
-                        @endforeach
+                            @php ($j++) 
+                            @endforeach
                         @else
                          <input type="hidden" name="ownerid[]">   
                         <input type="hidden" name="is_promoter[]">   
                          <input type="hidden" name="mobile_no[]"> 
-
+                            
                         @endif
                         <span class="form-fields-appand"></span>   
                         <div class="row">
-
+                        
                             <div class="col-md-12 mt-2">
-
                                 <div class="d-flex btn-section ">
                                     <div class="ml-auto text-right">
-                                        @if(request()->get('view_only'))
+                                        @if($view_only)
                                         <button type="button" id="btnAddMore" class="btn btn-success btn-add btn-sm ml-auto">
                                             <i class="fa fa-plus"></i>
                                             Add Management
@@ -872,28 +683,21 @@
                                         @endif
                                     </div>
                                 </div>				
-
                             </div>
 
                             <div class="col-md-12 mt-2">
-
-
-
                                 <div class="d-flex btn-section ">
                                     <div class="ml-auto text-right">
-                                       <!-- <input type="button" value="Back" class="btn btn-warning" onclick="window.location.href='company-details.php'">
-                                        -->
-                                        @if(request()->get('view_only'))
+                                        @if($view_only)
                                         @can('promoter_save')
                                          <input type="button" value="Save" data-type="save" id="submit" class="submit btn btn-success btn-sm">
                                          <input type="button" value="Next" data-type="next" id="submit" class="submit btn btn-success btn-sm">
                                         @endcan 
                                         @endif
                                     </div>
-                                </div>	
-                            </div>						
+                                </div>
+                            </div>
                         </div>
-
                     </div>
                 </form>
             </div>
@@ -915,20 +719,20 @@
 
     <script type="text/javascript">
         var messages = {
-             promoter_document_save: "{{ URL::route('promoter_document_save') }}",
-                data_not_found: "{{ trans('error_messages.data_not_found') }}",
-                token: "{{ csrf_token() }}",
-                data_not_found: "{{ trans('error_messages.data_not_found') }}",
-                get_promoter_details_by_cin: "{{ URL::route('get_promoter_details_by_cin') }}",
-                chk_user_voterid_karza: "{{ URL::route('chk_user_voterid_karza') }}",
-                chk_user_dl_karza: "{{ URL::route('chk_user_dl_karza') }}",
-                chk_user_passport_karza: "{{ URL::route('chk_user_passport_karza') }}",
-                chk_user_pan_status_karza: "{{ URL::route('chk_user_pan_status_karza') }}",
-                chk_user_pan_karza_add_more: "{{ URL::route('chk_user_pan_karza_add_more') }}",
-                chk_user_pan_karza: "{{ URL::route('chk_user_pan_karza') }}",
-                get_user_pan_response_karza: "{{ URL::route('get_user_pan_response_karza') }}",
-                protmoter_document_delete: "{{ url::route('promoter_document_delete') }}",
-                delete_management_info: "{{ url::route('delete_management_info') }}",    
+            promoter_document_save: "{{ URL::route('promoter_document_save') }}",
+            data_not_found: "{{ trans('error_messages.data_not_found') }}",
+            token: "{{ csrf_token() }}",
+            data_not_found: "{{ trans('error_messages.data_not_found') }}",
+            get_promoter_details_by_cin: "{{ URL::route('get_promoter_details_by_cin') }}",
+            chk_user_voterid_karza: "{{ URL::route('chk_user_voterid_karza') }}",
+            chk_user_dl_karza: "{{ URL::route('chk_user_dl_karza') }}",
+            chk_user_passport_karza: "{{ URL::route('chk_user_passport_karza') }}",
+            chk_user_pan_status_karza: "{{ URL::route('chk_user_pan_status_karza') }}",
+            chk_user_pan_karza_add_more: "{{ URL::route('chk_user_pan_karza_add_more') }}",
+            chk_user_pan_karza: "{{ URL::route('chk_user_pan_karza') }}",
+            get_user_pan_response_karza: "{{ URL::route('get_user_pan_response_karza') }}",
+            protmoter_document_delete: "{{ url::route('promoter_document_delete') }}",
+            delete_management_info: "{{ url::route('delete_management_info') }}",
         };
         $(document).ready(function () {
          ///////////////For Amount comma Seprate///////////
@@ -939,7 +743,10 @@
            return true;
         })
         
-        
+        jQuery.validator.addMethod("emailExt", function(value, element, param) {
+            return value.match(/^[a-zA-Z0-9_\.%\+\-]+@[a-zA-Z0-9\.\-]+\.[a-zA-Z]{2,}$/);
+        },'please enter a valid email');
+
         $('.submit').on('click', function (event) {
         var button = $(this).attr("data-type");
         var is_lease = '{{$is_lease}}';
@@ -955,6 +762,15 @@
         required: true
         })
         });
+
+        $('input.email').each(function () {
+            $(this).rules("add", {
+                required: false,
+                emailExt: true,
+                maxlength: 100
+            });
+        });
+
         if(button=='next')
       { 
                 $('select.gender').each(function () {
@@ -988,6 +804,7 @@
                 {
                  required: true,
                  number: true,
+                 minlength: 10
                 })
                 });
                }
@@ -1018,8 +835,9 @@
                     $('input.mobileveri').each(function () {
                     $(this).rules("add",
                     {
-                    required: false,
-                            number: false,
+                        required: false,
+                        number: false,
+                        minlength: 10
                     })
                     });
                 }
@@ -1295,8 +1113,7 @@
            {
                 var close  = "<button class='close clsdiv' type='button'>x</button>";
            }
-          // $(".form-fields-appand").append("<div class='fornm-sections'><div class='row'><div class='col-md-12'><div class='col-md-12'>"+close+"<h5 class='card-title form-head'>Management Information (" + x + ") </h5></div><div class='col-md-12'><div class='row'><div class='col-md-4'><div class='form-group'><label for='txtCreditPeriod' for='first_name' class='d-block'> Name  <span class='mandatory'>*</span></label><input type='hidden' class='owneridDynamic' id='ownerid" + x + "'   value=''><input type='text' name='first_name[]' vname='first_name" + x + "' id='first_name" + x + "' value='' class='form-control first_name' placeholder='Enter First Name' ></div></div><div class='col-md-2'><div class='form-group password-input'><label for='txtPassword'>Owner Type</label><select class='form-control is_promoter' name='applicant_type[]' id='applicant_type"+x+"'><option value='' selected='selected'>Select Owner Type</option><option value='1'>Is Promoter</option><option value='2'>Key Management Person</option><option value='3'>Co-Borrower</option><option value='4'>Guarantor </option></select></div></div><div class='col-md-2'><div class='form-group password-input'><label for='txtPassword'>Shareholding (%)</label><input type='hidden' name='isShareCheck[]' id='isShareCheck"+ x +"' value='0'><input type='text'  id='share_per" + x + "' data-id='" + x + "' maxlength='6' name='share_per[]' id='share_per" + x + "' id='employee' value='' class='form-control share_per'  placeholder='Enter Shareholder' ><span class='error' id='shareCheck" + x + "'></span></div></div><div class='col-md-4'><div class='form-group password-input'><label for='txtPassword'>DOB<span class='mandatory'>*</span></label><input type='text' name='date_of_birth[]'  id='date_of_birth" + x + "' readonly='readonly' value='' class='form-control date_of_birth datepicker-dis-fdate'  placeholder='Enter Date Of Birth' ></div></div></div><div class='row'><div class='col-md-4'><div class='form-group password-input'><label for='gender'>Gender<span class='mandatory'>*</span></label><select class='form-control gender' name='gender[]'   id='gender" + x + "'><option value=''> Select Gender</option><option value='1'> Male </option><option value='2'>Female </option><option value='3'>Other</option></select></div></div><div class='col-md-4'><div class='form-group INR'><label for='txtEmail'>Networth </label><div class='relative'><a href='javascript:void(0);' class='remaining'><i class='fa fa-inr' aria-hidden='true'></i></a><input type='text' maxlength='15' name='networth[]' id='networth" + x + "' value='' class='form-control networth'  placeholder='Enter Networth'></div><input name='response[]' id='response" + x + "' type='hidden' value=''></div></div><div class='col-md-4'><div class='form-group'><label for='txtEmail'>Designation</label><input type='text' name='designation[]'  id='designation" + x + "' value='' class='form-control designation'  placeholder='Enter Designation'></div></div></div><div class='row'><div class='col-md-4'><div class='form-group'><label for='txtEmail'>Other Ownerships</label><input type='text' name='other_ownership[]' id='other_ownership" + x + "' value='' class='form-control other_ownership'  placeholder='Enter Other Ownership'></div></div><div class='col-md-8'><div class='form-group'><label for='txtCreditPeriod'>Address<span class='mandatory'>*</span></label><textarea  style='height: 35px;' class='form-control textarea address' placeholder='Enter Address' name='owner_addr[]' id='address'"+ x +"'></textarea></div></div></div><div class='row'><div class='col-md-4'><div class='form-group'><label for='txtCreditPeriod'>CKYC Ref No</label><input type='text' name='ckyc_ref_no[]' id='ckyc_ref_no"+x+"' value='' class='form-control' placeholder='Enter CKYC Ref No.' ></div></div></div><div class='row'><div class='col-md-12'><div class='form-group'><label for='txtCreditPeriod'>Comment</label><textarea class='form-control textarea' placeholder='Enter Comment' name='comment[]' id='comment"+x+"'></textarea></div></div></div></div><span id='disableDocumentPart"+x+"' style='display:none'><h5 class='card-title form-head-h5 mt-3'>Document </h5><div class='row mt-2 mb-4'><div class='col-md-12'> <div class='prtm-full-block'><div class='prtm-block-content'> <div class='table-responsive ps ps--theme_default' data-ps-id='9615ce02-be28-0492-7403-d251d7f6339e'><table class='table text-center table-striped table-hover'><thead class='thead-primary'><tr><th class='text-left'>S.No</th><th>Document Name</th><th>Document ID No.</th><th>Action</th></tr></thead><tbody><tr><td class='text-left'>1</td><td width='30%'>Pan Card</td><td width='30%'><div class='col-md-12'><span class='text-success' id='v1successpanverify" + x + "' style='display:none;'><i class='fa fa-check-circle' aria-hidden='true'></i> <i>Verified Successfully</i> </span><span class=' text-danger' id='v1failurepanverify" + x + "' style='display:none;''><i class='fa fa-close' aria-hidden='true'></i> <i>Not Verified</i></span><a href='javascript:void(0);' id='ppan" + x + "' data-id='" + x + "' class='verify-owner-no verify-show veripan' style='top:0px'>Verify</a><input type='text'  name='veripan[]' id='veripan" + x + "' value='' class='form-control'  placeholder='Enter PAN Number'></div></td><td width='28%'><div class='file-browse float-left position-seta'><button class='btn-upload btn-sm viewDocument' type='button' title='view Details' data-id='" + x + "' data-type='3'> <i class='fa fa-eye'></i></button><button class='btn-upload btn-sm' type='button'> <i class='fa fa-download'></i></button><input type='file' name='verifyfile[]' class='verifyfile' id='verifyfile" + x + "' dir='1' onchange='FileDetails(this.getAttribute('dir'))' multiple=''> </div> <div class='upload-btn-wrapper setupload-btn'> <button class='btn'>Upload</button> <input type='file'  name='panfile[]' data-id='" + x + "' class='panfile' id='panfile" + x + "'> </div> </td> </tr><tr> <td class='text-left'>2</td> <td width='30%'>Driving License</td> <td width='30%' ><div class='col-md-12'><span class='text-success' id='v2successpanverify" + x + "' style='display:none;'><i class='fa fa-check-circle' aria-hidden='true'></i> <i>Verified Successfully</i> </span><span class=' text-danger' id='v2failurepanverify" + x + "' style='display:none;''><i class='fa fa-close' aria-hidden='true'></i> <i>Not Verified</i></span> <a href='javascript:void(0);' id='ddriving" + x + "' data-id='" + x + "'  class='verify-owner-no verify-show veridl' style='top:0px;'>Verify</a> <input type='text' name='verifydl[]' id='verifydl" + x + "' value='' class='form-control verifydl'  placeholder='Enter DL Number'> </div> </td> <td width='28%'> <div class='file-browse float-left position-seta'><button class='btn-upload btn-sm viewDocument' type='button' title='view Details'  data-id='" + x + "' data-type='5'> <i class='fa fa-eye'></i></button> <button class='btn-upload btn-sm' type='button'> <i class='fa fa-download'></i></button> <input type='file' id='downloaddl" + x + "' name='downloaddl[]' dir='1' onchange='FileDetails(this.getAttribute('dir'))' multiple='' class='downloaddl'> </div> <div class='upload-btn-wrapper setupload-btn'> <button class='btn'>Upload</button> <input type='file'  name='dlfile[]' data-id='" + x + "' class='dlfile' id='dlfile" + x + "'> </div> </td> </tr> <tr> <td class='text-left'>3</td> <td width='30%'>Voter ID</td> <td width='30%' ><div class='col-md-12'><span class='text-success' id='v3successpanverify" + x + "' style='display:none;'><i class='fa fa-check-circle' aria-hidden='true'></i> <i>Verified Successfully</i> </span><span class=' text-danger' id='v3failurepanverify" + x + "' style='display:none;''><i class='fa fa-close' aria-hidden='true'></i> <i>Not Verified</i></span> <a href='javascript:void(0);' id='vvoter" + x + "' data-id='" + x + "'  class='verify-owner-no verify-show verivoter' style='top:0px;'>Verify</a> <input type='text' name='verifyvoter[]' id='verifyvoter" + x + "' value='' class='form-control verifyvoter'  placeholder='Enter Voter's Epic Number'> </div> </td> <td width='28%'> <div class='file-browse float-left position-seta'><button class='btn-upload btn-sm viewDocument' type='button' title='view Details'  data-id='" + x + "'  data-type='4'> <i class='fa fa-eye'></i></button> <button class='btn-upload btn-sm' type='button'> <i class='fa fa-download'></i></button> <input type='file' name='downloadvoter[]' class='downloadvoter' id='downloadvoter" + x + "' dir='1' onchange='FileDetails(this.getAttribute('dir'))' multiple=''> </div> <div class='upload-btn-wrapper setupload-btn'> <button class='btn'>Upload</button> <input type='file' data-id='" + x + "'  class='voterfile' name='voterfile[]' id='voterfile" + x + "'> </div> </td> </tr> </tr> <tr> <td class='text-left'>4</td> <td width='30%'>Passport</td> <td width='30%' ><div class='col-md-12'> <span class='text-success' id='v4successpanverify" + x + "' style='display:none;'><i class='fa fa-check-circle' aria-hidden='true'></i> <i>Verified Successfully</i> </span><span class=' text-danger' id='v4failurepanverify" + x + "' style='display:none;''><i class='fa fa-close' aria-hidden='true'></i> <i>Not Verified</i></span><a href='javascript:void(0);' id='ppassport" + x + "' data-id='" + x + "' class='verify-owner-no verify-show veripass' style='top:0px;'>Verify</a> <input type='text' name='verifypassport[]' id='verifypassport" + x + "' value='' class='form-control verifypassport'  placeholder='Enter File Number'> </div> </td> <td width='28%'> <div class='file-browse float-left position-seta'> <button class='btn-upload btn-sm viewDocument' type='button' title='view Details'  data-id='" + x + "'  data-type='6'> <i class='fa fa-eye'></i></button><button class='btn-upload btn-sm' type='button'> <i class='fa fa-download'></i></button> <input type='file' name='downloadpassport[]' class='downloadpassport'  id='downloadpassport" + x + "' dir='1' onchange='FileDetails(this.getAttribute('dir'))' multiple=''> </div> <div class='upload-btn-wrapper setupload-btn'> <button class='btn'>Upload</button> <input type='file' data-id='" + x + "'   name='passportfile[]' class='passportfile' id='passportfile" + x + "'> </div> </td> </tr> </tr> <tr> <td class='text-left'>5</td> <td width='30%'>Photo</td> <td width='30%' > </td> <td width='28%'> <div class='file-browse float-left position-seta'> <button class='btn-upload btn-sm' type='button'> <i class='fa fa-download'></i></button> <input type='file' name='downloadphoto[]' class='downloadphoto' id='downloadphoto" + x + "' dir='1' onchange='FileDetails(this.getAttribute('dir'))' multiple=''> </div> <div class='upload-btn-wrapper setupload-btn'> <button class='btn'>Upload</button> <input type='file' data-id='" + x + "'  name='photofile[]' name='photofile' id='photofile" + x + "'> </div> </td> </tr> </tbody> </table> </span> <div class='ps__scrollbar-x-rail' style='left: 0px; bottom: 0px;'><div class='ps__scrollbar-x'  style='left: 0px; width: 0px;'></div></div><div class='ps__scrollbar-y-rail' style='top: 0px; right: 0px;'><div class='ps__scrollbar-y'  style='top: 0px; height: 0px;'></div></div> </div> </div> </div> </div></div> </div></div></div>");
-           $(".form-fields-appand").append("<div class='fornm-sections'><div class='row'><div class='col-md-12'><div class='col-md-12'>"+close+"<h5 class='card-title form-head'>Management Information (" + x + ") </h5></div><div class='col-md-12'><div class='row'><div class='col-md-4'><div class='form-group'><label for='txtCreditPeriod' for='first_name' class='d-block'> Name  <span class='mandatory'>*</span></label><input type='hidden' class='owneridDynamic' id='ownerid" + x + "'   value=''><input type='text' name='first_name[]' vname='first_name" + x + "' id='first_name" + x + "' value='' class='form-control first_name' placeholder='Enter First Name' ></div></div><div class='col-md-2'><div class='form-group password-input'><label for='txtPassword'>Owner Type</label><select class='form-control is_promoter' name='applicant_type[]' id='applicant_type"+x+"'><option value='' selected='selected'>Select Owner Type</option><option value='1'>Is Promoter</option><option value='2'>Key Management Person</option><option value='3'>Co-Borrower</option><option value='4'>Guarantor </option></select></div></div><div class='col-md-2'><div class='form-group password-input'><label for='txtPassword'>Shareholding (%)</label><input type='hidden' name='isShareCheck[]' id='isShareCheck"+ x +"' value='0'><input type='text'  id='share_per" + x + "' data-id='" + x + "' maxlength='6' name='share_per[]' id='share_per" + x + "' id='employee' value='' class='form-control share_per'  placeholder='Enter Shareholder' ><span class='error' id='shareCheck" + x + "'></span></div></div><div class='col-md-4'><div class='form-group password-input'><label for='txtPassword'>DOB<span class='mandatory'>*</span></label><input type='text' name='date_of_birth[]'  id='date_of_birth" + x + "' readonly='readonly' value='' class='form-control date_of_birth datepicker-dis-fdate'  placeholder='Enter Date Of Birth' ></div></div></div><div class='row'><div class='col-md-4'><div class='form-group password-input'><label for='gender'>Gender<span class='mandatory'>*</span></label><select class='form-control gender' name='gender[]'   id='gender" + x + "'><option value=''> Select Gender</option><option value='1'> Male </option><option value='2'>Female </option><option value='3'>Other</option></select></div></div><div class='col-md-4'><div class='form-group INR'><label for='txtEmail'>Networth </label><div class='relative'><a href='javascript:void(0);' class='remaining'><i class='fa fa-inr' aria-hidden='true'></i></a><input type='text' maxlength='15' name='networth[]' id='networth" + x + "' value='' class='form-control networth'  placeholder='Enter Networth'></div><input name='response[]' id='response" + x + "' type='hidden' value=''></div></div><div class='col-md-4'><div class='form-group'><label for='txtEmail'>Designation</label><input type='text' name='designation[]'  id='designation" + x + "' value='' class='form-control designation'  placeholder='Enter Designation'></div></div></div><div class='row'><div class='col-md-4'><div class='form-group'><label for='txtEmail'>Other Ownerships</label><input type='text' name='other_ownership[]' id='other_ownership" + x + "' value='' class='form-control other_ownership'  placeholder='Enter Other Ownership'></div></div><div class='col-md-8'><div class='form-group'><label for='txtCreditPeriod'>Address<span class='mandatory'>*</span></label><textarea  style='height: 35px;' class='form-control textarea address' placeholder='Enter Address' name='owner_addr[]' id='address'"+ x +"'></textarea></div></div></div><div class='row'><div class='col-md-12'><div class='form-group'><label for='txtCreditPeriod'>Comment</label><textarea class='form-control textarea' placeholder='Enter Comment' name='comment[]' id='comment"+x+"'></textarea></div></div></div></div><span id='disableDocumentPart"+x+"' style='display:none'><h5 class='card-title form-head-h5 mt-3'>Document </h5><div class='row mt-2 mb-4'><div class='col-md-12'> <div class='prtm-full-block'><div class='prtm-block-content'> <div class='table-responsive ps ps--theme_default' data-ps-id='9615ce02-be28-0492-7403-d251d7f6339e'><table class='table text-center table-striped table-hover'><thead class='thead-primary'><tr><th class='text-left'>S.No</th><th>Document Name</th><th>Document ID No.</th><th>Action</th></tr></thead><tbody><tr><td class='text-left'>1</td><td width='30%'>Pan Card</td><td width='30%'><div class='col-md-12'><span class='text-success' id='v1successpanverify" + x + "' style='display:none;'><i class='fa fa-check-circle' aria-hidden='true'></i> <i>Verified Successfully</i> </span><span class=' text-danger' id='v1failurepanverify" + x + "' style='display:none;''><i class='fa fa-close' aria-hidden='true'></i> <i>Not Verified</i></span><a href='javascript:void(0);' id='ppan" + x + "' data-id='" + x + "' class='verify-owner-no verify-show veripan' style='top:0px'>Verify</a><input type='text'  name='veripan[]' id='veripan" + x + "' value='' class='form-control'  placeholder='Enter PAN Number'></div></td><td width='28%'><div class='file-browse float-left position-seta'><button class='btn-upload btn-sm viewDocument' type='button' title='view Details' data-id='" + x + "' data-type='3'> <i class='fa fa-eye'></i></button><button class='btn-upload btn-sm' type='button'> <i class='fa fa-download'></i></button><input type='file' name='verifyfile[]' class='verifyfile' id='verifyfile" + x + "' dir='1' onchange='FileDetails(this.getAttribute('dir'))' multiple=''> </div> <div class='upload-btn-wrapper setupload-btn'> <button class='btn'>Upload</button> <input type='file'  name='panfile[]' data-id='" + x + "' class='panfile' id='panfile" + x + "'> </div> </td> </tr><tr> <td class='text-left'>2</td> <td width='30%'>Driving License</td> <td width='30%' ><div class='col-md-12'><span class='text-success' id='v2successpanverify" + x + "' style='display:none;'><i class='fa fa-check-circle' aria-hidden='true'></i> <i>Verified Successfully</i> </span><span class=' text-danger' id='v2failurepanverify" + x + "' style='display:none;''><i class='fa fa-close' aria-hidden='true'></i> <i>Not Verified</i></span> <a href='javascript:void(0);' id='ddriving" + x + "' data-id='" + x + "'  class='verify-owner-no verify-show veridl' style='top:0px;'>Verify</a> <input type='text' name='verifydl[]' id='verifydl" + x + "' value='' class='form-control verifydl'  placeholder='Enter DL Number'> </div> </td> <td width='28%'> <div class='file-browse float-left position-seta'><button class='btn-upload btn-sm viewDocument' type='button' title='view Details'  data-id='" + x + "' data-type='5'> <i class='fa fa-eye'></i></button> <button class='btn-upload btn-sm' type='button'> <i class='fa fa-download'></i></button> <input type='file' id='downloaddl" + x + "' name='downloaddl[]' dir='1' onchange='FileDetails(this.getAttribute('dir'))' multiple='' class='downloaddl'> </div> <div class='upload-btn-wrapper setupload-btn'> <button class='btn'>Upload</button> <input type='file'  name='dlfile[]' data-id='" + x + "' class='dlfile' id='dlfile" + x + "'> </div> </td> </tr> <tr> <td class='text-left'>3</td> <td width='30%'>Voter ID</td> <td width='30%' ><div class='col-md-12'><span class='text-success' id='v3successpanverify" + x + "' style='display:none;'><i class='fa fa-check-circle' aria-hidden='true'></i> <i>Verified Successfully</i> </span><span class=' text-danger' id='v3failurepanverify" + x + "' style='display:none;''><i class='fa fa-close' aria-hidden='true'></i> <i>Not Verified</i></span> <a href='javascript:void(0);' id='vvoter" + x + "' data-id='" + x + "'  class='verify-owner-no verify-show verivoter' style='top:0px;'>Verify</a> <input type='text' name='verifyvoter[]' id='verifyvoter" + x + "' value='' class='form-control verifyvoter'  placeholder='Enter Voter's Epic Number'> </div> </td> <td width='28%'> <div class='file-browse float-left position-seta'><button class='btn-upload btn-sm viewDocument' type='button' title='view Details'  data-id='" + x + "'  data-type='4'> <i class='fa fa-eye'></i></button> <button class='btn-upload btn-sm' type='button'> <i class='fa fa-download'></i></button> <input type='file' name='downloadvoter[]' class='downloadvoter' id='downloadvoter" + x + "' dir='1' onchange='FileDetails(this.getAttribute('dir'))' multiple=''> </div> <div class='upload-btn-wrapper setupload-btn'> <button class='btn'>Upload</button> <input type='file' data-id='" + x + "'  class='voterfile' name='voterfile[]' id='voterfile" + x + "'> </div> </td> </tr> </tr> <tr> <td class='text-left'>4</td> <td width='30%'>Passport</td> <td width='30%' ><div class='col-md-12'> <span class='text-success' id='v4successpanverify" + x + "' style='display:none;'><i class='fa fa-check-circle' aria-hidden='true'></i> <i>Verified Successfully</i> </span><span class=' text-danger' id='v4failurepanverify" + x + "' style='display:none;''><i class='fa fa-close' aria-hidden='true'></i> <i>Not Verified</i></span><a href='javascript:void(0);' id='ppassport" + x + "' data-id='" + x + "' class='verify-owner-no verify-show veripass' style='top:0px;'>Verify</a> <input type='text' name='verifypassport[]' id='verifypassport" + x + "' value='' class='form-control verifypassport'  placeholder='Enter File Number'> </div> </td> <td width='28%'> <div class='file-browse float-left position-seta'> <button class='btn-upload btn-sm viewDocument' type='button' title='view Details'  data-id='" + x + "'  data-type='6'> <i class='fa fa-eye'></i></button><button class='btn-upload btn-sm' type='button'> <i class='fa fa-download'></i></button> <input type='file' name='downloadpassport[]' class='downloadpassport'  id='downloadpassport" + x + "' dir='1' onchange='FileDetails(this.getAttribute('dir'))' multiple=''> </div> <div class='upload-btn-wrapper setupload-btn'> <button class='btn'>Upload</button> <input type='file' data-id='" + x + "'   name='passportfile[]' class='passportfile' id='passportfile" + x + "'> </div> </td> </tr> </tr> <tr> <td class='text-left'>5</td> <td width='30%'>Photo</td> <td width='30%' > </td> <td width='28%'> <div class='file-browse float-left position-seta'> <button class='btn-upload btn-sm' type='button'> <i class='fa fa-download'></i></button> <input type='file' name='downloadphoto[]' class='downloadphoto' id='downloadphoto" + x + "' dir='1' onchange='FileDetails(this.getAttribute('dir'))' multiple=''> </div> <div class='upload-btn-wrapper setupload-btn'> <button class='btn'>Upload</button> <input type='file' data-id='" + x + "'  name='photofile[]' name='photofile' id='photofile" + x + "'> </div> </td> </tr> </tbody> </table> </span> <div class='ps__scrollbar-x-rail' style='left: 0px; bottom: 0px;'><div class='ps__scrollbar-x'  style='left: 0px; width: 0px;'></div></div><div class='ps__scrollbar-y-rail' style='top: 0px; right: 0px;'><div class='ps__scrollbar-y'  style='top: 0px; height: 0px;'></div></div> </div> </div> </div> </div></div> </div></div></div>");
+           $(".form-fields-appand").append("<div class='fornm-sections'><div class='row'><div class='col-md-12'><div class='col-md-12'>"+close+"<h5 class='card-title form-head'>Management Information (" + x + ") </h5></div><div class='col-md-12'><div class='row'><div class='col-md-4'><div class='form-group'><label for='txtCreditPeriod' for='first_name' class='d-block'> Name  <span class='mandatory'>*</span></label><input type='hidden' class='owneridDynamic' id='ownerid" + x + "'   value=''><input type='text' name='first_name[]' vname='first_name" + x + "' id='first_name" + x + "' value='' class='form-control first_name' placeholder='Enter First Name' ></div></div><div class='col-md-2'><div class='form-group password-input'><label for='txtPassword'>Owner Type</label><select class='form-control is_promoter' name='applicant_type[]' id='applicant_type"+x+"'><option value='' selected='selected'>Select Owner Type</option><option value='1'>Is Promoter</option><option value='2'>Key Management Person</option><option value='3'>Co-Borrower</option><option value='4'>Guarantor </option><option value='5'> Authorised Signatory  </option></select></div></div><div class='col-md-2'><div class='form-group password-input'><label for='txtPassword'>Shareholding (%)</label><input type='hidden' name='isShareCheck[]' id='isShareCheck"+ x +"' value='0'><input type='text'  id='share_per" + x + "' data-id='" + x + "' maxlength='6' name='share_per[]' id='share_per" + x + "' id='employee' value='' class='form-control share_per'  placeholder='Enter Shareholder' ><span class='error' id='shareCheck" + x + "'></span></div></div><div class='col-md-4'><div class='form-group password-input'><label for='txtPassword'>DOB<span class='mandatory'>*</span></label><input type='text' name='date_of_birth[]'  id='date_of_birth" + x + "' readonly='readonly' value='' class='form-control date_of_birth datepicker-dis-fdate'  placeholder='Enter Date Of Birth' ></div></div></div><div class='row'><div class='col-md-4'><div class='form-group password-input'><label for='gender'>Gender<span class='mandatory'>*</span></label><select class='form-control gender' name='gender[]'   id='gender" + x + "'><option value=''> Select Gender</option><option value='1'> Male </option><option value='2'>Female </option><option value='3'>Other</option></select></div></div><div class='col-md-4'><div class='form-group INR'><label for='txtEmail'>Networth </label><div class='relative'><a href='javascript:void(0);' class='remaining'><i class='fa fa-inr' aria-hidden='true'></i></a><input type='text' maxlength='15' name='networth[]' id='networth" + x + "' value='' class='form-control networth'  placeholder='Enter Networth'></div><input name='response[]' id='response" + x + "' type='hidden' value=''></div></div><div class='col-md-4'><div class='form-group'><label for='txtEmail'>Designation</label><input type='text' name='designation[]'  id='designation" + x + "' value='' class='form-control designation'  placeholder='Enter Designation'></div></div></div><div class='row'><div class='col-md-4'><div class='form-group'><label for='txtEmail'>Other Ownerships</label><input type='text' name='other_ownership[]' id='other_ownership" + x + "' value='' class='form-control other_ownership'  placeholder='Enter Other Ownership'></div></div><div class='col-md-8'><div class='form-group'><label for='txtCreditPeriod'>Address<span class='mandatory'>*</span></label><textarea  style='height: 35px;' class='form-control textarea address' placeholder='Enter Address' name='owner_addr[]' id='address'"+ x +"'></textarea></div></div></div><div class='row'><div class='col-md-12'><div class='form-group'><label for='txtCreditPeriod'>Comment</label><textarea class='form-control textarea' placeholder='Enter Comment' name='comment[]' id='comment"+x+"'></textarea></div></div></div></div><span id='disableDocumentPart"+x+"' style='display:none'><h5 class='card-title form-head-h5 mt-3'>Document </h5><div class='row mt-2 mb-4'><div class='col-md-12'> <div class='prtm-full-block'><div class='prtm-block-content'> <div class='table-responsive ps ps--theme_default' data-ps-id='9615ce02-be28-0492-7403-d251d7f6339e'><table class='table text-center table-striped table-hover'><thead class='thead-primary'><tr><th class='text-left'>S.No</th><th>Document Name</th><th>Document ID No.</th><th>Action</th></tr></thead><tbody><tr><td class='text-left'>1</td><td width='30%'>Pan Card</td><td width='30%'><div class='col-md-12'><span class='text-success' id='v1successpanverify" + x + "' style='display:none;'><i class='fa fa-check-circle' aria-hidden='true'></i> <i>Verified Successfully</i> </span><span class=' text-danger' id='v1failurepanverify" + x + "' style='display:none;''><i class='fa fa-close' aria-hidden='true'></i> <i>Not Verified</i></span><a href='javascript:void(0);' id='ppan" + x + "' data-id='" + x + "' class='verify-owner-no verify-show veripan' style='top:0px'>Verify</a><input type='text'  name='veripan[]' id='veripan" + x + "' value='' class='form-control'  placeholder='Enter PAN Number'></div></td><td width='28%'><div class='file-browse float-left position-seta'><button class='btn-upload btn-sm viewDocument' type='button' title='view Details' data-id='" + x + "' data-type='3'> <i class='fa fa-eye'></i></button><button class='btn-upload btn-sm' type='button'> <i class='fa fa-download'></i></button><input type='file' name='verifyfile[]' class='verifyfile' id='verifyfile" + x + "' dir='1' onchange='FileDetails(this.getAttribute('dir'))' multiple=''> </div> <div class='upload-btn-wrapper setupload-btn'> <button class='btn'>Upload</button> <input type='file'  name='panfile[]' data-id='" + x + "' class='panfile' id='panfile" + x + "'> </div> </td> </tr><tr> <td class='text-left'>2</td> <td width='30%'>Driving License</td> <td width='30%' ><div class='col-md-12'><span class='text-success' id='v2successpanverify" + x + "' style='display:none;'><i class='fa fa-check-circle' aria-hidden='true'></i> <i>Verified Successfully</i> </span><span class=' text-danger' id='v2failurepanverify" + x + "' style='display:none;''><i class='fa fa-close' aria-hidden='true'></i> <i>Not Verified</i></span> <a href='javascript:void(0);' id='ddriving" + x + "' data-id='" + x + "'  class='verify-owner-no verify-show veridl' style='top:0px;'>Verify</a> <input type='text' name='verifydl[]' id='verifydl" + x + "' value='' class='form-control verifydl'  placeholder='Enter DL Number'> </div> </td> <td width='28%'> <div class='file-browse float-left position-seta'><button class='btn-upload btn-sm viewDocument' type='button' title='view Details'  data-id='" + x + "' data-type='5'> <i class='fa fa-eye'></i></button> <button class='btn-upload btn-sm' type='button'> <i class='fa fa-download'></i></button> <input type='file' id='downloaddl" + x + "' name='downloaddl[]' dir='1' onchange='FileDetails(this.getAttribute('dir'))' multiple='' class='downloaddl'> </div> <div class='upload-btn-wrapper setupload-btn'> <button class='btn'>Upload</button> <input type='file'  name='dlfile[]' data-id='" + x + "' class='dlfile' id='dlfile" + x + "'> </div> </td> </tr> <tr> <td class='text-left'>3</td> <td width='30%'>Voter ID</td> <td width='30%' ><div class='col-md-12'><span class='text-success' id='v3successpanverify" + x + "' style='display:none;'><i class='fa fa-check-circle' aria-hidden='true'></i> <i>Verified Successfully</i> </span><span class=' text-danger' id='v3failurepanverify" + x + "' style='display:none;''><i class='fa fa-close' aria-hidden='true'></i> <i>Not Verified</i></span> <a href='javascript:void(0);' id='vvoter" + x + "' data-id='" + x + "'  class='verify-owner-no verify-show verivoter' style='top:0px;'>Verify</a> <input type='text' name='verifyvoter[]' id='verifyvoter" + x + "' value='' class='form-control verifyvoter'  placeholder='Enter Voter's Epic Number'> </div> </td> <td width='28%'> <div class='file-browse float-left position-seta'><button class='btn-upload btn-sm viewDocument' type='button' title='view Details'  data-id='" + x + "'  data-type='4'> <i class='fa fa-eye'></i></button> <button class='btn-upload btn-sm' type='button'> <i class='fa fa-download'></i></button> <input type='file' name='downloadvoter[]' class='downloadvoter' id='downloadvoter" + x + "' dir='1' onchange='FileDetails(this.getAttribute('dir'))' multiple=''> </div> <div class='upload-btn-wrapper setupload-btn'> <button class='btn'>Upload</button> <input type='file' data-id='" + x + "'  class='voterfile' name='voterfile[]' id='voterfile" + x + "'> </div> </td> </tr> </tr> <tr> <td class='text-left'>4</td> <td width='30%'>Passport</td> <td width='30%' ><div class='col-md-12'> <span class='text-success' id='v4successpanverify" + x + "' style='display:none;'><i class='fa fa-check-circle' aria-hidden='true'></i> <i>Verified Successfully</i> </span><span class=' text-danger' id='v4failurepanverify" + x + "' style='display:none;''><i class='fa fa-close' aria-hidden='true'></i> <i>Not Verified</i></span><a href='javascript:void(0);' id='ppassport" + x + "' data-id='" + x + "' class='verify-owner-no verify-show veripass' style='top:0px;'>Verify</a> <input type='text' name='verifypassport[]' id='verifypassport" + x + "' value='' class='form-control verifypassport'  placeholder='Enter File Number'> </div> </td> <td width='28%'> <div class='file-browse float-left position-seta'> <button class='btn-upload btn-sm viewDocument' type='button' title='view Details'  data-id='" + x + "'  data-type='6'> <i class='fa fa-eye'></i></button><button class='btn-upload btn-sm' type='button'> <i class='fa fa-download'></i></button> <input type='file' name='downloadpassport[]' class='downloadpassport'  id='downloadpassport" + x + "' dir='1' onchange='FileDetails(this.getAttribute('dir'))' multiple=''> </div> <div class='upload-btn-wrapper setupload-btn'> <button class='btn'>Upload</button> <input type='file' data-id='" + x + "'   name='passportfile[]' class='passportfile' id='passportfile" + x + "'> </div> </td> </tr> </tr> <tr> <td class='text-left'>5</td> <td width='30%'>Photo</td> <td width='30%' > </td> <td width='28%'> <div class='file-browse float-left position-seta'> <button class='btn-upload btn-sm' type='button'> <i class='fa fa-download'></i></button> <input type='file' name='downloadphoto[]' class='downloadphoto' id='downloadphoto" + x + "' dir='1' onchange='FileDetails(this.getAttribute('dir'))' multiple=''> </div> <div class='upload-btn-wrapper setupload-btn'> <button class='btn'>Upload</button> <input type='file' data-id='" + x + "'  name='photofile[]' name='photofile' id='photofile" + x + "'> </div> </td> </tr> </tbody> </table> </span> <div class='ps__scrollbar-x-rail' style='left: 0px; bottom: 0px;'><div class='ps__scrollbar-x'  style='left: 0px; width: 0px;'></div></div><div class='ps__scrollbar-y-rail' style='top: 0px; right: 0px;'><div class='ps__scrollbar-y'  style='top: 0px; height: 0px;'></div></div> </div> </div> </div> </div></div> </div></div></div>");
            x++;
         datepickerDisFdate();
        
@@ -1372,7 +1189,6 @@
                 temp['address'] = v.address;
                 temp['dob'] = newDate;
                 arr.push(temp);
-                //// $(".form-fields-appand").append("<div class='fornm-sections'><div class='row'><div class='col-md-12'><div class='col-md-12'><button class='close clsdiv' type='button'>x</button><h3>Promoter</h3></div><div class='col-md-12'><div class='row'><div class='col-md-4'><div class='form-group'><label for='txtCreditPeriod' for='first_name'>Promoter Name<span class='mandatory'>*</span></label><input type='hidden'class='owneridDynamic' id='ownerid"+x+"' name='ownerid[]' value=''><input type='text' name='first_name[]' vname='first_name" + x + "' id='first_name" + x + "' value='"+v.name+"' class='form-control first_name' placeholder='Enter First Name' ></div></div><div class='col-md-4'><div class='form-group'><label for='txtCreditPeriod' for='first_name' >Last Name</label><input type='text' name='last_name[]' id='last_name" + x + "' value='' class='form-control last_name' placeholder='Enter Last Name' ></div></div><div class='col-md-4'><div class='form-group password-input'><label for='txtPassword'>DOB<span class='mandatory'>*</span></label><input type='text' name='date_of_birth[]'  id='date_of_birth" + x + "' value='"+newDate+"' class='form-control date_of_birth datepicker-dis-fdate'  placeholder='Enter Date Of Birth' ></div></div></div><div class='row'><div class='col-md-4'><div class='form-group password-input'><label for='gender'>Gender<span class='mandatory'>*</span></label><select class='form-control gender' name='gender[]'   id='gender" + x + "'><option value=''> Select Gender</option><option value='1'> Male </option><option value='2'>Female </option></select></div></div><div class='col-md-4'><div class='form-group'><label for='pan_no'>PAN Number<span class='mandatory'>*</span><span class='text-success' id='successpanverify"+x+"' style='display:none;'><i class='fa fa-check-circle' aria-hidden='true'></i> <i>Verified Successfully</i> </span><span class=' text-danger' id='failurepanverify"+x+"' style='display:none;''><i class='fa fa-close' aria-hidden='true'></i> <i>Not Verified</i></span></label><a href='javascript:void(0);' data-id='" + x + "' id='pan_verify" + x + "' class='verify-owner-no promoter_pan_verify'>Verify</a><input type='text' name='pan_no[]'  id='pan_no" + x + "' value='' class='form-control pan_no' placeholder='Enter Pan No' ><input name='response[] id='response" + x + "' type='hidden' value=''></div></div><div class='col-md-4'><div class='form-group password-input'><label for='txtPassword'>Shareholding (%)<span class='mandatory'>*</span></label><input type='text' name='share_per[]' id='share_per" + x + "' id='employee' value='' class='form-control share_per'  placeholder='Enter Shareholder' ></div></div></div><div class='row'><div class='col-md-4'><div class='form-group'><label for='txtEmail'>Educational Qualification</label><input type='text' name='edu_qualification[]'  id='edu_qualification" + x + "' value='' class='form-control edu_qualification'  placeholder='Enter Education Qualification.'></div></div><div class='col-md-4'><div class='form-group'><label for='txtEmail'>Other Ownerships</label><input type='text' name='other_ownership[]' id='other_ownership" + x + "' value='' class='form-control other_ownership'  placeholder='Enter Other Ownership'></div></div><div class='col-md-4'><div class='form-group INR'><label for='txtEmail'>Networth </label><a href='javascript:void(0);' class='verify-owner-no'><i class='fa fa-inr' aria-hidden='true'></i></a><input type='text' maxlength='15' name='networth[]' id='networth" + x + "' value='' class='form-control networth'  placeholder='Enter Networth'></div></div> </div></div><div class='col-md-8'><div class='form-group password-input'><label for='txtPassword'>Address<span class='mandatory'>*</span></label><textarea class='form-control textarea address' placeholder='Enter Address' name='owner_addr[]' id='address" + x + "'>"+v.address+"</textarea></div></div> <h5 class='card-title form-head-h5 mt-3'>Document </h5><div class='row mt-2 mb-4'><div class='col-md-12'> <div class='prtm-full-block'><div class='prtm-block-content'><div class='table-responsive ps ps--theme_default' data-ps-id='9615ce02-be28-0492-7403-d251d7f6339e'><table class='table text-center table-striped table-hover'><thead class='thead-primary'><tr><th class='text-left'>S.No</th><th>Document Name</th><th>Document ID No.</th><th>Action</th></tr></thead><tbody><tr><td class='text-left'>1</td><td width='30%'>Pan Card</td><td width='30%'><div class='col-md-12'><span class='text-success' id='v1successpanverify"+x+"' style='display:none;'><i class='fa fa-check-circle' aria-hidden='true'></i> <i>Verified Successfully</i> </span><span class=' text-danger' id='v1failurepanverify"+x+"' style='display:none;''><i class='fa fa-close' aria-hidden='true'></i> <i>Not Verified</i></span><a href='javascript:void(0);' id='ppan"+ x +"' data-id='"+ x +"' class='verify-owner-no verify-show veripan' style='top:0px'>Verify</a><input type='text'  name='veripan[]' id='veripan"+ x +"' value='' class='form-control'  placeholder='Enter PAN Number'></div></td><td width='28%'><div class='file-browse float-left position-seta'><button class='btn-upload btn-sm viewDocument' type='button' title='view Details' data-id='" + x + "' data-type='3'> <i class='fa fa-eye'></i></button><button class='btn-upload btn-sm' type='button'> <i class='fa fa-download'></i></button><input type='file' name='verifyfile[]' class='verifyfile' id='verifyfile" + x + "' dir='1' onchange='FileDetails(this.getAttribute('dir'))' multiple=''> </div> <div class='upload-btn-wrapper setupload-btn'> <button class='btn'>Upload</button> <input type='file'  name='panfile[]' data-id='" + x + "' class='panfile' id='panfile" + x + "'> </div> </td> </tr><tr> <td class='text-left'>2</td> <td width='30%'>Driving License</td> <td width='30%' > <div class='col-md-12'><span class='text-success' id='v2successpanverify"+x+"' style='display:none;'><i class='fa fa-check-circle' aria-hidden='true'></i> <i>Verified Successfully</i> </span><span class=' text-danger' id='v2failurepanverify"+x+"' style='display:none;''><i class='fa fa-close' aria-hidden='true'></i> <i>Not Verified</i></span> <a href='javascript:void(0);' id='ddriving" + x + "' data-id='" + x +"'  class='verify-owner-no verify-show veridl' style='top:0px;'>Verify</a> <input type='text' name='verifydl[]' id='verifydl" + x + "' value='' class='form-control verifydl'  placeholder='Enter DL Number'> </div> </td> <td width='28%'> <div class='file-browse float-left position-seta'><button class='btn-upload btn-sm viewDocument' type='button' title='view Details'  data-id='" + x + "' data-type='5'> <i class='fa fa-eye'></i></button> <button class='btn-upload btn-sm' type='button'> <i class='fa fa-download'></i></button> <input type='file' id='downloaddl" + x + "' name='downloaddl[]' dir='1' onchange='FileDetails(this.getAttribute('dir'))' multiple='' class='downloaddl'> </div> <div class='upload-btn-wrapper setupload-btn'> <button class='btn'>Upload</button> <input type='file'  name='dlfile[]' data-id='" + x + "' class='dlfile' id='dlfile" + x + "'> </div> </td> </tr> <tr> <td class='text-left'>3</td> <td width='30%'>Voter ID</td> <td width='30%' > <div class='col-md-12'><span class='text-success' id='v3successpanverify"+x+"' style='display:none;'><i class='fa fa-check-circle' aria-hidden='true'></i> <i>Verified Successfully</i> </span><span class=' text-danger' id='v3failurepanverify"+x+"' style='display:none;''><i class='fa fa-close' aria-hidden='true'></i> <i>Not Verified</i></span> <a href='javascript:void(0);' id='vvoter" + x + "' data-id='" + x +"'  class='verify-owner-no verify-show verivoter' style='top:0px;'>Verify</a> <input type='text' name='verifyvoter[]' id='verifyvoter" + x + "' value='' class='form-control verifyvoter'  placeholder='Enter Voter's Epic Number'> </div> </td> <td width='28%'> <div class='file-browse float-left position-seta'><button class='btn-upload btn-sm viewDocument' type='button' title='view Details'  data-id='" + x + "'  data-type='4'> <i class='fa fa-eye'></i></button> <button class='btn-upload btn-sm' type='button'> <i class='fa fa-download'></i></button> <input type='file' name='downloadvoter[]' class='downloadvoter' id='downloadvoter" + x + "' dir='1' onchange='FileDetails(this.getAttribute('dir'))' multiple=''> </div> <div class='upload-btn-wrapper setupload-btn'> <button class='btn'>Upload</button> <input type='file' data-id='" + x + "'  class='voterfile' name='voterfile[]' id='voterfile" + x + "'> </div> </td> </tr> </tr> <tr> <td class='text-left'>4</td> <td width='30%'>Passport</td> <td width='30%' > <div class='col-md-12'> <span class='text-success' id='v4successpanverify"+x+"' style='display:none;'><i class='fa fa-check-circle' aria-hidden='true'></i> <i>Verified Successfully</i> </span><span class=' text-danger' id='v4failurepanverify"+x+"' style='display:none;''><i class='fa fa-close' aria-hidden='true'></i> <i>Not Verified</i></span><a href='javascript:void(0);' id='ppassport" + x + "' data-id='" + x +"' class='verify-owner-no verify-show veripass' style='top:0px;'>Verify</a> <input type='text' name='verifypassport[]' id='verifypassport" + x + "' value='' class='form-control verifypassport'  placeholder='Enter File Number'> </div> </td> <td width='28%'> <div class='file-browse float-left position-seta'> <button class='btn-upload btn-sm viewDocument' type='button' title='view Details'  data-id='" + x + "'  data-type='6'> <i class='fa fa-eye'></i></button><button class='btn-upload btn-sm' type='button'> <i class='fa fa-download'></i></button> <input type='file' name='downloadpassport[]' class='downloadpassport'  id='downloadpassport" + x + "' dir='1' onchange='FileDetails(this.getAttribute('dir'))' multiple=''> </div> <div class='upload-btn-wrapper setupload-btn'> <button class='btn'>Upload</button> <input type='file' data-id='" + x + "'   name='passportfile[]' class='passportfile' id='passportfile" + x + "'> </div> </td> </tr> </tr> <tr> <td class='text-left'>5</td> <td width='30%'>Photo</td> <td width='30%' > </td> <td width='28%'> <div class='file-browse float-left position-seta'> <button class='btn-upload btn-sm' type='button'> <i class='fa fa-download'></i></button> <input type='file' name='downloadphoto[]' class='downloadphoto' id='downloadphoto" + x + "' dir='1' onchange='FileDetails(this.getAttribute('dir'))' multiple=''> </div> <div class='upload-btn-wrapper setupload-btn'> <button class='btn'>Upload</button> <input type='file' data-id='" + x + "'  name='photofile[]' name='photofile' id='photofile" + x + "'> </div> </td> </tr> </tbody> </table> <div class='ps__scrollbar-x-rail' style='left: 0px; bottom: 0px;'><div class='ps__scrollbar-x'  style='left: 0px; width: 0px;'></div></div><div class='ps__scrollbar-y-rail' style='top: 0px; right: 0px;'><div class='ps__scrollbar-y'  style='top: 0px; height: 0px;'></div></div> </div> </div> </div> </div> </div> </div></div></div> ");
                 x++;
                 }
                 count++;
@@ -1522,7 +1338,8 @@
         var PAN = $("#veripan" + count).val();
         var name = $("#first_name" + count).val();
         var dob = $("#date_of_birth" + count).val();
-        var dataStore = {'pan': PAN, 'name':name, 'dob':dob, '_token': messages.token, 'biz_id':bizId, 'ownerid':ownerid, 'app_id':app_id};
+        var doc_type_name = $(this).data('doc_type_name') ? $(this).data('doc_type_name') : '';
+        var dataStore = {'pan': PAN, 'name':name, 'dob':dob, '_token': messages.token, 'biz_id':bizId, 'ownerid':ownerid, 'app_id':app_id, doc_type_name:doc_type_name};
         var postData = dataStore;
         $('#ppan' + count).text('Waiting...');
         jQuery.ajax({
@@ -1575,7 +1392,8 @@
         var PAN = $("#verifydl" + count).val();
         var dl_no = $("#verifydl" + count).val();
         var dob = $("#date_of_birth" + count).val();
-        var dataStore = {'dl_no': dl_no, 'dob':dob, '_token': messages.token, 'biz_id':bizId, 'ownerid':ownerid, 'app_id':app_id};
+        var doc_type_name = $(this).data('doc_type_name') ? $(this).data('doc_type_name') : '';
+        var dataStore = {'dl_no': dl_no, 'dob':dob, '_token': messages.token, 'biz_id':bizId, 'ownerid':ownerid, 'app_id':app_id, doc_type_name:doc_type_name};
         ////var dataStore = {'dl_no': 'MH01 20090091406','dob':'12-06-1987','_token': messages.token,'biz_id':bizId,'ownerid':ownerid,'app_id':app_id};
 
         var postData = dataStore;
@@ -1619,6 +1437,7 @@
         var bizId = $('input[name=biz_id]').val();
         var app_id = $('#app_id').val();
         var ownerid = $('#ownerid' + count).val();
+        var doc_type_name = $(this).data('doc_type_name') ? $(this).data('doc_type_name') : '';
         if (ownerid)
         {
         var ownerid = ownerid;
@@ -1627,8 +1446,7 @@
         {
         var ownerid = 0;
         }
-        var dataStore = {'epic_no':voterId, '_token': messages.token, 'biz_id':bizId, 'ownerid':ownerid, 'app_id':app_id };
-        ///  var dataStore = {'epic_no': 'SHA4722088','_token': messages.token,'biz_id':bizId,'ownerid':ownerid,'app_id':app_id };
+        var dataStore = {'epic_no':voterId, '_token': messages.token, 'biz_id':bizId, 'ownerid':ownerid, 'app_id':app_id, doc_type_name:doc_type_name };
         var postData = dataStore;
         $('#vvoter' + count).text('Waiting...');
         jQuery.ajax({
@@ -1655,7 +1473,6 @@
                 $('#vvoter' + count).text('Verify');
                 $('#v3successpanverify' + count).hide();
                 $('#v3failurepanverify' + count).show();
-                /// $("#submit").attr("disabled", true);
                 }
 
 
@@ -1681,7 +1498,8 @@
         }
         var file = $("#verifypassport" + count).val();
         var dob = $("#date_of_birth" + count).val();
-        var dataStore = {'fileNo': file, 'dob':dob, '_token': messages.token, 'biz_id':bizId, 'ownerid':ownerid, 'app_id':app_id};
+        var doc_type_name = $(this).data('doc_type_name') ? $(this).data('doc_type_name') : '';
+        var dataStore = {'fileNo': file, 'dob':dob, '_token': messages.token, 'biz_id':bizId, 'ownerid':ownerid, 'app_id':app_id,doc_type_name:doc_type_name};
         //var dataStore = {'fileNo': 'BO3072344560818','dob':'17/08/1987','_token': messages.token };
         var postData = dataStore;
         $('#ppassport' + count).text('Waiting...');

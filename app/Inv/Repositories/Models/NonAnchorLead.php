@@ -113,6 +113,18 @@ class NonAnchorLead extends BaseModel
     {
         return $this->belongsTo('App\Inv\Repositories\Models\Master\Product', 'product_id', 'id');
     }
+
+    public static function getNonAnchorLeadByUserId($userId){
+        $arrUser = self::where('user_id', $userId)->first();
+        return ($arrUser ? $arrUser : FALSE);
+    }
+
+    public static function getNonAnchorUserData($whereCond) {
+        $nonanchors = self::select('non_anchor_leads.*')            
+            ->where($whereCond)            
+            ->get();            
+           return ($nonanchors ? $nonanchors : []);
+    }
 }
 
 

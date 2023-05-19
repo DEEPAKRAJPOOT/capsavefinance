@@ -289,8 +289,9 @@ class LeadController extends Controller {
         try {
             $user_id = $request->get('user_id');
             $userInfo = $this->userRepo->getUserDetail($user_id); //dd($userInfo);
+            $anchorId = $userInfo->anchor_id;
             //$application = $this->appRepo->getApplicationsDetail($user_id)->toArray();
-            $application = $this->appRepo->getApplicationsByPan($user_id)->toArray();
+            $application = $this->appRepo->getApplicationsByPan($user_id,$anchorId)->toArray();
             
             return view('backend.lead.lead_details')
                             ->with('userInfo', $userInfo)

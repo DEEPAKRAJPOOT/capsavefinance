@@ -754,8 +754,10 @@ class ReportsRepository extends BaseRepositories implements ReportInterface {
 					if(isset($whereCondition['user_id'])){
 						$query2->where('supplier_id',$whereCondition['user_id']);
 					}
-					$query2->select('anchor_id','invoice_no','invoice_id','supplier_id','prgm_offer_id','biz_id','program_id');
+					$query2->select('anchor_id','invoice_no','invoice_id','supplier_id','prgm_offer_id','app_id','biz_id','program_id');
 				},
+			'invoice.ucicUserUcic:app_id,ucic_id,user_id', 
+			'invoice.ucicUserUcic.ucicUser:user_ucic_id,ucic_code',
 			'invoice.lms_user:user_id,customer_id,virtual_acc_id', 
 			'invoice.anchor:anchor_id,comp_name,sales_user_id', 
 			'invoice.anchor.salesUser:user_id,f_name,m_name,l_name', 
@@ -925,6 +927,7 @@ class ReportsRepository extends BaseRepositories implements ReportInterface {
 				$date = $invDisb->inv_due_date;
 
 				$result[$invDisb->invoice_disbursed_id] = [
+					'ucicCode' => $invDetails->ucicUserUcic->ucicUser->ucic_code ?? '',
 					'custName' => $invDetails->business->biz_entity_name ?? '',
 					'customerId' => $invDetails->lms_user->customer_id ?? '',
 					'anchorName'=> $anchor_name,
@@ -1191,7 +1194,6 @@ class ReportsRepository extends BaseRepositories implements ReportInterface {
 	}
 
 	public function getReconReportData($userId){
-		
         $resultValue = [];
 		$soaBalance = DB::select('SELECT customer_id, soa_outstanding as SOA_Outstanding FROM (SELECT user_id, customer_id FROM rta_lms_users GROUP BY user_id ) AS a LEFT JOIN(SELECT b.user_id, (SUM(b.debit_amount) - SUM(b.credit_amount)) AS soa_outstanding FROM rta_customer_transaction_soa AS b LEFT JOIN rta_transactions AS c ON c.trans_id = b.trans_id WHERE c.soa_flag = 1 GROUP BY c.user_id) AS d ON a.user_id = d.user_id'); 
 		foreach($soaBalance as $key => $soaBal) {

@@ -368,7 +368,7 @@
         'get_documents_list', 'get_industries_list', 'get_vouchers_list',
         'get_segment_list', 'get_entity_list', 'get_constitutions_list',
         'get_gst_list', 'get_equipment_list', 'get_baserate_list', 'get_companies_list',
-        'get_bank_list','get_borrower_limit'
+        'get_bank_list','get_borrower_limit', 'get_master_group_list','list_ucic'
         ])
     <li class="nav-item">
         <a class="nav-link" data-toggle="collapse" href="#layoutsSubmenu11" aria-expanded="false"
@@ -469,6 +469,16 @@
                 @can('list_security_document')
                 <li class="nav-item">
                     <a class="nav-link" href="{{ route('list_security_document') }}">Manage Security Document Type</a>
+                </li>
+                @endcan
+                @can('get_master_group_list')
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ route('get_master_group_list') }}">Manage New Group</a>
+                </li>
+                @endcan
+                @can('list_ucic')
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ route('list_ucic') }}">Manage UCIC</a>
                 </li>
                 @endcan
             </ul>

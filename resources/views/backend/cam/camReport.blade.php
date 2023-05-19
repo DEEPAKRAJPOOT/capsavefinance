@@ -1,5 +1,57 @@
 @if(!empty($arrGroupCompany))
-   <div class="data mt-4">
+  @if($appData->is_old_app == 0) 
+<div class="data mt-4">
+         <table class="table" cellpadding="0" cellspacing="0">
+         <tr>
+            <td bgcolor="#8a8989" style="color:#fff;font-size: 15px;font-weight: bold;">Group Company Exposure</td>
+            <td bgcolor="#8a8989" align="right">
+               <span  style="font-size: 11px; color: #ffffff;">
+                  @if(isset($arrCamData->By_updated))
+                     Updated By: {{$arrCamData->By_updated}} ({!! isset($arrCamData->updated_at) ?  \Carbon\Carbon::createFromFormat('Y-m-d H:i:s',$arrCamData->updated_at)->format('j F, Y') : '' !!})
+                  @endif
+               </span>
+            </td>
+         </tr>
+         </table>                           
+         
+         <table id="invoice_history" class="table   no-footer overview-table " role="grid" aria-describedby="invoice_history_info" cellpadding="0" cellspacing="0">
+            <thead>
+               <tr role="row">
+                  <th class="sorting_asc" tabindex="0" aria-controls="invoice_history" rowspan="1" colspan="1" aria-sort="ascending" aria-label="Sr.No: activate to sort column descending" width="12%">Group Name</th>
+                  <th class="sorting" tabindex="0" aria-controls="invoice_history" rowspan="1" colspan="1" aria-label="Docs : activate to sort column ascending" width="20%">Borrower</th>
+                  <th class="sorting" tabindex="0" aria-controls="invoice_history" rowspan="1" colspan="1" aria-label="Docs : activate to sort column ascending" width="10%">Product Type</th>
+                  <th class="sorting" tabindex="0" aria-controls="invoice_history" rowspan="1" colspan="1" aria-label="Docs : activate to sort column ascending" width="18%">Sanction Limit (In Mn)</th>
+                  <th class="sorting" tabindex="0" aria-controls="invoice_history" rowspan="1" colspan="1" aria-label="Docs : activate to sort column ascending" width="20%">Outstanding Exposure (In Mn)</th> 
+                  <th class="sorting" tabindex="0" aria-controls="invoice_history" rowspan="1" colspan="1" aria-label="Docs : activate to sort column ascending" width="10%">Proposed Limit (In Mn)</th>
+                  <th class="sorting" tabindex="0" aria-controls="invoice_history" rowspan="1" colspan="1" aria-label="Docs : activate to sort column ascending" width="10%">Total (In Mn)</th>
+               </tr>
+            </thead>
+            <tbody>
+               @php $count = count($arrGroupCompany);
+                  @endphp
+               @foreach($arrGroupCompany as $key=>$arr)
+                  <tr role="row" class="odd">
+                     @if($loop->first)
+                        <td class="" rowspan="{{$count}}" width="12%"> {{isset($arr['group_name']) ? $arr['group_name'] : ''}}</td>
+                     @endif
+                     <td class="" width="20%">{{ isset($arr['borrower']) ? $arr['borrower'] : '--' }}</td>
+                     <td class="" width="10%">{{ str_replace('_', ' ', array_search($arr['product_id'], config('common.PRODUCT'))) }}</td>
+                     <td align= "right" class="text-right" width="18%">{{ isset($arr['sanction']) ? \Helpers::convertToMillions($arr['sanction']) : '--' }}</td>
+                     <td align= "right" class="text-right" width="20%">{{ isset($arr['outstanding']) ? \Helpers::convertToMillions($arr['outstanding']) : '--' }}</td>
+                     <td align= "right" class="text-right" width="10%">{{ isset($arr['proposed']) ? \Helpers::convertToMillions($arr['proposed']) : '--' }}</td>
+                     <td align= "right" class="text-right" width="10%">{{ in_array($arr['product_id'], [2,3]) ? \Helpers::convertToMillions($arr['outstanding'] + $arr['proposed']) : (in_array($arr['product_id'], [1]) ? \Helpers::convertToMillions($arr['sanction'] + $arr['proposed']) : '--') }}</td>
+                  </tr>
+               @endforeach
+               <tr>
+                  <td class="" colspan="6"><b>Total Exposure (In Mn)</b></td>
+                  <td align= "right" class="text-right" width="10%"><b>{{($arrCamData && isset($arrCamData->total_exposure_amount) && $arrCamData->total_exposure_amount > 0) ? \Helpers::convertToMillions($arrCamData->total_exposure_amount) : ''}}</b></td>   
+               </tr>
+            </tbody>
+         </table>         
+   </div>
+@else
+
+<div class="data mt-4">
        
 
          <table class="table" cellpadding="0" cellspacing="0">
@@ -37,10 +89,10 @@
                                <td class="" rowspan="{{$count}}"> {{isset($arrCamData->group_company) ? $arrCamData->group_company : ''}}</td>
                            @endif
                            <td class="">{{isset($arr['group_company_name']) ? $arr['group_company_name'] : ''}}</td>
-                           <td class="">{{($arr['sanction_limit'] > 0) ? $arr['sanction_limit'] : ''}}</td>
-                           <td class="">{{ ($arr['outstanding_exposure'] > 0) ? $arr['outstanding_exposure']: '' }}</td>
-                           <td class="">{{ (($arr['proposed_exposure'] > 0)) ? $arr['proposed_exposure'] : '--' }}</td>
-                           <td class="">{{ (($arr['outstanding_exposure'] > 0) || ($arr['proposed_exposure'] > 0)) ?  $arr['outstanding_exposure'] + $arr['proposed_exposure'] : '' }}</td>
+                           <td align= "right" class="text-right">{{($arr['sanction_limit'] > 0) ? $arr['sanction_limit'] : ''}}</td>
+                           <td align= "right" class="text-right">{{ ($arr['outstanding_exposure'] > 0) ? $arr['outstanding_exposure']: '' }}</td>
+                           <td align= "right" class="text-right">{{ (($arr['proposed_exposure'] > 0)) ? $arr['proposed_exposure'] : '--' }}</td>
+                           <td align= "right" class="text-right">{{ (($arr['outstanding_exposure'] > 0) || ($arr['proposed_exposure'] > 0)) ?  $arr['outstanding_exposure'] + $arr['proposed_exposure'] : '' }}</td>
                           
                         </tr>
                         @endforeach
@@ -48,14 +100,15 @@
                      
                      <tr>
                            <td class="" colspan="5"><b>Total Exposure (In Mn)</b></td>
-                           <td class=""><b>{{($arrCamData && $arrCamData->total_exposure_amount > 0) ? $arrCamData->total_exposure_amount : ''}}</b></td>   
+                           <td align= "right" class="text-right"><b>{{($arrCamData && $arrCamData->total_exposure_amount > 0) ? $arrCamData->total_exposure_amount : ''}}</b></td>   
                      </tr>
             </tbody>
          </table>
          
    </div>
-@endif 
 
+@endif
+@endif
 @include('backend.cam.deal_structure_offers')
 
 @if(isset($preCondArr) && count($preCondArr)>0)
@@ -1091,7 +1144,7 @@ $finFlag = false;
                @foreach($positiveRiskCmntArr as $postkey =>$postval)         
                      <tr>
                         <td width="40%">{{$postval['cond']}}</td>
-                        <td width="60%" style="white-space: unset; text-align: justify;">{{$postval['timeline']}}</td>
+                        <td width="60%" style="white-space: unset; align: justify;">{{$postval['timeline']}}</td>
                      </tr>                     
                @endforeach
                </tbody>       
@@ -1110,7 +1163,7 @@ $finFlag = false;
                @foreach($negativeRiskCmntArr as $postkey =>$postval)
                      <tr>
                         <td width="40%">{{$postval['cond']}}</td>
-                        <td width="60%" style="white-space: unset; text-align: justify;">{{$postval['timeline']}}</td>
+                        <td width="60%" style="white-space: unset; align: justify;">{{$postval['timeline']}}</td>
                      </tr>                     
                @endforeach
                </tbody>               

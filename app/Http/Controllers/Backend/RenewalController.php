@@ -2,24 +2,35 @@
 
 namespace App\Http\Controllers\Backend;
 
+use DB;
 use Auth;
+use Event;
+use Helpers;
 use Session;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Inv\Repositories\Models\UcicUser;
+use App\Inv\Repositories\Models\UcicUserUcic;
+use App\Inv\Repositories\Contracts\Traits\ApplicationTrait;
 use App\Inv\Repositories\Contracts\UserInterface as InvUserRepoInterface;
 use App\Inv\Repositories\Contracts\ApplicationInterface as InvAppRepoInterface;
-use App\Inv\Repositories\Contracts\Traits\ApplicationTrait;
+use App\Inv\Repositories\Contracts\DocumentInterface as InvDocumentRepoInterface;
+use App\Inv\Repositories\Contracts\UcicUserInterface as InvUcicUserRepoInterface;
 
 class RenewalController extends Controller {
 
     use ApplicationTrait;
     protected $appRepo;
+    protected $docRepo;
 
-    public function __construct(InvAppRepoInterface $app_repo, InvUserRepoInterface $user_repo)
+    public function __construct(InvAppRepoInterface $app_repo, InvUserRepoInterface $user_repo, InvUcicUserRepoInterface $ucicuser_repo, InvDocumentRepoInterface $doc_repo)
     {        
         $this->middleware('checkBackendLeadAccess');
         $this->appRepo  = $app_repo;
         $this->userRepo = $user_repo;
+        $this->ucicuser_repo = $ucicuser_repo;
+        $this->docRepo = $doc_repo;
     }
 
     public function copyAppConfirmbox(Request $request)
@@ -34,15 +45,28 @@ class RenewalController extends Controller {
         $where['status'] = [0,1];
         $where['curr_status_id'] = [config('common.mst_status_id.APP_REJECTED'), config('common.mst_status_id.APP_CANCEL')];
         $appData = $this->appRepo->getApplicationsData($where);
+        $enhanceAppAllowed = true;
+
+        if(count($appData)) {
+            foreach($appData as $newAppData) {
+                $appProductIds = $newAppData && $newAppData->appProducts()->count() ? $newAppData->appProducts()->pluck('product_id')->toArray() : [];
+                if ($newAppData && in_array(config('common.PRODUCT.TERM_LOAN'), $appProductIds) || in_array(config('common.PRODUCT.LEASE_LOAN'), $appProductIds)) {
+                    if (!in_array($newAppData->curr_status_id, [config('common.mst_status_id.OFFER_ACCEPTED')])) {
+                        $enhanceAppAllowed = false;
+                        break;
+                    }
+                }
+            }
+        }
 
         $userData = $this->userRepo->getfullUserDetail($userId);           
         $isAnchorLead = $userData && !empty($userData->anchor_id);
 
         $flag = 0; 
-        if (isset($appData[0])) {
+        if (isset($appData[0]) && !$enhanceAppAllowed) {
         //    Session::flash('message', trans('error_messages.active_app_check'));
         //    return redirect()->back();
-            $flag = 1; 
+            $flag = 1;
         }
         if ($appType == 1) {
             $save_route = 'renew_application';
@@ -84,38 +108,48 @@ class RenewalController extends Controller {
                 Session::flash('error_code', 'active_app_found');
                 return redirect()->back();            
             }
-            
-            /*
-            $where=[];
-            $where['user_id'] = $userId;
-            $appData = $this->appRepo->getAppDataByOrder($where , $orderBy = 'DESC');
-            if (!$appData) {
-                Session::flash('message', 'No application found for renewal');
-                return redirect()->back(); 
-            }
-            
-            $appId = $appData->app_id;
-            $bizId = $appData->biz_id;          
-                 
-            //$userId = 568;
-            //$userId = 510;
-                                 
-            //$appId = 435;
-            //$bizId = 439;  
 
-            //$appId = 391;
-            //$bizId = 392;  
-            
-            */
-            
-            $result = $this->copyApplication($userId, $appId, $bizId, $appType);            
-            if (!isset($result['new_app_id'])) {
-                Session::flash('error_code', 'app_data_error');
+            $ucicData = UcicUser::whereHas('ucicUserUcic', function($query) use($appId, $userId){
+                $query->where('app_id',$appId)->where('user_id',$userId);
+            })->first();
+
+            if($ucicData){
+                $ucicScr = $ucicData->updated_info_src;
+                $ucicId  = $ucicData->user_ucic_id;
+                
+                if($ucicId && !is_null($ucicData->business_info) && !is_null($ucicData->management_info)){
+                    $result = $this->copyApplicationUcic($userId, $appId, $bizId, $appType, $ucicId, true, false);  
+                }else{
+                    $result = $this->copyApplication($userId, $appId, $bizId, $appType);  
+                }
+
+                if (!isset($result['new_app_id'])) {
+                    Session::flash('error_code', 'app_data_error');
+                    return redirect()->back();            
+                }
+                
+                $newAppId = $result['new_app_id'];
+                $newBizId = $result['new_biz_id'];
+                $newUserId = $result['new_user_id'];
+
+                if($ucicData && isset($newAppId)){
+                    UcicUserUcic::firstOrCreate(
+                        [
+                        'app_id' => $newAppId, 
+                        'ucic_id' => $ucicData->user_ucic_id
+                    ],[
+                        'ucic_id' => $ucicData->user_ucic_id,
+                        'user_id' => $newUserId ?? NULL,
+                        'app_id' => $newAppId  ?? NULL,
+                        'group_id' => $ucicData->group_id
+                        ]       
+                    );
+                }
+            }else{
+                Session::flash('error_code', 'UCIC Data Missing!');
                 return redirect()->back();            
             }
-            
-            $newAppId = $result['new_app_id'];
-            $newBizId = $result['new_biz_id'];            
+
             $arrActivity = [];
             if ($appType == 1) {
                 $arrActivity['activity_code'] = 'application_renewal';

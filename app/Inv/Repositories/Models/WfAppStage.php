@@ -107,7 +107,6 @@ class WfAppStage extends BaseModel
                 ->join('wf_stage', 'app_wf.wf_stage_id', '=', 'wf_stage.wf_stage_id')                 
                 ->where('app_wf.biz_app_id', $app_id)        
                 ->where('app_wf.app_wf_status', '!=', 1)
-                //->orderBy('app_wf.wf_stage_id', 'DESC')
                 ->orderBy('wf_stage.order_no', 'ASC')
                 ->limit(1)
                 ->first();

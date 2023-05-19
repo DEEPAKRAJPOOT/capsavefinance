@@ -3,85 +3,93 @@
 namespace App\Inv\Repositories\Entities\Application;
 
 use DB;
-use Session;
 use Auth;
+use Session;
+use Carbon\Carbon;
+use App\Inv\Repositories\Models\Cam;
 use App\Inv\Repositories\Models\User;
-use App\Inv\Repositories\Models\AppDocument;
-use App\Inv\Repositories\Models\AppDocumentFile;
-use App\Inv\Repositories\Models\DocumentMaster;
-use App\Inv\Repositories\Models\Business;
-use App\Inv\Repositories\Models\BusinessAddress;
-use App\Inv\Repositories\Models\LiftingDetail;
-use App\Inv\Repositories\Models\AppBorrowerLimit;
-use App\Inv\Repositories\Models\Application;
-use App\Inv\Repositories\Models\AppAssignment;
-use App\Inv\Repositories\Models\FiAddress;
-use App\Inv\Repositories\Models\RcuDocument;
-use App\Inv\Repositories\Models\RcuStatusLog;
-use App\Inv\Repositories\Contracts\ApplicationInterface;
-use App\Inv\Repositories\Factory\Repositories\BaseRepositories;
-use App\Inv\Repositories\Contracts\Traits\CommonRepositoryTraits;
-use App\Inv\Repositories\Models\AppNote;
-use App\Inv\Repositories\Models\Program;
-use App\Inv\Repositories\Models\AppProgramOffer;
-use App\Inv\Repositories\Models\AppProgramOfferSanction;
 use App\Inv\Repositories\Models\Agency;
-use App\Inv\Repositories\Models\Master\Industry;
-use App\Inv\Repositories\Models\AppPdNote;
-use App\Inv\Repositories\Models\AnchorRelation;
-use App\Inv\Repositories\Models\AppApprover;
-use App\Inv\Repositories\Models\Master\Charges;
-use App\Inv\Repositories\Models\ProgramDoc;
-use App\Inv\Repositories\Models\ProgramCharges;
-use App\Inv\Repositories\Models\AppLimit;
-use App\Inv\Repositories\Models\AppProgramLimit;
+use App\Inv\Repositories\Models\BizApi;
+use App\Inv\Repositories\Models\AppNote;
 use App\Inv\Repositories\Models\LmsUser;
-use App\Inv\Repositories\Models\UserBankAccount;
+use App\Inv\Repositories\Models\Program;
+use App\Inv\Repositories\Models\AppLimit;
+use App\Inv\Repositories\Models\BizOwner;
+use App\Inv\Repositories\Models\Business;
+use App\Inv\Repositories\Models\UcicUser;
+use App\Inv\Repositories\Models\UcicUserUcic;
+use App\Inv\Repositories\Models\UserNach;
+use App\Inv\Repositories\Models\AppPdNote;
+use App\Inv\Repositories\Models\BizGstLog;
+use App\Inv\Repositories\Models\BizPanGst;
+use App\Inv\Repositories\Models\FiAddress;
+use App\Inv\Repositories\Models\OfferPTPQ;
+use App\Inv\Repositories\Models\AppProduct;
+use App\Inv\Repositories\Models\BizInvoice;
+use App\Inv\Repositories\Models\BizPerfios;
+use App\Inv\Repositories\Models\CamHygiene;
+use App\Inv\Repositories\Models\ProgramDoc;
+use App\Inv\Repositories\Models\UserAppDoc;
+use App\Inv\Repositories\Models\UserDetail;
+use App\Inv\Repositories\Models\WfAppStage;
+use App\Inv\Repositories\Models\AppApprover;
+use App\Inv\Repositories\Models\AppDocument;
+use App\Inv\Repositories\Models\Application;
+use App\Inv\Repositories\Models\Master\Bank;
+use App\Inv\Repositories\Models\OfferCharge;
+use App\Inv\Repositories\Models\RcuDocument;
+use App\Inv\Repositories\Models\AppStatusLog;
+use App\Inv\Repositories\Models\BizEntityCin;
+use App\Inv\Repositories\Models\Master\Asset;
+use App\Inv\Repositories\Models\RcuStatusLog;
+use App\Inv\Repositories\Models\AppAssignment;
+use App\Inv\Repositories\Models\AppDocProduct;
+use App\Inv\Repositories\Models\ColenderShare;
+use App\Inv\Repositories\Models\LiftingDetail;
+use App\Inv\Repositories\Models\Lms\NachBatch;
+use App\Inv\Repositories\Models\Lms\TransType;
+use App\Inv\Repositories\Models\NachStatusLog;
+use App\Inv\Repositories\Models\AnchorRelation;
+use App\Inv\Repositories\Models\AppGroupDetail;
+use App\Inv\Repositories\Models\AppLimitReview;
+use App\Inv\Repositories\Models\DocumentMaster;
+use App\Inv\Repositories\Models\Master\Charges;
+use App\Inv\Repositories\Models\Master\Company;
+use App\Inv\Repositories\Models\Master\Segment;
+use App\Inv\Repositories\Models\ProgramCharges;
+use App\Inv\Repositories\Models\UserCkycReport;
+use App\Inv\Repositories\Models\AppBizFinDetail;
+use App\Inv\Repositories\Models\AppDocumentFile;
+use App\Inv\Repositories\Models\AppProgramLimit;
+use App\Inv\Repositories\Models\AppProgramOffer;
+use App\Inv\Repositories\Models\BusinessAddress;
 use App\Inv\Repositories\Models\Master\DoaLevel;
+use App\Inv\Repositories\Models\Master\Industry;
+use App\Inv\Repositories\Models\UserBankAccount;
+use App\Inv\Repositories\Models\UserCkycConsent;
+use App\Inv\Repositories\Models\AppBizBankDetail;
+use App\Inv\Repositories\Models\AppBorrowerLimit;
+use App\Inv\Repositories\Models\Lms\Transactions;
 use App\Inv\Repositories\Models\Master\Documents;
 use App\Inv\Repositories\Models\Master\Equipment;
-use App\Inv\Repositories\Models\OfferPTPQ;
-use App\Inv\Repositories\Models\Cam;
-use App\Inv\Repositories\Models\Master\Constitution;
-use App\Inv\Repositories\Models\AppStatusLog;
-use App\Inv\Repositories\Models\Master\SubIndustry;
-use App\Inv\Repositories\Models\Master\Segment;
-use App\Inv\Repositories\Models\Master\Company;
-use App\Inv\Repositories\Models\Lms\Transactions;
-use App\Inv\Repositories\Models\ColenderShare;
-use App\Inv\Repositories\Models\Master\Bank;
-use App\Inv\Repositories\Models\OfferPrimarySecurity;
-use App\Inv\Repositories\Models\OfferCollateralSecurity;
-use App\Inv\Repositories\Models\OfferPersonalGuarantee;
-use App\Inv\Repositories\Models\OfferCorporateGuarantee;
-use App\Inv\Repositories\Models\OfferEscrowMechanism;
-use App\Inv\Repositories\Models\Lms\TransType;
-use App\Inv\Repositories\Models\CamReviewerSummary;
-use App\Inv\Repositories\Models\CamReviewSummPrePost;
-use App\Inv\Repositories\Models\OfferCharge;
-use App\Inv\Repositories\Models\BizPanGst;
-use App\Inv\Repositories\Models\BizOwner;
-use App\Inv\Repositories\Models\BizApi;
-use App\Inv\Repositories\Models\BizGstLog;
-use App\Inv\Repositories\Models\BizPerfios;
-use App\Inv\Repositories\Models\AppProduct;
-use App\Inv\Repositories\Models\AppDocProduct;
-use App\Inv\Repositories\Models\AppBizFinDetail;
-use App\Inv\Repositories\Models\AppBizBankDetail;
-use App\Inv\Repositories\Models\CamReviewSummRiskCmnt;
-use App\Inv\Repositories\Models\UserAppDoc;
-use App\Inv\Repositories\Models\CamHygiene;
-use App\Inv\Repositories\Models\WfAppStage;
-use App\Inv\Repositories\Models\AppOfferAdhocLimit;
-use App\Inv\Repositories\Models\UserDetail;
-use App\Inv\Repositories\Models\BizEntityCin;
-use App\Inv\Repositories\Models\BizInvoice;
-use App\Inv\Repositories\Models\UserNach;
-use App\Inv\Repositories\Models\Lms\NachBatch;
-use App\Inv\Repositories\Models\Master\Asset;
-use App\Inv\Repositories\Models\NachStatusLog;
 use App\Inv\Repositories\Models\AppSanctionLetter;
-use App\Inv\Repositories\Models\AppLimitReview;
+use App\Inv\Repositories\Models\AppOfferAdhocLimit;
+use App\Inv\Repositories\Models\CamReviewerSummary;
+use App\Inv\Repositories\Models\Master\SubIndustry;
+use App\Inv\Repositories\Models\Master\Constitution;
+use App\Inv\Repositories\Models\CamReviewSummPrePost;
+use App\Inv\Repositories\Models\OfferEscrowMechanism;
+use App\Inv\Repositories\Models\OfferPrimarySecurity;
+use App\Inv\Repositories\Models\CamReviewSummRiskCmnt;
+use App\Inv\Repositories\Models\OfferPersonalGuarantee;
+use App\Inv\Repositories\Contracts\ApplicationInterface;
+use App\Inv\Repositories\Models\AppProgramOfferSanction;
+use App\Inv\Repositories\Models\OfferCollateralSecurity;
+use App\Inv\Repositories\Models\OfferCorporateGuarantee;
+use App\Inv\Repositories\Factory\Repositories\BaseRepositories;
+use App\Inv\Repositories\Contracts\Traits\CommonRepositoryTraits;
+use App\Inv\Repositories\Entities\User\Exceptions\BlankDataExceptions;
+use App\Inv\Repositories\Entities\User\Exceptions\InvalidDataTypeExceptions;
 
 /**
  * Application repository class
@@ -1525,6 +1533,7 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
                 'app_id' => $appId, 
                 'product_id' => 1
                 ])
+            ->whereIn('status', [0,1,2])
             ->with('offer')
             ->first();
     }
@@ -2445,10 +2454,10 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
         return Business::getBizDataByPan($pan, $userId);
     }    
 
-     public function checkAppByPan($userId)
-     {
+    public function checkAppByPan($userId)
+    {
          return Application::checkAppByPan($userId);
-     }
+    }
      
     public function getApplicationsByPan($userId)
     {
@@ -2708,5 +2717,93 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
     public function getAddressforCustomerApp($bizId) 
     {
         return Business::getAddressforCustomerApp($bizId);
+    }
+    
+    public function ownaddress($biz_owner_id, $biz_id, $address_type){
+
+        return BusinessAddress::ownaddress($biz_owner_id, $biz_id, $address_type);
+    }
+
+    public function getlatestBizDataByPan($pan, $userId=null){
+        return Business::getlatestBizDataByPan($pan, $userId);
+    }
+
+    public function getPrgmOfferByAppId(int $appId)
+    {
+        $prgmOfferData = AppProgramOffer::getPrgmOfferByAppId($appId);
+        return $prgmOfferData ? $prgmOfferData : [];
+    }
+    public function getActiveProgram($prgm_id)
+    {
+        try{
+            return Program::getActiveProgram($prgm_id);
+        } catch (Exception $ex) {
+            return $ex;
+        }
+    }
+
+    public function updateConsentByConsentId($ckyc_consent_id,$consentData){
+
+        return UserCkycConsent::updateConsentByConsentId($ckyc_consent_id,$consentData);
+    }
+
+    public function updateConsentByuserId($where,$consentData){
+
+        return UserCkycConsent::updateConsentByuserId($where,$consentData);
+    }
+
+    public function getUserConsent($where){
+
+        return UserCkycConsent::getUserConsent($where);
+    }
+
+    public function getckycDocs($value, $appProductIds=null)
+    {
+        return DocumentMaster::select('id as doc_id')
+                ->where('doc_name','like', '%'.$value.'%')
+                ->where('is_active', 1)
+                ->first();
+    }
+
+
+    public function updateAppGroupDetails($whereCondition = null, $whereInCondition = null, $data)
+    {
+        return AppGroupDetail::updateAppGroupDetails($whereCondition, $whereInCondition, $data);
+    }
+    
+    public function updateUcicUserData($whereCondition = null, $whereInCondition = null, $data)
+    {
+        return UcicUser::updateUcicUserData($whereCondition, $whereInCondition, $data);
+    }
+    
+    public function getGroupIdByAppId($appId)
+    {
+        return UcicUserUcic::getGroupIdByAppId($appId);
+    }
+
+    public function getAppByParentAppId($appId) {
+        return Application::getAppByParentAppId((int) $appId);
+    }
+
+    public function checkAppByPanForNonAnchorLeads($userId)
+    {
+        return Application::checkAppByPanForNonAnchorLeads($userId);
+    }
+
+    public function getUcicUserAppCurrentStatus($app_id) 
+    {
+        $app_id=(int)$app_id;
+        $result= Application::getUcicUserAppCurrentStatus($app_id);
+        return ($result)?$result:false;
+    }
+
+    public function getappByUcicId($where){
+
+        return UcicUserUcic::getappByUcicId($where);
+    }
+
+    public function getCompanyReport($where){
+
+        return UserCkycReport::getCompanyReport($where);
     }
 }

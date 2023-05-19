@@ -20,8 +20,8 @@ class BizPanGst extends BaseModel
      * @var integer
      */
     protected $primaryKey = 'biz_pan_gst_id';
-    public $userstamps = false;
-    public $timestamps = false;
+    public $userstamps = true;
+    public $timestamps = true;
 
     
     protected $fillable = [

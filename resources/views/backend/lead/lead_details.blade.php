@@ -33,10 +33,13 @@
                                   <div class="head-sec">
                                      <div class="pull-right" style="margin-bottom: 10px;">
                                         @can('create_application')
-                                        <a href="{{route('create_application',['user_id' => request()->get('user_id')])}}">
-                                            
-                                            <button class="btn  btn-success btn-sm" type="button">+ Create Application</button>
-                                        </a>
+                                            @if($userInfo->isAccountClose)                                        
+                                                <button class="btn  btn-secondary btn-sm" type="button">+ Create Application</button>
+                                            @else
+                                                <a href="{{route('create_application',['user_id' => request()->get('user_id')])}}">
+                                                    <button class="btn  btn-success btn-sm" type="button">+ Create Application</button>
+                                                </a>
+                                            @endif
                                         @endcan
                                      </div>
                                   </div>

@@ -2,12 +2,23 @@
 namespace App\Inv\Repositories\Contracts\Traits;
 
 use Auth;
+use Helpers;
+use Carbon\Carbon;
+use Illuminate\Support\Facades\DB;
 use App\Inv\Repositories\Models\Cam;
-use App\Inv\Repositories\Models\Master\Equipment;
-use App\Inv\Repositories\Models\AppProgramOffer;
-use App\Inv\Repositories\Models\BizOwner;
 use App\Inv\Repositories\Models\Anchor;
+use App\Inv\Repositories\Models\BizApi;
+use App\Inv\Repositories\Models\BizOwner;
+use App\Inv\Repositories\Models\UcicUser;
+use App\Inv\Repositories\Models\BizPanGst;
+use App\Inv\Repositories\Models\AppDocument;
+use App\Inv\Repositories\Models\UcicUserUcic;
+use App\Inv\Repositories\Models\AppGroupDetail;
 use App\Inv\Repositories\Models\AppSecurityDoc;
+use App\Inv\Repositories\Models\AppDocumentFile;
+use App\Inv\Repositories\Models\AppProgramOffer;
+use App\Inv\Repositories\Models\BusinessAddress;
+use App\Inv\Repositories\Models\Master\Equipment;
 
 trait ApplicationTrait
 {
@@ -339,13 +350,14 @@ trait ApplicationTrait
             $appData['status'] = 0;
             $appData['renewal_status'] = 0;
             $appData['app_type'] = $appType;
+            $appData['is_old_app'] = 0;
             $newAppData = $this->appRepo->createApplication($appData);
             $newAppId = $newAppData->app_id;
             
             $appCode = \Helpers::formatIdWithPrefix($newAppId, 'APP');
             $this->appRepo->updateAppDetails($newAppId, ['app_code' => $appCode]);  
             \Helpers::updateAppCurrentStatus($newAppId, config('common.mst_status_id.APP_INCOMPLETE'));
-            
+
             $newBizOwnersArr=[];
             //Get and save Biz Owner with Address Data
             $ownersData  = $this->appRepo->getOwnerByBizId($bizId);
@@ -369,7 +381,7 @@ trait ApplicationTrait
                 $newBizEntityCinData = $bizEntityCin ? $this->arrayExcept($bizEntityCin->toArray(), array_merge($excludeKeys, ['biz_entity_cin_id'])) : [];
                 $newBizEntityCinData['biz_id'] = $newBizId;                
                 $newBizEntityCinData['created_at'] = \Carbon\Carbon::now();
-		$newBizEntityCinData['created_by'] = \Auth::user()->user_id;                
+                $newBizEntityCinData['created_by'] = \Auth::user()->user_id;  
                 $this->appRepo->saveBizEntityCinData($newBizEntityCinData);
             }
             
@@ -625,6 +637,7 @@ trait ApplicationTrait
             $result = [];
             $result['new_app_id'] = $newAppId;
             $result['new_biz_id'] = $newBizId;
+            $result['new_user_id'] = $userId;
             
             return $result;
             // all good
@@ -636,6 +649,481 @@ trait ApplicationTrait
         }
     }
     
+    protected function copyApplicationUcic($userId, $appId, $bizId, $appType=null, $ucicId, $isNotParent=true, $newuser_id)
+    {
+        \DB::beginTransaction();
+        
+        try {  
+            $ucicDetails = UcicUser::find($ucicId);
+            $managementInfo = json_decode($ucicDetails->management_info,true) ?? [];
+            $businessInfo = json_decode($ucicDetails->business_info,true) ?? [];
+    
+            $excludeKeys = ['created_at', 'created_by','updated_at', 'updated_by'];
+            
+            //Get and save Business Data
+            $bizData = $this->appRepo->getApplicationById($bizId);                      
+            $bizData = $bizData ? $this->arrayExcept($bizData->toArray(), array_merge($excludeKeys, ['biz_id'])) : [];           
+            $newBizData = $this->appRepo->createBusiness($bizData);
+
+
+            if ($isNotParent) {
+                $userId = $userId;
+            } else {
+                $userId = $newuser_id;
+            }
+            
+            $newBizData->update([
+                'user_id' => $userId,
+                'biz_entity_name' => $businessInfo['business_info']['entity_name'],
+                'date_of_in_corp'=>Carbon::createFromFormat('d/m/Y', $businessInfo['business_info']['incorporation_date'])->format('Y-m-d'),
+                'entity_type_id'=>$businessInfo['business_info']['sub_industry'],
+                'nature_of_biz'=>$businessInfo['business_info']['industry'],
+                'turnover_amt'=>($businessInfo['business_info']['business_turnover'])? str_replace(',', '', $businessInfo['business_info']['business_turnover']): 0,
+                'biz_constitution'=>$businessInfo['business_info']['biz_constitution'],
+                'biz_segment'=>$businessInfo['business_info']['segment'],
+                'share_holding_date'=> isset($businessInfo['business_info']['share_holding_per']) ? Carbon::createFromFormat('d/m/Y', $businessInfo['business_info']['share_holding_per'])->format('Y-m-d') : null,
+                'busi_pan_comm_date'=> isset($businessInfo['business_info']['commencement_date']) ? Carbon::createFromFormat('d/m/Y', $businessInfo['business_info']['commencement_date'])->format('Y-m-d') : null,
+                'msme_type' => $businessInfo['business_info']['msme_type'],
+                'msme_no' => $businessInfo['business_info']['msme_no'],
+                'label_1' => $businessInfo['business_info']['label']['1'] ?? '',
+                'label_2' => $businessInfo['business_info']['label']['2'] ?? '',
+                'label_3' => $businessInfo['business_info']['label']['3'] ?? '',
+                'email' => $businessInfo['business_info']['email'] ?? '',
+                'mobile' => $businessInfo['business_info']['mobile'] ?? '',
+            ]);
+
+            $newBizId = $newBizData->biz_id;
+            
+            //Get and save Application data
+            $appData  = $this->appRepo->getAppDataByAppId($appId);
+            $appData = $appData ? $this->arrayExcept($appData->toArray(), array_merge($excludeKeys, ['app_id', 'curr_status_id', 'curr_status_updated_at'])) : [];                
+            $appData['biz_id'] = $newBizId;
+            if ($isNotParent) {
+                $appData['parent_app_id'] = $appId;
+            } else {
+                $appData['user_id'] = $newuser_id;
+                $appData['parent_app_id'] = NULL;
+            }
+
+            $appData['status'] = 0;
+            $appData['renewal_status'] = 0;
+            $appData['app_type'] = $appType;
+            $appData['is_old_app'] = 0;
+            $newAppData = $this->appRepo->createApplication($appData);
+            $newAppId = $newAppData->app_id;
+
+            UcicUserUcic::create([
+            'ucic_id' => $ucicId,
+            'user_id' => $userId, 
+            'app_id' => $newAppId,
+            'group_id' => $ucicDetails->group_id,
+            ]);
+
+            $appCode = \Helpers::formatIdWithPrefix($newAppId, 'APP');
+            $this->appRepo->updateAppDetails($newAppId, ['app_code' => $appCode]);  
+            \Helpers::updateAppCurrentStatus($newAppId, config('common.mst_status_id.APP_INCOMPLETE'));
+
+            //Save Biz Entity Cin Data
+            $whereCond=[];
+            $whereCond['biz_id'] = $bizId;  
+            $bizEntityCinData  = $this->appRepo->getBizEntityCinData($whereCond);
+            foreach($bizEntityCinData as $bizEntityCin) {
+                $newBizEntityCinData = $bizEntityCin ? $this->arrayExcept($bizEntityCin->toArray(), array_merge($excludeKeys, ['biz_entity_cin_id'])) : [];
+                $newBizEntityCinData['biz_id'] = $newBizId;                
+                $newBizEntityCinData['created_at'] = \Carbon\Carbon::now();
+                $newBizEntityCinData['created_by'] = \Auth::user()->user_id;                
+                $this->appRepo->saveBizEntityCinData($newBizEntityCinData);
+            }
+            
+            //Get Biz Owner Address
+            $gst_address = array(
+                'addr_1' => $businessInfo['gst_address']['address'] ?? '',
+                'city_name' => $businessInfo['gst_address']['city'] ?? '',
+                'state_id' => $businessInfo['gst_address']['state_id'] ?? '',
+                'pin_code' => $businessInfo['gst_address']['pincode'] ?? '',
+                'location_id' => $businessInfo['gst_address']['address_label'] ?? '',
+                'address_type' => 0,
+                'biz_id' => $newBizId,
+                'biz_owner_id' => null
+            );
+            BusinessAddress::create($gst_address);
+
+            $communication = array(
+                'addr_1' => $businessInfo['other_address']['communication']['address'] ?? '',
+                'city_name' => $businessInfo['other_address']['communication']['city'] ?? '',
+                'state_id' => $businessInfo['other_address']['communication']['state_id'] ?? '',
+                'pin_code' => $businessInfo['other_address']['communication']['pincode'] ?? '',
+                'location_id' => $businessInfo['other_address']['communication']['address_label'] ?? '',
+                'address_type' => 1,
+                'biz_id' => $newBizId,
+                'biz_owner_id' => null
+            );
+            BusinessAddress::create($communication);
+
+            $gst = array(
+                'addr_1' => $businessInfo['other_address']['gst']['address'] ?? '',
+                'city_name' => $businessInfo['other_address']['gst']['city'] ?? '',
+                'state_id' => $businessInfo['other_address']['gst']['state_id'] ?? '',
+                'pin_code' => $businessInfo['other_address']['gst']['pincode'] ?? '',
+                'location_id' => $businessInfo['other_address']['gst']['address_label'] ?? '',
+                'address_type' => 2,
+                'biz_id' => $newBizId,
+                'biz_owner_id' => null
+            );
+            BusinessAddress::create($gst);
+
+            $warehouse = array(
+                'addr_1' => $businessInfo['other_address']['warehouse']['address'] ?? '',
+                'city_name' => $businessInfo['other_address']['warehouse']['city'] ?? '',
+                'state_id' => $businessInfo['other_address']['warehouse']['state_id'] ?? '',
+                'pin_code' => $businessInfo['other_address']['warehouse']['pincode'] ?? '',
+                'location_id' => $businessInfo['other_address']['warehouse']['address_label'] ?? '',
+                'address_type' => 3,
+                'biz_id' => $newBizId,
+                'biz_owner_id' => null
+            );
+            BusinessAddress::create($warehouse);
+
+            $factory = array(
+                'addr_1' => $businessInfo['other_address']['factory']['address'] ?? '',
+                'city_name' => $businessInfo['other_address']['factory']['city'] ?? '',
+                'state_id' => $businessInfo['other_address']['factory']['state_id'] ?? '',
+                'pin_code' => $businessInfo['other_address']['factory']['pincode'] ?? '',
+                'location_id' => $businessInfo['other_address']['factory']['address_label'] ?? '',
+                'address_type' => 4,
+                'biz_id' => $newBizId,
+                'biz_owner_id' => null
+            );
+            BusinessAddress::create($factory);
+
+            //Get Biz API Data
+            $bizApiData  = BizApi::whereNull('biz_owner_id')->where('biz_id',$bizId)->get();
+            foreach($bizApiData as $apiData) {
+                $bizApiArrData = $apiData ? $this->arrayExcept($apiData->toArray(), array_merge($excludeKeys, ['biz_api_id'])) : [];
+                $bizApiArrData['biz_id'] = $newBizId;
+                $this->appRepo->saveBizApiData($bizApiArrData);
+            } 
+
+            //Get and save Pan GST Data
+            $bizPanGstData  = BizPanGst::whereNull('biz_owner_id')->where('biz_id',$bizId)->get();
+            foreach($bizPanGstData as $gstData) {
+                $bizPanGstArrData = $gstData ? $this->arrayExcept($gstData->toArray(), array_merge($excludeKeys, ['biz_pan_gst_id'])) : [];
+                $bizPanGstArrData['biz_id'] = $newBizId;
+                $this->appRepo->saveBizPanGstData($bizPanGstArrData);
+            }
+
+            BizPanGst::where(['biz_id'=>$newBizId, 'type'=>'2', 'parent_pan_gst_id'=>'0'])
+            ->update(['pan_gst_hash'=>$businessInfo['business_info']['gst_no']['pan_gst_hash']]);                
+
+            //update for CIN
+            BizPanGst::where(['biz_id'=>$newBizId, 'type'=>1, 'parent_pan_gst_id'=>'0', 'biz_owner_id'=>null])
+            ->update(['cin'=>(isset($businessInfo['business_info']['cin_no']))? $businessInfo['business_info']['cin_no']: NULL]);
+       
+            $newBizOwnersArr=[];
+            $oldOwnersArr=[];
+            if(!empty($managementInfo)){
+                $ucicOwnerIds = $managementInfo['management_info']['ownerIds'];
+                $ucicOwner = $managementInfo['management_info']['owners'];
+    
+                $i = 0;
+                foreach ($ucicOwnerIds as $key => $ucicOwnerId) {
+                    $newOwnerData = BizOwner::create([
+                    'user_id' => $userId,
+                    'biz_id' => $newBizId, 
+                    'first_name' => $ucicOwner[$i]['name'],
+                    'is_promoter' => $ucicOwner[$i]['owner_type']??0,
+                    'applicant_type' => $ucicOwner[$i]['owner_type']??0,
+                    'email' => $ucicOwner[$i]['email']??'',
+                    'mobile_no' => $ucicOwner[$i]['mobile_no']??'',
+                    'date_of_birth' => $ucicOwner[$i]['dob'],
+                    'gender' => $ucicOwner[$i]['gender'],
+                    'owner_addr' => $ucicOwner[$i]['address'] ?? '',
+                    'comment' => $ucicOwner[$i]['comment'],
+                    'other_ownership' => $ucicOwner[$i]['other_ownership'],
+                    'networth' => $ucicOwner[$i]['networth'],
+                    'share_per' => $ucicOwner[$i]['shareholding'],
+                    'designation' => $ucicOwner[$i]['designation'],
+                    'home_no' => $ucicOwner[$i]['home_no'] ?? null,
+                    'biz_pan_gst_id' => $ucicOwner[$i]['biz_pan_gst_id'] ?? null,
+                    'is_pan_verified' => $ucicOwner[$i]['is_pan_verified'] ?? null,
+                    'edu_qualification' => $ucicOwner[$i]['edu_qualification'] ?? null,
+                    'cibil_score' => $ucicOwner[$i]['cibil_score'] ?? null,
+                    'is_cibil_pulled' => $ucicOwner[$i]['is_cibil_pulled'] ?? null,
+                    'ckyc_ref_no' => $ucicOwner[$i]['ckyc_ref_no'] ?? null,
+                    'pan_number' => $ucicOwner[$i]['pan_no'] ?? null,
+                    'mobile' => $ucicOwner[$i]['mobile'] ?? null,
+                    'pan_card' => $ucicOwner[$i]['verify_pan'] ?? null,
+                    'driving_license' => $ucicOwner[$i]['verify_dl'] ?? null,
+                    'voter_id' => $ucicOwner[$i]['verify_voter'] ?? null,
+                    'passport' => $ucicOwner[$i]['verify_passport'] ?? null,
+                    
+                    'created_by' =>  Auth::user()->user_id]);
+                    
+                    $newBizOwnerId = $newOwnerData->biz_owner_id;
+
+                    if($ucicOwner[$i]['owner_id']){
+                        $oldOwnersArr[$ucicOwner[$i]['owner_id']] = $newBizOwnerId;
+                    }else{
+                        $newBizOwnersArr[] = $newBizOwnerId;
+                    }
+                    if($newBizOwnerId){
+                        // Add Ownere Address
+                        $ownerAddress = array(
+                            'addr_1' => $ucicOwner[$i]['address'],
+                            'biz_id' => $newBizId,
+                            'address_type' => 5,
+                            'rcu_status' => 0,
+                            'created_by' => Auth::user()->user_id,
+                            'biz_owner_id' => $newBizOwnerId
+                        );
+                        BusinessAddress::create($ownerAddress);
+
+                        // Add Ownere Document Files
+                        $ownerDocumnets = $managementInfo['document_upload'][$ucicOwner[$i]['owner_id']] ?? [];
+                        if(!empty($ownerDocumnets)){
+                            foreach ($ownerDocumnets as $ownerDoc) {
+                                if(isset($ownerDoc['file']['id']) && is_numeric($ownerDoc['file']['id'])){
+                                    $this->uploadApplicationDocumentUcic($ownerDoc['file']['id'], $newAppId, $newBizOwnerId, $ownerDoc['doc_id']??'');
+                                }     
+                                 // Add Owner Document Verification
+                                if(isset($ownerDoc['biz_api_id']) && is_numeric($ownerDoc['biz_api_id'])){
+                                    $whereCond=[];
+                                    $whereCond['biz_api_id'] = $ownerDoc['biz_api_id'];
+                                    $bizApiData  = $this->appRepo->getBizApiData($whereCond);
+                                    foreach($bizApiData as $apiData) {
+                                        $bizApiArrData = $apiData ? $this->arrayExcept($apiData->toArray(), array_merge($excludeKeys, ['biz_api_id'])) : [];
+                                        $bizApiArrData['biz_id'] = $newBizId;
+                                        $bizApiArrData['biz_owner_id'] = $newBizOwnerId;
+                                        $this->appRepo->saveBizApiData($bizApiArrData);
+                                    } 
+                                }
+                            }
+                        }
+                    }
+                    $i++;
+                }
+            }
+    
+            //Get and save GST Log Data
+            $whereCond=[];
+            $whereCond['app_id'] = $appId;
+            $bizGstLogsData = $this->appRepo->getBizGstLogData($whereCond);
+            foreach($bizGstLogsData as $gstLog) {
+                $bizGstLogArrData = $gstLog ? $this->arrayExcept($apiData->toArray(), array_merge($excludeKeys, ['id'])) : [];
+                $bizGstLogArrData['app_id'] = $newAppId;                
+                $this->appRepo->saveBizGstLogData($bizGstLogArrData);
+            }
+            
+            //Get and save Perfios Data
+            $whereCond=[];
+            $whereCond['app_id'] = $appId;
+            $bizPerfiosData = $this->appRepo->getBizPerfiosData($whereCond);
+            foreach($bizPerfiosData as $perfiosData) {
+                $bizPerfiosArrData = $perfiosData ? $this->arrayExcept($perfiosData->toArray(), array_merge($excludeKeys, ['biz_perfios_id'])) : [];
+                $bizPerfiosArrData['app_id'] = $newAppId;                
+                $this->appRepo->saveBizPerfiosData($bizPerfiosArrData);
+            }            
+                    
+            //Get and save application product data  
+            if(isset($businessInfo['product_type']['product_type'])){
+                foreach ($businessInfo['product_type']['product_type'] as $productId) {
+                    $appProductArrData['app_id'] = $newAppId;    
+                    $appProductArrData['product_id'] = $productId;
+                    $appProductArrData['loan_amount'] = $businessInfo['product_type'][$productId]['loan_amount'];
+                    $appProductArrData['tenor_days'] = $businessInfo['product_type'][$productId]['tenor'];            
+                    $this->appRepo->saveAppProductData($appProductArrData);
+                }
+            }        
+                    
+            //Get and save application documents           
+            $whereCond=[];
+            $whereCond['app_id'] = $appId;
+            $appDocsData = $this->appRepo->getAppDocuments($whereCond);
+            foreach($appDocsData as $appDoc) {
+                $appDocId = $appDoc->app_doc_id;
+                $appDocsArrData = $appDoc ? $this->arrayExcept($appDoc->toArray(), array_merge($excludeKeys, ['app_doc_id'])) : [];
+                
+                $appDocsArrData['app_id'] = $newAppId;
+                $appDocsArrData['user_id'] = $userId;                
+                $appDocResult = $this->appRepo->saveAppDocuments($appDocsArrData);
+                $newAppDocId = $appDocResult ? $appDocResult->app_doc_id : null;
+                
+                //Get and save application product document
+                $whereCond=[];
+                $whereCond['app_doc_id'] = $appDocId;
+                $appDocFilesData = $this->appRepo->getAppProductDocs($whereCond);
+                foreach($appDocFilesData as $appDocFile) {
+                    $appDocFilesArrData = $appDocFile ? $this->arrayExcept($appDocFile->toArray(), array_merge($excludeKeys, ['app_doc_product_id'])) : [];
+                    $appDocFilesArrData['app_doc_id'] = $newAppDocId; 
+                    $this->appRepo->saveAppProductDocs($appDocFilesArrData);
+                }  
+            }      
+            
+            //Get and save application document files         
+            $whereCond=[];
+            $whereCond['app_id'] = $appId;
+            $appDocFilesData = AppDocumentFile::whereNull('biz_owner_id')->where('app_id',$appId)->get();
+            foreach($appDocFilesData as $appDocFile) {
+                $appDocFilesArrData = $appDocFile ? $this->arrayExcept($appDocFile->toArray(), array_merge($excludeKeys, ['app_doc_file_id'])) : [];
+                $appDocFilesArrData['app_id'] = $newAppId; 
+                $appDocFilesArrData['user_id'] = $userId; 
+                $this->appRepo->saveAppDocFiles($appDocFilesArrData);
+            }  
+            
+            //rta_user_app_doc
+            //Get and save application document files         
+            $whereCond=[];
+            $whereCond['app_id'] = $appId;
+            $appUserDocData = $this->appRepo->getUserAppDocData($whereCond);
+            foreach($appUserDocData as $appUserDoc) {
+                $appUserDocArrData = $appUserDoc ? $this->arrayExcept($appUserDoc->toArray(), array_merge($excludeKeys, ['app_doc_file_id'])) : [];
+                $appUserDocArrData['app_id'] = $newAppId;
+                $appUserDocArrData['user_id'] = $userId;
+                $this->appRepo->saveUserAppDocData($appUserDocArrData);
+            }
+            
+            //rta_app_biz_bank_detail
+            //Get and save application business bank detail       
+            $whereCond=[];
+            $whereCond['app_id'] = $appId;
+            $appBizBankData = $this->appRepo->getAppBizBankDetail($whereCond);
+            foreach($appBizBankData as $appBizBank) {
+                $appBizBankArrData = $appBizBank ? $this->arrayExcept($appBizBank->toArray(), array_merge($excludeKeys, ['bank_detail_id'])) : [];
+                $appBizBankArrData['app_id'] = $newAppId; 
+                $this->appRepo->saveAppBizBankDetail($appBizBankArrData);
+            }                
+            
+            //app_biz_fin_detail
+            //Get and save application business finance detail         
+            $whereCond=[];
+            $whereCond['app_id'] = $appId;
+            $appBizFinData = $this->appRepo->getAppBizFinDetail($whereCond);
+            foreach($appBizFinData as $appBizFin) {
+                $appBizFinArrData = $appBizFin ? $this->arrayExcept($appBizFin->toArray(), array_merge($excludeKeys, ['fin_detail_id'])) : [];
+                $appBizFinArrData['app_id'] = $newAppId; 
+                $appBizFinArrData['biz_id'] = $newBizId;
+                $this->appRepo->saveAppBizFinDetail($appBizFinArrData);
+            }                   
+            
+            //Get and save cam report data         
+            $whereCond=[];
+            $whereCond['app_id'] = $appId;
+            $camReportData = $this->appRepo->getCamReportData($whereCond);
+            foreach($camReportData as $camReport) {
+                $camReportArrData = $camReport ? $this->arrayExcept($camReport->toArray(), array_merge($excludeKeys, ['cam_report_id','contact_person','operational_person','program','rating_no','rating_comment','existing_exposure','proposed_exposure','sanction_limit_cam','outstanding_exposure_cam','group_company','total_exposure','t_o_f_limit','t_o_f_purpose','t_o_f_takeout','t_o_f_recourse','t_o_f_security_check','t_o_f_security','t_o_f_adhoc_limit','t_o_f_covenants','risk_comments','cm_comment','promoter_cmnt'])) : [];
+                $camReportArrData['app_id'] = $newAppId; 
+                $camReportArrData['biz_id'] = $newBizId;
+                //$this->appRepo->saveAppBizFinDetail($camReportArrData); //Previous call
+                $this->appRepo->saveCamReportData($camReportArrData);
+            }    
+            
+            //rta_cam_hygiene
+            //Get and save cam hygiene data         
+            $whereCond=[];
+            $whereCond['app_id'] = $appId;
+            $camHygieneData = $this->appRepo->getCamHygieneData($whereCond);
+            foreach($camHygieneData as $camHygiene) {
+                $camHygieneArrData = $camHygiene ? $this->arrayExcept($camHygiene->toArray(), array_merge($excludeKeys, ['cam_report_id'])) : [];
+                $camHygieneArrData['app_id'] = $newAppId; 
+                $camHygieneArrData['biz_id'] = $newBizId;
+                $this->appRepo->saveCamHygieneData($camHygieneArrData);
+            }             
+            
+            //rta_cam_reviewer_summary
+            //Get and save cam reviewer summary data         
+            $whereCond=[];
+            $whereCond['app_id'] = $appId;
+            $camReviewerData = $this->appRepo->getCamReviewerSummaryData($whereCond);
+            foreach($camReviewerData as $camReviewer) {
+                $camReviewerSummaryId = $camReviewer->cam_reviewer_summary_id;
+                $camReviewerArrData = $camReviewer ? $this->arrayExcept($camReviewer->toArray(), array_merge($excludeKeys, ['cam_reviewer_summary_id'])) : [];
+                $camReviewerArrData['app_id'] = $newAppId; 
+                $camReviewerArrData['biz_id'] = $newBizId;
+                $newCamReviewer = $this->appRepo->saveCamReviewerSummaryData($camReviewerArrData);
+                $newCamReviewerSummaryId = $newCamReviewer->cam_reviewer_summary_id;
+                        
+                //rta_cam_reviewer_risk_cmnt
+                //Get and save cam reviewer risk cmnt data         
+                $whereCond=[];
+                $whereCond['cam_reviewer_summary_id'] = $camReviewerSummaryId;
+                $camReviewerRiskData = $this->appRepo->getCamReviewerRiskData($whereCond);
+                foreach($camReviewerRiskData as $camReviewerRisk) {
+                    $camReviewerRiskArrData = $camReviewerRisk ? $this->arrayExcept($camReviewerRisk->toArray(), array_merge($excludeKeys, ['risk_cmnt_id'])) : [];
+                    $camReviewerRiskArrData['cam_reviewer_summary_id'] = $newCamReviewerSummaryId;                     
+                    $this->appRepo->saveCamReviewerRiskData($camReviewerRiskArrData);
+                }   
+                
+                //rta_cam_reviewer_prepost_cond
+                //Get and save cam reviewer prepost cond data         
+                $whereCond=[];
+                $whereCond['cam_reviewer_summary_id'] = $camReviewerSummaryId;
+                $camReviewerPrePostData = $this->appRepo->getCamReviewerPrePostData($whereCond);
+                foreach($camReviewerPrePostData as $camReviewerPrePost) {
+                    $camReviewerPrePostArrData = $camReviewerPrePost ? $this->arrayExcept($camReviewerPrePost->toArray(), array_merge($excludeKeys, ['prepost_cond_id'])) : [];
+                    $camReviewerPrePostArrData['cam_reviewer_summary_id'] = $newCamReviewerSummaryId;                     
+                    $this->appRepo->saveCamReviewerPrePostData($camReviewerPrePostArrData);
+                }                  
+            }  
+            
+            $wfStageArr = [1, 2, 5, 10];
+            foreach($wfStageArr as $wfStageId) {
+                $wfData=[];
+                $wfData['biz_app_id'] = $newAppId;
+                $wfData['user_id'] = $userId;
+                $wfData['wf_stage_id'] = $wfStageId;
+                $stats = $wfStageId == 10 ? 0 : 1;
+                $wfData['app_wf_status'] = $stats;
+                $wfData['is_complete'] = $stats;
+                $this->appRepo->saveWfDetail($wfData);
+            }
+            
+            $userData = $this->userRepo->getfullUserDetail($userId);
+            if ($userData && !empty($userData->anchor_id)) {
+                $toUserId = $this->userRepo->getLeadSalesManager($userId);
+            } else {
+                $toUserId = $this->userRepo->getAssignedSalesManager($userId);
+            }
+            
+            //$roles = $this->appRepo->getBackStageUsers($appId, [4]);  //Assigned Sales Manager
+            //$toUserId = isset($roles[0]) ? $roles[0]->user_id : null;
+                                        
+            if ($toUserId) {
+               \Helpers::assignAppToUser($toUserId, $newAppId);
+            }            
+            
+            \DB::commit();
+            
+            $result = [];
+            $result['new_app_id'] = $newAppId;
+            $result['new_biz_id'] = $newBizId;
+            $result['new_user_id'] = $userId;
+            
+            return $result;
+        } catch (\Exception $e) {
+            \DB::rollback();
+            dd($e);
+            return [];
+        }
+    }
+    
+    public function uploadApplicationDocumentUcic($fileId, $appId, $ownerId = null, $docId, $docIdNo = null){
+        if(!empty($fileId)){
+            $ownerDocCheck = $this->docRepo->appOwnerDocCheck($appId, $docId, $ownerId);
+            if(!empty($ownerDocCheck)) {
+                $appDocResponse = $this->docRepo->updateAppDocFile($ownerDocCheck, $fileId);
+                // $appDocResponse = $this->docRepo->updateAppDocNumberFile($ownerDocCheck, $docIdNo);
+            } else {
+                $appDocData['app_id'] = $appId;
+                $appDocData['doc_id'] = $docId;
+                $appDocData['biz_owner_id'] = $ownerId;
+                $appDocData['file_id']  = $fileId;
+                $appDocData['is_upload'] = 1;
+                $appDocData['is_ovd_enabled'] = 1;
+                // $appDocData['doc_id_no'] = $docIdNo;
+                $appDocResponse = $this->docRepo->saveAppDoc($appDocData);
+            }
+        }
+    }
     protected function arrayExcept($array, $keys)
     {
 

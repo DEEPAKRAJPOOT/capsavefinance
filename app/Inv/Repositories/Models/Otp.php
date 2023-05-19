@@ -42,6 +42,7 @@ class Otp extends BaseModel
      */
     protected $fillable = [
         'user_id',
+        'biz_owner_id',
         'activity_id',
         'mobile_no',
         'otp_no',
@@ -101,12 +102,45 @@ class Otp extends BaseModel
             throw new InvalidDataTypeExceptions(trans('error_message.invalid_data_type'));
         }
 
-        $arrSkill = self::where('user_id', (int) $userId)->orderBy('otp_trans_id','DESC')
+        $arrSkill = self::where('user_id', (int) $userId)->where('activity_id',1)->orderBy('otp_trans_id','DESC')
             ->get();
 
         return ($arrSkill ?: false);
     }
+
+    public static function getConsentOtps($where){
+
+        //Check data is Array
+        if (!is_array($where)) {
+            throw new InvalidDataTypeExceptions(trans('error_message.send_array'));
+        }
+
+        if(isset($where['biz_owner_id']) && !empty($where['biz_owner_id'])){
+            $arrSkill = self::where(['user_id'=>$where['user_id'],'biz_owner_id'=>$where['biz_owner_id']])->where('activity_id',94)->orderBy('otp_trans_id','DESC')
+            ->get();
+        }else{
+            $arrSkill = self::where('user_id', $where['user_id'])->whereNull('biz_owner_id')->where('activity_id',94)->orderBy('otp_trans_id','DESC')
+            ->get();
+        }
+
+        return ($arrSkill ?: false);
+    }
     
+    public static function getConsentOtpsbyActive($where){
+        //Check data is Array
+        if (!is_array($where)) {
+            throw new InvalidDataTypeExceptions(trans('error_message.send_array'));
+        }
+
+        if(isset($where['biz_owner_id']) && !empty($where['biz_owner_id'])){
+            $arrSkill = self::where(['user_id'=>$where['user_id'],'biz_owner_id'=>$where['biz_owner_id']])->where('activity_id',94)->where('is_otp_expired', 0)->get();
+        }else{
+
+            $arrSkill = self::where('user_id', $where['user_id'])->whereNull('biz_owner_id')->where('activity_id',94)->where('is_otp_expired', 0)->get();
+        }
+        return ($arrSkill ?: false);
+    } 
+
     public static function getOtpsbyActive($userId)
     {
         /**
@@ -116,8 +150,7 @@ class Otp extends BaseModel
             throw new InvalidDataTypeExceptions(trans('error_message.invalid_data_type'));
         }
 
-        $arrSkill = self::where('user_id', (int) $userId)->where('is_otp_expired', 0)
-            ->get();
+        $arrSkill = self::where('user_id', (int) $userId)->where('is_otp_expired', 0)->where('activity_id',1)->get();
 
         return ($arrSkill ?: false);
     }
@@ -188,6 +221,7 @@ class Otp extends BaseModel
          $arrUser = self::select('otp_trans.*', 'users.f_name','users.l_name','users.m_name','users.email')
             ->leftjoin('users', 'otp_trans.user_id', '=', 'users.user_id')
             ->where('otp_trans.otp_no', (int) $otp)
+            ->where('otp_trans.activity_id',1)
             ->where('otp_trans.user_id', (int) $user_id)
             ->where('otp_trans.is_otp_expired', 0)
             ->first();
@@ -195,6 +229,37 @@ class Otp extends BaseModel
 
 
         return ($arrUser ?: false);
+    }
+
+    public static function getConsentUserByOTP($otp,$user_id,$biz_owner_id=null){
+
+        /**
+         * Check user id is not an integer
+         */
+        if (!is_int((int) $otp) && $otp != 0) {
+            throw new InvalidDataTypeExceptions(trans('error_message.invalid_data_type'));
+        }
+        
+        if(is_null($biz_owner_id)){
+            $arrUser = self::select('otp_trans.*', 'users.f_name','users.l_name','users.m_name','users.email')
+                        ->leftjoin('users', 'otp_trans.user_id', '=', 'users.user_id')
+                        ->where('otp_trans.otp_no', (int) $otp)
+                        ->where('otp_trans.activity_id',94)
+                        ->where('otp_trans.user_id', (int) $user_id)
+                        ->whereNull('biz_owner_id')
+                        ->where('otp_trans.is_otp_expired', 0)->first();
+        }else{
+            $arrUser = self::select('otp_trans.*', 'users.f_name','users.l_name','users.m_name','users.email')
+                        ->leftjoin('users', 'otp_trans.user_id', '=', 'users.user_id')
+                        ->where('otp_trans.otp_no', (int) $otp)
+                        ->where('otp_trans.activity_id',94)
+                        ->where('otp_trans.user_id', (int) $user_id)
+                        ->where('biz_owner_id',(int)$biz_owner_id)
+                        ->where('otp_trans.is_otp_expired', 0)->first();
+        }
+            
+            return ($arrUser ?: false);
+
     }
 
     /**

@@ -1,7 +1,7 @@
 /* check pan card verify before upload pan*/
 
 
-function uploadFile(uploadId, ownerId, docId)
+function uploadFile(uploadId, ownerId, docId, docTypeName = null)
 {
     $('.isloader').show();
     var biz_id  = $('#biz_id').val();
@@ -54,7 +54,7 @@ function uploadFile(uploadId, ownerId, docId)
     datafile.append('doc_id', docId);
     datafile.append('doc_file', file);
     datafile.append('doc_id_no', id_number);
-    
+    datafile.append('doc_type_name', docTypeName);
     
     console.log(messages.promoter_document_save);
     console.log(app_id);
@@ -127,7 +127,7 @@ function uploadFile(uploadId, ownerId, docId)
 
 // delete options for doc file
 
-function deleteFile(uploadId, ownerId, file_id, docId)
+function deleteFile(uploadId, ownerId, file_id, docId, docTypeName = null)
 {
     $('.isloader').show();
     var biz_id  = $('#biz_id').val();
@@ -146,7 +146,7 @@ function deleteFile(uploadId, ownerId, file_id, docId)
     datafile.append('doc_id', docId);
    // datafile.append('doc_file', file);
     datafile.append('file_id', file_id);
-    
+    datafile.append('doc_type_name', docTypeName);
     
     console.log(messages.protmoter_document_delete);
     $.ajax({

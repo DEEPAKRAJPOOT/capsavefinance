@@ -39,99 +39,17 @@
                         <input type="hidden" name="biz_id" id="biz_id"  value="{{ (!empty($bizId)) ? $bizId : '' }}" >   
                         <input type="hidden" id="rowcount" value="{{count($ownerDetails)}}">
                    
-                         @php ($i = 0)
+                        @php ($i = 0)
                         @php ($j = 0)
-                        @php ($main = [])
-                        @php ($main1 = [])
-                        @if(count($ownerDetails) > 0) 
-                        @foreach($ownerDetails as $key=>$row)    @php ($i++)
+                        @if(count($manInfoData) > 0)
+                            @foreach($manInfoData as $key => $manInfo)
+                                @php ($i++)
+                                @php( $manInfoDoc = $manInfoDocData['document_upload'][$manInfo['owner_id']] ?? [])
 
                         <div class="form-fields custom-promoter">
                             @csrf
-                            <?php
-                            array_push($main, array('panNo' => null, 'dlNo' => null, 'voterNo' => null, 'passNo' => null,'mobileNo' => null,'mobileOtpNo' => null,'panVerifyNo' =>null));
-                            array_push($main1, array('panNoFile' => null, 'dlNoFile' => null, 'voterNoFile' => null, 'passNoFile' => null, 'aadharFile' => null, 'electricityFile' => null, 'telephoneFile' => null));
-
-                            // dd($row->businessApi);
-                            /* for get api response file data   */
-                            foreach ($row->businessApi as $row1) {
-
-                                if ($row1->type == 3) {
-                                    $main[$key]['panNo'] = json_decode($row1->karza->req_file);
-                                } else if ($row1->type == 5) {
-                                    $main[$key]['dlNo'] = json_decode($row1->karza->req_file);
-                                } else if ($row1->type == 4) {
-                                    $main[$key]['voterNo'] = json_decode($row1->karza->req_file);
-                                } else if ($row1->type == 6) {
-                                    $main[$key]['passNo'] = json_decode($row1->karza->req_file);
-                                }
-                                else if ($row1->type == 7) {
-                                    $main[$key]['mobileNo'] = json_decode($row1->karza->req_file);
-                                }
-                                 else if ($row1->type == 8) {
-                                    $main[$key]['mobileOtpNo'] = json_decode($row1->karza->req_file);
-                                }
-                                  else if ($row1->type == 9) {
-                                    $main[$key]['panVerifyNo'] = json_decode($row1->karza->req_file);
-                                }
-                                
-                            }
-
-                                $main1[$key]['panNoFileOVD'] = 0;
-                                $main1[$key]['dlNoFileOVD'] = 0;
-                                $main1[$key]['voterNoFileOVD'] = 0;
-                                $main1[$key]['passNoFileOVD'] = 0;
-                                $main1[$key]['photoFileOVD'] = 0;
-                                $main1[$key]['aadharFileOVD'] = 0;
-                                $main1[$key]['electricityFileOVD'] = 0;
-                                $main1[$key]['telephoneFileOVD'] = 0;
-                       
-                                /* for get document file data   */
-                            foreach ($row->document as $row2) {
-                                if ($row2->doc_id == 2) {
-                                    $main1[$key]['panNoFile'] = $row2->userFile->file_path;
-                                    $main1[$key]['panNoId'] = $row2->userFile->file_id;
-                                    $main1[$key]['panNoFileID'] = $row2->userFile->file_id;
-                                    $main1[$key]['panNoFileOVD'] = $row2->is_ovd_enabled;
-                                } else if ($row2->doc_id == 31) {
-
-                                    $main1[$key]['dlNoFile'] = $row2->userFile->file_path;
-                                    $main1[$key]['dlNoId'] = $row2->userFile->file_id;
-                                    $main1[$key]['dlNoFileOVD'] = $row2->is_ovd_enabled;
-                                } else if ($row2->doc_id == 30) {
-
-                                    $main1[$key]['voterNoFile'] = $row2->userFile->file_path;
-                                    $main1[$key]['voterNoId'] = $row2->userFile->file_id;
-                                    $main1[$key]['voterNoFileOVD'] = $row2->is_ovd_enabled;
-                                } else if ($row2->doc_id == 32) {
-                                    $main1[$key]['passNoFile'] = $row2->userFile->file_path;
-                                    $main1[$key]['passNoId'] = $row2->userFile->file_id;
-                                    $main1[$key]['passNoFileOVD'] = $row2->is_ovd_enabled;
-                                } else if ($row2->doc_id == 22) {
-
-                                    $main1[$key]['photoFile'] = $row2->userFile->file_path;
-                                    $main1[$key]['photoId'] = $row2->userFile->file_id;
-                                    $main1[$key]['photoFileOVD'] = $row2->is_ovd_enabled;
-                                } else if ($row2->doc_id == 34) {
-
-                                    $main1[$key]['aadharFile'] = $row2->userFile->file_path;
-                                    $main1[$key]['aadharId'] = $row2->userFile->file_id;
-                                    $main1[$key]['aadharFileOVD'] = $row2->is_ovd_enabled;
-                                }else if ($row2->doc_id == 37) {
-
-                                    $main1[$key]['electricityFile'] = $row2->userFile->file_path;
-                                    $main1[$key]['electricityId'] = $row2->userFile->file_id;
-                                    $main1[$key]['electricityFileOVD'] = $row2->is_ovd_enabled;
-                                }else if ($row2->doc_id == 38) {
-
-                                    $main1[$key]['telephoneFile'] = $row2->userFile->file_path;
-                                    $main1[$key]['telephoneId'] = $row2->userFile->file_id;
-                                    $main1[$key]['telephoneFileOVD'] = $row2->is_ovd_enabled;
-                                }
-                            }
-                            ?>
                             <div class="col-md-12">
-                                <h5 class="card-title form-head">Management Information ({{isset($row->first_name) ? $i : '1'}}) </h5>
+                                <h5 class="card-title form-head">Management Information ({{ isset($manInfo['name']) ? $i : '1'}}) </h5>
 
                                 <div class="row">
                                     <div class="col-md-4">
@@ -140,37 +58,34 @@
 
                                                 <span class="mandatory">*</span>
                                                 
-<!--                                                <span class="pull-right d-flex align-items-center"><input type="checkbox" name="is_promoter[]" data-id="{{isset($row->first_name) ? $i : '1'}}" id="is_promoter{{isset($row->first_name) ? $i : '1'}}" {{($row->is_promoter==1) ?  "checked='checked'" : ''}} value="{{($row->is_promoter==1) ?  '1' : '0'}}" class="is_promoter mr-2">
-                                                    <span class="white-space-nowrap">Is Promoter</span></span>-->
+                                                    {{--<span class="pull-right d-flex align-items-center"><input type="checkbox" name="is_promoter[]" data-id="{{isset($manInfo['name']) ? $i : '1'}}" id="is_promoter{{isset($manInfo['name']) ? $i : '1'}}" {{($row->is_promoter==1) ?  "checked='checked'" : ''}} value="{{($row->is_promoter==1) ?  '1' : '0'}}" class="is_promoter mr-2">
+                                                    <span class="white-space-nowrap">Is Promoter</span></span>--}}
                                             </label>
-                                            <input type="hidden" name="ownerid[]" id="ownerid{{isset($row->first_name) ? $i : '1'}}" value="{{$row->biz_owner_id}}">   
-                                            <input type="text" name="first_name[]" id="first_name{{isset($row->first_name) ? $i : '1'}}" vname="first_name1" value="{{$row->first_name}}" class="form-control first_name" placeholder="Enter First Name" >
+                                            <input type="hidden" name="ownerid[]" id="ownerid{{isset($manInfo['name']) ? $i : '1'}}" value="{{ $manInfo['owner_id'] }}">   
+                                            <input type="text" name="first_name[]" id="first_name{{isset($manInfo['name']) ? $i : '1'}}" vname="first_name1" value="{{ $manInfo['name'] }}" class="form-control first_name" placeholder="Enter First Name" >
                                         </div>
                                     </div>
                                     <div class="col-md-2">
                                       <div class="form-group password-input">
                                           <label for="txtPassword">Owner Type
                                           </label>
-                                          <select class="form-control is_promoter" name="applicant_type[]" id="applicant_type{{isset($row->first_name) ? $i : '1'}}">
+                                          <select class="form-control is_promoter" name="applicant_type[]" id="applicant_type{{isset($manInfo['name']) ? $i : '1'}}">
 
                                               <option value="" selected="selected"> Select Owner Type</option>
-                                              <option value="1" @if($row->applicant_type==1)  selected="selected" @endif> Is Promoter </option>
-                                              <option value="2" @if($row->applicant_type==2)  selected="selected" @endif> Key Management Person </option>
-                                              <option value="3" @if($row->applicant_type==3)  selected="selected" @endif> Co-Borrower </option>
-                                              <option value="4" @if($row->applicant_type==4)  selected="selected" @endif> Guarantor </option>
+                                              <option value="1" @if(($manInfo['owner_type']) ==1)  selected="selected" @endif> Is Promoter </option>
+                                              <option value="2" @if(($manInfo['owner_type']) ==2)  selected="selected" @endif> Key Management Person </option>
+                                              <option value="3" @if(($manInfo['owner_type']) ==3)  selected="selected" @endif> Co-Borrower </option>
+                                              <option value="4" @if(($manInfo['owner_type']) ==4)  selected="selected" @endif> Guarantor </option>
                                           </select>
                                       </div>
                                     </div>
                                     <div class="col-md-2">
                                         <div class="form-group password-input">
-                                            <label for="txtPassword">Shareholding (%)
-
-                                              
-                                            </label>
-                                              <input type="hidden" name="isShareCheck[]" id="isShareCheck{{isset($row->first_name) ? $i : '1'}}" value="{{($row->applicant_type==1) ?  '1' : '0'}}">
+                                            <label for="txtPassword">Shareholding (%)</label>
+                                              <input type="hidden" name="isShareCheck[]" id="isShareCheck{{isset($manInfo['name']) ? $i : '1'}}" value="{{(($manInfo['owner_type'])==1) ?  '1' : '0'}}">
                                             
-                                            <input type="text"  id="share_per{{isset($row->first_name) ? $i : '1'}}" name="share_per[]" data-id="{{isset($row->first_name) ? $i : '1'}}" maxlength="6"  value="{{($row->share_per=='0.00') ? '' : $row->share_per}}" class="form-control share_per"  placeholder="Enter Shareholder" >
-                                            <span class="error" id="shareCheck{{isset($row->first_name) ? $i : '1'}}"></span> 
+                                            <input type="text"  id="share_per{{isset($manInfo['name']) ? $i : '1'}}" name="share_per[]" data-id="{{isset($manInfo['name']) ? $i : '1'}}" maxlength="6"  value="{{(($manInfo['shareholding'])=='0.00') ? '' : $manInfo['shareholding'] ?? ''}}" class="form-control share_per"  placeholder="Enter Shareholder" >
+                                            <span class="error" id="shareCheck{{isset($manInfo['name']) ? $i : '1'}}"></span> 
                                         </div>
                                     </div>
                                    
@@ -179,7 +94,7 @@
                                             <label for="txtPassword">DOB
                                                 <span class="mandatory">*</span>
                                             </label>
-                                            <input type="text" readonly="readonly" name="date_of_birth[]" id="date_of_birth{{isset($row->first_name) ? $i : '1'}}" value="{{ ($row->date_of_birth) ? date('d/m/Y', strtotime($row->date_of_birth)) : '' }}" class="form-control date_of_birth datepicker-dis-fdate"  placeholder="Enter Date Of Birth" >
+                                            <input type="text" readonly="readonly" name="date_of_birth[]" id="date_of_birth{{isset($manInfo['name']) ? $i : '1'}}" value="{{ ($manInfo['dob']) ? date('d/m/Y', strtotime($manInfo['dob'])) : '' }}" class="form-control date_of_birth datepicker-dis-fdate"  placeholder="Enter Date Of Birth" >
                                         </div>
                                     </div>
 
@@ -192,12 +107,12 @@
                                             <label for="txtPassword">Gender
                                                 <span class="mandatory">*</span>
                                             </label>
-                                            <select class="form-control gender" name="gender[]" id="gender{{isset($row->first_name) ? $i : '1'}}">
+                                            <select class="form-control gender" name="gender[]" id="gender{{isset($manInfo['name']) ? $i : '1'}}">
 
                                                 <option value=""> Select Gender</option>
-                                                <option value="1" @if($row->gender==1)  selected="selected" @endif> Male </option>
-                                                <option value="2" @if($row->gender==2)  selected="selected" @endif>Female </option>
-                                                <option value="3" @if($row->gender==3)  selected="selected" @endif>Other </option>
+                                                <option value="1" @if($manInfo['gender']==1)  selected="selected" @endif> Male </option>
+                                                <option value="2" @if($manInfo['gender']==2)  selected="selected" @endif>Female </option>
+                                                <option value="3" @if($manInfo['gender']==3)  selected="selected" @endif>Other </option>
                                             </select>
                                         </div>
                                     </div>
@@ -205,28 +120,26 @@
                                         <div class="form-group">
                                             <label for="txtCreditPeriod">PAN Number
                                                 <span class="mandatory">{{($is_lease==0) ? '*' : '' }}</span>
-                                                <span class="text-success" id="successpanverify{{isset($row->first_name) ? $i : '1'}}" style="display:{{ (isset($main[$j]['panVerifyNo']->requestId)) ? 'inline' : 'none' }}"><i class="fa fa-check-circle" aria-hidden="true"></i> <i>Verified Successfully</i> </span>
-                                                <span class="text-danger" id="failurepanverify{{isset($row->first_name) ? $i : '1'}}" style="display:none;"><i class="fa fa-close" aria-hidden="true"></i> <i>Not Verified</i> </span>
+                                                <span class="text-success" id="successpanverify{{isset($manInfo['name']) ? $i : '1'}}" style="display:{{ (isset($manInfo['is_pan_verified']) && $manInfo['is_pan_verified']) ? 'inline' : 'none' }}"><i class="fa fa-check-circle" aria-hidden="true"></i> <i>Verified Successfully</i> </span>
+                                                <span class="text-danger" id="failurepanverify{{isset($manInfo['name']) ? $i : '1'}}" style="display:none;"><i class="fa fa-close" aria-hidden="true"></i> <i>Not Verified</i> </span>
                                             
                                             </label>
                                              <div class="relative"> 
-                                            <a href="javascript:void(0);" data-id="{{isset($row->first_name) ? $i : '1'}}" id="pan_verify{{isset($row->first_name) ? $i : '1'}}" class="verify-owner-no promoter_pan_verify" style=" pointer-events:{{isset($main[$j]['panVerifyNo']->requestId) ? 'none' : '' }}">{{isset($main[$j]['panVerifyNo']->requestId) ?  'Verified' : 'Verify' }}</a>
-                                            <input type="text" name="pan_no[]" id="pan_no{{isset($row->first_name) ? $i : '1'}}" value="{{isset($main[$j]['panVerifyNo']->requestId) ?  $main[$j]['panVerifyNo']->requestId : $row->pan_number }}" class="form-control pan_no" placeholder="Enter Pan Number" {{(isset($main[$j]['panVerifyNo']->requestId)) ? 'readonly' : '' }}>
-                                           <input name="response[]" id="response{{isset($row->first_name) ? $i : '1'}}" type="hidden" value="">                       
+                                            <a href="javascript:void(0);" data-id="{{isset($manInfo['name']) ? $i : '1'}}" id="pan_verify{{isset($manInfo['name']) ? $i : '1'}}" class="verify-owner-no promoter_pan_verify" style=" pointer-events:{{isset($manInfo['is_pan_verified']) && $manInfo['is_pan_verified'] ? 'none' : '' }}">{{isset($manInfo['is_pan_verified']) && $manInfo['is_pan_verified'] ?  'Verified' : 'Verify' }}</a>
+                                            <input type="text" name="pan_no[]" id="pan_no{{isset($manInfo['name']) ? $i : '1'}}" value="{{isset($manInfo['pan_no']) ? $manInfo['pan_no'] : '' }}" class="form-control pan_no" placeholder="Enter Pan Number" {{(isset($manInfo['is_pan_verified']) && $manInfo['is_pan_verified']) ? 'readonly' : '' }}>
+                                           <input name="response[]" id="response{{isset($manInfo['name']) ? $i : '1'}}" type="hidden" value="">                       
                                              </div>
                                              </div>
                                     </div>
                                      
-                                    <!--    
-                                  <div class="col-md-4">
+                                  {{--<div class="col-md-4">
                                         <div class="form-group">
                                             <label for="txtEmail">Educational Qualification
 
                                             </label>
-                                            <input type="text" name="edu_qualification[]" id="edu_qualification{{isset($row->first_name) ? $i : '1'}}" value="{{$row->edu_qualification}}" class="form-control edu_qualification"  placeholder="Enter Education Qualification">
+                                            <input type="text" name="edu_qualification[]" id="edu_qualification{{isset($manInfo['name']) ? $i : '1'}}" value="{{$row->edu_qualification}}" class="form-control edu_qualification"  placeholder="Enter Education Qualification">
                                         </div>
-                                    </div>
-                                 -->
+                                    </div>--}}
                                   <div class="col-md-4">
                                         <div class="form-group">
 
@@ -234,7 +147,7 @@
 
 
                                             </label>
-                                            <input type="text" name="designation[]" id="designation{{isset($row->first_name) ? $i : '1'}}" value="{{$row->designation}}" class="form-control designation"  placeholder="Enter Designation">
+                                            <input type="text" name="designation[]" id="designation{{isset($manInfo['name']) ? $i : '1'}}" value="{{ $manInfo['designation'] ?? ''}}" class="form-control designation"  placeholder="Enter Designation">
                                         </div>
                                     </div>
                                 </div>
@@ -244,7 +157,7 @@
                                         <div class="form-group">
                                                  <label for="txtEmail">Other Ownerships
                                                  </label>
-                                                 <input type="text" name="other_ownership[]" id="other_ownership{{isset($row->first_name) ? $i : '1'}}" value="{{$row->other_ownership}}" class="form-control other_ownership"  placeholder="Other Ownership">
+                                                 <input type="text" name="other_ownership[]" id="other_ownership{{isset($manInfo['name']) ? $i : '1'}}" value="{{ $manInfo['other_ownership'] ?? ''}}" class="form-control other_ownership"  placeholder="Other Ownership">
                                              </div>
                                      </div>
                                   
@@ -253,60 +166,62 @@
                                             <label for="txtCreditPeriod">Address
                                                 <span class="mandatory">*</span>
                                             </label>
-                                            <textarea  style="height: 35px;" class="form-control textarea address" placeholder="Enter Address" name="owner_addr[]" id="address{{isset($row->first_name) ? $i : '1'}}">{{isset($row->address->addr_1) ? $row->address->addr_1 : ''}}</textarea>
+                                            <textarea  style="height: 35px;" class="form-control textarea address" placeholder="Enter Address" name="owner_addr[]" id="address{{isset($manInfo['name']) ? $i : '1'}}">{{ $manInfo['address'] ?? ''}}</textarea>
                                         </div>
                                     </div>
                                 
                                 </div>
                                 <div class="row">
                                     <div class="col-md-4"> 
-                                    <div class="form-group INR">
-                                                 <label for="txtEmail">Networth
-                                                 </label>
-                                              <div class="relative">   
-                                              <a href="javascript:void(0);" class="verify-owner-no"><i class="fa fa-inr" aria-hidden="true"></i></a>
-                                                 <input type="text" name="networth[]" maxlength='15' id="networth{{isset($row->first_name) ? $i : '1'}}" value="{{number_format($row->networth)}}" class="form-control networth"  placeholder="Enter Networth">
-                                              </div>
-                                              </div>
+                                        <div class="form-group INR">
+                                            <label for="txtEmail">Networth</label>
+                                            <div class="relative">   
+                                                <a href="javascript:void(0);" class="verify-owner-no"><i class="fa fa-inr" aria-hidden="true"></i></a>
+                                                <input type="text" name="networth[]" maxlength='15' id="networth{{isset($manInfo['name']) ? $i : '1'}}" value="{{number_format($manInfo['networth'] ?? 0)}}" class="form-control networth"  placeholder="Enter Networth">
+                                            </div>
+                                        </div>
                                     </div>
-                                        <div class="col-md-2">
-                                            <div class="form-group">
-                                                <label for="txtEmail">Mobile <span class="mandatory">{{($is_lease==0) ? '*' : '' }}</span>  </label> 
-                                             <input type="text" name="mobile_no[]"  {{isset($main[$j]['mobileNo']->mobile) ? 'readonly' : '' }} maxlength="10" id="mobile_no{{isset($row->first_name) ? $i : '1'}}" value="{{ isset($main[$j]['mobileNo']->mobile) ? $main[$j]['mobileNo']->mobile : $row->mobile }}" class="form-control mobileveri"  placeholder="Enter Mobile no">
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            <label for="txtEmail">Email </label>
+                                        <input type="text" name="email[]"  id="email{{isset($manInfo['name']) ? $i : '1'}}" value="{{ $manInfo['email'] ?? '' }}" class="form-control email"  placeholder="Enter Email">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <div class="form-group">
+                                            <label for="txtEmail">Mobile <span class="mandatory">{{($is_lease==0) ? '*' : '' }}</span>  </label> 
+                                            <input type="text" name="mobile_no[]" {{isset($manInfo['mobileNo']->mobile) ? 'readonly' : '' }} maxlength="10" id="mobile_no{{isset($manInfo['name']) ? $i : '1'}}" value="{{ isset($manInfo['mobileNo']->mobile) ? $manInfo['mobileNo']->mobile : $manInfo['mobile'] ?? '' }}" class="form-control mobileveri"  placeholder="Enter Mobile no">
                                               
-                                             <span class="text-success float-left findMobileverify" id="v5successpanverify{{isset($row->first_name) ? $i : '1'}}"> <i class="fa fa-{{isset($main[$j]['mobileNo']->mobile) ? 'check-circle' : '' }}" aria-hidden="true"></i><i>{{isset($main[$j]['mobileNo']->mobile) ? 'Verified Successfully' : '' }}</i> </span>
-                                                <span class="text-danger float-left" id="v5failurepanverify{{isset($row->first_name) ? $i : '1'}}"> </span>
-                                                
-                                             
+                                             <span class="text-success float-left findMobileverify" id="v5successpanverify{{isset($manInfo['name']) ? $i : '1'}}"> <i class="fa fa-{{isset($manInfo['mobileNo']->mobile) ? 'check-circle' : '' }}" aria-hidden="true"></i><i>{{isset($manInfo['mobileNo']->mobile) ? 'Verified Successfully' : '' }}</i> </span>
+                                                <span class="text-danger float-left" id="v5failurepanverify{{isset($manInfo['name']) ? $i : '1'}}"> </span>
+                                                                                             
                                             </div>
                                         </div>
                                     <div class="col-md-3">
                                         <div class="form-group" >
                                             <label class="d-block">&nbsp;</label>
-                                           <a class="btn btn-primary  btn-sm verify_mobile_no" data-id="{{isset($row->first_name) ? $i : '1'}}" name="verify_mobile_no" id="verify_mobile_no{{isset($row->first_name) ? $i : '1'}}" style="color:white;bottom: 15px;top: auto;  display:{{ (isset($main[$j]['mobileNo']->mobile)) ? 'none' : ''}}" > {{ isset($main[$j]['mobileNo']->mobile) ? 'Verified' : 'Verify without OTP' }}</a>
-                                            <a class="btn btn-primary btn-sm ml-2 sen_otp_to_mobile" data-id="{{isset($row->first_name) ? $i : '1'}}" name="verify_mobile_otp_no" id="verify_mobile_otp_no{{isset($row->first_name) ? $i : '1'}}" style="color:white;bottom: 15px;top: auto; display:{{ (isset($main[$j]['mobileOtpNo']->request_id)) ? 'none' : ''}}" > {{ isset($main[$j]['mobileOtpNo']->request_id) ? 'Verified' : 'Verify with OTP' }}</a> 
+                                           <a class="btn btn-primary  btn-sm verify_mobile_no" data-id="{{isset($manInfo['name']) ? $i : '1'}}" name="verify_mobile_no" id="verify_mobile_no{{isset($manInfo['name']) ? $i : '1'}}" style="color:white;bottom: 15px;top: auto;  display:{{ isset($manInfo['mobileNo']->mobile) ? 'none' : ''}}" > {{ isset($manInfo['mobileNo']->mobile) ? 'Verified' : 'Verify without OTP' }}</a>
+                                            <a class="btn btn-primary btn-sm ml-2 sen_otp_to_mobile" data-id="{{isset($manInfo['name']) ? $i : '1'}}" name="verify_mobile_otp_no" id="verify_mobile_otp_no{{isset($manInfo['name']) ? $i : '1'}}" style="color:white;bottom: 15px;top: auto; display:{{ (isset($manInfo['mobileOtpNo']['request_id'])) ? 'none' : ''}}" > {{ isset($manInfo['mobileOtpNo']['request_id']) ? 'Verified' : 'Verify with OTP' }}</a> 
                                         </div>
-                                           </div>
-                                    <div class="col-md-2" id="toggleOtp{{isset($row->first_name) ? $i : '1'}}" style="display:none">
+                                    </div>
+                                    <div class="col-md-2" id="toggleOtp{{isset($manInfo['name']) ? $i : '1'}}" style="display:none">
                                         <div class="form-group" >
                                                
                                                 <label for="txtEmail">OTP <span class="mandatory">*</span></label> 
-                                                <a class="verify-owner-no verify-show verify_otp" name="verify_otp" data-id="{{isset($row->first_name) ? $i : '1'}}"> {{isset($main[$j]['mobileOtpNo']->request_id) ?  'Verified' : 'Verify' }}</a>
-                                                <input type="text" name="otp_no[]"   maxlength="6" id="verify_otp_no{{isset($row->first_name) ? $i : '1'}}" value="" class="form-control mobileotpveri"  placeholder="Enter OTP" >
-                                               <span class="text-success float-left" id="v6successpanverify{{isset($row->first_name) ? $i : '1'}}"> {{isset($main[$j]['mobileNo']->request_id) ? 'Verified Successfully' : '' }} </span>
-                                                <span class="text-danger float-left" id="v6failurepanverify{{isset($row->first_name) ? $i : '1'}}"> </span>
+                                                <a class="verify-owner-no verify-show verify_otp" name="verify_otp" data-id="{{isset($manInfo['name']) ? $i : '1'}}"> {{isset($manInfo['mobileOtpNo']['request_id']) ?  'Verified' : 'Verify' }}</a>
+                                                <input type="text" name="otp_no[]"   maxlength="6" id="verify_otp_no{{isset($manInfo['name']) ? $i : '1'}}" value="" class="form-control mobileotpveri"  placeholder="Enter OTP" >
+                                               <span class="text-success float-left" id="v6successpanverify{{isset($manInfo['name']) ? $i : '1'}}"> {{isset($manInfo['mobileNo']->mobile) ? 'Verified Successfully' : '' }} </span>
+                                                <span class="text-danger float-left" id="v6failurepanverify{{isset($manInfo['name']) ? $i : '1'}}"> </span>
                                                 
                                             </div>
                                       </div>  
                                     <div class="col-md-3">
-                                         <div class="form-group" id="pOtpVeriView{{isset($row->first_name) ? $i : '1'}}" style="display:{{isset($main[$j]['mobileOtpNo']->request_id) ? 'inline' : 'none'}}">
+                                         <div class="form-group" id="pOtpVeriView{{isset($manInfo['name']) ? $i : '1'}}" style="display:{{isset($manInfo['mobileOtpNo']['request_id']) ? 'inline' : 'none'}}">
                                              <label class="d-block" >Verified  OTP</label> 
-                                           <span class="text-success float-left" id="v11successpanverify{{isset($row->first_name) ? $i : '1'}}" style="display:{{isset($main[$j]['mobileOtpNo']->request_id) ? 'inline' : 'none'}}"> <i class="fa fa-check-circle" aria-hidden="true"></i><i>Verified Successfully</i> </span>
+                                           <span class="text-success float-left" id="v11successpanverify{{isset($manInfo['name']) ? $i : '1'}}" style="display:{{isset($manInfo['mobileOtpNo']['request_id']) ? 'inline' : 'none'}}"> <i class="fa fa-check-circle" aria-hidden="true"></i><i>Verified Successfully</i> </span>
                                                
                                       </div>
-                                    </div>
-
-                           
+                                    </div>                           
                                 </div>
                                 <div class="row">
                                     <div class="col-md-4">
@@ -314,7 +229,7 @@
                                             <label for="txtCreditPeriod">CKYC Ref No
                                               
                                             </label>
-                                            <input type="text" name="ckyc_ref_no[]" id="ckyc_ref_no{{isset($row->first_name) ? $i : '1'}}" value="{{$row->ckyc_ref_no ? $row->ckyc_ref_no : ''}}" class="form-control" placeholder="Enter CKYC Ref No." >
+                                            <input type="text" name="ckyc_ref_no[]" id="ckyc_ref_no{{isset($manInfo['name']) ? $i : '1'}}" value="{{ $manInfo['ckyc_ref_no'] ?? ''}}" class="form-control" placeholder="Enter CKYC Ref No." >
                                         </div>
                                     </div> 
                                 </div>
@@ -324,14 +239,14 @@
                                             <label for="txtCreditPeriod">Comment
                                               
                                             </label>
-                                            <textarea class="form-control textarea" placeholder="Enter Comment" name="comment[]" id="comment{{isset($row->first_name) ? $i : '1'}}">{{$row->comment}}</textarea>
+                                            <textarea class="form-control textarea" placeholder="Enter Comment" name="comment[]" id="comment{{isset($manInfo['name']) ? $i : '1'}}">{{ $manInfo['comment'] ?? ''}}</textarea>
                                         </div>
                                     </div> 
                                 </div>
 
                                 <h5 class="card-title form-head-h5 mt-3">Document </h5>	
 
-                                   <div class="row mt-2 mb-4">
+                                <div class="row mt-2 mb-4">
                                     <div class="col-md-12">
                                         <div class="prtm-full-block">       
                                             <div class="prtm-block-content">
@@ -351,42 +266,41 @@
                                                             <td width="30%">Pan Card</td>
                                                             <td width="30%" >
                                                                 <div class="col-md-12">
-                                                                   <a href="javascript:void(0);" id='ppan{{isset($row->first_name) ? $i : '1'}}' data-id="{{isset($row->first_name) ? $i : '1'}}" class="verify-owner-no verify-show veripan" style="top:0px; pointer-events:{{ (isset($main[$j]['panNo']->requestId)) ? 'none' : ''}}">{{ isset($main[$j]['panNo']->requestId) ? 'Verified' : 'Verify' }}</a>
-                                                                    <input type="text" {{isset($main[$j]['panNo']->requestId) ? "readonly='readonly'" : '' }} value="{{ isset($main[$j]['panNo']->requestId) ? $main[$j]['panNo']->requestId : $row->pan_card }}"  name="veripan[]" id="veripan{{isset($row->first_name) ? $i : '1'}}"  class="form-control verifydl"  placeholder="Enter PAN Number">
-                                                                    <span class="text-success float-left" id="v1successpanverify{{isset($row->first_name) ? $i : '1'}}" style="display:{{isset($main[$j]['panNo']->requestId) ? 'inline' : 'none'}}"><i class="fa fa-check-circle" aria-hidden="true"></i> <i>Verified Successfully</i> </span>
-                                                                    <span class="text-danger float-left" id="v1failurepanverify{{isset($row->first_name) ? $i : '1'}}" style="display:none;"><i class="fa fa-close" aria-hidden="true"></i> <i>Not Verified</i> </span>
+                                                                   <a href="javascript:void(0);" id='ppan{{isset($manInfo['name']) ? $i : '1'}}' data-id="{{isset($manInfo['name']) ? $i : '1'}}" class="verify-owner-no verify-show veripan" style="top:0px; pointer-events:{{ (isset($manInfoDoc['pan_card']['is_verify']) && $manInfoDoc['pan_card']['is_verify']) ? 'none' : ''}}" data-doc_type_name="pan_card">{{ isset($manInfoDoc['pan_card']['is_verify']) && $manInfoDoc['pan_card']['is_verify'] ? 'Verified' : 'Verify' }}</a>
+                                                                    <input type="text" {{isset($manInfoDoc['pan_card']['is_verify']) && $manInfoDoc['pan_card']['is_verify'] ? "readonly='readonly'" : '' }} value="{{ isset($manInfoDoc['pan_card']['id_no']) ? $manInfoDoc['pan_card']['id_no'] : ($manInfo['pan_card'] ?? '') }}"  name="veripan[]" id="veripan{{isset($manInfo['name']) ? $i : '1'}}"  class="form-control verifydl"  placeholder="Enter PAN Number">
+                                                                    <span class="text-success float-left" id="v1successpanverify{{isset($manInfo['name']) ? $i : '1'}}" style="display:{{isset($manInfoDoc['pan_card']['is_verify']) && $manInfoDoc['pan_card']['is_verify'] ? 'inline' : 'none'}}"><i class="fa fa-check-circle" aria-hidden="true"></i> <i>Verified Successfully</i> </span>
+                                                                    <span class="text-danger float-left" id="v1failurepanverify{{isset($manInfo['name']) ? $i : '1'}}" style="display:none;"><i class="fa fa-close" aria-hidden="true"></i> <i>Not Verified</i> </span>
 
                                                                 </div>
                                                             </td>
                                                             <td width="14%">
                                                                 <div class="file-browse float-left position-seta">
-                                                                    <a  href="{{ isset($main1[$j]['panNoId']) ? route('frontend_download_storage_file', ['file_id' =>$main1[$j]['panNoId'] ]) : '' }}" class="btn-upload   btn-sm" type="button" id="pandown{{isset($row->first_name) ? $i : '1'}}" style="display:{{ isset($main1[$j]['panNoFile']) ? 'inline' : 'none'}}" > <i class="fa fa-download"></i></a>
+                                                                    <a  href="{{ isset($manInfoDoc['pan_card']['file']['id']) ? route('frontend_download_storage_file', ['file_id' => $manInfoDoc['pan_card']['file']['id'] ]) : '' }}" class="btn-upload   btn-sm" type="button" id="pandown{{isset($manInfo['name']) ? $i : '1'}}" style="display:{{ isset($manInfoDoc['pan_card']['file']['id']) ? 'inline' : 'none'}}" > <i class="fa fa-download"></i></a>
 
-                                                                    <a  href="{{ isset($main1[$j]['panNoId']) ? route('frontend_view_uploaded_doc', ['file_id' => $main1[$j]['panNoId'] ]) : '' }}" title="View File" class="btn-upload   btn-sm" target="_blank" type="button" id="pandown{{isset($row->first_name) ? $i : '1'}}" style="display:{{ isset($main1[$j]['panNoFile']) ? 'inline' : 'none'}}" target="_blank"> <i class="fa fa-eye"></i></a>
+                                                                    <a  href="{{ isset($manInfoDoc['pan_card']['file']['id']) ? route('frontend_view_uploaded_doc', ['file_id' => $manInfoDoc['pan_card']['file']['id'] ]) : '' }}" title="View File" class="btn-upload   btn-sm" target="_blank" type="button" id="pandown{{isset($manInfo['name']) ? $i : '1'}}" style="display:{{ isset($manInfoDoc['pan_card']['file']['id']) ? 'inline' : 'none'}}" target="_blank"> <i class="fa fa-eye"></i></a>
 
-                                                                    @if($main1[$key]['panNoFileOVD'] == 1)
-                                                                        <button type="button" class="btn-upload   btn-sm" title="Disable OVD" style="display:{{ isset($main1[$j]['panNoFile']) ? 'inline' : 'none'}}" name="panfiles[]" id="panfiles{{isset($row->first_name) ? $i : '1'}}" onclick="deleteFile({{isset($row->first_name) ? $i : '1'}}, {{ $row->biz_owner_id }}, {{ isset($main1[$key]['panNoFileID']) ? $main1[$key]['panNoFileID'] : 'null' }}, 2)" ><i class="fa fa-times"></i></button>
+                                                                    @if(isset($manInfoDoc['pan_card']['file']['id']))
+                                                                        <button type="button" class="btn-upload   btn-sm" title="Disable OVD" style="display:{{ isset($manInfoDoc['pan_card']['file']['id']) ? 'inline' : 'none'}}" name="panfiles[]" id="panfiles{{isset($manInfo['name']) ? $i : '1'}}" onclick="deleteFile({{isset($manInfo['name']) ? $i : '1'}}, {{ $manInfo['owner_id'] }}, {{ isset($manInfoDoc['pan_card']['file']['id']) ? $manInfoDoc['pan_card']['file']['id'] : 'null' }}, 2, 'pan_card')" ><i class="fa fa-times"></i></button>
                                                                     @endif
                                                                     
-                                                                    <!-- <input type="file" class="verifyfile" name="verifyfile[]" id="verifyfile{{isset($row->first_name) ? $i : '1'}}" dir="1" onchange="FileDetails(this.getAttribute('dir'))" multiple=""> -->
+                                                                    <!-- <input type="file" class="verifyfile" name="verifyfile[]" id="verifyfile{{isset($manInfo['name']) ? $i : '1'}}" dir="1" onchange="FileDetails(this.getAttribute('dir'))" multiple=""> -->
                                                                 </div>
                                                             </td>
                                                             <td width="14%">
 
                                                                 <div class="upload-btn-wrapper setupload-btn">
                                                                     <button class="btn">Upload</button>
-                                                                     <input type="file" class="panfile" data-id="{{isset($row->first_name) ? $i : '1'}}"  name="panfile[]" id="panfile{{isset($row->first_name) ? $i : '1'}}" onchange="uploadFile({{isset($row->first_name) ? $i : '1'}}, {{ $row->biz_owner_id }}, 2)">
+                                                                     <input type="file" class="panfile" data-id="{{isset($manInfo['name']) ? $i : '1'}}"  name="panfile[]" id="panfile{{isset($manInfo['name']) ? $i : '1'}}" onchange="uploadFile({{isset($manInfo['name']) ? $i : '1'}}, {{ $manInfo['owner_id'] }}, 2, 'pan_card')">
                                                                     <span class="fileUpload"></span>
                                                                 </div>   
 
-                                                                @if($main1[$key]['panNoFileOVD'] == 1)
+                                                                @if(!empty($manInfoDoc['pan_card']['is_ovd_enabled']))
                                                                     <span class="d-flex align-items-center">
-                                                                        <input type="checkbox" name="is_ovd[]" value="2" {{ $main1[$key]['panNoFileOVD'] == 1 ? 'checked' : 'disabled'}} class="mr-2" disabled>
+                                                                        <input type="checkbox" name="is_ovd[]" value="2" {{ $manInfoDoc['pan_card']['is_ovd_enabled'] == 1 ? 'checked' : 'disabled'}} class="mr-2" disabled>
                                                                         <span class="white-space-nowrap">IS OVD Enabled</span>
                                                                     </span>  
                                                                 @endif
-                                                                
-                                                                
+                                                                                                                                
                                                             </td>
                                                         </tr>
                                                         <tr>
@@ -394,40 +308,38 @@
                                                             <td width="30%">Driving License</td>
                                                             <td width="30%" >
                                                                 <div class="col-md-12">
-                                                                   <a href="javascript:void(0);" id='ddriving{{isset($row->first_name) ? $i : '1'}}' data-id="{{isset($row->first_name) ? $i : '1'}}" class="verify-owner-no verify-show veridl" style="top:0px; pointer-events:{{ (isset($main[$j]['dlNo']->requestId)) ? 'none' : ''}}">{{ isset($main[$j]['dlNo']->requestId) ? 'Verified' : 'Verify' }}</a>
-                                                                    <input type="text" {{ isset($main[$j]['dlNo']->requestId) ? "readonly='readonly'" : '' }} value="{{ isset($main[$j]['dlNo']->requestId) ? $main[$j]['dlNo']->requestId : $row->driving_license }}" name="verifydl[]" id="verifydl{{isset($row->first_name) ? $i : '1'}}" class="form-control verifydl"  placeholder="Enter DL Number">
+                                                                   <a href="javascript:void(0);" id='ddriving{{isset($manInfo['name']) ? $i : '1'}}' data-id="{{isset($manInfo['name']) ? $i : '1'}}" class="verify-owner-no verify-show veridl" style="top:0px; pointer-events:{{ (isset($manInfoDoc['driving_license']['is_verify']) && $manInfoDoc['driving_license']['is_verify']) ? 'none' : ''}}"  data-doc_type_name="driving_license">{{ isset($manInfoDoc['driving_license']['is_verify']) && $manInfoDoc['driving_license']['is_verify'] ? 'Verified' : 'Verify' }}</a>
+                                                                    <input type="text" {{ isset($manInfoDoc['driving_license']['is_verify']) && $manInfoDoc['driving_license']['is_verify'] ? "readonly='readonly'" : '' }} value="{{ isset($manInfoDoc['driving_license']['id_no']) ? $manInfoDoc['driving_license']['id_no'] : ($manInfo['driving_license'] ?? '') }}" name="verifydl[]" id="verifydl{{isset($manInfo['name']) ? $i : '1'}}" class="form-control verifydl"  placeholder="Enter DL Number">
 
-                                                                           <span class="text-success float-left" id="v2successpanverify{{isset($row->first_name) ? $i : '1'}}" style="display:{{isset($main[$j]['dlNo']->requestId) ? 'inline' : 'none'}}"><i class="fa fa-check-circle" aria-hidden="true"></i> <i>Verified Successfully</i> </span>
+                                                                    <span class="text-success float-left" id="v2successpanverify{{isset($manInfo['name']) ? $i : '1'}}" style="display:{{isset($manInfoDoc['driving_license']['is_verify']) && $manInfoDoc['driving_license']['is_verify'] ? 'inline' : 'none'}}"><i class="fa fa-check-circle" aria-hidden="true"></i> <i>Verified Successfully</i> </span>
 
-                                                                    <span class="text-danger float-left" id="v2failurepanverify{{isset($row->first_name) ? $i : '1'}}" style="display:none;"><i class="fa fa-close" aria-hidden="true"></i> <i>Not Verified</i> </span>
+                                                                    <span class="text-danger float-left" id="v2failurepanverify{{isset($manInfo['name']) ? $i : '1'}}" style="display:none;"><i class="fa fa-close" aria-hidden="true"></i> <i>Not Verified</i> </span>
 
                                                                 </div>
                                                             </td>
                                                             <td width="14%">
                                                                 <div class="file-browse float-left position-seta">
-                                                                   <a  href="{{ isset($main1[$j]['dlNoId']) ? route('frontend_download_storage_file', ['file_id' => $main1[$j]['dlNoId'] ]) : '' }}" class="btn-upload   btn-sm" type="button" id="dldown{{isset($row->first_name) ? $i : '1'}}" style="display:{{ isset($main1[$j]['dlNoFile']) ? 'inline' : 'none'}}"> <i class="fa fa-download"></i></a>
-                                                                   <a  href="{{ isset($main1[$j]['dlNoId']) ? route('frontend_view_uploaded_doc', ['file_id' => $main1[$j]['dlNoId'] ]) : '' }}" title="View File" class="btn-upload   btn-sm" target="_blank" type="button" id="pandown{{isset($row->first_name) ? $i : '1'}}" style="display:{{ isset($main1[$j]['dlNoFile']) ? 'inline' : 'none'}}" target="_blank"> <i class="fa fa-eye"></i></a>
-                                                                    <!-- <input type="file" id="downloaddl{{isset($row->first_name) ? $i : '1'}}" name="downloaddl[]" class="downloaddl" dir="1" onchange="FileDetails(this.getAttribute('dir'))" multiple=""> -->
+                                                                   <a  href="{{ isset($manInfoDoc['driving_license']['file']['id']) ? route('frontend_download_storage_file', ['file_id' => $manInfoDoc['driving_license']['file']['id'] ]) : '' }}" class="btn-upload   btn-sm" type="button" id="dldown{{isset($manInfo['name']) ? $i : '1'}}" style="display:{{ isset($manInfoDoc['driving_license']['file']['id']) ? 'inline' : 'none'}}"> <i class="fa fa-download"></i></a>
+                                                                   <a  href="{{ isset($manInfoDoc['driving_license']['file']['id']) ? route('frontend_view_uploaded_doc', ['file_id' => $manInfoDoc['driving_license']['file']['id'] ]) : '' }}" title="View File" class="btn-upload   btn-sm" target="_blank" type="button" id="pandown{{isset($manInfo['name']) ? $i : '1'}}" style="display:{{ isset($manInfoDoc['driving_license']['file']['id']) ? 'inline' : 'none'}}" target="_blank"> <i class="fa fa-eye"></i></a>
+                                                                    <!-- <input type="file" id="downloaddl{{isset($manInfo['name']) ? $i : '1'}}" name="downloaddl[]" class="downloaddl" dir="1" onchange="FileDetails(this.getAttribute('dir'))" multiple=""> -->
 
-                                                                    @if($main1[$key]['dlNoFileOVD'] == 1)
-                                                                        <button type="button"  class="btn-upload   btn-sm" title="Disable OVD" style="display:{{ isset($main1[$j]['dlNoFile']) ? 'inline' : 'none'}}" name="dlfiles[]" id="dlfiles{{isset($row->first_name) ? $i : '1'}}" onclick="deleteFile({{isset($row->first_name) ? $i : '1'}}, {{ $row->biz_owner_id }}, {{ isset($main1[$key]['dlNoId']) ? $main1[$key]['dlNoId'] : 'null' }}, 31)" ><i class="fa fa-times"></i></button>
-                                                                    @endif                                                                    
-                                                                    
+                                                                    @if(!empty($manInfoDoc['driving_license']['file']['id']))
+                                                                        <button type="button"  class="btn-upload   btn-sm" title="Disable OVD" style="display:{{ isset($manInfoDoc['driving_license']['file']['id']) ? 'inline' : 'none'}}" name="dlfiles[]" id="dlfiles{{isset($manInfo['name']) ? $i : '1'}}" onclick="deleteFile({{isset($manInfo['name']) ? $i : '1'}}, {{ $manInfo['owner_id'] }}, {{ isset($manInfoDoc['driving_license']['file']['id']) ? $manInfoDoc['driving_license']['file']['id'] : 'null' }}, 31, 'driving_license')" ><i class="fa fa-times"></i></button>
+                                                                    @endif
                                                                 </div>
                                                             </td>
                                                             <td width="14%">
 
                                                                 <div class="upload-btn-wrapper setupload-btn">
                                                                   <button class="btn">Upload</button>
-                                                                   <input type="file" name="dlfile[]" data-id="{{isset($row->first_name) ? $i : '1'}}"  id="dlfile{{isset($row->first_name) ? $i : '1'}}" class="dlfile"  onchange="uploadFile({{isset($row->first_name) ? $i : '1'}}, {{ $row->biz_owner_id }}, 31)">
+                                                                   <input type="file" name="dlfile[]" data-id="{{isset($manInfo['name']) ? $i : '1'}}"  id="dlfile{{isset($manInfo['name']) ? $i : '1'}}" class="dlfile"  onchange="uploadFile({{isset($manInfo['name']) ? $i : '1'}}, {{ $manInfo['owner_id'] }}, 31, 'driving_license')">
                                                                 </div>
-                                                                @if($main1[$key]['dlNoFileOVD'] == 1)
+                                                                @if(!empty($manInfoDoc['driving_license']['is_ovd_enabled']))
                                                                     <span class="d-flex align-items-center">
-                                                                        <input type="checkbox" name="is_ovd[]" value="2" {{ $main1[$key]['dlNoFileOVD'] == 1 ? 'checked' : 'disabled'}} class="mr-2" disabled>
+                                                                        <input type="checkbox" name="is_ovd[]" value="2" {{ $manInfoDoc['driving_license']['is_ovd_enabled'] == 1 ? 'checked' : 'disabled'}} class="mr-2" disabled>
                                                                         <span class="white-space-nowrap">IS OVD Enabled</span>
                                                                     </span>  
                                                                 @endif
-                                                                
                                                             </td>
                                                         </tr>
                                                         <tr>
@@ -435,195 +347,181 @@
                                                             <td width="30%">Voter ID</td>
                                                             <td width="30%" >
                                                                 <div class="col-md-12">
-                                                                    <a href="javascript:void(0);" id='vvoter{{isset($row->first_name) ? $i : '1'}}' data-id="{{isset($row->first_name) ? $i : '1'}}" class="verify-owner-no verify-show verivoter" style="top:0px; pointer-events:{{ (isset($main[$j]['voterNo']->requestId)) ? 'none' : ''}}">{{ isset($main[$j]['voterNo']->requestId) ? 'Verified' : 'Verify' }}</a>
-                                                                   <input type="text" {{isset($main[$j]['voterNo']->requestId) ? "readonly='readonly'" : '' }} value="{{ isset($main[$j]['voterNo']->requestId) ? $main[$j]['voterNo']->requestId : $row->voter_id }}" name="verifyvoter[]" id="verifyvoter{{isset($row->first_name) ? $i : '1'}}"  class="form-control verifyvoter"  placeholder="Enter Voter's Epic Number">
-                                                                    <span class="text-success float-left" id="v3successpanverify{{isset($row->first_name) ? $i : '1'}}" style="display:{{isset($main[$j]['voterNo']->requestId) ? 'inline' : 'none'}}"><i class="fa fa-check-circle" aria-hidden="true"></i> <i>Verified Successfully</i> </span>
+                                                                    <a href="javascript:void(0);" id='vvoter{{isset($manInfo['name']) ? $i : '1'}}' data-id="{{isset($manInfo['name']) ? $i : '1'}}" class="verify-owner-no verify-show verivoter" style="top:0px; pointer-events:{{ (isset($manInfoDoc['voter_id']['is_verify']) && $manInfoDoc['voter_id']['is_verify']) ? 'none' : ''}}" data-doc_type_name="voter_id">{{ isset($manInfoDoc['voter_id']['is_verify']) && $manInfoDoc['voter_id']['is_verify'] ? 'Verified' : 'Verify' }}</a>
+                                                                   <input type="text" {{isset($manInfoDoc['voter_id']['is_verify']) && $manInfoDoc['voter_id']['is_verify'] ? "readonly='readonly'" : '' }} value="{{ isset($manInfoDoc['voter_id']['id_no']) ? $manInfoDoc['voter_id']['id_no'] : ($manInfo['voter_id'] ?? '') }}" name="verifyvoter[]" id="verifyvoter{{isset($manInfo['name']) ? $i : '1'}}"  class="form-control verifyvoter"  placeholder="Enter Voter's Epic Number">
+                                                                    <span class="text-success float-left" id="v3successpanverify{{isset($manInfo['name']) ? $i : '1'}}" style="display:{{isset($manInfoDoc['voter_id']['is_verify']) && $manInfoDoc['voter_id']['is_verify'] ? 'inline' : 'none'}}"><i class="fa fa-check-circle" aria-hidden="true"></i> <i>Verified Successfully</i> </span>
 
-                                                                    <span class="text-danger float-left" id="v3failurepanverify{{isset($row->first_name) ? $i : '1'}}" style="display:none;"><i class="fa fa-close" aria-hidden="true"></i> <i>Not Verified</i> </span>
+                                                                    <span class="text-danger float-left" id="v3failurepanverify{{isset($manInfo['name']) ? $i : '1'}}" style="display:none;"><i class="fa fa-close" aria-hidden="true"></i> <i>Not Verified</i> </span>
 
                                                                 </div>
                                                             </td>
                                                             <td width="14%">
                                                                 <div class="file-browse float-left position-seta">
-                                                                    <a  href="{{ isset($main1[$j]['voterNoId']) ? route('frontend_download_storage_file', ['file_id' => $main1[$j]['voterNoId'] ]) : '' }}" class="btn-upload   btn-sm" type="button" id="voterdown{{isset($row->first_name) ? $i : '1'}}" style="display:{{ isset($main1[$j]['voterNoFile']) ? 'inline' : 'none'}}"> <i class="fa fa-download"></i></a>
-                                                                    <a  href="{{ isset($main1[$j]['voterNoId']) ? route('frontend_view_uploaded_doc', ['file_id' => $main1[$j]['voterNoId'] ]) : '' }}" title="View File" class="btn-upload   btn-sm" target="_blank" type="button" id="pandown{{isset($row->first_name) ? $i : '1'}}" style="display:{{ isset($main1[$j]['voterNoFile']) ? 'inline' : 'none'}}" target="_blank"> <i class="fa fa-eye"></i></a>
-                                                                    <!-- <input type="file" name="downloadvoter[]" class="downloadvoter" id="downloadvoter{{isset($row->first_name) ? $i : '1'}}" dir="1" onchange="FileDetails(this.getAttribute('dir'))" multiple=""> -->
-                                                                    @if($main1[$key]['voterNoFileOVD'] == 1)
-                                                                        <button type="button"  class="btn-upload   btn-sm" title="Disable OVD" style="display:{{ isset($main1[$j]['voterNoFile']) ? 'inline' : 'none'}}" name="voterdowns[]" id="voterdowns{{isset($row->first_name) ? $i : '1'}}" onclick="deleteFile({{isset($row->first_name) ? $i : '1'}}, {{ $row->biz_owner_id }}, {{ isset($main1[$key]['voterNoId']) ? $main1[$key]['voterNoId'] : 'null' }}, 30)" ><i class="fa fa-times"></i></button>
+                                                                    <a  href="{{ isset($manInfoDoc['voter_id']['file']['id']) ? route('frontend_download_storage_file', ['file_id' => $manInfoDoc['voter_id']['file']['id'] ]) : '' }}" class="btn-upload   btn-sm" type="button" id="voterdown{{isset($manInfo['name']) ? $i : '1'}}" style="display:{{ isset($manInfoDoc['voter_id']['file']['id']) ? 'inline' : 'none'}}"> <i class="fa fa-download"></i></a>
+                                                                    <a  href="{{ isset($manInfoDoc['voter_id']['file']['id']) ? route('frontend_view_uploaded_doc', ['file_id' => $manInfoDoc['voter_id']['file']['id'] ]) : '' }}" title="View File" class="btn-upload   btn-sm" target="_blank" type="button" id="pandown{{isset($manInfo['name']) ? $i : '1'}}" style="display:{{ isset($manInfoDoc['voter_id']['file']['id']) ? 'inline' : 'none'}}" target="_blank"> <i class="fa fa-eye"></i></a>
+                                                                    <!-- <input type="file" name="downloadvoter[]" class="downloadvoter" id="downloadvoter{{isset($manInfo['name']) ? $i : '1'}}" dir="1" onchange="FileDetails(this.getAttribute('dir'))" multiple=""> -->
+                                                                    @if(!empty($manInfoDoc['voter_id']['file']['id']))
+                                                                        <button type="button"  class="btn-upload   btn-sm" title="Disable OVD" style="display:{{ isset($manInfoDoc['voter_id']['file']['id']) ? 'inline' : 'none'}}" name="voterdowns[]" id="voterdowns{{isset($manInfo['name']) ? $i : '1'}}" onclick="deleteFile({{isset($manInfo['name']) ? $i : '1'}}, {{ $manInfo['owner_id'] }}, {{ isset($manInfoDoc['voter_id']['file']['id']) ? $manInfoDoc['voter_id']['file']['id'] : 'null' }}, 30, 'voter_id')" ><i class="fa fa-times"></i></button>
                                                                     @endif                                                                    
                                                                 </div>
                                                             </td>
                                                             <td width="14%">
                                                                 <div class="upload-btn-wrapper setupload-btn">
                                                                    <button class="btn">Upload</button>
-                                                                   <input type="file" name="voterfile[]" data-id="{{isset($row->first_name) ? $i : '1'}}"  class="voterfile" id="voterfile{{isset($row->first_name) ? $i : '1'}}"  onchange="uploadFile({{isset($row->first_name) ? $i : '1'}}, {{ $row->biz_owner_id }}, 30)">
+                                                                   <input type="file" name="voterfile[]" data-id="{{isset($manInfo['name']) ? $i : '1'}}"  class="voterfile" id="voterfile{{isset($manInfo['name']) ? $i : '1'}}"  onchange="uploadFile({{isset($manInfo['name']) ? $i : '1'}}, {{ $manInfo['owner_id'] }}, 30, 'voter_id')">
                                                                 </div>
-                                                                @if($main1[$key]['voterNoFileOVD'] == 1)
+                                                                @if(!empty($manInfoDoc['voter_id']['is_ovd_enabled']))
                                                                     <span class="d-flex align-items-center">
-                                                                        <input type="checkbox" name="is_ovd[]" value="2" {{ $main1[$key]['voterNoFileOVD'] == 1 ? 'checked' : 'disabled'}} class="mr-2" disabled>
+                                                                        <input type="checkbox" name="is_ovd[]" value="2" {{ $manInfoDoc['voter_id']['is_ovd_enabled'] == 1 ? 'checked' : 'disabled'}} class="mr-2" disabled>
                                                                         <span class="white-space-nowrap">IS OVD Enabled</span>
                                                                     </span>  
                                                                 @endif
                                                             </td>
-                                                        </tr>
                                                         </tr>
                                                         <tr>
                                                             <td class="text-left">4</td>
                                                             <td width="30%">Passport</td>
                                                             <td width="30%" >
                                                                 <div class="col-md-12">
-                                                                    <a href="javascript:void(0);" id='ppassport{{isset($row->first_name) ? $i : '1'}}' data-id="{{isset($row->first_name) ? $i : '1'}}" class="verify-owner-no verify-show veripass" style="top:0px; pointer-events:{{ (isset($main[$j]['passNo']->requestId)) ? 'none' : ''}}">{{ isset($main[$j]['passNo']->requestId) ? 'Verified' : 'Verify' }}</a>
-                                                                   <input type="text"  {{ isset($main[$j]['passNo']->requestId) ? "readonly='readonly'" : '' }}  value="{{ isset($main[$j]['passNo']->requestId) ? $main[$j]['passNo']->requestId : $row->passport }}" name="verifypassport[]" id="verifypassport{{isset($row->first_name) ? $i : '1'}}"  class="form-control verifypassport" placeholder="Enter File Number">
+                                                                    <a href="javascript:void(0);" id='ppassport{{isset($manInfo['name']) ? $i : '1'}}' data-id="{{isset($manInfo['name']) ? $i : '1'}}" class="verify-owner-no verify-show veripass" style="top:0px; pointer-events:{{ (isset($manInfoDoc['passport']['is_verify']) && $manInfoDoc['passport']['is_verify']) ? 'none' : ''}}" data-doc_type_name="passport">{{ isset($manInfoDoc['passport']['is_verify']) && $manInfoDoc['passport']['is_verify'] ? 'Verified' : 'Verify' }}</a>
+                                                                   <input type="text"  {{ isset($manInfoDoc['passport']['is_verify']) && $manInfoDoc['passport']['is_verify'] ? "readonly='readonly'" : '' }}  value="{{ isset($manInfoDoc['passport']['id_no']) ? $manInfoDoc['passport']['id_no'] : ($manInfo['passport'] ?? '') }}" name="verifypassport[]" id="verifypassport{{isset($manInfo['name']) ? $i : '1'}}"  class="form-control verifypassport" placeholder="Enter File Number">
 
-                                                                           <span class="text-success float-left" id="v4successpanverify{{isset($row->first_name) ? $i : '1'}}"  style="display:{{isset($main[$j]['passNo']->requestId) ? 'inline' : 'none'}}"><i class="fa fa-check-circle" aria-hidden="true"></i> <i>Verified Successfully</i> </span>
+                                                                    <span class="text-success float-left" id="v4successpanverify{{isset($manInfo['name']) ? $i : '1'}}"  style="display:{{isset($manInfoDoc['passport']['is_verify']) && $manInfoDoc['passport']['is_verify'] ? 'inline' : 'none'}}"><i class="fa fa-check-circle" aria-hidden="true"></i> <i>Verified Successfully</i> </span>
 
-                                                                    <span class="text-danger float-left" id="v4failurepanverify{{isset($row->first_name) ? $i : '1'}}"  style="display:none;"><i class="fa fa-close" aria-hidden="true"></i> <i>Not Verified</i> </span>
+                                                                    <span class="text-danger float-left" id="v4failurepanverify{{isset($manInfo['name']) ? $i : '1'}}"  style="display:none;"><i class="fa fa-close" aria-hidden="true"></i> <i>Not Verified</i> </span>
 
 
                                                                 </div>
                                                             </td>
                                                             <td width="14%">
                                                                 <div class="file-browse float-left position-seta">
-                                                                    <a  href="{{ isset($main1[$j]['passNoId']) ? route('frontend_download_storage_file', ['file_id' => $main1[$j]['passNoId'] ]) : '' }}" class="btn-upload   btn-sm" type="button" id="passdown{{isset($row->first_name) ? $i : '1'}}" style="display:{{ isset($main1[$j]['passNoFile']) ? 'inline' : 'none'}}"> <i class="fa fa-download"></i></a>
-                                                                    <a  href="{{ isset($main1[$j]['passNoId']) ? route('frontend_view_uploaded_doc', ['file_id' => $main1[$j]['passNoId'] ]) : '' }}" title="View File" class="btn-upload   btn-sm" target="_blank" type="button" id="pandown{{isset($row->first_name) ? $i : '1'}}" style="display:{{ isset($main1[$j]['passNoFile']) ? 'inline' : 'none'}}" target="_blank"> <i class="fa fa-eye"></i></a>
-                                                                    <!-- <input type="file" name="downloadpassport[]" class="downloadpassport" id="downloadpassport{{isset($row->first_name) ? $i : '1'}}" dir="1" onchange="FileDetails(this.getAttribute('dir'))" multiple=""> -->
-                                                                    @if($main1[$key]['passNoFileOVD'] == 1)
-                                                                        <button type="button"  class="btn-upload   btn-sm" title="Disable OVD" style="display:{{ isset($main1[$j]['passNoFile']) ? 'inline' : 'none'}}"  name="passportfiles[]" id="passportfiles{{isset($row->first_name) ? $i : '1'}}" onclick="deleteFile({{isset($row->first_name) ? $i : '1'}}, {{ $row->biz_owner_id }}, {{ isset($main1[$key]['passNoId']) ? $main1[$key]['passNoId'] : 'null' }}, 32)" ><i class="fa fa-times"></i></button>
+                                                                    <a  href="{{ isset($manInfoDoc['passport']['file']['id']) ? route('frontend_download_storage_file', ['file_id' => $manInfoDoc['passport']['file']['id'] ]) : '' }}" class="btn-upload   btn-sm" type="button" id="passdown{{isset($manInfo['name']) ? $i : '1'}}" style="display:{{ isset($manInfoDoc['passport']['file']['id']) ? 'inline' : 'none'}}"> <i class="fa fa-download"></i></a>
+                                                                    <a  href="{{ isset($manInfoDoc['passport']['file']['id']) ? route('frontend_view_uploaded_doc', ['file_id' => $manInfoDoc['passport']['file']['id'] ]) : '' }}" title="View File" class="btn-upload   btn-sm" target="_blank" type="button" id="pandown{{isset($manInfo['name']) ? $i : '1'}}" style="display:{{ isset($manInfoDoc['passport']['file']['id']) ? 'inline' : 'none'}}" target="_blank"> <i class="fa fa-eye"></i></a>
+                                                                    <!-- <input type="file" name="downloadpassport[]" class="downloadpassport" id="downloadpassport{{isset($manInfo['name']) ? $i : '1'}}" dir="1" onchange="FileDetails(this.getAttribute('dir'))" multiple=""> -->
+                                                                    @if(!empty($manInfoDoc['passport']['file']['id']))
+                                                                        <button type="button"  class="btn-upload   btn-sm" title="Disable OVD" style="display:{{ isset($manInfoDoc['passport']['file']['id']) ? 'inline' : 'none'}}"  name="passportfiles[]" id="passportfiles{{isset($manInfo['name']) ? $i : '1'}}" onclick="deleteFile({{isset($manInfo['name']) ? $i : '1'}}, {{ $manInfo['owner_id'] }}, {{ isset($manInfoDoc['passport']['file']['id']) ? $manInfoDoc['passport']['file']['id'] : 'null' }}, 32, 'passport')" ><i class="fa fa-times"></i></button>
                                                                     @endif                                                                    
                                                                 </div>
                                                             </td>
                                                             <td width="14%">
                                                                 <div class="upload-btn-wrapper setupload-btn">
                                                                     <button class="btn">Upload</button>
-                                                                     <input type="file" name="passportfile[]" data-id="{{isset($row->first_name) ? $i : '1'}}" class="passportfile" id="passportfile{{isset($row->first_name) ? $i : '1'}}"  onchange="uploadFile({{isset($row->first_name) ? $i : '1'}}, {{ $row->biz_owner_id }}, 32)">
+                                                                     <input type="file" name="passportfile[]" data-id="{{isset($manInfo['name']) ? $i : '1'}}" class="passportfile" id="passportfile{{isset($manInfo['name']) ? $i : '1'}}"  onchange="uploadFile({{isset($manInfo['name']) ? $i : '1'}}, {{ $manInfo['owner_id'] }}, 32, 'passport')">
                                                                 </div>
-                                                                @if($main1[$key]['passNoFileOVD'] == 1)
+                                                                @if(!empty($manInfoDoc['passport']['is_ovd_enabled']))
                                                                     <span class="d-flex align-items-center">
-                                                                        <input type="checkbox" name="is_ovd[]" value="2" {{ $main1[$key]['passNoFileOVD'] == 1 ? 'checked' : 'disabled'}} class="mr-2" disabled>
+                                                                        <input type="checkbox" name="is_ovd[]" value="2" {{ $manInfoDoc['passport']['is_ovd_enabled'] == 1 ? 'checked' : 'disabled'}} class="mr-2" disabled>
                                                                         <span class="white-space-nowrap">IS OVD Enabled</span>
                                                                     </span>  
-                                                                @endif                                                                
+                                                                @endif
                                                             </td>
-                                                        </tr>
                                                         </tr>
                                                         <tr>
                                                             <td class="text-left">5</td>
                                                             <td width="30%">Photo</td>
-                                                            <td width="30%" >
-
+                                                            <td width="30%">
                                                             </td>
                                                             <td width="14%">
                                                                 <div class="file-browse float-left position-seta">
 
-                                                                    <a  href="{{ isset($main1[$j]['photoId']) ? route('frontend_download_storage_file', ['file_id' => $main1[$j]['photoId'] ]) : '' }}" class="btn-upload   btn-sm" type="button" id="photodown{{isset($row->first_name) ? $i : '1'}}" style="display:{{ isset($main1[$j]['photoFile']) ? 'inline' : 'none'}}"> <i class="fa fa-download"></i></a>
-                                                                    <a  href="{{ isset($main1[$j]['photoId']) ? route('frontend_view_uploaded_doc', ['file_id' => $main1[$j]['photoId'] ]) : '' }}" title="View File" class="btn-upload   btn-sm" target="_blank" type="button" id="pandown{{isset($row->first_name) ? $i : '1'}}" style="display:{{ isset($main1[$j]['photoFile']) ? 'inline' : 'none'}}" target="_blank"> <i class="fa fa-eye"></i></a>
-                                                                    <!-- <input type="file" class="downloadphoto"  name="downloadphoto[]" id="downloadphoto{{isset($row->first_name) ? $i : '1'}}" dir="1" onchange="FileDetails(this.getAttribute('dir'))" multiple=""> -->
-                                                                    @if($main1[$key]['photoFileOVD'] == 1)
-                                                                        <button type="button"  class="btn-upload   btn-sm" title="Disable OVD" style="display:{{ isset($main1[$j]['photoFile']) ? 'inline' : 'none'}}"  name="photofiles[]" id="photofiles{{isset($row->first_name) ? $i : '1'}}" onclick="deleteFile({{isset($row->first_name) ? $i : '1'}}, {{ $row->biz_owner_id }}, {{ isset($main1[$key]['photoId']) ? $main1[$key]['photoId'] : 'null' }}, 22)" ><i class="fa fa-times"></i></button>
+                                                                    <a  href="{{ isset($manInfoDoc['photo']['file']['id']) ? route('frontend_download_storage_file', ['file_id' => $manInfoDoc['photo']['file']['id'] ]) : '' }}" class="btn-upload   btn-sm" type="button" id="photodown{{isset($manInfo['name']) ? $i : '1'}}" style="display:{{ isset($manInfoDoc['photo']['file']['id']) ? 'inline' : 'none'}}"> <i class="fa fa-download"></i></a>
+                                                                    <a  href="{{ isset($manInfoDoc['photo']['file']['id']) ? route('frontend_view_uploaded_doc', ['file_id' => $manInfoDoc['photo']['file']['id'] ]) : '' }}" title="View File" class="btn-upload   btn-sm" target="_blank" type="button" id="pandown{{isset($manInfo['name']) ? $i : '1'}}" style="display:{{ isset($manInfoDoc['photo']['file']['id']) ? 'inline' : 'none'}}" target="_blank"> <i class="fa fa-eye"></i></a>
+                                                                    <!-- <input type="file" class="downloadphoto"  name="downloadphoto[]" id="downloadphoto{{isset($manInfo['name']) ? $i : '1'}}" dir="1" onchange="FileDetails(this.getAttribute('dir'))" multiple=""> -->
+                                                                    @if(!empty($manInfoDoc['photo']['file']['id']))
+                                                                        <button type="button"  class="btn-upload   btn-sm" title="Disable OVD" style="display:{{ isset($manInfoDoc['photo']['file']['id']) ? 'inline' : 'none'}}"  name="photofiles[]" id="photofiles{{isset($manInfo['name']) ? $i : '1'}}" onclick="deleteFile({{isset($manInfo['name']) ? $i : '1'}}, {{ $manInfo['owner_id'] }}, {{ isset($manInfoDoc['photo']['file']['id']) ? $manInfoDoc['photo']['file']['id'] : 'null' }}, 22, 'photo')" ><i class="fa fa-times"></i></button>
                                                                     @endif                                                                    
                                                                 </div>
                                                             </td>
                                                             <td width="14%"> 
                                                                 <div class="upload-btn-wrapper setupload-btn">
                                                                     <button class="btn">Upload</button>
-                                                                   <input type="file" class="photofile"  name="photofile[]"  data-id="{{isset($row->first_name) ? $i : '1'}}"  id="photofile{{isset($row->first_name) ? $i : '1'}}"  onchange="uploadFile({{isset($row->first_name) ? $i : '1'}}, {{ $row->biz_owner_id }}, 22)">
+                                                                   <input type="file" class="photofile"  name="photofile[]"  data-id="{{isset($manInfo['name']) ? $i : '1'}}"  id="photofile{{isset($manInfo['name']) ? $i : '1'}}"  onchange="uploadFile({{isset($manInfo['name']) ? $i : '1'}}, {{ $manInfo['owner_id'] }}, 22, 'photo')">
                                                                 </div>
-                                                                @if($main1[$key]['photoFileOVD'] == 1)
+                                                                @if(!empty($manInfoDoc['photo']['is_ovd_enabled']))
                                                                     <span class="d-flex align-items-center">
-                                                                        <input type="checkbox" name="is_ovd[]" value="2" {{ $main1[$key]['photoFileOVD'] == 1 ? 'checked' : 'disabled'}} class="mr-2" disabled>
+                                                                        <input type="checkbox" name="is_ovd[]" value="2" {{ $manInfoDoc['photo']['is_ovd_enabled'] == 1 ? 'checked' : 'disabled'}} class="mr-2" disabled>
                                                                         <span class="white-space-nowrap">IS OVD Enabled</span>
                                                                     </span>  
-                                                                @endif                                                                
+                                                                @endif   
                                                             </td>
                                                         </tr>
-
-
                                                         <tr>
                                                             <td class="text-left">6</td>
                                                             <td width="30%">Aadhar Card </td>
-                                                            <td width="30%" >
-
+                                                            <td width="30%">
                                                             </td>
                                                             <td width="14%">
                                                                 <div class="file-browse float-left position-seta">
-
-                                                                    <a  href="{{ isset($main1[$j]['aadharId']) ? route('frontend_download_storage_file', ['file_id' => $main1[$j]['aadharId'] ]) : '' }}" class="btn-upload   btn-sm" type="button" id="aadhardown{{isset($row->first_name) ? $i : '1'}}" style="display:{{ isset($main1[$j]['aadharFile']) ? 'inline' : 'none'}}"> <i class="fa fa-download"></i></a>
-                                                                    <a  href="{{ isset($main1[$j]['aadharId']) ? route('frontend_view_uploaded_doc', ['file_id' => $main1[$j]['aadharId'] ]) : '' }}" title="View File" class="btn-upload   btn-sm" target="_blank" type="button" id="pandown{{isset($row->first_name) ? $i : '1'}}" style="display:{{ isset($main1[$j]['aadharFile']) ? 'inline' : 'none'}}" target="_blank"> <i class="fa fa-eye"></i></a>
-                                                                    <!-- <input type="file" class="downloadaadhar"  name="downloadaadhar[]" id="downloadaadhar{{isset($row->first_name) ? $i : '1'}}" dir="1" onchange="FileDetails(this.getAttribute('dir'))" multiple=""> -->
-                                                                    @if($main1[$key]['aadharFileOVD'] == 1)
-                                                                        <button type="button"  class="btn-upload   btn-sm" title="Disable OVD" style="display:{{ isset($main1[$j]['aadharFile']) ? 'inline' : 'none'}}" name="downloadaadhars[]" id="downloadaadhars{{isset($row->first_name) ? $i : '1'}}" onclick="deleteFile({{isset($row->first_name) ? $i : '1'}}, {{ $row->biz_owner_id }}, {{ isset($main1[$key]['aadharId']) ? $main1[$key]['aadharId'] : 'null' }}, 34)" ><i class="fa fa-times"></i></button>
+                                                                    <a  href="{{ isset($manInfoDoc['aadhar_card']['file']['id']) ? route('frontend_download_storage_file', ['file_id' => $manInfoDoc['aadhar_card']['file']['id'] ]) : '' }}" class="btn-upload   btn-sm" type="button" id="aadhardown{{isset($manInfo['name']) ? $i : '1'}}" style="display:{{ isset($manInfoDoc['aadhar_card']['file']['id']) ? 'inline' : 'none'}}"> <i class="fa fa-download"></i></a>
+                                                                    <a  href="{{ isset($manInfoDoc['aadhar_card']['file']['id']) ? route('frontend_view_uploaded_doc', ['file_id' => $manInfoDoc['aadhar_card']['file']['id'] ]) : '' }}" title="View File" class="btn-upload   btn-sm" target="_blank" type="button" id="pandown{{isset($manInfo['name']) ? $i : '1'}}" style="display:{{ isset($manInfoDoc['aadhar_card']['file']['id']) ? 'inline' : 'none'}}" target="_blank"> <i class="fa fa-eye"></i></a>
+                                                                    <!-- <input type="file" class="downloadaadhar"  name="downloadaadhar[]" id="downloadaadhar{{isset($manInfo['name']) ? $i : '1'}}" dir="1" onchange="FileDetails(this.getAttribute('dir'))" multiple=""> -->
+                                                                    @if(!empty($manInfoDoc['aadhar_card']['file']['id']))
+                                                                        <button type="button"  class="btn-upload   btn-sm" title="Disable OVD" style="display:{{ isset($manInfoDoc['aadhar_card']['file']['id']) ? 'inline' : 'none'}}" name="downloadaadhars[]" id="downloadaadhars{{isset($manInfo['name']) ? $i : '1'}}" onclick="deleteFile({{isset($manInfo['name']) ? $i : '1'}}, {{ $manInfo['owner_id'] }}, {{ isset($manInfoDoc['aadhar_card']['file']['id']) ? $manInfoDoc['aadhar_card']['file']['id'] : 'null' }}, 34, 'aadhar_card')" ><i class="fa fa-times"></i></button>
                                                                     @endif                                                                    
                                                                 </div>
                                                             </td>
                                                             <td width="14%"> 
                                                                 <div class="upload-btn-wrapper setupload-btn">
                                                                     <button class="btn">Upload</button>
-                                                                    <input type="file" class="aadharfile"  name="aadharfile[]"  data-id="{{isset($row->first_name) ? $i : '1'}}"  id="aadharfile{{isset($row->first_name) ? $i : '1'}}"  onchange="uploadFile({{isset($row->first_name) ? $i : '1'}}, {{ $row->biz_owner_id }}, 34)">
+                                                                    <input type="file" class="aadharfile"  name="aadharfile[]"  data-id="{{isset($manInfo['name']) ? $i : '1'}}"  id="aadharfile{{isset($manInfo['name']) ? $i : '1'}}"  onchange="uploadFile({{isset($manInfo['name']) ? $i : '1'}}, {{ $manInfo['owner_id'] }}, 34, 'aadhar_card')">
                                                                 </div>
-                                                                @if($main1[$key]['aadharFileOVD'] == 1)
+                                                                @if(!empty($manInfoDoc['aadhar_card']['is_ovd_enabled']))
                                                                     <span class="d-flex align-items-center">
-                                                                        <input type="checkbox" name="is_ovd[]" value="2" {{ $main1[$key]['aadharFileOVD'] == 1 ? 'checked' : 'disabled'}} class="mr-2" disabled>
+                                                                        <input type="checkbox" name="is_ovd[]" value="2" {{ $manInfoDoc['aadhar_card']['is_ovd_enabled'] == 1 ? 'checked' : 'disabled'}} class="mr-2" disabled>
                                                                         <span class="white-space-nowrap">IS OVD Enabled</span>
                                                                     </span>  
-                                                                @endif                                                                
+                                                                @endif   
                                                             </td>
                                                         </tr>
-                                                                                <tr>
+                                                        <tr>
                                                             <td class="text-left">7</td>
                                                             <td width="30%">Electricity Bill </td>
-                                                            <td width="30%" >
-
-                                                            </td>
+                                                            <td width="30%"></td>
                                                             <td width="14%">
                                                                 <div class="file-browse float-left position-seta">
-
-                                                                    <a  href="{{ isset($main1[$j]['electricityId']) ? route('frontend_download_storage_file', ['file_id' => $main1[$j]['electricityId'] ]) : '' }}" class="btn-upload   btn-sm" type="button" id="electricitydown{{isset($row->first_name) ? $i : '1'}}" style="display:{{ isset($main1[$j]['electricityFile']) ? 'inline' : 'none'}}"> <i class="fa fa-download"></i></a>
-                                                                    <a  href="{{ isset($main1[$j]['electricityId']) ? route('frontend_view_uploaded_doc', ['file_id' => $main1[$j]['electricityId'] ]) : '' }}" title="View File" class="btn-upload   btn-sm" target="_blank" type="button" id="pandown{{isset($row->first_name) ? $i : '1'}}" style="display:{{ isset($main1[$j]['electricityFile']) ? 'inline' : 'none'}}" target="_blank"> <i class="fa fa-eye"></i></a>
-                                                                    <!-- <input type="file" class="downloadelectricity"  name="downloadelectricity[]" id="downloadelectricity{{isset($row->first_name) ? $i : '1'}}" dir="1" onchange="FileDetails(this.getAttribute('dir'))" multiple=""> -->
-                                                                    @if($main1[$key]['electricityFileOVD'] == 1)
-                                                                        <button type="button"  class="btn-upload   btn-sm" title="Disable OVD" style="display:{{ isset($main1[$j]['electricityFile']) ? 'inline' : 'none'}}" name="downloadelectricitys[]" id="downloadelectricitys{{isset($row->first_name) ? $i : '1'}}" onclick="deleteFile({{isset($row->first_name) ? $i : '1'}}, {{ $row->biz_owner_id }}, {{ isset($main1[$key]['electricityId']) ? $main1[$key]['electricityId'] : 'null' }}, 37)" ><i class="fa fa-times"></i></button>
+                                                                    <a  href="{{ isset($manInfoDoc['electricity_bill']['file']['id']) ? route('frontend_download_storage_file', ['file_id' => $manInfoDoc['electricity_bill']['file']['id'] ]) : '' }}" class="btn-upload   btn-sm" type="button" id="electricitydown{{isset($manInfo['name']) ? $i : '1'}}" style="display:{{ isset($manInfoDoc['electricity_bill']['file']['id']) ? 'inline' : 'none'}}"> <i class="fa fa-download"></i></a>
+                                                                    <a  href="{{ isset($manInfoDoc['electricity_bill']['file']['id']) ? route('frontend_view_uploaded_doc', ['file_id' => $manInfoDoc['electricity_bill']['file']['id'] ]) : '' }}" title="View File" class="btn-upload   btn-sm" target="_blank" type="button" id="pandown{{isset($manInfo['name']) ? $i : '1'}}" style="display:{{ isset($manInfoDoc['electricity_bill']['file']['id']) ? 'inline' : 'none'}}" target="_blank"> <i class="fa fa-eye"></i></a>
+                                                                    <!-- <input type="file" class="downloadelectricity"  name="downloadelectricity[]" id="downloadelectricity{{isset($manInfo['name']) ? $i : '1'}}" dir="1" onchange="FileDetails(this.getAttribute('dir'))" multiple=""> -->
+                                                                    @if(!empty($manInfoDoc['electricity_bill']['file']['id']))
+                                                                        <button type="button"  class="btn-upload   btn-sm" title="Disable OVD" style="display:{{ isset($manInfoDoc['electricity_bill']['file']['id']) ? 'inline' : 'none'}}" name="downloadelectricitys[]" id="downloadelectricitys{{isset($manInfo['name']) ? $i : '1'}}" onclick="deleteFile({{isset($manInfo['name']) ? $i : '1'}}, {{ $manInfo['owner_id'] }}, {{ isset($manInfoDoc['electricity_bill']['file']['id']) ? $manInfoDoc['electricity_bill']['file']['id'] : 'null' }}, 37, 'electricity_bill')" ><i class="fa fa-times"></i></button>
                                                                     @endif                                                                    
                                                                 </div>
                                                             </td>
                                                             <td width="14%"> 
                                                                 <div class="upload-btn-wrapper setupload-btn">
                                                                    <button class="btn">Upload</button>
-                                                                    <input type="file" class="electricityfile"  name="electricityfile[]"  data-id="{{isset($row->first_name) ? $i : '1'}}"  id="electricityfile{{isset($row->first_name) ? $i : '1'}}"  onchange="uploadFile({{isset($row->first_name) ? $i : '1'}}, {{ $row->biz_owner_id }}, 37)">
+                                                                    <input type="file" class="electricityfile"  name="electricityfile[]"  data-id="{{isset($manInfo['name']) ? $i : '1'}}"  id="electricityfile{{isset($manInfo['name']) ? $i : '1'}}"  onchange="uploadFile({{isset($manInfo['name']) ? $i : '1'}}, {{ $manInfo['owner_id'] }}, 37, 'electricity_bill')">
                                                                 </div>
-                                                                @if($main1[$key]['electricityFileOVD'] == 1)
+                                                                @if(!empty($manInfoDoc['electricity_bill']['is_ovd_enabled']))
                                                                     <span class="d-flex align-items-center">
-                                                                        <input type="checkbox" name="is_ovd[]" value="2" {{ $main1[$key]['electricityFileOVD'] == 1 ? 'checked' : 'disabled'}} class="mr-2" disabled>
+                                                                        <input type="checkbox" name="is_ovd[]" value="2" {{ $manInfoDoc['electricity_bill']['is_ovd_enabled'] == 1 ? 'checked' : 'disabled'}} class="mr-2" disabled>
                                                                         <span class="white-space-nowrap">IS OVD Enabled</span>
                                                                     </span>  
-                                                                @endif                                                                
+                                                                @endif
                                                             </td>
                                                         </tr>
-                                                        
-                                                                                  <tr>
+                                                        <tr>
                                                             <td class="text-left">8</td>
                                                             <td width="30%">Telephone Bill </td>
-                                                            <td width="30%" >
-
-                                                            </td>
+                                                            <td width="30%"></td>
                                                             <td width="14%">
                                                                 <div class="file-browse float-left position-seta">
-
-                                                                    <a  href="{{ isset($main1[$j]['telephoneId']) ? route('frontend_download_storage_file', ['file_id' => $main1[$j]['telephoneId'] ]) : '' }}" class="btn-upload   btn-sm" type="button" id="telephonedown{{isset($row->first_name) ? $i : '1'}}" style="display:{{ isset($main1[$j]['telephoneFile']) ? 'inline' : 'none'}}"> <i class="fa fa-download"></i></a>
-                                                                    <a  href="{{ isset($main1[$j]['telephoneId']) ? route('frontend_view_uploaded_doc', ['file_id' => $main1[$j]['telephoneId'] ]) : '' }}" title="View File" class="btn-upload   btn-sm" target="_blank" type="button" id="pandown{{isset($row->first_name) ? $i : '1'}}" style="display:{{ isset($main1[$j]['telephoneFile']) ? 'inline' : 'none'}}" target="_blank"> <i class="fa fa-eye"></i></a>
-                                                                    <!-- <input type="file" class="downloadtelephone"  name="downloadtelephone[]" id="downloadtelephone{{isset($row->first_name) ? $i : '1'}}" dir="1" onchange="FileDetails(this.getAttribute('dir'))" multiple=""> -->
-                                                                    @if($main1[$key]['telephoneFileOVD'] == 1)
-                                                                        <button type="button"  class="btn-upload   btn-sm" title="Disable OVD" style="display:{{ isset($main1[$j]['telephoneFile']) ? 'inline' : 'none'}}" name="downloadtelephones[]" id="downloadtelephones{{isset($row->first_name) ? $i : '1'}}" onclick="deleteFile({{isset($row->first_name) ? $i : '1'}}, {{ $row->biz_owner_id }}, {{ isset($main1[$key]['telephoneId']) ? $main1[$key]['telephoneId'] : 'null' }}, 38)" ><i class="fa fa-times"></i></button>
-                                                                    @endif                                                                    
+                                                                    <a  href="{{ isset($manInfoDoc['telephone_bill']['file']['id']) ? route('frontend_download_storage_file', ['file_id' => $manInfoDoc['telephone_bill']['file']['id'] ]) : '' }}" class="btn-upload   btn-sm" type="button" id="telephonedown{{isset($manInfo['name']) ? $i : '1'}}" style="display:{{ isset($manInfoDoc['telephone_bill']['file']['id']) ? 'inline' : 'none'}}"> <i class="fa fa-download"></i></a>
+                                                                    <a  href="{{ isset($manInfoDoc['telephone_bill']['file']['id']) ? route('frontend_view_uploaded_doc', ['file_id' => $manInfoDoc['telephone_bill']['file']['id'] ]) : '' }}" title="View File" class="btn-upload   btn-sm" target="_blank" type="button" id="pandown{{isset($manInfo['name']) ? $i : '1'}}" style="display:{{ isset($manInfoDoc['telephone_bill']['file']['id']) ? 'inline' : 'none'}}" target="_blank"> <i class="fa fa-eye"></i></a>
+                                                                    <!-- <input type="file" class="downloadtelephone"  name="downloadtelephone[]" id="downloadtelephone{{isset($manInfo['name']) ? $i : '1'}}" dir="1" onchange="FileDetails(this.getAttribute('dir'))" multiple=""> -->
+                                                                    @if(!empty($manInfoDoc['telephone_bill']['file']['id']))
+                                                                        <button type="button"  class="btn-upload   btn-sm" title="Disable OVD" style="display:{{ isset($manInfoDoc['telephone_bill']['file']['id']) ? 'inline' : 'none'}}" name="downloadtelephones[]" id="downloadtelephones{{isset($manInfo['name']) ? $i : '1'}}" onclick="deleteFile({{isset($manInfo['name']) ? $i : '1'}}, {{ $manInfo['owner_id'] }}, {{ isset($manInfoDoc['telephone_bill']['file']['id']) ? $manInfoDoc['telephone_bill']['file']['id'] : 'null' }}, 38, 'telephone_bill')" ><i class="fa fa-times"></i></button>
+                                                                    @endif
                                                                 </div>
                                                             </td>
                                                             <td width="14%"> 
                                                                 <div class="upload-btn-wrapper setupload-btn">
                                                                    <button class="btn">Upload</button>
-                                                                    <input type="file" class="telephonefile"  name="telephonefile[]"  data-id="{{isset($row->first_name) ? $i : '1'}}"  id="telephonefile{{isset($row->first_name) ? $i : '1'}}"  onchange="uploadFile({{isset($row->first_name) ? $i : '1'}}, {{ $row->biz_owner_id }}, 38)">
+                                                                    <input type="file" class="telephonefile"  name="telephonefile[]"  data-id="{{isset($manInfo['name']) ? $i : '1'}}"  id="telephonefile{{isset($manInfo['name']) ? $i : '1'}}"  onchange="uploadFile({{isset($manInfo['name']) ? $i : '1'}}, {{ $manInfo['owner_id'] }}, 38, 'telephone_bill')">
                                                                 </div>
-                                                                @if($main1[$key]['telephoneFileOVD'] == 1)
+                                                                @if(!empty($manInfoDoc['telephone_bill']['is_ovd_enabled']))
                                                                     <span class="d-flex align-items-center">
-                                                                        <input type="checkbox" name="is_ovd[]" value="2" {{ $main1[$key]['telephoneFileOVD'] == 1 ? 'checked' : 'disabled'}} class="mr-2" disabled>
+                                                                        <input type="checkbox" name="is_ovd[]" value="2" {{ $manInfoDoc['telephone_bill']['is_ovd_enabled'] == 1 ? 'checked' : 'disabled'}} class="mr-2" disabled>
                                                                         <span class="white-space-nowrap">IS OVD Enabled</span>
                                                                     </span>  
                                                                 @endif                                                                
@@ -632,18 +530,18 @@
                                                     </tbody>
                                                 </table>
 
-                                                <div class="modal" id="myModal{{isset($row->first_name) ? $i : '1'}}">
+                                                <div class="modal" id="myModal{{isset($manInfo['name']) ? $i : '1'}}">
                                                     <div class="modal-dialog modal-lg">
                                                         <div class="modal-content">
                                                             <!-- Modal Header -->
                                                             <div class="modal-header">
-                                                                <h5 id="dynamicTitle{{isset($row->first_name) ? $i : '1'}}"></h5>
+                                                                <h5 id="dynamicTitle{{isset($manInfo['name']) ? $i : '1'}}"></h5>
                                                                 <button type="button" class="close close-btns" data-dismiss="modal">×</button>
                                                             </div>
                                                             <!-- Modal body -->
                                                             <div class="modal-body text-left">
                                                                 <div class="table-responsive ps ps--theme_default" data-ps-id="c019a9d0-57f7-7dd4-16ba-e6ea054ce839">
-                                                                    <span class="getBizApiRes" id="getBizApiRes{{isset($row->first_name) ? $i : '1'}}"></span>
+                                                                    <span class="getBizApiRes" id="getBizApiRes{{isset($manInfo['name']) ? $i : '1'}}"></span>
                                                                     <div class="ps__scrollbar-x-rail" style="left: 0px; bottom: 0px;"><div class="ps__scrollbar-x"  style="left: 0px; width: 0px;"></div></div><div class="ps__scrollbar-y-rail" style="top: 0px; right: 0px;"><div class="ps__scrollbar-y"  style="top: 0px; height: 0px;"></div></div></div>
                                                             </div>
                                                         </div>
@@ -743,6 +641,9 @@
            return true;
         })
         
+        jQuery.validator.addMethod("emailExt", function(value, element, param) {
+            return value.match(/^[a-zA-Z0-9_\.%\+\-]+@[a-zA-Z0-9\.\-]+\.[a-zA-Z]{2,}$/);
+        },'please enter a valid email');
         
         $('.submit').on('click', function (event) {
         var button = $(this).attr("data-type");
@@ -759,6 +660,15 @@
         required: true
         })
         });
+
+        $('input.email').each(function () {
+            $(this).rules("add", {
+                required: false,
+                emailExt: true,
+                maxlength: 100
+            });
+        });
+
         if(button=='next')
       { 
                 $('select.gender').each(function () {
@@ -790,8 +700,9 @@
                 $('input.mobileveri').each(function () {
                 $(this).rules("add",
                 {
-                required: true,
-                        number: true,
+                    required: true,
+                    number: true,
+                    minlength: 10
                 })
                 });
                }
@@ -822,8 +733,9 @@
                 $('input.mobileveri').each(function () {
                 $(this).rules("add",
                 {
-                required: false,
-                        number: false,
+                    required: false,
+                    number: false,
+                    minlength: 10
                 })
                 });
               }
@@ -1330,7 +1242,8 @@
         var PAN = $("#veripan" + count).val();
         var name = $("#first_name" + count).val();
         var dob = $("#date_of_birth" + count).val();
-        var dataStore = {'pan': PAN, 'name':name, 'dob':dob, '_token': messages.token, 'biz_id':bizId, 'ownerid':ownerid, 'app_id':app_id};
+        var doc_type_name = $(this).data('doc_type_name') ? $(this).data('doc_type_name') : '';
+        var dataStore = {'pan': PAN, 'name':name, 'dob':dob, '_token': messages.token, 'biz_id':bizId, 'ownerid':ownerid, 'app_id':app_id, doc_type_name:doc_type_name};
         var postData = dataStore;
         $('#ppan' + count).text('Waiting...');
         jQuery.ajax({
@@ -1383,7 +1296,8 @@
         var PAN = $("#verifydl" + count).val();
         var dl_no = $("#verifydl" + count).val();
         var dob = $("#date_of_birth" + count).val();
-        var dataStore = {'dl_no': dl_no, 'dob':dob, '_token': messages.token, 'biz_id':bizId, 'ownerid':ownerid, 'app_id':app_id};
+        var doc_type_name = $(this).data('doc_type_name') ? $(this).data('doc_type_name') : '';
+        var dataStore = {'dl_no': dl_no, 'dob':dob, '_token': messages.token, 'biz_id':bizId, 'ownerid':ownerid, 'app_id':app_id, doc_type_name:doc_type_name};
         ////var dataStore = {'dl_no': 'MH01 20090091406','dob':'12-06-1987','_token': messages.token,'biz_id':bizId,'ownerid':ownerid,'app_id':app_id};
 
         var postData = dataStore;
@@ -1427,6 +1341,7 @@
         var bizId = $('input[name=biz_id]').val();
         var app_id = $('#app_id').val();
         var ownerid = $('#ownerid' + count).val();
+        var doc_type_name = $(this).data('doc_type_name') ? $(this).data('doc_type_name') : '';
         if (ownerid)
         {
         var ownerid = ownerid;
@@ -1435,7 +1350,7 @@
         {
         var ownerid = 0;
         }
-        var dataStore = {'epic_no':voterId, '_token': messages.token, 'biz_id':bizId, 'ownerid':ownerid, 'app_id':app_id };
+        var dataStore = {'epic_no':voterId, '_token': messages.token, 'biz_id':bizId, 'ownerid':ownerid, 'app_id':app_id, doc_type_name:doc_type_name };
         ///  var dataStore = {'epic_no': 'SHA4722088','_token': messages.token,'biz_id':bizId,'ownerid':ownerid,'app_id':app_id };
         var postData = dataStore;
         $('#vvoter' + count).text('Waiting...');
@@ -1489,7 +1404,8 @@
         }
         var file = $("#verifypassport" + count).val();
         var dob = $("#date_of_birth" + count).val();
-        var dataStore = {'fileNo': file, 'dob':dob, '_token': messages.token, 'biz_id':bizId, 'ownerid':ownerid, 'app_id':app_id};
+        var doc_type_name = $(this).data('doc_type_name') ? $(this).data('doc_type_name') : '';
+        var dataStore = {'fileNo': file, 'dob':dob, '_token': messages.token, 'biz_id':bizId, 'ownerid':ownerid, 'app_id':app_id,doc_type_name:doc_type_name};
         //var dataStore = {'fileNo': 'BO3072344560818','dob':'17/08/1987','_token': messages.token };
         var postData = dataStore;
         $('#ppassport' + count).text('Waiting...');

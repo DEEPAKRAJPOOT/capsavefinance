@@ -21,6 +21,7 @@ var iframe_ids = [
     'modalPromoter3',
     'modalPromoter7',
     'modalPromoter8',
+    'modalManualConsent',
     'assignFiFrame',
     'pdNoteFrame',
     'modalPromoter',
@@ -150,7 +151,8 @@ var iframe_ids = [
     'assignUserLeads',
     'assignUserApplication',
     'editReviewDate',
-    'EditTotalCreditAssessed'
+    'EditTotalCreditAssessed',
+    'groupConfirmation'
 ];
 
 iframe_ids.forEach(function (id) {

@@ -130,7 +130,6 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'uses' => 'Backend\SupplierController@index'
             ]);
 
-          
             Route::get('company-details', [
                 'as' => 'company_details',
                 'uses' => 'Backend\ApplicationController@showCompanyDetails'
@@ -173,7 +172,35 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'uses' => 'Backend\ApplicationController@showDocuments'
             ]);
             
-            
+            Route::get('ckyc-details',[
+                'as'=>'ckycdetails',
+                'uses'=>'Backend\CkycController@index'
+            ]);
+            Route::get('ckyc-manual-consent',[
+                'as'=>'ckyc_manual_consent',
+                'uses'=>'Backend\CkycController@ckycManualConsent'
+            ]);
+
+            Route::post('save-manual-consent',[
+                'as' => 'save_manual_consent',
+                'uses'=> 'Backend\CkycController@saveManualConsent'
+            ]);
+
+            Route::get('ckyc-otp-consent',[
+                'as'=>'ckyc_otp_consent',
+                'uses'=>'Backend\CkycController@ckycOtpConsent'
+            ]);
+
+            Route::post('ckyc-applicable-save',[
+                'as'=>'ckyc_applicable_save',
+                'uses'=>'Backend\CkycController@ckycApplicableSave'
+            ]);
+
+            Route::get('ckyc-pull-request',[
+                'as'=>'ckyc_pull_request',
+                'uses'=>'Backend\CkycController@ckycPullRequest'
+            ]);
+
             Route::get('documents/upload-document', [
                 'as' => 'show_upload_document',
                 'uses' => 'Backend\ApplicationController@uploadDocument'
@@ -647,6 +674,16 @@ Route::domain(config('proin.backend_uri'))->group(function () {
             Route::get('download-approval-file-copy', [
                 'as' => 'download_approval_file_copy',
                 'uses' => 'Backend\DocumentController@downloadStorageFile'
+            ]);
+
+            Route::post('ucic-promoter-document-delete', [
+                'as' => 'ucic_promoter_document_delete',
+                'uses' => 'Master\UcicUserController@ucicPromoterDocumentDelete'
+            ]); 
+
+            Route::post('ucic-promoter-document-save', [
+                'as' => 'ucic_promoter_document_save',
+                'uses' => 'Master\UcicUserController@ucicPromoterDocumentSave'
             ]);
 
             //start section cam
@@ -1558,6 +1595,82 @@ Route::domain(config('proin.backend_uri'))->group(function () {
             ]);
             //END Security Document
             
+            Route::get('/list-ucic', [
+                'as' => 'list_ucic',
+                'uses' => 'Master\UcicUserController@list'
+            ]);
+
+            Route::get('/business-details', [
+                'as' => 'business_details',
+                'uses' => 'Master\UcicUserController@businessInfo'
+            ]);
+
+            Route::post('business-details', [
+                'as' => 'save_business_details',
+                'uses' => 'Master\UcicUserController@saveBusinessInfo'
+            ]);
+
+            Route::get('/management-details', [
+                'as' => 'management_details',
+                'uses' => 'Master\UcicUserController@showPromoterDetails'
+            ]);
+
+            Route::post('/management-details', [
+                'as' => 'management_details_save',
+                'uses' => 'Master\UcicUserController@updatePromoterDetail'
+            ]);
+
+            Route::get('/group-linking', [
+                'as' => 'group_linking',
+                'uses' => 'Master\UcicUserController@groupLinking'
+            ]);
+
+            Route::post('/save-group-linking', [
+                'as' => 'save_group_linking',
+                'uses' => 'Master\UcicUserController@saveGroupLinking'
+            ]);
+
+            Route::get('group-confirmation-change', [
+                'as' => 'group_confirmation_change',
+                'uses' => 'Master\UcicUserController@groupChangeConfirmation'
+            ]);
+            
+            // Master Groups
+            Route::get('new-group', [
+                'as' => 'get_master_group_list',
+                'uses' => 'Master\GroupController@index'
+            ]);
+
+            Route::get('add-new-group', [
+                'as' => 'add_new_group',
+                'uses' => 'Master\GroupController@create'
+            ]);
+
+            Route::post('save-new-group', [
+                'as' => 'save_new_group',
+                'uses' => 'Master\GroupController@store'
+            ]);
+
+            Route::post('update-new-group', [
+                'as' => 'update_new_group',
+                'uses' => 'Master\GroupController@store'
+            ]);
+
+            Route::post('approve-new-group', [
+                'as' => 'approve_new_group',
+                'uses' => 'Master\GroupController@store'
+            ]);
+
+            Route::get('edit-new-group', [
+                'as' => 'edit_new_group',
+                'uses' => 'Master\GroupController@create'
+            ]);
+            
+            Route::get('view-group-ucic', [
+                'as' => 'view_group_ucic',
+                'uses' => 'Master\GroupController@viewGroupUcic'
+            ]);
+            //End group
         });
 
         Route::group(['prefix' => 'agency'], function () {

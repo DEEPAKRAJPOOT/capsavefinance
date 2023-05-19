@@ -13,6 +13,17 @@ return [
     'LMS_STATUS' => env('LMS_STATUS', 0),
     'NPA_DAYS' => env('NPA_DAYS', 90),
     'COMP_ADDR_ID'=>'10',
+    'CKYC_RES_STATUSCODE' => [
+        101 => 'Valid Authentication',
+        102 => 'Invalid ID number or combination of inputs',
+        103 => 'No records found for the given ID or combination of inputs at the source',
+        104 => 'Max retries exceeded',
+        105 => 'Missing Consent',
+        106 => 'Multiple Records Exist',
+        107 => 'Not Supported',
+        108 => 'Internal Resource Unavailable',
+        109 => 'Too many records Found'
+    ],
     'TRANS_TYPE' => [    
        'REVERSE' => '2',
        'TDS'=>'7',
@@ -291,5 +302,6 @@ return [
      'KOTAK_CLIENT_CODE' => env('KOTAK_CLIENT_CODE', 'TEMPTEST1'),
      'KOTAK_MSG_SOURCE' => env('KOTAK_MSG_SOURCE', 'ABCCOMPANY'),
      'KOTAK_MYPRODCODE' => env('KOTAK_MYPRODCODE', 'NETPAY'),
-     'SHOW_EDIT_REVIEW_DATE_BUTTON_IN_DAYS' => env('SHOW_EDIT_REVIEW_DATE_BUTTON_IN_DAYS', 7)
+     'SHOW_EDIT_REVIEW_DATE_BUTTON_IN_DAYS' => env('SHOW_EDIT_REVIEW_DATE_BUTTON_IN_DAYS', 7),
+     
 ];

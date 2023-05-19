@@ -192,7 +192,8 @@ class DataRenderer implements DataProviderInterface
                                 ->orWhere('users.l_name', 'like', "%$by_nameOrEmail%")
                                 ->orWhere(\DB::raw("CONCAT(rta_users.f_name,' ',rta_users.l_name)"), 'like', "%$by_nameOrEmail%")
                                 ->orWhere('users.email', 'like', "%$by_nameOrEmail%")
-                                ->orWhere('anchor_user.pan_no', 'like', "%$by_nameOrEmail%");
+                                ->orWhere('anchor_user.pan_no', 'like', "%$by_nameOrEmail%")
+                                ->orWhere('non_anchor_leads.pan_no', 'like', "%$by_nameOrEmail%");
                             });
                         }
                     }
@@ -386,7 +387,7 @@ class DataRenderer implements DataProviderInterface
     {
     
         return DataTables::of($app)
-                ->rawColumns(['app_id','biz_entity_name','assignee', 'status', 'assigned_by', 'action','assoc_anchor', 'contact','name', 'app_code'])
+                ->rawColumns(['app_id','ucic_code','biz_entity_name','assignee', 'status', 'assigned_by', 'action','assoc_anchor', 'contact','name', 'app_code'])
                 ->addColumn(
                     'app_code',
                     function ($app) {
@@ -420,10 +421,21 @@ class DataRenderer implements DataProviderInterface
                         return $ret;
                     }
                 )
+                ->addColumn('ucic_code', function($app) {
+                    if($app->user_ucic_id) {
+                        return "<a href=\"".route('business_details', ['userUcicId' => $app->user_ucic_id])."\" rel=\"tooltip\">$app->ucic_code</a> ";
+                    }else{
+                        return  '---';
+                    }
+                })
                 ->addColumn(
                     'biz_entity_name',
-                    function ($app) {                        
-                        $panInfo = $app->pan_no && !empty($app->pan_no) ? '<br><strong>PAN:</strong> ' . $app->pan_no : '';
+                    function ($app) {          
+                        $panInfo = '';
+                        $panNo = $app->ucicUser->pan_no ?? NULL;              
+                        if($panNo){
+                            $panInfo = '<br><strong>PAN:</strong> ' . $panNo;
+                        }
                         if ($app->app_type != 0) {
                             $panInfo .= '</br><small class="aprveAppListBtn">('. \Helpers::getAppTypeName($app->app_type) .')</small>';
                         }
@@ -559,7 +571,7 @@ class DataRenderer implements DataProviderInterface
 
                         if ($view_only && $app->status == 1) {
                           //// $act = $act . '<a title="Copy application" href="#" data-toggle="modal" data-target="#addAppCopy" data-url="' . route('add_app_copy', ['user_id' =>$app->user_id,'app_id' => $app->app_id, 'biz_id' => $app->biz_id]) . '" data-height="190px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm">Copy Application</a>';
-                            if(Helpers::checkPermission('send_case_confirmBox')){
+                            if(Helpers::checkPermission('send_case_confirmBox') && !$app->user->isAccountClose){
                                 $hasSupplyChainOffer = Helpers::hasSupplyChainOffer($app->app_id);
                                 if ($currentStage && ( (!$lmsStatus && $currentStage->order_no < 16) || ($lmsStatus && $currentStage->order_no <= 16) ) ) {
                                     $moveToBackStageUrl = '&nbsp;<a href="#" title="Move to Back Stage" data-toggle="modal" data-target="#assignCaseFrame" data-url="' . route('send_case_confirmBox', ['user_id' => $app->user_id,'app_id' => $app->app_id, 'biz_id' => $request->get('biz_id'), 'assign_case' => 1]) . '" data-height="320px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm"><i class="fa fa-reply" aria-hidden="true"></i></a> ';
@@ -582,7 +594,7 @@ class DataRenderer implements DataProviderInterface
                         }
 
 
-                        if ($lmsStatus && $app->renewal_status == 1 && Helpers::checkPermission('copy_app_confirmbox')) {
+                        if ($lmsStatus && $app->renewal_status == 1 && Helpers::checkPermission('copy_app_confirmbox') && !$app->user->isAccountClose) {
                             $act = $act . '&nbsp;<a href="#" title="Copy/Renew Application" data-toggle="modal" data-target="#confirmCopyApp" data-url="' . route('copy_app_confirmbox', ['user_id' => $app->user_id,'app_id' => $app->app_id, 'biz_id' => $app->biz_id, 'app_type' => 1]) . '" data-height="200px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm"><i class="fa fa-files-o" aria-hidden="true"></i></a> ';
                         }
 
@@ -591,7 +603,7 @@ class DataRenderer implements DataProviderInterface
                         //$where['status'] = [0,1];
                         //$appData = Application::getApplicationsData($where);
                         $appData = Application::checkAppByPan($app->user_id);
-                        if ($lmsStatus && $app->status == 2 && !$appData) { //Limit Enhancement
+                        if ($lmsStatus && $app->status == 2 && !$appData && !$app->user->isAccountClose) { //Limit Enhancement
 
                             if (Helpers::checkPermission('enhance_limit_confirmbox')) {
                                 $act = $act . '&nbsp;<a href="#" title="Limit Enhancement" data-toggle="modal" data-target="#confirmEnhanceLimit" data-url="' . route('enhance_limit_confirmbox', ['user_id' => $app->user_id,'app_id' => $app->app_id, 'biz_id' => $app->biz_id, 'app_type' => 2]) . '" data-height="200px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm"><i class="fa fa-user-plus" aria-hidden="true"></i></a> ';
@@ -606,12 +618,12 @@ class DataRenderer implements DataProviderInterface
                         if (Helpers::isChangeAppStatusAllowed($app->curr_status_id) && Helpers ::checkPermission('reject_app')) {
                            $act = $act . '<a title="Modify Status" href="#" data-toggle="modal" data-target="#rejectApplication" data-url="' . route('reject_app', ['app_id' => $app->app_id, 'note_id' => $app->note_id, 'user_id' => $app->user_id, 'curr_status_id' => $app->curr_status_id]) . '" data-height="250px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm"><i class="fa fa-cog" aria-hidden="true"></i></a>';
                         }
-                        if (Helpers::isChangeAppStatusReactivate($app->curr_status_id) && Helpers ::checkPermission('reactivate_status_app')) {
+                        if (Helpers::isChangeAppStatusReactivate($app->curr_status_id) && Helpers ::checkPermission('reactivate_status_app') && !$app->user->isAccountClose) {
                            $act = $act . '<a title="Reactivate Status" href="#" data-toggle="modal" data-target="#reactivateApplication" data-url="' . route('reactivate_status_app', ['app_id' => $app->app_id, 'note_id' => $app->note_id, 'user_id' => $app->user_id, 'curr_status_id' => $app->curr_status_id]) . '" data-height="250px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm"><i class="fa fa-key" aria-hidden="true"></i></a>';
                         }
                         
                         $userRoles = $roleData->pluck('id')->toArray();
-                        if (in_array(config('common.user_role.REVIEWER'), $userRoles) && Helpers::checkPermission('app_pull_back_confirmBox') && in_array($app->app_type, [2,3]) && $currentStage->stage_code == 'approver' && !Helpers::isAppApprByAuthority($app->app_id)) {
+                        if (in_array(config('common.user_role.REVIEWER'), $userRoles) && Helpers::checkPermission('app_pull_back_confirmBox') && in_array($app->app_type, [2,3]) && $currentStage->stage_code == 'approver' && !Helpers::isAppApprByAuthority($app->app_id) && !$app->user->isAccountClose) {
                             $act .= '&nbsp;<a href="#" title="App Pull Back" data-toggle="modal" data-target="#pullBackAssignCaseFrame" data-url="' . route('app_pull_back_confirmBox', ['user_id' => $app->user_id,'app_id' => $app->app_id, 'biz_id' => $app->biz_id, 'app_pull_back' => true, ]) . '" data-height="200px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm"><i class="fa fa-undo" aria-hidden="true"></i></a> ';
                         }
                         
@@ -622,13 +634,29 @@ class DataRenderer implements DataProviderInterface
                 )
                 ->filter(function ($query) use ($request) {
 
-                    if ($request->get('search_keyword') != '') {
+                    if ($request->get('search_keyword') != '' && $request->get('search_type') != '') {
                         $query->where(function ($query) use ($request) {
                             $search_keyword = trim($request->get('search_keyword'));
-                            $query->where('app.app_code', 'like',"%$search_keyword%")
-                            ->orWhere('biz.biz_entity_name', 'like', "%$search_keyword%")
-                            ->orWhere('anchor_user.pan_no', 'like', "%$search_keyword%");
-                        });
+                            $search_type =  trim($request->get('search_type'));
+                            //Search For Pan No
+                            if($search_type == 1){
+                                $query->Where('user_ucic.pan_no', '=', "$search_keyword");
+                            }
+                            // Search For App Code
+                            if($search_type == 2){
+                                $query->where('app.app_code', 'like', "%$search_keyword%");
+                            }
+
+                            // Search For UCIC
+                            if($search_type == 3){
+                                $query->where('user_ucic.ucic_code', 'like', "%$search_keyword%");
+                            }
+
+                            // Search For Business Name
+                            if($search_type == 4){
+                                $query->where('biz.biz_entity_name', 'like', "%$search_keyword%");
+                            }
+                        }); 
                     }
                     if ($request->get('is_assign') != '') {
                         $query->where(function ($query) use ($request) {
@@ -3409,6 +3437,18 @@ class DataRenderer implements DataProviderInterface
                     function ($program) {
                       return  \Helpers::formatCurreny($program->anchor_limit);
                     })
+                ->editColumn(
+                    'program_type',
+                    function ($program) {
+                        // dd($program->anchors->is_fungible);
+                    $prgmType = '';
+                    if($program->anchors->is_fungible === "1"){
+                        $prgmType = 'Fungible';
+                    }else{
+                        $prgmType = 'Non-Fungible';
+                    }
+                    return  $prgmType;
+                })  
                 ->addColumn(
                     'anchor_sub_limit',
                     function ($program) {
@@ -4064,10 +4104,10 @@ class DataRenderer implements DataProviderInterface
                             $ret .= '<strong>Total Limit:</strong> '. \Helpers::formatCurreny($program->anchor_limit) . '<br>';
 
                             if ($program->anchors->is_fungible) {
-                                $ret .= '<strong>Utilized Limit:</strong> '. \Helpers::formatCurrency(InvoiceTrait::anchorInvoiceApproveAmount($program->anchor_id)). '<br>';
-                                $ret .= '<strong>Remaining Limit:</strong> '. \Helpers::formatCurreny($program->anchor_limit - InvoiceTrait::anchorInvoiceApproveAmount($program->anchor_id)). '<br>';
+                                $ret .= '<strong>Utilized Limit:</strong> '. \Helpers::formatCurrency(InvoiceTrait::anchorPrgmInvoiceApproveAmount($program->anchor_id,$program->prgm_id)). '<br>';
+                                $ret .= '<strong>Remaining Limit:</strong> '. \Helpers::formatCurreny($program->anchor_limit - InvoiceTrait::anchorPrgmInvoiceApproveAmount($program->anchor_id,$program->prgm_id)). '<br>';
                             } else {
-                                $ret .= '<strong>Remaining Limit:</strong> '. \Helpers::formatCurreny($program->anchor_limit - $this->anchor_utilized_balance ). '<br>';
+                                $ret .= '<strong>Remaining Limit:</strong> '. \Helpers::formatCurreny($program->anchor_limit - $program->anchor_sub_limit ). '<br>';
                             }
 
                             return $ret;
@@ -4078,7 +4118,7 @@ class DataRenderer implements DataProviderInterface
                             $ret = '<strong>Limit:</strong> '. \Helpers::formatCurreny($program->anchor_sub_limit) . '<br>';
                             $ret .= '<strong>Loan Size:</strong> '. \Helpers::formatCurreny($program->min_loan_size) .'-' . \Helpers::formatCurreny($program->max_loan_size). '<br>';
                             if ($program->anchors->is_fungible) {
-                                $ret .= '<strong>Utilized Sub Program Limit:</strong> '. \Helpers::formatCurrency(InvoiceTrait::anchorPrgmInvoiceApproveAmount($program->anchor_id, $program->prgm_id)). '<br>';
+                                // $ret .= '<strong>Utilized Sub Program Limit:</strong> '. \Helpers::formatCurrency(InvoiceTrait::anchorPrgmInvoiceApproveAmount($program->anchor_id, $program->prgm_id)). '<br>';
                             } else {
                                 $ret .= '<strong>Utilized Limit in Offer:</strong> '. \Helpers::formatCurreny(\Helpers::getPrgmBalLimit($program->prgm_id)) . '<br>';
                             }
@@ -4159,7 +4199,7 @@ class DataRenderer implements DataProviderInterface
     public function lmsGetCustomers(Request $request, $customer)
     {
         return DataTables::of($customer)
-                ->rawColumns(['customer_id','customer_name', 'status','limit', 'consume_limit', 'available_limit','anchor','action'])
+                ->rawColumns(['customer_id','ucic_code','customer_name', 'status','limit', 'consume_limit', 'available_limit','anchor','action'])
 
                 ->editColumn(
                     'app_id',
@@ -4168,6 +4208,22 @@ class DataRenderer implements DataProviderInterface
                         return \Helpers::formatIdWithPrefix($customer->app_id, 'APP');
                     }
                 )
+                ->addColumn('ucic_code', function($customer) {
+                    $ucicUser = $customer->bizApp->ucicUser;
+                   /* if($ucicUser && $ucicUser->app_id && $ucicUser->business_info){
+                        return "<a href=\"".route('business_details', ['userUcicId' => $ucicUser->user_ucic_id])."\" rel=\"tooltip\">$ucicUser->ucic_code</a> ";
+                    }
+                    return $ucicUser->ucic_code ?? '---'; */
+                    $ucicCodeData = \Helpers::getuciciCode($customer->app_id);
+                    if ($ucicCodeData) {
+                        return "<a href=\"".route('business_details', ['userUcicId' => $ucicCodeData->user_ucic_id])."\" rel=\"tooltip\">$ucicCodeData->ucic_code</a> ";
+                    }else if($ucicUser) {
+                        return "<a href=\"".route('business_details', ['userUcicId' => $ucicUser->user_ucic_id])."\" rel=\"tooltip\">$ucicUser->ucic_code</a> ";
+                    }else {
+                        return  '---';
+                    }
+
+                })
                 ->addColumn(
                     'customer_id',
                     function ($customer) {
@@ -4185,11 +4241,11 @@ class DataRenderer implements DataProviderInterface
                         'customer_name',
                         function ($customer) {
 
-                        $full_name = $customer->user->f_name.' '.$customer->user->l_name;
+                        $bizEntityName = $customer->application && $customer->application->business ? $customer->application->business->biz_entity_name : "";
                         $email = $customer->user->email;
 
                         $data = '';
-                        $data .= $full_name ? '<span><b>Name:&nbsp;</b>'.$full_name.'</span>' : '';
+                        $data .= $bizEntityName ? '<span><b>Entity Name:&nbsp;</b>'.$bizEntityName.'</span>' : '';
                         $data .= $email ? '<br><span><b>Email:&nbsp;</b>'.$email.'</span>' : '';
 
                         return $data;
@@ -4276,11 +4332,20 @@ class DataRenderer implements DataProviderInterface
                         if ($request->has('search_keyword')) {
                             $search_keyword = trim($request->get('search_keyword'));
                             $query->whereHas('user', function($query1) use ($search_keyword) {
-                                $query1->where('f_name', 'like',"%$search_keyword%")
-                                ->orWhere('l_name', 'like', "%$search_keyword%")
-                                ->orWhere('email', 'like', "%$search_keyword%");
-                            });
+                                // $query1->where('f_name', 'like',"%$search_keyword%")
+                                // ->orWhere('l_name', 'like', "%$search_keyword%");
+                                // ->orWhere('email', 'like', "%$search_keyword%");
 
+                                $query1->where('email', 'like', "%$search_keyword%");
+                                $query1->orWhereHas('biz', function($newQuery2) use($search_keyword) {
+                                    $newQuery2->where('biz_entity_name', 'like', "%$search_keyword%");
+                                });
+                            })
+                            ->orWhereHas('bizApp', function($newQuery) use($search_keyword) {
+                                $newQuery->whereHas('ucicUser', function($newQuery1) use($search_keyword) {
+                                    $newQuery1->where('ucic_code', 'like', "%$search_keyword%");
+                                });
+                            });
                         }
                     }
                     if ($request->get('customer_id') != '') {
@@ -9623,10 +9688,10 @@ class DataRenderer implements DataProviderInterface
                     return $data->group_name;
                 })
                 ->addColumn('created_at', function ($data) {
-                    return $data->created_at ? date('d-m-Y h:i A', strtotime($data->created_at)) : '';
+                    return $data->created_at ? Carbon::parse($data->created_at)->timezone(config('common.timezone'))->format('d-m-Y h:i A') : '';
                 })
                 ->addColumn('updated_at', function ($data) {
-                    return $data->updated_at ? date('d-m-Y h:i A', strtotime($data->updated_at)) : '';
+                    return $data->updated_at ? Carbon::parse($data->updated_at)->timezone(config('common.timezone'))->format('d-m-Y h:i A') : '';
                 })
                 ->addColumn('is_active', function ($data) {
                     $isApproved = MakerChecker::checkGroupIsApproved($data->group_id);
@@ -9659,21 +9724,25 @@ class DataRenderer implements DataProviderInterface
     public function getGroupUcicData(Request $request, $data)
     {
         return DataTables::of($data)
-                ->rawColumns([])
-                ->addColumn('group_code', function ($data) {
-                    return $data->group->group_code;
-                })
-                ->addColumn('group_name', function ($data) {
-                    return $data->group->group_name;
-                })
-                ->addColumn('app_id', function ($data) {
-                    return \Helpers::formatIdWithPrefix($data->app_id, 'APP');
-                })
+                ->rawColumns(['ucic_code','sanction','outstanding'])
                 ->addColumn('ucic_code', function ($data) {
-                    return $data->ucic->ucic_code;
+                    $link = $act = $data->ucic_code ?? "";
+                    if (!empty($data->ucic_link) && !empty($data->user_ucic_id)) {
+                        $act = "<a href=\"".route('business_details', ['userUcicId' => $data->user_ucic_id, 'app_id' => $data->app_id, 'biz_id' => $data->biz_id])."\" rel=\"tooltip\">$link</> ";                        
+                    }
+                    return $act;
                 })
-                ->addColumn('customer_name', function ($data) {
-                    return $data->ucic->user->full_name;
+                ->addColumn('entity_name', function ($data) {
+                    return $data->borrower;
+                })
+                ->addColumn('product_type', function ($data) {
+                    return str_replace('_', ' ', array_search($data->product_id, config('common.PRODUCT')));
+                })
+                ->addColumn('sanction', function ($data) {
+                    return "₹ ".number_format($data->sanction,2);
+                })
+                ->addColumn('outstanding', function ($data) {
+                    return "₹ ".number_format($data->outstanding,2);
                 })
                 ->make(true);
     }
@@ -9684,131 +9753,61 @@ class DataRenderer implements DataProviderInterface
         $this->sr_no = 1;
     
         return Datatables::of($data)
-        ->rawColumns(['ucic_code','app_id','group_code','group_name','f_name','email','created_at'])
-            ->addColumn(
-                'ucic_code',
-                function($data) {
-                    // return isset($data->ucic_code) ? $data->ucic_code : 'N/A';
-                    $link = $data->ucic_code;
-                    if(isset($data->app_id)){
-                        return "<a href=\"".route('business_details', ['user_ucic_id' => $data->user_ucic_id, 'app_id' => $data->app_id, 'biz_id' => $data->app->biz_id])."\" rel=\"tooltip\">$link</a> ";
-                    }else{
-                       return $data->ucic_code;
-                    }
-                        
+        ->rawColumns(['ucic_code','app_id','group_code','group_name','entity_name','email','created_at'])
+            ->addColumn('ucic_code', function($data) {
+                $link = $data->ucic_code;
+                if(isset($data->app_id)){
+                    return "<a href=\"".route('business_details', ['userUcicId' => $data->user_ucic_id])."\" rel=\"tooltip\">$link</a> ";
+                }else{
+                    return $data->ucic_code;
+                }
+            })
+            ->addColumn('app_id', function($data) {
+                return $data->app_code ?? 'N/A';
+            })
+            ->addColumn('group_code', function($data) {
+                return $data->group_code ?? 'N/A';    
+            })
+            ->addColumn('group_name', function($data) {
+                return $data->group_name ?? 'N/A';
+            })
+            ->addColumn('entity_name', function($data) {
+                return $data->biz_name ?  $data->biz_name.'<br> <strong>PAN: </strong>'. $data->pan_no  : 'N/A';
+            })
+            ->addColumn('email', function($data) {
+                return $data->email ?? 'N/A';
+            })
+            ->addColumn('created_at', function($data) {
+                    return !empty($data->created_at) ? Carbon::parse($data->created_at)->format('d-m-Y') : 'N/A';
             })
 
-            ->addColumn(
-                'app_id',
-                function($data) {
-                    $ret='';
-                    if(!empty($data->app)){
-                        $parent_app_id = $data->app->parent_app_id;
-                        $app_id = $data->app->app_id;
-                        $app_code = $data->app->app_code;
-                        $userId = $data->user_id;
-                        if (!empty($parent_app_id)) {
-                            
-                            $link = route('business_details', ['biz_id' => $data->app->biz_id, 'app_id' => $parent_app_id, 'user_id'=>$userId]);
-                            $ret = "<a id='app-id-$app_id' href='$link' rel='tooltip'>" . $app_code . "</a>";
-                            $ret .= "<br><small>Parent:</small><br><a href='" . route('business_details', ['biz_id' => $data->app->biz_id, 'app_id' => $parent_app_id]) . "' rel='tooltip'>" . \Helpers::formatIdWithPrefix($parent_app_id, 'APP') . "</a>";
-                        }else{
-                            
-                            $link = route('business_details', ['biz_id' => $data->app->biz_id, 'app_id' => $app_id, 'user_id'=>$userId]);
-                            $ret = "<a id='app-id-$app_id' href='$link' rel='tooltip'>" . $app_code . "</a>";
-                            //$ret = "<br><small>Parent:</small><br><a href='" . route('business_details', ['biz_id' => $data->app->biz_id, 'app_id' => $app_id]) . "' rel='tooltip'>" . \Helpers::formatIdWithPrefix($app_id, 'APP') . "</a>";
-
-                        }
-                    }else{
-                        $ret='NA';
-                    }
-                    
-                    return $ret;
-            })
-            ->addColumn(
-                'group_code',
-                function($data) {
-                    $groupCode = 'N/A';$ret='N/A';
-                    if(!empty($data->app)){
-                    $app_id = $data->app->app_id;
-                    $userId = $data->user_id;
-                    if (isset($data->appgroupdetails) && !empty($data->appgroupdetails)){
-                        $groupCode = $data->appgroupdetails->group->group_code;
-                        $link = route('group_linking', ['biz_id' => $data->app->biz_id, 'app_id' => $app_id, 'user_id'=>$userId]);
-                        $ret = "<a id='app-id-$app_id' href='$link' rel='tooltip'>" . $groupCode . "</a>";
-                    }
-                  }
-                    return $ret;
-                            
-            })
-            ->addColumn(
-                'group_name',
-                function($data) {
-                    $groupName = 'N/A';$ret='N/A';
-                    if(!empty($data->app)){
-                    $app_id = $data->app->app_id;
-                    $userId = $data->user_id;
-                    if (isset($data->appgroupdetails) && !empty($data->appgroupdetails)){
-                        $groupName = $data->appgroupdetails->group->group_name;
-                        $link = route('group_linking', ['biz_id' => $data->app->biz_id, 'app_id' => $app_id, 'user_id'=>$userId]);
-                        $ret = "<a id='app-id-$app_id' href='$link' rel='tooltip'>" . $groupName . "</a>";
-                    }
-                  }
-                    return $ret;
-            })
-
-            ->addColumn(
-                'f_name',
-                function($data) {
-                    // return isset($data->user) ? $data->user->f_name : 'N/A';
-                    $panInfo = $data->pan_no && !empty($data->pan_no) ? '<br><strong>PAN:</strong> ' . $data->pan_no : ((isset($data->pan_no) && $data->pan_no && !empty($data->pan_no)) ? '<br><strong>PAN:</strong> ' . $data->pan_no : ''); 
-                    $full_name = $data->user->f_name.' '.$data->user->l_name . $panInfo;
-                    return $full_name;
-            })
-
-            ->addColumn(
-                'email',
-                function($data) {
-                    return isset($data->user) ? $data->user->email : 'N/A';
-            })
-
-            /*->addColumn(
-                'name',
-                function($data) {
-                    return isset($data->anchor) ? $data->anchor->name: 'N/A';
-            })*/
-
-            ->addColumn(
-                'created_at',
-                function($data) {
-                    return !empty($data->user->created_at) ? Carbon::parse($data->user->created_at)->format('d-m-Y') : 'N/A';
-            })
-
-            // ->editColumn(
-            //     'action',
-            //     function($data) {
-            //        return '<a title="view Application" href="'.route("view_business_detail", ["app_id" => $data->app_id]).'" class="btn btn-action-btn btn-sm "><i class="text-secondary fa fa-cog" aria-hidden="true"></i></a><a title="edit Application" href="'.route("edit_business_details", ["app_id" => $data->app_id]).'" class="btn btn-action-btn btn-sm "><i class="text-secondary fa fa-edit" aria-hidden="true"></i></a>';
-            // })
-       
             ->filter(function ($query) use ($request) {
-                DB::enableQueryLog();
                 if ($request->get('by_code') != '') {
                     $query->where(function ($query) use ($request) {
-                         $search = trim($request->get('by_code'));
+                        $search = trim($request->get('by_code'));
                         $query->where('ucic_code', 'like',$search)
-                         ->orwhere('pan_no', 'like',"%$search%");
-                       
-                    });
-                    $query->orWhereHas('appgroupdetails.group',function ($query) use ($request) {
+                        ->orwhere('pan_no', 'like',"%$search%");
+                    })
+                    ->orWhereHas('appgroupdetails.group',function ($query) use ($request) {
                         $search = trim($request->get('by_code'));
                         $query->where('group_code', 'like',"%$search%");
-                    });
-                    $query->orWhereHas('appgroupdetails.group',function ($query) use ($request) {
+                    })
+                    ->orWhereHas('appgroupdetails.group',function ($query) use ($request) {
                         $search = trim($request->get('by_code'));
                         $query->where('group_name', 'like',"%$search%");
-                    });   
+                    })
+                    ->orWhereHas('userApps',function ($query) use ($request) {
+                        $search = trim($request->get('by_code'));
+                        $query->where('app_code', 'like',"%$search%");
+                    })
+                    ->orWhereHas('user',function ($query) use ($request) {
+                        $search = trim($request->get('by_code'));
+                        $query->whereHas('biz', function($newQuery) use($search) {
+                            $newQuery->where('biz_entity_name', 'like',"%$search%");
+                        });
+                    });
                 }
-            })  
+            })                    
             ->make(true);
     }                  
 
@@ -9926,8 +9925,7 @@ class DataRenderer implements DataProviderInterface
                     $status = ($data->is_active == '2')?'<div class="btn-group "> <label class="badge badge-warning current-status">In Active</label> </div></b>':'<div class="btn-group "> <label class="badge badge-success current-status">Active</label>&nbsp;'. $btn.'</div></b>';
                  //    dd($status);
                     return $status;
-            })
-            
+            })            
             ->make(true);
     }
 
@@ -9960,6 +9958,57 @@ class DataRenderer implements DataProviderInterface
                     }
                 }
                 return '';
+            })
+            ->make(true);
+    }
+    public function getGroupUcicBorrowerData(Request $request, $data)
+    {
+        $this->appId = (int) $request->app_id;
+        $this->isAppApprovedByAllApprs = Helpers::isAppApprByAuthorityForGroup($this->appId);
+
+        $this->sr_no = 1;
+        return DataTables::of($data)
+            ->rawColumns(['borrower', 'product_type', 'sanction_amt', 'outstanding_amt', 'proposed_amt'])
+            ->addColumn('borrower', function ($data) use($request) {
+                $act = "<input type='hidden' name='group[".$this->sr_no."][borrower]' class='form-control' value='".$data->biz_id."'/>";
+                $act .= "<input type='hidden' name='group[".$this->sr_no."][ucic_id]' class='form-control' value='".$data->ucic_id."'/>";
+                $act .= "<input type='hidden' name='group[".$this->sr_no."][biz_app_id]' class='form-control' value='".$data->biz_app_id."'/>";
+                if($data->editable){
+                    $act .= '<p><span style="color: red; font-size: 20px"> * </span> '.$data->borrower.'</p>'.$act;
+                }else{
+                    $act .= $data->borrower;
+                }
+                // $act .= isset($data->comp_name) && !empty($data->comp_name) ? ' ('.$data->comp_name.')':'';
+                return $act;
+            })
+            ->addColumn('product_type', function ($data) {
+                $act = "<input type='hidden' name='group[".$this->sr_no."][product_type]' class='form-control' value='".$data->product_id."'/>";
+                $act .= str_replace('_', ' ', array_search($data->product_id, config('common.PRODUCT')));
+                return $act;
+            })
+            ->addColumn('sanction_amt', function ($data) {
+                $scfClass = in_array($data->product_id, [1]) ? 'sum_grp_amt' : '';
+                $act = "<input type='hidden' name='group[".$this->sr_no."][sanction]' class='form-control $scfClass right' value='".$data->sanction."'/>" . Helpers::convertToMillions($data->sanction);
+                return $act;
+            })
+            ->addColumn('outstanding_amt', function ($data) {
+                $inputType = in_array($data->product_id, [2,3]) && !$this->isAppApprovedByAllApprs ? 'text' : 'hidden';
+                $addClass  = $inputType == 'text' ? 'sum_grp_amt' : '';
+                $onChange = $inputType == 'text' ? "onkeyup='convertToMillions(this,\"outstanding_in_millions_".$this->sr_no."\")'" : '';
+                $act =  "<input type='".$inputType."' name='group[".$this->sr_no."][outstanding]' class='form-control text-right $addClass' value='".$data->outstanding."' $onChange/>";
+                $act .= $inputType == 'hidden' ? Helpers::convertToMillions($data->outstanding) : "<div class='text-muted'><span id='outstanding_in_millions_".$this->sr_no."'>".Helpers::convertToMillions($data->outstanding)." in mn</span></div>";
+                return $act;
+            })
+            ->addColumn('proposed_amt', function ($data) {
+                if($data->editable){
+                    $act = !$this->isAppApprovedByAllApprs ? 
+                    "<input type='text' name='group[".$this->sr_no."][proposed]' class='form-control sum_grp_amt proposed_amt text-right' value='".$data->proposed."' onkeyup='convertToMillions(this,\"proposed_in_millions_".$this->sr_no."\")'/><div class='text-muted'><span id='proposed_in_millions_".$this->sr_no."'>". Helpers::convertToMillions($data->proposed)." in mn</span></div>" : 
+                    "<input type='hidden' name='group[".$this->sr_no."][proposed]' class='sum_grp_amt' value='".$data->proposed."'/>". Helpers::convertToMillions($data->proposed);
+                }else{
+                    $act = "<input type='hidden' name='group[".$this->sr_no."][proposed]' class='sum_grp_amt' value='0'/>". Helpers::convertToMillions($data->proposed);
+                }
+                $this->sr_no++;
+                return $act;
             })
             ->make(true);
     }

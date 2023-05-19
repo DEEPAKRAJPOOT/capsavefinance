@@ -14,6 +14,7 @@ use App\Inv\Repositories\Models\Application;
 use App\Inv\Repositories\Models\AppProgramLimit;
 use App\Inv\Repositories\Models\AppProgramOffer;
 use App\Inv\Repositories\Models\LmsUser;
+use App\Inv\Repositories\Models\LmsUsersLog;
 
 class User extends Authenticatable
 {
@@ -933,5 +934,10 @@ class User extends Authenticatable
         return self::backendUser()
                     ->where('email', $email)
                     ->first();
+    }
+
+    public function getIsAccountCloseAttribute(){
+        $cnt = LmsUsersLog::where('user_id',$this->user_id)->where('status_id',config('common.USER_STATUS.ACCOUNT_CLOSURE'))->count();
+        return ($cnt > 0) ? TRUE : FALSE;
     }
 }

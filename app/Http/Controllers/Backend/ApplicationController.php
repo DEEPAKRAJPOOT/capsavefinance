@@ -12,7 +12,6 @@ use App\Inv\Repositories\Contracts\UserInterface as InvUserRepoInterface;
 use App\Inv\Repositories\Contracts\ApplicationInterface as InvAppRepoInterface;
 use App\Inv\Repositories\Contracts\DocumentInterface as InvDocumentRepoInterface;
 use App\Inv\Repositories\Contracts\MasterInterface as InvMasterRepoInterface;
-// use App\Inv\Repositories\Contracts\UcicUserInterface as InvUcicUserRepoInterface;
 use App\Inv\Repositories\Models\Master\State;
 use App\Inv\Repositories\Models\BizApiLog;
 use App\Inv\Repositories\Models\AppProgramOffer;
@@ -35,7 +34,6 @@ use App\Inv\Repositories\Contracts\Traits\ActivityLogTrait;
 use App\Inv\Repositories\Models\Master\LocationType;
 use App\Inv\Repositories\Models\AppSanctionLetter;
 use PDF as NewPDF;
-use App\Inv\Repositories\Models\AppProgramLimit;
 use App\Inv\Repositories\Models\BizOwner;
 use App\Inv\Repositories\Contracts\Traits\CamTrait;
 use App\Inv\Repositories\Models\AppSecurityDoc;
@@ -44,7 +42,13 @@ use App\Inv\Repositories\Contracts\UserInvoiceInterface as InvUserInvRepoInterfa
 use App\Inv\Repositories\Models\Application;
 use App\Inv\Repositories\Models\AppLimit;
 use App\Inv\Repositories\Models\BusinessAddress;
-
+use App\Inv\Repositories\Models\AppProgramLimit;
+use App\Inv\Repositories\Models\UcicUser;
+use App\Inv\Repositories\Models\UcicUserUcic;
+use Illuminate\Http\File;
+use App\Events\Event;
+use App\Inv\Repositories\Models\WfAppStage;
+use App\Inv\Repositories\Contracts\UcicUserInterface as InvUcicUserRepoInterface;
 
 class ApplicationController extends Controller
 {
@@ -56,7 +60,7 @@ class ApplicationController extends Controller
 	protected $docRepo;
 	protected $masterRepo;
 	protected $lmsRepo;
-	// protected $ucicuser_repo;
+	protected $ucicuser_repo;
 	protected $UserInvRepo;
 
 	use ActivityLogTrait;
@@ -68,14 +72,14 @@ class ApplicationController extends Controller
 	 */
 	protected $pdf;
 
-	public function __construct(InvAppRepoInterface $app_repo, InvUserRepoInterface $user_repo, InvDocumentRepoInterface $doc_repo, InvLmsRepoInterface $lms_repo, InvMasterRepoInterface $master_repo, Pdf $pdf,InvUserInvRepoInterface $UserInvRepo){
+	public function __construct(InvAppRepoInterface $app_repo, InvUserRepoInterface $user_repo, InvDocumentRepoInterface $doc_repo, InvLmsRepoInterface $lms_repo, InvMasterRepoInterface $master_repo, Pdf $pdf,InvUserInvRepoInterface $UserInvRepo, InvUcicUserRepoInterface $ucicuser_repo){
 		$this->appRepo = $app_repo;
 		$this->userRepo = $user_repo;
 		$this->docRepo = $doc_repo;
 		$this->masterRepo = $master_repo;
 		$this->pdf = $pdf;
 		$this->lmsRepo = $lms_repo;
-		// $this->ucicuser_repo = $ucicuser_repo;
+		$this->ucicuser_repo = $ucicuser_repo;
 		$this->UserInvRepo = $UserInvRepo;
 		$this->middleware('checkBackendLeadAccess');
 	}
@@ -123,46 +127,69 @@ class ApplicationController extends Controller
 	 */
 	public function showCompanyDetails(Request $request){
 		try {
-			// dd($request->all());
-			$arrFileData = $request->all();
+			$cinList = [];
+			$gstList = [];
+			$ucicCode = null;
 			$appId = $request->get('app_id');
 			$bizId = $request->get('biz_id');
 			$userId = $request->get('user_id');
-
-			$product_ids = [];
-
-			$business_info = $this->appRepo->getApplicationById($request->biz_id);
-			$app_data = $this->appRepo->getAppDataByBizId($request->biz_id);
-
-			if (!empty($app_data->products)) {
-				foreach($app_data->products as $product){
-					$product_ids[$product->pivot->product_id]= array(
-						"loan_amount" => $product->pivot->loan_amount,
-						"tenor_days" => $product->pivot->tenor_days
-					);
-				}
-			}
-
+			$viewOnly = $request->get('view_only');
 			$states = State::getStateList()->get();
+			$roleData = User::getBackendUser(\Auth::user()->user_id);
+			$userRole = $roleData[0]->name;
+			$is_all_app_access = $roleData[0]->is_allapp_access;
+			if($is_all_app_access === '1'){
+			  $viewOnly = 1;
+			}
 			
-			$locationType = LocationType::getLocationDropDown();
-			$product_types = $this->masterRepo->getProductDataList();
-			//dd($business_info->gst->pan_gst_hash);
 			$industryList = $this->appRepo->getIndustryDropDown()->toArray();
 			$constitutionList = $this->appRepo->getConstitutionDropDown()->toArray();
 			$segmentList = $this->appRepo->getSegmentDropDown()->toArray();
+			$locationType = LocationType::getLocationDropDown();
+			$product_types = $this->masterRepo->getProductDataList();
+			$product_ids = [];
+
+			$business_info = $this->appRepo->getApplicationById($request->biz_id);
+			$app_data = $this->appRepo->getAppData($appId);
+			$cinList = $business_info->cins;
+			$gstList = $business_info->gsts;
+
+			if($app_data){
+				$userId = $app_data->user_id;
+				$ucicCode = $app_data->ucicUser->ucic_code ?? null;
+				if(!$ucicCode){
+					$pan_no = $app_data->business->pan->pan_gst_hash;
+					$ucicCode = $this->ucicuser_repo->getUcicData(['pan_no' => $pan_no])->ucic_code ?? null;
+				}
+				if (!empty($app_data->products)) {
+					foreach($app_data->products as $product){
+						$product_ids[$product->pivot->product_id]= array(
+							"loan_amount" => $product->pivot->loan_amount,
+							"tenor_days" => $product->pivot->tenor_days
+						);
+					}
+				}
+			}
+
+			$data = $this->ucicuser_repo->formatBusinessInfoDb($business_info, $product_ids);
+			
 			if ($business_info) {
 				return view('backend.app.company_details')
-
-						->with(['business_info'=>$business_info, 'states'=>$states, 'product_ids'=> $product_ids])
+						->with('ucicCode',$ucicCode)
 						->with('user_id',$userId)
-						->with('product_types',$product_types)
 						->with('app_id',$appId)
 						->with('biz_id',$bizId)
+						->with('viewOnly',$viewOnly)
+						->with('states',$states)
 						->with('industryList',$industryList)
 						->with('constitutionList',$constitutionList)
 						->with('segmentList',$segmentList)
-						->with('locationType',$locationType);
+						->with('locationType',$locationType)
+						->with('product_types',$product_types)
+						->with('cinList',$cinList)
+						->with('gstList',$gstList)
+						->with('data',$data)
+						->with('userRole',$userRole);
 			} else {
 				return redirect()->back()->withErrors(trans('auth.oops_something_went_wrong'));
 			}
@@ -186,27 +213,56 @@ class ApplicationController extends Controller
 			$appId = $request->app_id;
 			$bizId = $request->biz_id;
 			$userId = $request->user_id;
-
 			$business_info = $this->appRepo->updateCompanyDetail($arrFileData, $bizId, Auth::user()->user_id);
 
 			if ($business_info) {
-                                //Update Anchor Pan and Biz Id
-                                $appData = $this->appRepo->getAppData($appId);
-                                $arrAnchUser=[];
-                                //$arrAnchUser['pan_no'] = $arrFileData['biz_pan_number'];
-                                $arrAnchUser['biz_id'] = $bizId;
-                                $this->userRepo->updateAnchorUserData($arrAnchUser, ['user_id' => $appData->user_id]);
+				//Update Anchor Pan and Biz Id
+				$appData = $this->appRepo->getAppData($appId);
+				$arrAnchUser=[];
+				$arrAnchUser['biz_id'] = $bizId;
+				$this->userRepo->updateAnchorUserData($arrAnchUser, ['user_id' => $appData->user_id]);
+				
+				//Update UCIC Data only if appllication is not approved
+				if(!Helper::isAppApprByAuthorityForGroup($appId) && $appData->ucicUser->is_sync) {
+					if($appData){
+						$userUcicId = $appData->ucicUser->user_ucic_id ?? null;
+						if(!$userUcicId){
+							$pan_no = $appData->business->pan->pan_gst_hash;
+							$ucicData = $this->ucicuser_repo->createUpdateUcic(['pan_no' => $pan_no, 'user_id'=>$appData->user_id, 'app_id' => $appId]);
+							$userUcicId = $ucicData->user_ucic_id;
+						}
+						if($userUcicId){
+							$product_ids = [];
+							$business_info = $this->appRepo->getApplicationById($appData->biz_id);
+							if (!empty($appData->products)) {
+								foreach($appData->products as $product){
+									$product_ids[$product->pivot->product_id]= array(
+										"loan_amount" => $product->pivot->loan_amount,
+										"tenor_days" => $product->pivot->tenor_days
+									);
+								}
+							}
+							$businessInfo = $this->ucicuser_repo->formatBusinessInfoDb($business_info,$product_ids);
+						
+							$ownerPanApi = $this->userRepo->getOwnerApiDetail(['biz_id' => $appData->biz_id]);
+							$documentData = \Helpers::makeManagementInfoDocumentArrayData($ownerPanApi);
+							$managementData = $this->ucicuser_repo->formatManagementInfoDb($ownerPanApi,NULL);
+							$managementInfo = array_merge($managementData,$documentData);
+							$this->ucicuser_repo->saveApplicationInfo($userUcicId, $businessInfo, $managementInfo, $appData->app_id);
+						}
+					}
+				}
 
-            $whereActivi['activity_code'] = 'company_details_save';
-            $activity = $this->masterRepo->getActivity($whereActivi);
-            if(!empty($activity)) {
-                $activity_type_id = isset($activity[0]) ? $activity[0]->id : 0;
-                $activity_desc = 'Save Company Details (Business Information) Application Information. AppID '. $appId;
-                $arrActivity['app_id'] = $appId;
-                $this->activityLogByTrait($activity_type_id, $activity_desc, response()->json($arrFileData), $arrActivity);
-            }
+				$whereActivi['activity_code'] = 'company_details_save';
+				$activity = $this->masterRepo->getActivity($whereActivi);
+				if(!empty($activity)) {
+					$activity_type_id = isset($activity[0]) ? $activity[0]->id : 0;
+					$activity_desc = 'Save Company Details (Business Information) Application Information. AppID '. $appId;
+					$arrActivity['app_id'] = $appId;
+					$this->activityLogByTrait($activity_type_id, $activity_desc, response()->json($arrFileData), $arrActivity);
+				}
 				Session::flash('message',trans('success_messages.update_company_detail_successfully'));
-				return redirect()->route('promoter_details',['app_id' =>  $appId, 'biz_id' => $bizId,'user_id' => $userId]);
+				return redirect()->route('promoter_details',['app_id' =>  $appId, 'biz_id' => $bizId]);
 			} else {
 				return redirect()->back()->withInput()->withErrors(trans('auth.oops_something_went_wrong'));
 			}
@@ -220,7 +276,6 @@ class ApplicationController extends Controller
 	 public function showPromoterDetails(Request $request){
 		try
 		{
-		// $id = Auth::user()->user_id;
 		$appId = $request->get('app_id');
 		$bizId = $request->get('biz_id');
 		$editFlag = $request->get('edit');
@@ -238,7 +293,13 @@ class ApplicationController extends Controller
 		}
 		$appData 	 = $this->appRepo->getAppData($appId);
 		$user_id = $appData->user_id;
-		$OwnerPanApi = $this->userRepo->getOwnerApiDetail($attribute);
+		$roleData = User::getBackendUser(\Auth::user()->user_id);
+		$role_id = $roleData[0]->name;
+		$isAllAppAccess = $roleData[0]->is_allapp_access;
+		$OwnerPanApi = $this->userRepo->getOwnerApiDetail(['biz_id' => $bizId]);
+		$documentData = \Helpers::makeManagementInfoDocumentArrayData($OwnerPanApi);
+		$managementData = $this->ucicuser_repo->formatManagementInfoDb($OwnerPanApi,NULL);
+
 		return view('backend.app.promoter-details')->with([
 			'ownerDetails' => $OwnerPanApi,
 			'cin_no' => $cin,
@@ -247,7 +308,11 @@ class ApplicationController extends Controller
 			'edit' => $editFlag,
 			'is_lease' => $getProductType,
 			'appData' => $appData,
-			'user_id' => $user_id
+			'user_id' => $user_id,
+			'role_id' => $role_id,
+			'is_all_app_access'=>$isAllAppAccess,
+			'manInfoData' => $managementData['management_info']['owners'] ?? [],
+			'manInfoDocData' => $documentData ?? []
 		]);
 			 
 		} catch (Exception $ex) {
@@ -287,7 +352,6 @@ class ApplicationController extends Controller
 			$owner_info = $this->userRepo->updateOwnerInfo($arrFileData); //Auth::user()->id
 
 			if ($owner_info) {
-
 				//Add application workflow stages
 				$appId = $arrFileData['app_id'];
 				$appData = $this->appRepo->getAppDataByAppId($appId);
@@ -295,6 +359,37 @@ class ApplicationController extends Controller
 				$prgmDocsWhere = [];
 				$prgmDocsWhere['stage_code'] = 'doc_upload';
 				$reqdDocs = $this->createAppRequiredDocs($prgmDocsWhere, $userId, $appId);
+
+				//Update UCIC Data only if appllication is not approved
+				if(!Helper::isAppApprByAuthorityForGroup($appId) && $appData->ucicUser->is_sync == 1) {
+					if($appData){
+						$userUcicId = $appData->ucicUser->user_ucic_id ?? null;
+						if(!$userUcicId){
+							$pan_no = $appData->business->pan->pan_gst_hash;
+							$ucicData = $this->ucicuser_repo->createUpdateUcic(['pan_no' => $pan_no, 'user_id'=>$userId, 'app_id' => $appId]);
+							$userUcicId = $ucicData->user_ucic_id;
+						}
+
+						if($userUcicId){
+							$product_ids = [];
+							$business_info = $this->appRepo->getApplicationById($appData->biz_id);
+							if (!empty($appData->products)) {
+								foreach($appData->products as $product){
+									$product_ids[$product->pivot->product_id]= array(
+										"loan_amount" => $product->pivot->loan_amount,
+										"tenor_days" => $product->pivot->tenor_days
+									);
+								}
+							}
+							$businessInfo = $this->ucicuser_repo->formatBusinessInfoDb($business_info,$product_ids);
+							$ownerPanApi = $this->userRepo->getOwnerApiDetail(['biz_id' => $appData->biz_id]);
+							$documentData = \Helpers::makeManagementInfoDocumentArrayData($ownerPanApi);
+							$managementData = $this->ucicuser_repo->formatManagementInfoDb($ownerPanApi,NULL);
+							$managementInfo = array_merge($managementData,$documentData);
+							$this->ucicuser_repo->saveApplicationInfo($userUcicId, $businessInfo, $managementInfo, $appData->app_id);
+						}
+					}
+				}
 
 				$currentStage = \Helpers::getCurrentWfStage($appId);
 				if ($currentStage && $currentStage->stage_code == 'promo_detail') {
@@ -372,26 +467,28 @@ class ApplicationController extends Controller
 			$appId = $request->get('app_id'); //  fetch document id
 			$ownerId = $request->get('owner_id'); //  fetch document id
 
-//            $uploadData = Helpers::uploadAwsBucket($arrFileData, $appId);
 			$uploadData = Helpers::uploadAppFile($arrFileData, $appId);
 			$userFile = $this->docRepo->saveFile($uploadData);
 			if(!empty($userFile->file_id)) {
 				$ownerDocCheck = $this->docRepo->appOwnerDocCheck($appId, $docId, $ownerId);
 				if(!empty($ownerDocCheck)) {
 					$appDocResponse = $this->docRepo->updateAppDocFile($ownerDocCheck, $userFile->file_id);
-                                        $appDocResponse = $this->docRepo->updateAppDocNumberFile($ownerDocCheck, $request->get('doc_id_no'));
+                    $appDocResponse = $this->docRepo->updateAppDocNumberFile($ownerDocCheck, $request->get('doc_id_no'));
 					$fileId = $appDocResponse->file_id;
 					$response = $this->docRepo->getFileByFileId($fileId);
 
 				} else {
 					$appDocData = Helpers::appDocData($arrFileData, $userFile->file_id);
 					$appDocData['is_ovd_enabled'] = 1;
-                                        $appDocData['doc_id_no'] = ($request->get('doc_id_no')) ? $request->get('doc_id_no') : '';
+                    $appDocData['doc_id_no'] = ($request->get('doc_id_no')) ? $request->get('doc_id_no') : '';
 					$appDocResponse = $this->docRepo->saveAppDoc($appDocData);
 					$fileId = $appDocResponse->file_id;
 					$response = $this->docRepo->getFileByFileId($fileId);
 				}
 
+				$appData = $this->appRepo->getAppData($appId);
+				$ucicData = $this->ucicuser_repo->getUcicData(['user_id' => $appData->user_id]);
+				\Helpers::updateOrDeleteDocFileToUcic($ucicData, $ownerId, $arrFileData['doc_type_name'], $fileId, Storage::url($response->file_path), $appId, 'application');
 			}
 			if ($response) {
 				return response()->json([
@@ -657,74 +754,91 @@ class ApplicationController extends Controller
 
 			// if ($response->count() < 1) {
 				$appData = $this->appRepo->getAppData($appId);
-                                $curStatus = $appData ? $appData->curr_status_id : 0;
-                                $currentStage = Helpers::getCurrentWfStage($appId);
-                                $appStatusList = [
-                                    config('common.mst_status_id.APP_REJECTED'),
-                                    config('common.mst_status_id.APP_CANCEL'),
-                                    config('common.mst_status_id.APP_HOLD'),
-                                    config('common.mst_status_id.APP_DATA_PENDING')
-                                ];
-                                if ($currentStage && $currentStage->order_no < 4 && !in_array($curStatus, $appStatusList) ) {
-                                    $this->appRepo->updateAppData($appId, ['status' => 1]);
-                                    Helpers::updateAppCurrentStatus($appId, config('common.mst_status_id.COMPLETED'));
+				$curStatus = $appData ? $appData->curr_status_id : 0;
+				$currentStage = Helpers::getCurrentWfStage($appId);
+				$appStatusList = [
+					config('common.mst_status_id.APP_REJECTED'),
+					config('common.mst_status_id.APP_CANCEL'),
+					config('common.mst_status_id.APP_HOLD'),
+					config('common.mst_status_id.APP_DATA_PENDING')
+				];
+				if ($currentStage && $currentStage->order_no < 4 && !in_array($curStatus, $appStatusList) ) {
+					$this->appRepo->updateAppData($appId, ['status' => 1]);
+					Helpers::updateAppCurrentStatus($appId, config('common.mst_status_id.COMPLETED'));
 
-                                    $curDate = \Carbon\Carbon::now()->format('Y-m-d');
-                                    $endDate = date('Y-m-d', strtotime('+1 years -1 day'));
-                                    //$appLimitId = $this->appRepo->getAppLimitIdByUserIdAppId($userId, $appId);
+					$curDate = \Carbon\Carbon::now()->format('Y-m-d');
+					$endDate = date('Y-m-d', strtotime('+1 years -1 day'));
 
-                                    /*if ($appData && in_array($appData->app_type, [1,2,3]) ) {
-                                        $parentAppId = $appData->parent_app_id;
-                                        $actualEndDate = $curDate;
-                                        $appLimitData = $this->appRepo->getAppLimitData(['user_id' => $userId, 'app_id' => $parentAppId]);
-                                        if (in_array($appData->app_type, [2,3])) {
-                                           $curDate = isset($appLimitData[0]) ? $appLimitData[0]->start_date : null;
-                                           $endDate = isset($appLimitData[0]) ? $appLimitData[0]->end_date : null;
-                                        }
-                                       $this->appRepo->updateAppData($parentAppId, ['status' => 3, 'is_child_sanctioned' => 1]);
-                                       $this->appRepo->updateAppLimit(['status' => 2, 'actual_end_date' => $actualEndDate], ['app_id' => $parentAppId]);
-                                       $this->appRepo->updatePrgmLimit(['status' => 2, 'actual_end_date' => $actualEndDate], ['app_id' => $parentAppId, 'product_id' => 1]);
-                                       \Helpers::updateAppCurrentStatus($parentAppId, config('common.mst_status_id.APP_CLOSED'));
-                                    }*/
-                                    /*
-                                    if (!is_null($appLimitId)) {
-                                        $this->appRepo->saveAppLimit([
-                                                'status' => 1,
-                                                'start_date' => $curDate,
-                                                'end_date' => $endDate], $appLimitId);
-                                        $this->appRepo->updatePrgmLimitByLimitId([
-                                                'status' => 1,
-                                                'start_date' => $curDate,
-                                                'end_date' => $endDate], $appLimitId);
-                                    }
-                                     *
-                                     */
-                                }
+					if ($appData) {
+						$product_ids = [];
+						$businessInfo = $this->appRepo->getApplicationById($appData->biz_id);
+						if (!empty($appData->products)) {
+							foreach ($appData->products as $product) {
+								$product_ids[$product->pivot->product_id]= array(
+									"loan_amount" => $product->pivot->loan_amount,
+									"tenor_days" => $product->pivot->tenor_days
+								);
+							}
+						}
+						$data = $this->ucicuser_repo->formatBusinessInfoDb($businessInfo, $product_ids);
+						$userUcicId = $appData->ucicUser->user_ucic_id ?? null;
+						if (!$userUcicId) {
+							$pan_no = $appData->business->pan->pan_gst_hash;
+							$ucicData = $this->ucicuser_repo->createUpdateUcic(['pan_no' => $pan_no, 'user_id'=>$appData->user_id, 'app_id' => $appData->app_id]);
+							$userUcicId = $ucicData->user_ucic_id;
+						}
+						if ($userUcicId) {
+							$exitsUcicData = $this->ucicuser_repo->getUcicData(['user_ucic_id' => $userUcicId]);
+							$groupID = $exitsUcicData->group_id;
+							if($exitsUcicData->is_sync == 1) {
+
+								$product_ids = [];
+								$business_info = $this->appRepo->getApplicationById($appData->biz_id);
+								if (!empty($appData->products)) {
+									foreach ($appData->products as $product) {
+										$product_ids[$product->pivot->product_id]= array(
+											"loan_amount" => $product->pivot->loan_amount,
+											"tenor_days" => $product->pivot->tenor_days
+										);
+									}
+								}
+								$businessInfo = $this->ucicuser_repo->formatBusinessInfoDb($business_info, $product_ids);
+								$ownerPanApi = $this->userRepo->getOwnerApiDetail(['biz_id' => $appData->biz_id]);
+								$documentData = \Helpers::makeManagementInfoDocumentArrayData($ownerPanApi);
+								$managementData = $this->ucicuser_repo->formatManagementInfoDb($ownerPanApi, null);
+								$managementInfo = array_merge($managementData, $documentData);
+								
+								$this->ucicuser_repo->saveApplicationInfo($userUcicId, $businessInfo, $managementInfo, $appData->app_id);
+								$attr['user_id'] = $appData->user_id;
+								$attr['app_id'] = $appData->app_id;
+								$this->ucicuser_repo->update($attr, $userUcicId);
+								$whereucic['user_id'] = $appData->user_id;
+								$whereucic['app_id']  = $appData->app_id;
+								$ucicuserData = UcicUserUcic::getUcicUserData($whereucic);
+								if ($ucicuserData == false) {
+									$ucicNewDataucic['ucic_id'] = $userUcicId;
+									$ucicNewDataucic['user_id'] = $appData->user_id;
+									$ucicNewDataucic['app_id'] = $appData->app_id;
+									$ucicNewDataucic['group_id'] = $groupID;
+									UcicUserUcic::create($ucicNewDataucic);
+								}
+
+							}
+						}
+					}
+                }
 				Helpers::updateWfStage('doc_upload', $appId, $wf_status = 1);
 
 				//Add application workflow stages
 				Helpers::updateWfStage('app_submitted', $appId, $wf_status = 1);
 
-				//Update workflow stage
-				//$currentStage = Helpers::getCurrentWfStage($app_id);
-				//$curr_wf_stage_code = $currentStage ? $currentStage->stage_code : null;
-				//Helpers::updateWfStage($curr_wf_stage_code, $appId, $wf_status = 1);
-
 				//Insert Pre Offer Documents
 				$prgmDocsWhere = [];
 				$prgmDocsWhere['stage_code'] = 'pre_offer';
-				//$appData = $this->appRepo->getAppDataByAppId($appId);
-				//$userId = $appData ? $appData->user_id : null;
 				$reqdDocs = $this->createAppRequiredDocs($prgmDocsWhere, $userId, $appId);
-				return redirect()->route('application_list')->with('message', trans('success_messages.app.saved'));
-			// } else {
-			//     //Add application workflow stages
-			//     Helpers::updateWfStage('app_submitted', $request->get('app_id'), $wf_status = 2);
 
-			//     return redirect()->back()->withErrors(trans('error_messages.app.incomplete'));
-			// }
+				return redirect()->route('application_list')->with('message', trans('success_messages.app.saved'));
 		} catch (Exception $ex) {
-			//Add application workflow stages
 			Helpers::updateWfStage('app_submitted', $request->get('app_id'), $wf_status = 2);
 
 			return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
@@ -1133,6 +1247,12 @@ class ApplicationController extends Controller
 						Session::flash('error_code', 'no_offer_found');
 						return redirect()->back();
 					}
+
+					$isAppGroup = AppGroupDetail::where('app_id',$app_id)->count();
+					if(!$isAppGroup){
+						Session::flash('error_code', 'group_status');
+						return redirect()->back();
+					}
                                         
 					$appData = $this->appRepo->getAppData($app_id);
 					if ($appData && in_array($appData->curr_status_id, [config('common.mst_status_id.OFFER_LIMIT_REJECTED')]) ) {
@@ -1396,7 +1516,7 @@ class ApplicationController extends Controller
 							}
 						  }
 						  	if ($fData['amount'] > 0.00) {
-								if($appData && (in_array($appData->app_type, [3]) && $chrgs->chargeName->chrg_name != 'Processing Fee') || $appData && in_array($appData->app_type, [0,1,2])) {
+								if($appData && ( in_array($appData->app_type, [0,1,2]) || (in_array($appData->app_type, [3]) && $chrgs->chargeName->chrg_name != 'Processing Fee')) ){
 									$fDebitData = $this->createTransactionData($user_id, $fData, $ChargeId, 0);
 									$fDebitCreate = $this->appRepo->saveTransaction($fDebitData);
 									$id  = Auth::user()->user_id;
@@ -1492,34 +1612,79 @@ class ApplicationController extends Controller
 	 *
 	 * @return \Illuminate\Http\Response
 	 */
-	public function showBusinessInformation()
+	public function showBusinessInformation(Request $request)
 	{
-            $userId = request()->get('user_id');
-            //$where=[];
-            //$where['user_id'] = $userId;
-            //$where['status'] = [0,1];
-            //$appData = $this->appRepo->getApplicationsData($where);
-            $appData = $this->appRepo->checkAppByPan($userId);
-            $userData = $this->userRepo->getfullUserDetail($userId);
-            $isAnchorLead = $userData && !empty($userData->anchor_id);
-
-            //if (isset($appData[0])) {
-            if ($appData) {
-                Session::flash('message', trans('error_messages.active_app_check'));
-                return redirect()->back();
-            }
-
+		$data = [];
+		$cinList = [];
+		$gstList = [];
+		$product_ids = [];
+		$ucic_code = null;
+		$userId = $request->get('user_id');
 		$states = State::getStateList()->get();
-		$product_types = $this->masterRepo->getProductDataList();
 		$industryList = $this->appRepo->getIndustryDropDown()->toArray();
 		$constitutionList = $this->appRepo->getConstitutionDropDown()->toArray();
 		$segmentList = $this->appRepo->getSegmentDropDown()->toArray();
+		$locationType = LocationType::getLocationDropDown();
+		$product_types = $this->masterRepo->getProductDataList();
+		$anchUserData = $this->userRepo->getAnchorUserData(['user_id' => $userId]);
+        $pan_no = isset($anchUserData[0]) ? $anchUserData[0]->pan_no : null;
+		if (!count($anchUserData) && !$pan_no) {
+			$nonAnchorLead = $this->userRepo->getNonAnchorLeadByUserId(['user_id' => $userId]);
+			$pan_no = $nonAnchorLead ? $nonAnchorLead->pan_no : null;
+		}
 
-                $anchUserData = $this->userRepo->getAnchorUserData(['user_id' => $userId]);
-                $pan = isset($anchUserData[0]) ? $anchUserData[0]->pan_no : '';
-        $locationType = LocationType::getLocationDropDown();
-		return view('backend.app.business_information',compact(['states', 'product_types','industryList','constitutionList', 'segmentList', 'pan', 'locationType']));
-	}
+		$appData = $this->appRepo->checkAppByPan($userId);
+		if (!$appData) {
+			$appData = $this->appRepo->checkAppByPanForNonAnchorLeads($userId);
+		}
+		if ($appData) {
+			Session::flash('message', trans('error_messages.active_app_check'));
+			return redirect()->back();
+		}
+
+		$ucicDetails = UcicUser::where('user_id', $userId)->first();
+
+		if($ucicDetails){
+			$ucic_code = $ucicDetails->ucic_code;
+			$pan_no = $ucicDetails->pan_no;
+			$appId = $ucicDetails->app_id;
+			$requestAppId = (int) $request->app_id;
+
+			if($requestAppId){
+				$app_data = $this->appRepo->getAppDataByAppId($requestAppId);
+				if($app_data && $app_data->biz_id){
+					$business_info = $this->appRepo->getApplicationById($app_data->biz_id);
+					$cinList = $business_info->cins;
+					$gstList = $business_info->gsts;
+					if (!empty($app_data->products)) {
+						foreach($app_data->products as $product){
+							$product_ids[$product->pivot->product_id]= array(
+								"loan_amount" => $product->pivot->loan_amount,
+								"tenor_days" => $product->pivot->tenor_days
+							);
+						}
+					}
+
+					$data = $this->ucicuser_repo->formatBusinessInfoDb($business_info, $product_ids);
+				}
+				// $data = json_decode(($ucicDetails->business_info ?? []),true); 
+			}
+		}
+
+		return view('backend.app.business_information')
+				->with('pan_no',$pan_no)
+				->with('ucic_code',$ucic_code)
+				->with('user_id',$userId)
+				->with('states',$states)
+				->with('industryList',$industryList)
+				->with('constitutionList',$constitutionList)
+				->with('segmentList',$segmentList)
+				->with('locationType',$locationType)
+				->with('product_types',$product_types)
+				->with('cinList',$cinList)
+				->with('gstList',$gstList)
+				->with('data',$data);
+    }
 
 	/**
 	 *
@@ -1529,15 +1694,14 @@ class ApplicationController extends Controller
 	{
 		try {
 			$arrFileData = $request->all();
-
-                        $whereCond=[];
-                        //$whereCond[] = ['anchor_id', '=', \Auth::user()->anchor_id];
-                        $whereCond[] = ['user_id', '=', $request->user_id];
-                        $anchUserData = $this->userRepo->getAnchorUserData($whereCond);
-                        if (isset($anchUserData[0]) && $anchUserData[0]->pan_no != $arrFileData['biz_pan_number']) {
-                            Session::flash('message', 'You can\'t changed the registered pan number.');
-                            return redirect()->back();
-                        }
+			$whereCond=[];
+			$whereCond[] = ['user_id', '=', $request->user_id];
+			$anchUserData = $this->userRepo->getAnchorUserData($whereCond);
+			
+			if (isset($anchUserData[0]) && $anchUserData[0]->pan_no != $arrFileData['biz_pan_number']) {
+				Session::flash('message', 'You can\'t changed the registered pan number.');
+				return redirect()->back();
+			}
 
 			if(request()->is_gst_manual == 1){
 				$arrFileData['biz_gst_number'] = request()->get('biz_gst_number_text');
@@ -1545,7 +1709,30 @@ class ApplicationController extends Controller
 
 			$user_id = $request->user_id;
 			$business_info = $this->appRepo->saveBusinessInfo($arrFileData, $user_id);
-			//$appId  = Session::put('appId', $business_info['app_id']);
+			
+			//Update UCIC Data only if appllication is not approved
+			$appData = $this->appRepo->getAppData($business_info['app_id']);
+			$userUcicId = $appData->ucicUser->user_ucic_id ?? null;
+			$exitsUcicData = $this->ucicuser_repo->getUcicData(['user_ucic_id' => $userUcicId]);
+			if(!Helper::isAppApprByAuthorityForGroup($business_info['app_id']) && $exitsUcicData->is_sync){
+				if(isset($business_info['biz_id']) && isset($business_info['app_id'])){
+					$appData = $this->appRepo->getAppData($business_info['app_id']);
+					if($appData){
+						$product_ids = [];
+						$businessInfo = $this->appRepo->getApplicationById($appData->biz_id);
+						if (!empty($appData->products)) {
+							foreach($appData->products as $product){
+								$product_ids[$product->pivot->product_id]= array(
+									"loan_amount" => $product->pivot->loan_amount,
+									"tenor_days" => $product->pivot->tenor_days
+								);
+							}
+						}
+						$data = $this->ucicuser_repo->formatBusinessInfoDb($businessInfo,$product_ids);
+						$this->ucicuser_repo->saveBusinessInfoApp($data, $userUcicId, $appData->app_id);
+					}
+				}
+			}		
 
 			//Add application workflow stages
 			Helpers::addWfAppStage('new_case', $user_id);
@@ -1641,6 +1828,8 @@ class ApplicationController extends Controller
 		$offerId = $request->get('offer_id');
 		$bizId = $request->get('biz_id');
         $cmntText = $request->get('comment_txt');
+		$appData = $this->appRepo->getAppDataByAppId($appId);
+		$userId = $appData ? $appData->user_id : null;
 
 		try {
 			$offerData = [];
@@ -1661,7 +1850,6 @@ class ApplicationController extends Controller
 				//Insert Pre Sanctions Documents
 				$prgmDocsWhere = [];
 				$prgmDocsWhere['stage_code'] = 'upload_pre_sanction_doc';
-				$appData = $this->appRepo->getAppDataByAppId($appId);
 				$userId = $appData ? $appData->user_id : null;
 				$reqdDocs = $this->createAppRequiredDocs($prgmDocsWhere, $userId, $appId);
 				/*$limitData = $this->masterRepo->getCurrentBorrowerLimitData();
@@ -1691,47 +1879,43 @@ class ApplicationController extends Controller
 			} else if($request->has('btn_reject_offer')) {
 				$offerData['status'] = 2;
 				$message = trans('backend_messages.offer_rejected');
-                                $appApprData = [
-                                    'app_id' => $appId,
-                                    'approver_user_id' => \Auth::user()->user_id,
-                                    'status' => 2
-                                  ];
-                                //$this->appRepo->saveAppApprovers($appApprData);
-                                AppApprover::updateAppApprActiveFlag($appId);
-                                $addl_data = [];
-                                $addl_data['sharing_comment'] = $cmntText;
-                                $selRoleId = 6;
-                                $roles = $this->appRepo->getBackStageUsers($appId, [$selRoleId]);
-                                $selUserId = $roles[0]->user_id;
-                                $currStage = Helpers::getCurrentWfStage($appId);
-                                //$selRoleStage = Helpers::getCurrentWfStagebyRole($selRoleId);
-                                $selRoleStage = Helpers::getCurrentWfStagebyRole($selRoleId, $user_journey=2, $wf_start_order_no=$currStage->order_no, $orderBy='DESC');
-                                Helpers::updateWfStageManual($appId, $selRoleStage->order_no, $currStage->order_no, $wf_status = 2, $selUserId, $addl_data);
-                                Session::flash('operation_status', 1);
+				$appApprData = [
+					'app_id' => $appId,
+					'approver_user_id' => \Auth::user()->user_id,
+					'status' => 2
+					];
+				AppApprover::updateAppApprActiveFlag($appId);
+				$addl_data = [];
+				$addl_data['sharing_comment'] = $cmntText;
+				$selRoleId = 6;
+				$roles = $this->appRepo->getBackStageUsers($appId, [$selRoleId]);
+				$selUserId = $roles[0]->user_id ?? null;
+				$currStage = Helpers::getCurrentWfStage($appId);
+				$selRoleStage = Helpers::getCurrentWfStagebyRole($selRoleId, $user_journey=2, $wf_start_order_no=$currStage->order_no, $orderBy='DESC');
+				Helpers::updateWfStageManual($appId, $selRoleStage->order_no, $currStage->order_no, $wf_status = 2, $selUserId, $addl_data);
+				Session::flash('operation_status', 1);
 
-                                Helpers::updateAppCurrentStatus($appId, config('common.mst_status_id.OFFER_REJECTED'));
-
+				Helpers::updateAppCurrentStatus($appId, config('common.mst_status_id.OFFER_REJECTED'));
+				$applicationUpdate = $this->appRepo->updateAppDetails($appId, ['is_old_app' => 0]);
+				\Helpers::unApproveAppGroupDetails($appId);
 			}
 
-			// $savedOfferData = $this->appRepo->saveOfferData($offerData, $offerId);
 			$savedOfferData = $this->appRepo->updateActiveOfferByAppId($appId, $offerData);
+			$appPrgmOffers = $this->appRepo->getAllOffers($appId);
+			foreach($appPrgmOffers as $appPrgmOffer) {
+				if (!empty($appPrgmOffer->prgm_id) && ($appPrgmOffer->status == 1 || $appPrgmOffer->status == 2)) {
+					$prgmId = $appPrgmOffer->prgm_id;
 
-                        $appPrgmOffers = $this->appRepo->getAllOffers($appId);
-                        foreach($appPrgmOffers as $appPrgmOffer) {
-                            if (!empty($appPrgmOffer->prgm_id) && ($appPrgmOffer->status == 1 || $appPrgmOffer->status == 2)) {
-                                $prgmId = $appPrgmOffer->prgm_id;
+					$updatePrgmData = [];
+					$updatePrgmData['is_edit_allow'] = 1;
 
-                                $updatePrgmData = [];
-                                $updatePrgmData['is_edit_allow'] = 1;
-
-                                $whereUpdatePrgmData = [];
-                                $whereUpdatePrgmData['prgm_id'] = $prgmId;
-                                $this->appRepo->updateProgramData($updatePrgmData, $whereUpdatePrgmData);
-                            }
-                        }
+					$whereUpdatePrgmData = [];
+					$whereUpdatePrgmData['prgm_id'] = $prgmId;
+					$this->appRepo->updateProgramData($updatePrgmData, $whereUpdatePrgmData);
+				}
+			}
 			if ($savedOfferData) {
 				Session::flash('message', $message);
-				//return redirect()->route('gen_sanction_letter', ['app_id' => $appId, 'biz_id' => $bizId, 'offer_id' => $offerId ]);
 				return redirect()->route('view_offer', ['app_id' => $appId, 'biz_id' => $bizId,'user_id' => $userId ]);
 			}
 
@@ -1774,7 +1958,7 @@ class ApplicationController extends Controller
 	{
 		$request =  $request->all();
 		$result   = $this->userRepo->getOwnerAppRes($request);
-		$res = json_decode($result->karza->res_file);
+		$res = $result->karza ? json_decode($result->karza->res_file) : '';
 		return view('backend.app.promoter_pan_verify_data')->with('res', $res);
 
 	}
@@ -2429,6 +2613,10 @@ class ApplicationController extends Controller
 			$this->docRepo->disableIsOVD($where);
 			$response = $this->docRepo->deleteFile($fileId);
 
+			$appData = $this->appRepo->getAppData($fileId['app_id']);
+			$ucicData = $this->ucicuser_repo->getUcicData(['user_id' => $appData->user_id]);
+			\Helpers::updateOrDeleteDocFileToUcic($ucicData, $fileId['owner_id'], $fileId['doc_type_name'], $fileId['file_id'], $filePath = '', $fileId['app_id'], 'application', $update = false, $delete = true);
+
 			if ($response) {
 				Session::flash('message',trans('success_messages.deleted'));
 				return redirect()->back();
@@ -2558,6 +2746,8 @@ class ApplicationController extends Controller
                     	];
                     	$this->appRepo->updateOfferByAppId($app_id, $updtData);
                     }
+					
+					Helpers::changeGroupLatestApp($app_id);
 
                     $appStatusList = Helpers::getAppStatusList();
                     $arrActivity = [];

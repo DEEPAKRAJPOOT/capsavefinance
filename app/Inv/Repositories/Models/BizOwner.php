@@ -5,6 +5,7 @@ use DB;
 use Session;
 use Auth;
 use Carbon\Carbon;
+use App\Inv\Repositories\Models\UserCkycConsent;
 use Illuminate\Notifications\Notifiable;
 use App\Inv\Repositories\Models\AppDocument;
 use App\Inv\Repositories\Models\AppDocumentFile;
@@ -64,6 +65,7 @@ class BizOwner extends BaseModel
         'user_id',
         'is_pan_verified',
         'first_name',
+        'email',
         'is_promoter',
         'mobile_no',
         'date_of_birth',
@@ -126,6 +128,17 @@ class BizOwner extends BaseModel
       return $this->hasMany('App\Inv\Repositories\Models\AppDocumentFile', 'biz_owner_id','biz_owner_id');  
        
    }
+
+   public function ownerConsent(){
+
+    return $this->hasOne('App\Inv\Repositories\Models\UserCkycConsent', 'biz_owner_id','biz_owner_id');
+   }
+
+   public function getIndividualCKYCApilogData(){
+
+    return $this->hasMany('App\Inv\Repositories\Models\UserCkycApiLog','biz_owner_id','biz_owner_id');
+   }
+
    /* Relation of Owner and  Aplication relation*/
     /* created by gajendra chauhan   */
     public static  function getOwnerByBizId($bizId){
@@ -214,12 +227,13 @@ class BizOwner extends BaseModel
             'first_name' => $attributes['first_name'][$i],
             'is_promoter' => isset($attributes['isShareCheck'][$i]) ? $attributes['isShareCheck'][$i] : 0,
             'mobile_no' => $attributes['mobile_no'][$i],     
+            'email' => $attributes['email'][$i] ?? null,     
             'date_of_birth' => ($attributes['date_of_birth'])? Carbon::createFromFormat('d/m/Y', $attributes['date_of_birth'][$i])->format('Y-m-d'): NULL,
             'gender' => $attributes['gender'][$i],
             'comment' => $attributes['comment'][$i],
             'is_pan_verified' => 1, 
             'applicant_type' => $attributes['applicant_type'][$i],
-           // 'ckyc_ref_no' => $attributes['ckyc_ref_no'][$i],
+           'ckyc_ref_no' => $attributes['ckyc_ref_no'][$i] ?? null,
             'share_per' => $attributes['share_per'][$i],
                'designation' => $attributes['designation'][$i],    
            /// 'edu_qualification' => $attributes['edu_qualification'][$i],
@@ -249,7 +263,7 @@ class BizOwner extends BaseModel
             'comment' => $attributes['comment'][$i],
             'is_pan_verified' => 1,
             'applicant_type' => $attributes['applicant_type'][$i],
-            //'ckyc_ref_no' => $attributes['ckyc_ref_no'][$i],
+            'ckyc_ref_no' => $attributes['ckyc_ref_no'][$i] ?? null,
             'share_per' => $attributes['share_per'][$i],
                'designation' => $attributes['designation'][$i],    
            /// 'edu_qualification' => $attributes['edu_qualification'][$i],
@@ -298,13 +312,14 @@ class BizOwner extends BaseModel
             'user_id' => $userId, 
             'first_name' => $attributes['first_name'][$i],
             'is_promoter' => ($attributes['isShareCheck'][$i]) ? $attributes['isShareCheck'][$i] : 0,
-            'mobile_no' => $attributes['mobile_no'][$i], 
+            'mobile_no' => $attributes['mobile_no'][$i],
+            'email' => $attributes['email'][$i] ?? null,
             'date_of_birth' =>($attributes['date_of_birth'])? Carbon::createFromFormat('d/m/Y', $attributes['date_of_birth'][$i])->format('Y-m-d'): NULL,
             'gender' => $attributes['gender'][$i],
             'comment' => $attributes['comment'][$i],
             'is_pan_verified' => 1,
             'applicant_type' => $attributes['applicant_type'][$i],
-           // 'ckyc_ref_no' => $attributes['ckyc_ref_no'][$i],
+           'ckyc_ref_no' => $attributes['ckyc_ref_no'][$i] ?? null,
             'share_per' => $attributes['share_per'][$i],
             'designation' => $attributes['designation'][$i],    
            /// 'edu_qualification' => $attributes['edu_qualification'][$i],
@@ -337,20 +352,15 @@ class BizOwner extends BaseModel
 
   public static function getCompanyOwnerByBizId($biz_id)
     {
-        $arrData = self::select('biz_owner.first_name','biz_owner.biz_owner_id','biz_owner.last_name','biz_owner.pan_number', 'biz_owner.email','biz_owner.mobile_no','biz_owner.cibil_score', 'biz_owner.is_cibil_pulled','biz_owner.is_promoter', 'biz_owner.gender', 'biz_owner.designation', 'biz_owner.share_per')
+        $arrData = self::select('biz_owner.biz_id','biz_owner.first_name','biz_owner.biz_owner_id','biz_owner.last_name','biz_owner.pan_number', 'biz_owner.email','biz_owner.mobile_no','biz_owner.cibil_score', 'biz_owner.is_cibil_pulled','biz_owner.is_promoter', 'biz_owner.gender', 'biz_owner.designation', 'biz_owner.share_per')
         ->where('biz_owner.biz_id', $biz_id)
         ->get();
         return $arrData;
     }
 
- 
   public static function getBizOwnerDataByOwnerId($biz_owner_id)
   {
-     $arrData = self::where('biz_owner.biz_owner_id', $biz_owner_id)->first();
-        return $arrData;
-  }
-
-
-
-   
+    $arrData = self::where('biz_owner.biz_owner_id', $biz_owner_id)->first();
+    return $arrData;
+  }   
 }

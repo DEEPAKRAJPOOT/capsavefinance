@@ -136,7 +136,7 @@ class OutstandingReportManual implements ShouldQueue
             $rows++;
             foreach($exceldata as $key => $rowData){
                 $sheet->setActiveSheetIndex(0)
-                ->setCellValue('A'.$rows, '')
+                ->setCellValue('A'.$rows, $rowData['ucicCode'])
                 ->setCellValue('B'.$rows, $rowData['custName'])
                 ->setCellValue('C'.$rows, $rowData['customerId'])
                 ->setCellValue('D'.$rows, $rowData['anchorName'])

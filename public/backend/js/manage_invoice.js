@@ -22,16 +22,58 @@
 
 
     //////////////// for checked & unchecked////////////////
-    $(document).on('click', '#chkAll', function () {
-        var isChecked = $("#chkAll").is(':checked');
-        if (isChecked)
-        {
-            $('input:checkbox').attr('checked', 'checked');
-        } else
-        {
-            $('input:checkbox').removeAttr('checked');
+ $(document).on('click', '#chkAll', function () {
+    // Check or Uncheck All checkboxes
+    $("#chkAll").change(function(){
+        var checked = $(this).is(':checked');
+        if(checked){
+        $(".chkstatus").each(function(){
+            $(this).prop("checked",true);
+        });
+        }else{
+        $(".chkstatus").each(function(){
+            $(this).prop("checked",false);
+        });
         }
     });
+
+ // Changing state of CheckAll checkbox 
+    $(".chkstatus").click(function(){
+
+        if($(".chkstatus").length == $(".chkstatus:checked").length) {
+            $("#chkAll").prop("checked", true);
+        } else {
+            $("#chkAll").prop("checked", false);
+        }
+
+    });
+
+});
+ $(document).on('click', '#chkAll', function () {
+    // Check or Uncheck All checkboxes
+    $("#chkAll").change(function(){
+        var checked = $(this).is(':checked');
+        if(checked){
+        $(".invoice_id").each(function(){
+            $(this).prop("checked",true);
+        });
+        }else{
+        $(".invoice_id").each(function(){
+            $(this).prop("checked",false);
+        });
+        }
+    });
+
+ // Changing state of CheckAll checkbox 
+    $(".invoice_id").click(function(){
+
+        if($(".invoice_id").length == $(".invoice_id:checked").length) {
+            $("#chkAll").prop("checked", true);
+        } else {
+            $("#chkAll").prop("checked", false);
+        }
+    });
+});
  ///////////////////////For Invoice Approve////////////////////////
     $(document).on('click', '.pendingApproveInv', function () {
           
@@ -442,7 +484,7 @@ function uploadFile(app_id,id)
         });
      
         if (arr.length == 0) {
-            replaceAlert('Please select atleast one checked', 'error');
+            replaceAlert('Please select at-least one invoice', 'error');
             return false;
         }
         if (confirm('Are you sure, You want to approve it.'))
@@ -477,7 +519,7 @@ function uploadFile(app_id,id)
                     }else
                     {
                       
-                       localStorage.setItem('Msg', 'You cannot move this invoice ('+data.msg+') to Approved tab, as customer/anchor/program limit has been exceeded  or invoice has been moved to exception cases.');
+                       localStorage.setItem('Msg', JSON.stringify({text: 'You cannot move the selected invoices('+data.msg+') to the Approve tab, as the program/customer/anchor limit has been exceeded.', type: 'error'}));
                        location.reload();
                     }
 
@@ -504,7 +546,7 @@ function uploadFile(app_id,id)
             arr[i++] = $(this).val();
         });
         if (arr.length == 0) {
-            replaceAlert('Please select atleast one checked', 'error');
+            replaceAlert('Please select at-least one invoice', 'error');
             return false;
         }
         if (confirm('Are you sure? You want to disbursement queue.'))
@@ -536,7 +578,11 @@ function uploadFile(app_id,id)
                     if(data.msg=="")
                     {
                     //    localStorage.setItem('storageMsg', 'Invoice successfully moved');
-                        localStorage.setItem('storageMsg', JSON.stringify({text: 'Invoice successfully moved', type: 'success'}));
+                        localStorage.setItem('Msg', JSON.stringify({text: 'Invoice successfully moved', type: 'success'}));
+                       location.reload();
+                    }else
+                    {
+                        localStorage.setItem('Msg', JSON.stringify({text: 'You cannot move the selected invoices('+data.msg+') to the Disbursment Queue tab, as the program/customer/anchor limit has been exceeded.', type: 'error'}));
                        location.reload();
                     }
 
@@ -1117,7 +1163,7 @@ function uploadFile(app_id,id)
         });
      
         if (arr.length == 0) {
-            replaceAlert('Please select atleast one checked', 'error');
+            replaceAlert('Please select at-least one invoice', 'error');
             return false;
         }
         if (confirm('Are you sure, You want to reject the selected invoices?'))
@@ -1147,8 +1193,7 @@ function uploadFile(app_id,id)
                     }
                     else
                     {
-                        localStorage.setItem('Msg', JSON.stringify({text: 'You cannot move this invoice ('+data.msg+') to Reject tab, as customer/anchor/program limit has been exceeded  or invoice has been moved to exception cases.', type: 'error'}));
-                    //    localStorage.setItem('storageMsg', 'You cannot move this invoice ('+data.msg+') to Reject tab, as customer/anchor/program limit has been exceeded  or invoice has been moved to exception cases.');
+                        localStorage.setItem('Msg', JSON.stringify({text: 'You cannot move the selected invoices('+data.msg+') to the Reject tab, as the program/customer/anchor limit has been exceeded.', type: 'error'}));
                        location.reload();
                     }
                }
@@ -1174,7 +1219,7 @@ function uploadFile(app_id,id)
         });
         
         if (arr.length == 0) {
-            replaceAlert('Please select atleast one checked', 'error');
+            replaceAlert('Please select at-least one invoice', 'error');
             return false;
         }
         if (confirm('Are you sure, You want to reject the selected invoices?'))
@@ -1206,7 +1251,7 @@ function uploadFile(app_id,id)
                     else
                     {
                         
-                        localStorage.setItem('Msg', 'You cannot move this invoice ('+data.msg+') to Reject tab, as customer/anchor/program limit has been exceeded  or invoice has been moved to exception cases.');
+                        localStorage.setItem('Msg', JSON.stringify({text: 'You cannot move the selected invoices('+data.msg+') to the Reject tab, as the program/customer/anchor limit has been exceeded.', type: 'error'}));
                         location.reload();
                     }
                 }

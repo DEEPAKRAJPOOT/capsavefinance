@@ -8,6 +8,7 @@ try {
             pageLength: 10,
             searching: false,
             bSort: true,
+            ordering: false,
             ajax: {
                 "url": messages.backend_get_ep_list_approve, // json datasource
                 "method": 'POST',
@@ -43,6 +44,34 @@ try {
          $('#search_biz').on('click', function (e) {
             oTable.draw();
         });                   
+    });
+
+    $(document).on('click', '#chkAll', function () {
+        // Check or Uncheck All checkboxes
+        $("#chkAll").change(function(){
+            var checked = $(this).is(':checked');
+            if(checked){
+            $(".chkstatus").each(function(){
+                $(this).prop("checked",true);
+            });
+            }else{
+            $(".chkstatus").each(function(){
+                $(this).prop("checked",false);
+            });
+            }
+        });
+    
+     // Changing state of CheckAll checkbox 
+        $(".chkstatus").click(function(){
+    
+            if($(".chkstatus").length == $(".chkstatus:checked").length) {
+                $("#chkAll").prop("checked", true);
+            } else {
+                $("#chkAll").prop("checked", false);
+            }
+    
+        });
+    
     });
 } catch (e) {
     if (typeof console !== 'undefined') {

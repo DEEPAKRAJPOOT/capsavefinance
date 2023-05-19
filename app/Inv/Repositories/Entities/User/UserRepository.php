@@ -33,6 +33,10 @@ use Auth;
 use App\Inv\Repositories\Models\CoLenderUsers;
 use App\Inv\Repositories\Models\Lms\Disbursal;
 use App\Inv\Repositories\Models\User;
+use App\Inv\Repositories\Models\UserCkycConsent;
+use App\Inv\Repositories\Models\UserCkyc;
+use App\Inv\Repositories\Models\UserCkycApiLog;
+use App\Inv\Repositories\Models\UserCkycDoc;
 use App\Inv\Repositories\Models\Program;
 use App\Inv\Repositories\Models\NonAnchorLead;
 
@@ -313,7 +317,7 @@ class UserRepository extends BaseRepositories implements UserInterface
 
          return Otp::getOtps($otp);
     }
-    
+
     public function selectOtpbyLastExpired($user_id)
     {
          return Otp::selectOtpbyLastExpired($user_id);
@@ -1984,10 +1988,75 @@ class UserRepository extends BaseRepositories implements UserInterface
         $result = UserModel::getBackendUserByEmail($email);
         return $result ?: false;
     }
+     
+    public function getConsentOtps($where){
+        return Otp::getConsentOtps($where);
+    }
+    
+    public function getConsentOtpsbyActive($where)
+    {
+        return Otp::getConsentOtpsbyActive($where);
+    }
 
+    public function getConsentUserByOTP($otp,$user_id,$biz_owner_id=null){
+        return Otp::getConsentUserByOTP($otp,$user_id,$biz_owner_id);
+    }
+    
+    public function saveotpConsent($data, $ckyc_consent_id = null){
+
+        $result = UserCkycConsent::saveOtpConsent($data, $ckyc_consent_id);
+        return $result ?: false;
+    }
+
+    public function updateotpConsent($data, $where){
+
+        $result = UserCkycConsent::updateotpConsent($data, $where);
+        return $result ?: false;
+    }
+
+    public function updateBusinessotpConsent($ckycConsentData, $userId){
+
+        $result = UserCkycConsent::updateBusinessotpConsent($ckycConsentData, $userId);
+        return $result ?: false;
+    }
+
+    public function userckycApilogUpdate($api_log_id, $user_ckyc_api_log_data){
+
+        return UserCkycApiLog::userckycApilogUpdate($api_log_id, $user_ckyc_api_log_data);
+    }
+
+    public function userckycCreateOrUpdate($where, $user_ckyc_data){
+
+        return UserCkyc::userckycCreateOrUpdate($where, $user_ckyc_data);
+    }
+    
+    public static function getOtpExpired($where=[])
+    {
+       $result = Otp::where($where)->first();
+       return $result ?: false;
+    }
+
+    public function getNonAnchorLeadByUserId($userId)
+    {
+        $result = NonAnchorLead::getNonAnchorLeadByUserId($userId);    
+        return $result ?: false;
+    }
+    
     public function getActiveRolesByType($role_type) 
     { 
         return Role::getActiveRolesByType($role_type);
+    }
+
+    public function getNonAnchorUserData($pan)
+    {
+        $result = NonAnchorLead::getNonAnchorUserData($pan);
+    
+        return $result ?: false;
+    }
+
+    public function checkCkycdocumentPulled($where){
+
+        return UserCkycApiLog::checkCkycdocumentPulled($where);
     }
 }
 

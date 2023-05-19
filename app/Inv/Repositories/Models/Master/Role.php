@@ -60,6 +60,7 @@ class Role extends BaseModel
         'is_supper_admin',
         'is_default_ml',
         'dashboard_type',
+        'is_allapp_access',
     ];
 
     /**

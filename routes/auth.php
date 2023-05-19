@@ -130,6 +130,12 @@ Route::domain(config('proin.frontend_uri'))->group(function () {
         'uses' => 'Auth\RegisterController@showThanksForm'
     ]);
 
+    Route::get('consentthanks',
+        [
+        'as' => 'consentthanks',
+        'uses' => 'Auth\RegisterController@showConsentThanksForm'
+    ]);
+
     Route::get('otp/{token}',
         [
         'as' => 'otp',
@@ -154,6 +160,10 @@ Route::domain(config('proin.frontend_uri'))->group(function () {
         'uses' => 'Auth\RegisterController@resendotpUser'
     ]);
     
+    Route::post('verify-otp-consent',[
+        'as'=>'verify_otp_consent',
+        'uses'=> 'Auth\RegisterController@verifyOtpConsent'
+    ]);
     
     Route::get('otp-thanks',
         [

@@ -747,4 +747,8 @@ class AppProgramOffer extends BaseModel {
     public static function getData($appId,$prgmId,$anchorId){
         return self::where(['is_active' => 1,'app_id' => $appId,'anchor_id'=>$anchorId,'prgm_id'=>$prgmId])->get();
     }
+    
+    public function appGroupDetails() {
+        return $this->hasMany('App\Inv\Repositories\Models\AppGroupDetail', 'app_id', 'app_id');
+    }
 }

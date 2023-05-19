@@ -41,6 +41,7 @@ return [
     'get_promoter_url' => env('GET_PROMOTER_URL', ''),
     'get_promoter_key' => env('GET_PROMOTER_KEY', ''),
     'get_karza_suffix_url' => env('KARZA_API_SUFFIX_URL', ''),
+    'get_karza_ckyc_suffix_url' => env('KARZA_API_CKYC_SUFFIX_URL', ''),
     'get_promoter_url_by_cin' => env('GET_PROMOTER_URL_BY_CIN', ''),
     'get_karza_gst_verification_suffix_url' => env('KARZA_API_GST_VERIVICATION_SUFFIX_URL', ''),
     
