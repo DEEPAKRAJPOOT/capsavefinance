@@ -108,6 +108,10 @@ class SendEmail extends Mailable implements ShouldQueue
                 ->where('id', $this->mailLogDataId)
                 ->update(['status' => 1]);
         } catch (\Exception $e) {
+            // If an exception occurs, update the status to 0 indicating a failure
+            DB::table('email_logger')
+                ->where('id', $this->mailLogDataId)
+                ->update(['status' => 0]);
             throw $e;
         }
 
