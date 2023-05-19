@@ -59,10 +59,10 @@ class InterestAccrualSod extends Command
             ->pluck('invoice_disbursed_id','invoice_disbursed_id');
             $Obj = new ManualApportionmentHelper($this->lmsRepo);
             foreach ($invoiceList as $invId => $trans) {
-                $Obj->intAccrual($invId, NULL,NULL,7,$eventDate);
-                $Obj->transactionPostingAdjustment($invId,NULL,7,$eventDate);
+                $Obj->intAccrual($invId, NULL,NULL,6,$eventDate);
+                $Obj->transactionPostingAdjustment($invId,NULL,6,$eventDate);
             }
-            $Obj->runningIntPosting(NULL,7,$eventDate);
+            $Obj->runningIntPosting(NULL,6,$eventDate);
             InvoiceDisbursedDetail::updateDailyInterestAccruedDetails();
 
         if($cLogDetails){
