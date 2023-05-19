@@ -2685,6 +2685,7 @@ class CamController extends Controller
 
     public function generateCamReport(Request $request){
       try{
+        
         $viewData = $this->getCamReportData($request);
         $bizId = $request->get('biz_id');
         $appId = $request->get('app_id');

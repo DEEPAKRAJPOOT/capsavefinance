@@ -478,29 +478,30 @@ class Helper extends PaypalHelper
      */
     public static function generateCamPdf($appId, $bizId, $pdfContent)
     {
+        $s3path = env('S3_BUCKET_DIRECTORY_PATH').'/cam/' . $appId . "/" . config('common.PRODUCT.LEASE_LOAN');
         $inputArr = [];
         if ($pdfContent) {
-            if (!Storage::exists('/public/cam/' . $appId)) {
-                Storage::makeDirectory('/public/cam/' . $appId, 0777, true);
+            if (!Storage::disk('s3')->exists($s3path)) {
+                Storage::disk('s3')->makeDirectory($s3path, 0777, true);
             }
-            if (!Storage::exists('/public/cam/' . $appId . "/" . config('common.PRODUCT.LEASE_LOAN'))) {
+            /*if (!Storage::exists('/public/cam/' . $appId . "/" . config('common.PRODUCT.LEASE_LOAN'))) {
                 Storage::makeDirectory('/public/cam/' . $appId . "/" . config('common.PRODUCT.LEASE_LOAN'), 0777, true);
-            }
+            }*/
             $businessDetails = Business::find($bizId);
             $fileName ='CAM_'.$appId.'_'.$businessDetails->biz_entity_name.'.pdf'; // 'CamReport_'.$appId."_".time().".pdf";
-            $path = "/cam/" .$appId."/".config('common.PRODUCT.LEASE_LOAN')."/".$fileName;            
-            $tempPath = Storage::disk('public')->put($path, $pdfContent);
-            $dbpath = "cam/" . $appId . "/" . config('common.PRODUCT.LEASE_LOAN') . "/" . $fileName;
+            $path = $s3path."/".$fileName;            
+            $tempPath = Storage::disk('s3')->put($path, $pdfContent);
+            $dbpath = $s3path . "/" . $fileName;
             $inputArr['file_path'] = $dbpath;
         }
 
-        $inputArr['file_type'] = Storage::disk('public')->mimeType($path);
+        $inputArr['file_type'] = Storage::disk('s3')->mimeType($path);
         $inputArr['file_name'] = $fileName;
-        $inputArr['file_size'] = Storage::disk('public')->size($path);
+        $inputArr['file_size'] = Storage::disk('s3')->size($path);
         $inputArr['file_encp_key'] =  md5(time());
         $inputArr['created_by'] = 1;
         $inputArr['updated_by'] = 1;
-
+        dd($inputArr);
         return $inputArr;
     }
 
