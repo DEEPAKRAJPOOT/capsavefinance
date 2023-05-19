@@ -156,17 +156,16 @@
                          if(v.program!=null)
                          {  
                             getSupplierByPrgmId = (obj3[v.program.prgm_id])?obj3[v.program.prgm_id]:'';
-                            $dropDown = "<option value='"+v.program.prgm_id+","+v.app_prgm_limit_id+"'>"+v.program.prgm_name+"&nbsp;&nbsp;(Sub-Program ID: "+v.program.prgm_id+")</option>";
                             if(getSupplierByPrgmId != ''){
+                            $dropDown = "<option value='"+v.program.prgm_id+","+v.app_prgm_limit_id+"'>"+v.program.prgm_name+"&nbsp;&nbsp;(Sub-Program ID: "+v.program.prgm_id+")</option>";
                               $(getSupplierByPrgmId).each(function(j,v1){
                                 if(v1 !=null)
                                 {           
                                   $dropDown +="<option value='"+v.program.prgm_id+","+v.app_prgm_limit_id+"' disabled>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"+v1.biz_entity_name+"&nbsp;&nbsp;("+v1.customer_id+")</option>";  
                                 }                   
                                 });
-                            }
-                            $("#program_bulk_id").append($dropDown);
-                              
+                                $("#program_bulk_id").append($dropDown);
+                            }  
                           }                   
                          });
                       }else{
