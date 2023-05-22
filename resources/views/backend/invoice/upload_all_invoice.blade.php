@@ -396,6 +396,6 @@ var messages = {
    })
  
   </script> 
-  <script src="{{ asset('backend/js/single_invoice.js') }}"></script>
+  <script src="{{ asset('backend/js/single_invoice.js?v=1') }}"></script>
 @endsection
  
