@@ -99,11 +99,12 @@ class UserFile extends BaseModel
         $appId = (isset($attributes['appId'])) ? $attributes['appId'] : $attributes['app_id'];
         for ( $i=0; $i < $count; $i++) 
         {   
+            $s3path = env('S3_BUCKET_DIRECTORY_PATH').'/user/' .$userId. '/' .$appId;
             if($attributes['doc_file'][$i]) {
-                if(!Storage::exists('/public/user/' .$userId. '/' .$appId)) {
-                    Storage::makeDirectory('/public/user/' .$userId. '/' .$appId, 0775, true);
+                if(!Storage::disk('s3')->exists($s3path)) {
+                    Storage::disk('s3')->makeDirectory($s3path, 0775, true);
                 }
-                $path = Storage::disk('public')->put('/user/' .$userId. '/' .$appId, $attributes['doc_file'][$i], null);
+                $path = Storage::disk('s3')->put($s3path, $attributes['doc_file'][$i], null);
                 $inputArr[$i]['file_path'] = $path;
             }
              
