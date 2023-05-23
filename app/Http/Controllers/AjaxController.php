@@ -3359,7 +3359,7 @@ if ($err) {
         $id = $request->get('id');
         $segment_id = $request->get('segmentId');
         if (is_null($id)) {
-            throw new BlankDataExceptions(trans('error_message.no_data_found'));
+          //  throw new BlankDataExceptions(trans('error_message.no_data_found'));
         }
         
         if($segment_id != null)

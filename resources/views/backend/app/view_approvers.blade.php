@@ -45,7 +45,7 @@
                                         <td>
                                         @can('upload_approval_mail_copy')
                                             @if (!$isFinalUpload)
-                                                <a href="javascript:void(0)" onclick="document.querySelector('.approval-doc-files').click();setDataValue('{{ $approver['app_id'] }}#{{ $approver['app_appr_status_id'] }}');" title="Upload Approval Mail Copy" class="btn btn-action-btn btn-sm" style="{{ $style  }}"><i class="fa fa-upload fa-2xl fa-fw" aria-hidden="true"></i></a>
+                                                <!--<a href="javascript:void(0)" onclick="document.querySelector('.approval-doc-files').click();setDataValue('{{ $approver['app_id'] }}#{{ $approver['app_appr_status_id'] }}');" title="Upload Approval Mail Copy" class="btn btn-action-btn btn-sm" style="{{ $style  }}"><i class="fa fa-upload fa-2xl fa-fw" aria-hidden="true"></i></a>-->
                                                 <input type="file" id="approval-doc-file-{{ $approver['app_appr_status_id'] }}" class="approval-doc-files" name="approval-doc-file" style="display: none;" class="form-control">   
                                             @endif
                                         @endcan
