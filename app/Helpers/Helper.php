@@ -3123,7 +3123,17 @@ class Helper extends PaypalHelper
             $ucicManagementData['document_upload'][$ownerId][$key]['file']['id'] = $update && !$delete ? $fileId : ((!$update && $delete) ? null : null);
             $ucicManagementData['document_upload'][$ownerId][$key]['file']['path'] = $update && !$delete ? $filePath : ((!$update && $delete) ? null : null);
         }else{
-            $doc_id_no = ['pan_card' => 2, 'driving_license' => 31, 'voter_id' => 30, 'passport' => 32, 'photo' => 22, 'aadhar_card' => 34, 'telephone_bill' => 38, 'electricity_bill' => 37];
+            $doc_id_no = [
+                'pan_card' => 2, 
+                'photo' => 22, 
+                'voter_id' => 30, 
+                'driving_license' => 31, 
+                'passport' => 32, 
+                'aadhar_card' => 34, 
+                'electricity_bill' => 37,
+                'telephone_bill' => 38,
+                'other_documents_pre_offer' => 77 
+            ];
             $documents = $ucicManagementData['document_upload'] ?? [];
             $documents = $documents[$ownerId] ?? [];
             $documentData = $documents[$key] ?? [];
