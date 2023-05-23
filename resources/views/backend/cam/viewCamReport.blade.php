@@ -19,10 +19,10 @@
         @if(($currStageCode == 'approver') && ($approveStatus && $approveStatus->status == 0))
           <div class="float-right">
             @can('approve_limit_form')
-           <!-- <a data-toggle="modal"  data-height="150px" 
+           <a data-toggle="modal"  data-height="150px" 
             data-width="100%" data-target="#approveLimitFrame"
             data-url="{{route('approve_limit_form', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')])}}"  
-            data-placement="top" class="float-right mt-0 ml-3"><button type="button" class="btn btn-success btn-sm">Approve Limit</button></a>-->
+            data-placement="top" class="float-right mt-0 ml-3"><button type="button" class="btn btn-success btn-sm">Approve Limit</button></a>
             @endcan
           </div>
           @elseif(($approveStatus && $approveStatus->status == 1))
