@@ -322,7 +322,7 @@
                                                                 <button type='button' class="btn">Upload</button>
                                                                 @endcan
                                                                 @endif
-                                                                <input type="file" class="ckycfile"  name="ckycfile[]"  data-id="{{isset($row->first_name) ? $i : '1'}}"  id="ckycfile{{isset($row->first_name) ? $i : '1'}}"  onchange="uploadFile({{isset($row->first_name) ? $i : '1'}}, {{ $row->biz_owner_id }}, 77)">
+                                                                <input type="file" class="ckycfile"  name="ckycfile[]"  data-id="{{isset($row->first_name) ? $i : '1'}}"  id="ckycfile{{isset($row->first_name) ? $i : '1'}}"  onchange="uploadFile({{isset($row->first_name) ? $i : '1'}}, {{ $row->biz_owner_id }}, 77, 'other_documents_pre_offer')">
                                                                 <input type="hidden" name="ownerid[]" id="ownerid{{isset($row->first_name) ? $i : '1'}}" value="{{$row->biz_owner_id}}">
                                                             </div>
 
