@@ -370,7 +370,7 @@ class Helper extends PaypalHelper
                     $zipFilename =  $zipName[0].'.'.$zipExtension;
                     $path = Storage::disk('s3')->putFileAs(env('S3_BUCKET_DIRECTORY_PATH').'/user/' .$userId .'/invoice/' . $batch_id.'/zip', $attributes['file_image_id'], $zipFilename); 
                     $zipPath  = env('S3_BUCKET_URL').$path;
-                    $open_path =  env('S3_BUCKET_URL').$path;;
+                    $open_path =  env('S3_BUCKET_URL').$path;
                     $extract_path =  env('S3_BUCKET_URL').$path;
                     /*$zip =  Zip::open($open_path);
                 if(count($zip->listFiles()) > 50)
@@ -501,7 +501,6 @@ class Helper extends PaypalHelper
         $inputArr['file_encp_key'] =  md5(time());
         $inputArr['created_by'] = 1;
         $inputArr['updated_by'] = 1;
-        dd($inputArr);
         return $inputArr;
     }
 
