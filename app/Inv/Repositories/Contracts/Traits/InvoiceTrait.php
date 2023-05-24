@@ -71,7 +71,6 @@ trait InvoiceTrait
         $isSupplierLimitExceeded = self::isSupplierLimitExceeded($data);
         $isProgramLimitExceeded = false;
         $isProgramLimitExceeded = self::isSupplierProgramLimitExceeded($subPrgmData->anchor_sub_limit,$prgmApproveInvoiceAmt);
-       // $isSupplierLimitExceeded = self::isSupplierLimitExceeded($cusomer_id, $amount);
          
        
         if($res)

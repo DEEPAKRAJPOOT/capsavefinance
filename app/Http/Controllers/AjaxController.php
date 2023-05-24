@@ -3966,11 +3966,7 @@ if ($err) {
         $limit =   InvoiceTrait::ProgramLimit($res);
         $customerLimitArray = $this->application->getUserLimit($supplier_id[0]);
         $customerLimit      = ($customerLimitArray) ? $customerLimitArray->tot_limit_amt : 0;
-        //dd($customerLimit->tot_limit_amt);
-        // $sum   =   InvoiceTrait::invoiceApproveLimit($res);
-        // $sum   =   Helpers::anchorSupplierUtilizedLimitByInvoice($res['user_id'], $res['anchor_id']);
         $sum   =   Helpers::anchorSupplierPrgmUtilizedLimitByInvoice($res);
-        ///////////
         $getUserProgramLimit = $this->application->getUserProgramLimit($supplier_id[0]);
         $getUserActiveProgramLimit = $this->application->getUserActiveProgramLimit($supplier_id[0]);
         $inv_Total_limit = 0; $customberOfferLimit = 0; $consumeLimitByPrgm = 0; $customberOfferLimit = 0;
@@ -3996,12 +3992,8 @@ if ($err) {
                     }
                 }
             }
-        /////////
-        //dd($customberOfferLimit);
         $adhocData   =  $this->invRepo->checkUserAdhoc($res);
         $is_adhoc   = $adhocData['amount'];
-       // $remainAmount = round(($prgmlimit - $sum), 2);
-       //$remainAmount = round(($limit - $inv_Total_limit), 2);
        $remainAmount = round(($customberOfferLimit - $inv_Total_limit), 2);
        $remainPrgmLimit = round(($limit - $consumeLimitByPrgm), 2);
         
@@ -4094,9 +4086,6 @@ if ($err) {
                         $marginAmt = Helpers::getOfferMarginAmtOfInvoiceAmt($attr['prgm_offer_id'], $attr['invoice_approve_amount']);
                         $sum   =   InvoiceTrait::invoiceApproveLimit($attr);
                         $remainAmount = $userLimit - $sum;
-                        /*if ($marginAmt > $remainAmount) {
-                            return response()->json(['status' => 0,'message' => 'Invoice amount should not be greater than the remaining limit amount after excluding the margin amount for invoice no. '.$attr['invoice_no']]); 
-                        }*/
                         $updateInvoice=  InvoiceTrait::updateBulkLimit($userLimit,$attr->invoice_approve_amount,$attr);  
                         $attr['comm_txt'] = $updateInvoice['comm_txt'];
                         $attr['status_id'] = $updateInvoice['status_id'];
@@ -4200,13 +4189,11 @@ if ($err) {
             return \response()->json(['duplicatestatus' => 0,'msg' => 'We are unable to process the selected Invoice as some Invoice has been already processed.']);
         }
        $result = InvoiceTrait::checkInvoiceLimitExced($request);
-       //$result = []; 
        foreach($request['invoice_id'] as $row)
        {  
           if($request->status==8)
           {
             $attr['invoice_id']=$row; 
-           // $response =  InvoiceTrait::updateApproveStatus($attr);  
          
           }elseif($request->status==14)
           {
@@ -4216,13 +4203,9 @@ if ($err) {
             $uid = Auth::user()->user_id;
             $response = InvoiceStatusLog::saveInvoiceStatusLog($attr['invoice_id'],$request->status);
             BizInvoice::where(['invoice_id' =>$attr['invoice_id']])->update(['status_id' =>$request->status,'status_update_time' => $cDate,'updated_by' =>$uid]);
-            // return redirect()->back()->with('message', 'Invoice move to reject tab successfully');
-            // return redirect('http://admin.rent.local/lms/invoice/backend_get_reject_invoice')->with('message', 'Invoice move to reject tab successfully');
           }
           else
           {
-             //$this->invRepo->updateInvoice($row,$request->status);
-            //$result = '';
             $invoice_id = $row;
             $invData = $this->invRepo->getInvoiceData(['invoice_id' => $invoice_id],['supplier_id','app_id']);        
             $supplier_id = isset($invData[0]) ? $invData[0]->supplier_id : null;

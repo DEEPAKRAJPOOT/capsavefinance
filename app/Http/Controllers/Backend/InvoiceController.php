@@ -728,8 +728,6 @@ class InvoiceController extends Controller {
         
         $invoice_amount = str_replace(',', '', $attributes['invoice_approve_amount']);
         $invoice_approve_amount = str_replace(',', '', $attributes['invoice_approve_amount']);
-        // $invUtilizedAmt = Helpers::anchorSupplierUtilizedLimitByInvoice($attributes['supplier_id'], $request->anchor_id);
-        // $totalProductLimit = Helpers::getTotalProductLimit($appId, $productId = 1);
         $marginAmt = Helpers::getOfferMarginAmtOfInvoiceAmt($prgmOfferId, $invoice_amount);
         $prgmApproveInvoiceAmt      = InvoiceTrait::anchorPrgmInvoiceApproveAmount($attributes['anchor_id'], $attributes['program_id']);
         
@@ -756,20 +754,6 @@ class InvoiceController extends Controller {
         $isAnchorLimitExceeded = false;
         $isAnchorLimitExceeded = InvoiceTrait::isAnchorLimitExceeded($attributes['anchor_id'], $invoice_approve_amount);
 
-        //dd($limit, $prgmApproveInvoiceAmt,$attributes['program_id'],$prmApproveLimit,$prgmAvilableLimit, $isProgramLimitExceeded);
-        // $limit =   InvoiceTrait::ProgramLimit($attributes);
-        // $sum   =   InvoiceTrait::invoiceApproveLimit($attributes);
-        // $remainAmount = $limit - $sum;
-
-        // if ($marginAmt > $remainAmount) {
-        //     Session::flash('error', 'Invoice amount should not be greater than the remaining limit amount after excluding the margin amount.');
-        //     return back();
-        // }
-
-        // if ($totalProductLimit > 0 && $invoice_amount > 0 && $marginAmt > ($totalProductLimit - $invUtilizedAmt)) {
-        //     Session::flash('error', 'Invoice amount should not be greater than the balance limit amount.');
-        //     return back();
-        // }
         if (!empty($attributes['exception'])) {
             $statusId = 28;
             $attributes['remark'] = 'Invoice date & current date difference should not be more than old tenor days';           

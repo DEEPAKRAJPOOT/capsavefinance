@@ -2660,9 +2660,6 @@ class Helper extends PaypalHelper
                     $newAttr['anchor_id'] = $attr['anchor_id'];
                     $newAttr['prgm_offer_id'] = $parentAppOffer->prgm_offer_id;
                     $sum += self::anchorSupplierPrgmUtilizedLimitByInvoice($newAttr);
-                    //$sum = self::anchorSupplierPrgmUtilizedLimitByInvoice($newAttr);
-                  // dd("ddddd");
-                  //echo "===>".$sum; 
                 }
                 else {
                     if ($prgmData && $prgmData->copied_prgm_id) {
@@ -2717,10 +2714,6 @@ class Helper extends PaypalHelper
                     $newAttr['user_id'] = $attr['user_id'];
                     $newAttr['anchor_id'] = $attr['anchor_id'];
                     $newAttr['prgm_offer_id'] = $parentAppOffer->prgm_offer_id;
-                    //$sum += self::anchorSupplierPrgmUtilizedLimitByInvoice($newAttr);
-                    //$sum = self::anchorSupplierPrgmUtilizedLimitByInvoice($newAttr);
-                  // dd("ddddd");
-                  //echo "===>".$sum; 
                 }
                 else {
                     if ($prgmData && $prgmData->copied_prgm_id) {
@@ -2731,7 +2724,6 @@ class Helper extends PaypalHelper
                             $newAttr['user_id'] = $attr['user_id'];
                             $newAttr['anchor_id'] = $attr['anchor_id'];
                             $newAttr['prgm_offer_id'] = $parentAppOffer->prgm_offer_id;
-                            //$sum += self::anchorSupplierPrgmUtilizedLimitByInvoice($newAttr);
                         }
                     }
                 }
