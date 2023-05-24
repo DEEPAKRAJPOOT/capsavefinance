@@ -570,13 +570,10 @@
 
   $('#calculateUpfrontInt').click(function(){
     const offerDataJson = $('#offer_data').val();
-    console.log(offerDataJson);
     // Decode the base64-encoded string
     const decodedOfferData = atob(offerDataJson);
-    console.log(decodedOfferData);
     // Parse the JSON string into an object
     const offerData = JSON.parse(decodedOfferData);
-    console.log(offerData);
     calculateUpfrontInterest(offerData);       
   });
   
@@ -606,13 +603,9 @@
       var month = String(currentDate.getMonth() + 1).padStart(2, '0');
       var year = currentDate.getFullYear();
       var curDate = day + '/' + month + '/' + year;
-      //var options = { day: '2-digit', month: '2-digit', year: 'numeric' };
-      //var curDate = currentDate.toLocaleDateString(undefined, options);
       tenor = findDaysWithDate(invoice_due_date, curDate);
-      console.log(currentDate, curDate, invoice_due_date, curDate);
     }
     var upfrontInterest = calculateInterest(fundedAmount, interestRate, tenor);
-    console.log(upfrontInterest.toFixed(2),fundedAmount, interestRate, tenor);
     $("#upFrontAmount").empty().html(
       '<b style="color:rgb(5, 88, 19);">Upfront Interest Amount: ' + upfrontInterest.toFixed(2) + '</b>,&nbsp;&nbsp;' +
       '<b style="color:rgb(5, 88, 19);">Upfront Interest Days: ' + tenor + '</b>'
