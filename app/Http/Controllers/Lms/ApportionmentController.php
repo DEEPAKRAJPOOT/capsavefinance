@@ -1678,7 +1678,7 @@ class ApportionmentController extends Controller
 				$payment = Payment::find($paymentId);
                 $apportionment = $payment->apportionment()->orderBy('apportionment_id','desc')->first();
 				if($payment && $apportionment->apportionment_type == '1'){
-                    if($payment->is_settled == '1' && (($payment->action_type == '1' && $payment->trans_type == '17') ||($payment->action_type == '3' && $payment->trans_type == '7')) && $payment->validRevertPayment ){
+                    if($payment->is_settled == '1' && (($payment->action_type == '1' && $payment->trans_type == '17') || ($payment->action_type == '3' && $payment->trans_type == '7') || ($payment->action_type == '5' && $payment->trans_type == '31')) && $payment->validRevertPayment ){
 						$aporUndoPro = self::apportionmentUndoProcess($payment, $apportionment);
                         if($aporUndoPro['status']){
                             $payment->is_settled = '0';

@@ -354,9 +354,9 @@ class Payment extends BaseModel {
         $result = false;
         $curDate = Helper::getSysStartDate();
         $curYearMonth = Carbon::parse($curDate)->format('Ym');
-        $apportDetails = self::apportionment()->latest('apportionment_id')->select('apportionment_id','apportionment_type')->first();
+        $apportDetails = self::apportionment()->latest('apportionment_id')->select('apportionment_id','apportionment_type','created_at')->first();
 
-        $payYearMonth = $apportDetails ? Carbon::parse($apportDetails->created_at)->format('Ym') : Carbon::parse($this->date_of_payment)->format('Ym');
+        $payYearMonth = $apportDetails ? Carbon::parse($apportDetails->created_at)->timezone(config('common.timezone'))->format('Ym') : Carbon::parse($this->date_of_payment)->format('Ym');
         $lastSettledPaymentId = Payment::where('user_id',$this->user_id)
         ->where('is_settled',self::PAYMENT_SETTLED)
         ->orderBy('date_of_payment','DESC')
@@ -367,7 +367,7 @@ class Payment extends BaseModel {
         if($this->is_settled == self::PAYMENT_SETTLED && $lastSettledPaymentId == $this->payment_id){
             if($curYearMonth == $payYearMonth && $apportDetails->apportionment_type == 1 && !$this->refundReq){
                 $refAdjTransId = Transactions::where('apportionment_id',$apportDetails->apportionment_id)->whereIn('trans_type',[config('lms.TRANS_TYPE.REFUND'),config('lms.TRANS_TYPE.MARGIN'),config('lms.TRANS_TYPE.NON_FACTORED_AMT')])->where('entry_type',1)->whereColumn('amount','<>','settled_outstanding')->pluck('trans_id')->toArray();
-                $refAdjTransCnt = Transactions::where('apportionment_id',$apportDetails->apportionment_id)->whereIn('link_trans_id',$refAdjTransId)->whereIn('trans_type',[config('lms.TRANS_TYPE.REFUND'),config('lms.TRANS_TYPE.ADJUSTMENT')])->where('entry_type',0)->where('outstanding','>',0)->count();
+                $refAdjTransCnt = Transactions::whereIn('link_trans_id',$refAdjTransId)->whereIn('trans_type',[config('lms.TRANS_TYPE.REFUND'),config('lms.TRANS_TYPE.ADJUSTMENT')])->where('entry_type',0)->where('outstanding','>',0)->count();
                 if(!$refAdjTransCnt){
                     $result = true;
                 }
