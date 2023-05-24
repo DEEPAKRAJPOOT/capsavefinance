@@ -602,7 +602,8 @@
     var interestRate = parseFloat(offerData.interest_rate);
     if (offerData.benchmark_date == 1) {
       var currentDate = new Date(offerData.currentDate);
-      var curDate = currentDate.toLocaleDateString();
+      var options = { day: '2-digit', month: '2-digit', year: 'numeric' };
+      var curDate = currentDate.toLocaleDateString(undefined, options);
       tenor = findDaysWithDate(invoice_due_date, curDate);
       console.log(currentDate, curDate, invoice_due_date, curDate);
     }
