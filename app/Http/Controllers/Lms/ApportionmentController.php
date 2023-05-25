@@ -1160,11 +1160,20 @@ class ApportionmentController extends Controller
             $billData = [];
             foreach($transactionList as $trans){
                 if(in_array($trans['trans_type'], [config('lms.TRANS_TYPE.INTEREST'),config('lms.TRANS_TYPE.INTEREST_OVERDUE')])){
-                    if($trans['interest_borne_by'] == 2){
-                        $billType = 'IC';
-                    }else{
-                        $billType = 'IA';
+                    if($trans['trans_type'] == config('lms.TRANS_TYPE.INTEREST')){
+                        if($trans['interest_borne_by'] == 2){
+                            $billType = 'IC';
+                        }else{
+                            $billType = 'IA';
+                        }
+                    }elseif($trans['trans_type'] == config('lms.TRANS_TYPE.INTEREST_OVERDUE')){
+                        if($trans['overdue_interest_borne_by'] == 2){
+                            $billType = 'IC';
+                        }else{
+                            $billType = 'IA';
+                        }
                     }
+                    
                     $billData[$trans['user_id']][$billType][$trans['trans_id']] = $trans['trans_id'];
                 }
             }
