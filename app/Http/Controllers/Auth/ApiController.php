@@ -21,6 +21,8 @@ use App\Inv\Repositories\Models\TallyFactVoucher;
 use App\Inv\Repositories\Models\TransFactVoucher;
 use App\Helpers\Helpers;
 use Illuminate\Support\Facades\Mail;
+use App\Inv\Repositories\Models\Lms\Apportionment;
+
 /**
  * 
  */
@@ -88,130 +90,166 @@ class ApiController
   private function createJournalData($journalData, $batch_no) {
     $journalPayments = [];
     foreach ($journalData as $jrnls) {
-      $accountDetails = $jrnls->userRelation->companyBankDetails ?? NULL;
-      if (empty($accountDetails)) {
-        continue;
-      }
-      $is_charge = false;
-      if ($jrnls->transType->chrg_master_id != 0) {
-        $is_charge = true;
-      }
-      $payment_id = '';
-      if(!empty(($jrnls->payment_id))){  
-       $payment_id = " & Payment Id ".$jrnls->payment_id;
-      }
-      $user_id = Helper::formatIdWithPrefix($jrnls->user_id, 'CUSTID');
-      $userName = $jrnls->user->biz_name;
-      $trans_type_name = $jrnls->getTransNameAttribute();
-      $invoice_no = $jrnls->userinvoicetrans->getUserInvoice->invoice_no ?? NULL;
-      $invoice_date = $jrnls->userinvoicetrans->getUserInvoice->invoice_date ?? NULL;
-      if (empty($invoice_no)) {
-          $invoice_no = $jrnls->invoiceDisbursed->invoice->invoice_no ?? NULL;
-          $invoice_date = $jrnls->invoiceDisbursed->invoice->invoice_date ?? NULL;
-      }
-      $invoice_date = !empty($invoice_date) ? $invoice_date .' 23:59:59' : NULL;
-      $inst_no = $jrnls->refundReq->tran_no ?? NULL;
-      $inst_date = $jrnls->refundReq->actual_refund_date ?? NULL;
-      if (!empty($jrnls->parent_trans_id)) {
-        $parentRecord  = $jrnls->getParentTxn();
+      if(in_array($jrnls->trans_type, [config('lms.TRANS_TYPE.REVERSE'), config('lms.TRANS_TYPE.ADJUSTMENT')])){
+        $reversalPayment = $this->createReversalData($jrnls, $batch_no);
+        $journalPayments = array_merge($journalPayments, $reversalPayment);
+      }else{
+        $accountDetails = $jrnls->userRelation->companyBankDetails ?? NULL;
+        if (empty($accountDetails)) {
+          continue;
+        }
+        $is_charge = false;
+        if ($jrnls->transType->chrg_master_id != 0) {
+          $is_charge = true;
+        }
+        $payment_id = '';
+        if(!empty(($jrnls->payment_id))){  
+        $payment_id = " & Payment Id ".$jrnls->payment_id;
+        }
+        $user_id = Helper::formatIdWithPrefix($jrnls->user_id, 'CUSTID');
+        $userName = $jrnls->user->biz_name;
+        $trans_type_name = $jrnls->getTransNameAttribute();
+        $invoice_no = $jrnls->userinvoicetrans->getUserInvoice->invoice_no ?? NULL;
+        $invoice_date = $jrnls->userinvoicetrans->getUserInvoice->invoice_date ?? NULL;
         if (empty($invoice_no)) {
-            $invoice_no = $parentRecord->userinvoicetrans->getUserInvoice->invoice_no ?? NULL;
-            $invoice_date = $parentRecord->userinvoicetrans->getUserInvoice->invoice_date ?? NULL;
-            if (empty($invoice_no)) {
-              $invoice_no = $parentRecord->invoiceDisbursed->invoice->invoice_no ?? NULL;
-              $invoice_date = $parentRecord->invoiceDisbursed->invoice->invoice_date ?? NULL;
-            }
+            $invoice_no = $jrnls->invoiceDisbursed->invoice->invoice_no ?? NULL;
+            $invoice_date = $jrnls->invoiceDisbursed->invoice->invoice_date ?? NULL;
         }
         $invoice_date = !empty($invoice_date) ? $invoice_date .' 23:59:59' : NULL;
-        if (empty($inst_no)) {
-              $inst_no = $parentRecord->refundReq->tran_no ?? NULL;
-              $inst_date = $parentRecord->refundReq->actual_refund_date ?? NULL;
+        $inst_no = $jrnls->refundReq->tran_no ?? NULL;
+        $inst_date = $jrnls->refundReq->actual_refund_date ?? NULL;
+        if (!empty($jrnls->parent_trans_id)) {
+          $parentRecord  = $jrnls->getParentTxn();
+          if (empty($invoice_no)) {
+              $invoice_no = $parentRecord->userinvoicetrans->getUserInvoice->invoice_no ?? NULL;
+              $invoice_date = $parentRecord->userinvoicetrans->getUserInvoice->invoice_date ?? NULL;
+              if (empty($invoice_no)) {
+                $invoice_no = $parentRecord->invoiceDisbursed->invoice->invoice_no ?? NULL;
+                $invoice_date = $parentRecord->invoiceDisbursed->invoice->invoice_date ?? NULL;
+              }
+          }
+          $invoice_date = !empty($invoice_date) ? $invoice_date .' 23:59:59' : NULL;
+          if (empty($inst_no)) {
+                $inst_no = $parentRecord->refundReq->tran_no ?? NULL;
+                $inst_date = $parentRecord->refundReq->actual_refund_date ?? NULL;
+          }
         }
-      }
-      $getTransfactVoucherNumber = Helper::getTransfactVoucherNumber($jrnls->trans_id);
-      if($getTransfactVoucherNumber){
-        $factvoucherNumber = $getTransfactVoucherNumber->fact_voucher_no;
-      }else{
-        $this->journalFactVoucherSeq++;  
-        $factvoucherNumber = 'SJV'.$this->voucherFormat.sprintf('%07d',$this->journalFactVoucherSeq);
-        $transfactvoucherData = [
-          'trans_id'=>$jrnls->trans_id,
-          'fact_voucher_no'=>$factvoucherNumber,
-          'created_at'=>\Carbon\Carbon::now()->setTimezone(config('app.timezone'))->format('Y-m-d H:i:s')
+        $getTransfactVoucherNumber = Helper::getTransfactVoucherNumber($jrnls->trans_id);
+        if($getTransfactVoucherNumber){
+          $factvoucherNumber = $getTransfactVoucherNumber->fact_voucher_no;
+        }else{
+          $this->journalFactVoucherSeq++;  
+          $factvoucherNumber = 'SJV'.$this->voucherFormat.sprintf('%07d',$this->journalFactVoucherSeq);
+          $transfactvoucherData = [
+            'trans_id'=>$jrnls->trans_id,
+            'fact_voucher_no'=>$factvoucherNumber,
+            'created_at'=>\Carbon\Carbon::now()->setTimezone(config('app.timezone'))->format('Y-m-d H:i:s')
+          ];
+          
+          $this->journalTransFactVoucher[] = $transfactvoucherData;
+        }
+        $this->journalFactEndVoucherNumber = $factvoucherNumber;
+        $this->voucherNo = $this->voucherNo + 1;
+        $entry_type = $jrnls->entry_type == 1 ? 'Credit' : 'Debit';
+        $this->selectedTxnData[] = $jrnls->trans_id;
+        $JournalRow = [
+            'batch_no' =>  $batch_no,
+            'transactions_id' =>  $jrnls->trans_id,
+            'fact_voucher_number'=>$factvoucherNumber,
+            'voucher_no' => $this->voucherNo,
+            'voucher_type' => 'Journal',
+            'voucher_date' => $jrnls->trans_date,
+            'transaction_date'=>$jrnls->created_at,
+            'is_debit_credit' =>  $entry_type,
+            'trans_type' =>  $trans_type_name,
+            'invoice_no' =>   $invoice_no,
+            'invoice_date' =>  $invoice_date,
+            'ledger_name' =>  $userName,
+            'amount' =>  $jrnls->amount,
+            'ref_no' =>  $invoice_no,
+            'ref_amount' =>  $jrnls->amount,
+            'acc_no' =>  '',
+            'ifsc_code' =>  '',
+            'bank_name' =>  '',
+            'company_bank_name'=>'',
+            'company_bank_acc'=>'',
+            'cheque_amount' =>  '',
+            'cross_using' => '',
+            'mode_of_pay' => '',
+            'inst_no' =>  NULL,
+            'utr_no'  => NULL,
+            'inst_date' =>  NULL,
+            'favoring_name' =>  '',
+            'remarks' => '',
+            'generated_by' => '0',
+            'narration' => 'Being '.$trans_type_name.' Booked towards UserId ' . $user_id . ', Invoice No '. $invoice_no .' & Batch no '. $batch_no .$payment_id,
         ];
-        
-        $this->journalTransFactVoucher[] = $transfactvoucherData;
-      }
-      $this->journalFactEndVoucherNumber = $factvoucherNumber;
-      $this->voucherNo = $this->voucherNo + 1;
-      $entry_type = $jrnls->entry_type == 1 ? 'Credit' : 'Debit';
-      $this->selectedTxnData[] = $jrnls->trans_id;
-      $JournalRow = [
-          'batch_no' =>  $batch_no,
-          'transactions_id' =>  $jrnls->trans_id,
-          'fact_voucher_number'=>$factvoucherNumber,
-          'voucher_no' => $this->voucherNo,
-          'voucher_type' => 'Journal',
-          'voucher_date' => $jrnls->trans_date,
-          'transaction_date'=>$jrnls->created_at,
-          'is_debit_credit' =>  $entry_type,
-          'trans_type' =>  $trans_type_name,
-          'invoice_no' =>   $invoice_no,
-          'invoice_date' =>  $invoice_date,
-          'ledger_name' =>  $userName,
-          'amount' =>  $jrnls->amount,
-          'ref_no' =>  $invoice_no,
-          'ref_amount' =>  $jrnls->amount,
-          'acc_no' =>  '',
-          'ifsc_code' =>  '',
-          'bank_name' =>  '',
-          'company_bank_name'=>'',
-          'company_bank_acc'=>'',
-          'cheque_amount' =>  '',
-          'cross_using' => '',
-          'mode_of_pay' => '',
-          'inst_no' =>  NULL,
-          'utr_no'  => NULL,
-          'inst_date' =>  NULL,
-          'favoring_name' =>  '',
-          'remarks' => '',
-          'generated_by' => '0',
-          'narration' => 'Being '.$trans_type_name.' Booked towards UserId ' . $user_id . ', Invoice No '. $invoice_no .' & Batch no '. $batch_no .$payment_id,
-     ];
-     $gstData = [];
-     if ($jrnls->trans_type == config('lms.TRANS_TYPE.WAVED_OFF')) {
-            $totalamount = $jrnls->amount;
-            $userStateId = $parentRecord->userinvoicetrans->getUserInvoice->user_gst_state_id ?? NULL;
-            $companyStateId = $parentRecord->userinvoicetrans->getUserInvoice->comp_gst_state_id ?? NULL;
-            $base_amt = $totalamount;
-            $igst_amt = 0;
-            $igst_rate = 0;
-            $cgst_amt = 0;
-            $cgst_rate = 0;
-            $sgst_amt = 0;
-            $sgst_rate = 0;
-            $totalGST = $parentRecord->gst_per;
-            if ($parentRecord->gst == 1) {
-                $base_amt = $totalamount * 100/(100 + $totalGST);
-                if($userStateId == $companyStateId) {
-                    $cgst_rate = ($totalGST/2);
-                    $cgst_amt = round((($base_amt * $cgst_rate)/100),2);
-                    $sgst_rate = ($totalGST/2);
-                    $sgst_amt = round((($base_amt * $sgst_rate)/100),2);
-                } else {
-                   $igst_rate = $totalGST;
-                    $igst_amt = round((($base_amt * $igst_rate)/100),2); 
-                }
+        $gstData = [];
+        if ($jrnls->trans_type == config('lms.TRANS_TYPE.WAVED_OFF')) {
+              $totalamount = $jrnls->amount;
+              $userStateId = $parentRecord->userinvoicetrans->getUserInvoice->user_gst_state_id ?? NULL;
+              $companyStateId = $parentRecord->userinvoicetrans->getUserInvoice->comp_gst_state_id ?? NULL;
+              $base_amt = $totalamount;
+              $igst_amt = 0;
+              $igst_rate = 0;
+              $cgst_amt = 0;
+              $cgst_rate = 0;
+              $sgst_amt = 0;
+              $sgst_rate = 0;
+              $totalGST = $parentRecord->gst_per;
+              if ($parentRecord->gst == 1) {
+                  $base_amt = $totalamount * 100/(100 + $totalGST);
+                  if($userStateId == $companyStateId) {
+                      $cgst_rate = ($totalGST/2);
+                      $cgst_amt = round((($base_amt * $cgst_rate)/100),2);
+                      $sgst_rate = ($totalGST/2);
+                      $sgst_amt = round((($base_amt * $sgst_rate)/100),2);
+                  } else {
+                    $igst_rate = $totalGST;
+                      $igst_amt = round((($base_amt * $igst_rate)/100),2); 
+                  }
+              }
+            $gstData['base_amount'] = $base_amt;
+            if ($sgst_amt != 0) {
+                $gstData['sgst'] = $sgst_amt;
+            } 
+            if ($cgst_amt != 0) {
+                $gstData['cgst'] = $cgst_amt;
+            } 
+            if ($igst_amt != 0) {
+                $gstData['igst'] = $igst_amt;
             }
-          $gstData['base_amount'] = $base_amt;
-          if ($sgst_amt != 0) {
-              $gstData['sgst'] = $sgst_amt;
+            foreach ($gstData as $gst_key => $gst_val) {
+              $gst_trans_amount = $gst_val;
+              switch ($gst_key) {
+                case 'base_amount':
+                  $gst_trans_type = $trans_type_name;
+                  break;
+                case 'sgst':
+                  $gst_trans_type = 'SGST - '.$trans_type_name;
+                  break;
+                case 'cgst':
+                  $gst_trans_type = 'CGST - '.$trans_type_name;
+                  break;
+                case 'igst':
+                  $gst_trans_type = 'IGST - '.$trans_type_name;
+                  break;
+              }
+              $JournalRow['trans_type'] =  $gst_trans_type;
+              $JournalRow['amount'] =  $gst_trans_amount;
+              $JournalRow['ref_amount'] =  $gst_trans_amount;
+              $journalPayments[] = $JournalRow;
+            }
+        }else if (!empty($jrnls->userinvoicetrans->getUserInvoice->invoice_no)) {
+          $gstData['base_amount'] = $jrnls->userinvoicetrans->base_amount;
+          if ($jrnls->userinvoicetrans->sgst_amount != 0) {
+              $gstData['sgst'] = $jrnls->userinvoicetrans->sgst_amount;
           } 
-          if ($cgst_amt != 0) {
-              $gstData['cgst'] = $cgst_amt;
+          if ($jrnls->userinvoicetrans->cgst_amount != 0) {
+              $gstData['cgst'] = $jrnls->userinvoicetrans->cgst_amount;
           } 
-          if ($igst_amt != 0) {
-              $gstData['igst'] = $igst_amt;
+          if ($jrnls->userinvoicetrans->igst_amount != 0) {
+              $gstData['igst'] = $jrnls->userinvoicetrans->igst_amount;
           }
           foreach ($gstData as $gst_key => $gst_val) {
             $gst_trans_amount = $gst_val;
@@ -234,45 +272,10 @@ class ApiController
             $JournalRow['ref_amount'] =  $gst_trans_amount;
             $journalPayments[] = $JournalRow;
           }
-    }else if (!empty($jrnls->userinvoicetrans->getUserInvoice->invoice_no)) {
-        $gstData['base_amount'] = $jrnls->userinvoicetrans->base_amount;
-        if ($jrnls->userinvoicetrans->sgst_amount != 0) {
-            $gstData['sgst'] = $jrnls->userinvoicetrans->sgst_amount;
-        } 
-        if ($jrnls->userinvoicetrans->cgst_amount != 0) {
-            $gstData['cgst'] = $jrnls->userinvoicetrans->cgst_amount;
-        } 
-        if ($jrnls->userinvoicetrans->igst_amount != 0) {
-            $gstData['igst'] = $jrnls->userinvoicetrans->igst_amount;
-        }
-        foreach ($gstData as $gst_key => $gst_val) {
-          $gst_trans_amount = $gst_val;
-          switch ($gst_key) {
-            case 'base_amount':
-              $gst_trans_type = $trans_type_name;
-              break;
-            case 'sgst':
-              $gst_trans_type = 'SGST - '.$trans_type_name;
-              break;
-            case 'cgst':
-              $gst_trans_type = 'CGST - '.$trans_type_name;
-              break;
-            case 'igst':
-              $gst_trans_type = 'IGST - '.$trans_type_name;
-              break;
-          }
-          $JournalRow['trans_type'] =  $gst_trans_type;
-          $JournalRow['amount'] =  $gst_trans_amount;
-          $JournalRow['ref_amount'] =  $gst_trans_amount;
+        }else{
           $journalPayments[] = $JournalRow;
         }
-      }else{
-        $journalPayments[] = $JournalRow;
       }
-     if (in_array($jrnls->trans_type, [config('lms.TRANS_TYPE.REVERSE'), config('lms.TRANS_TYPE.ADJUSTMENT')])) {
-        $reversalPayment = $this->createReversalData($jrnls, $batch_no);
-        $journalPayments = array_merge($journalPayments, $reversalPayment);
-     }
     }
     return $journalPayments;
   }
@@ -280,12 +283,11 @@ class ApiController
   private function createReversalData($rvrslRow, $batch_no) {
     $reversalPayment = [];
     $where = [['is_posted_in_tally', '=', '0'],['soa_flag', '=', '1']];
-    $settledTransactoionsFromReversal = $rvrslRow->getReversalParent ? $rvrslRow->getReversalParent->getSettledTxns()->where($where)?? []:[];
-    if (!empty($settledTransactoionsFromReversal)) {
-      foreach ($settledTransactoionsFromReversal as  $rvrsl) {
+        $rvrsl = $rvrslRow;
+
         $accountDetails = $rvrsl->userRelation->companyBankDetails ?? NULL;
         if (empty($accountDetails)) {
-          continue;
+          return $reversalPayment;
         }
         $user_id = Helper::formatIdWithPrefix($rvrsl->user_id, 'CUSTID');
         $bizName = $rvrsl->user->biz_name;
@@ -314,19 +316,24 @@ class ApiController
           }
         }
         $this->selectedTxnData[] = $rvrsl->trans_id;
-        $this->selectedPaymentData[] = $rvrsl->payment_id;
-        $getTransfactVoucherNumber = Helper::getTransfactVoucherNumber($rvrsl->trans_id);
+
+         $getTransfactVoucherNumber = Helper::getTransfactVoucherNumber($rvrsl->trans_id);
         if($getTransfactVoucherNumber){
           $factvoucherNumber = $getTransfactVoucherNumber->fact_voucher_no;
         }else{
-          $factvoucherNumber = 'SRP'.$this->voucherFormat.sprintf('%07d',$this->paymentFactVoucherSeq);
+          $this->journalFactVoucherSeq++;  
+          $factvoucherNumber = 'SJV'.$this->voucherFormat.sprintf('%07d',$this->journalFactVoucherSeq);
           $transfactvoucherData = [
             'trans_id'=>$rvrsl->trans_id,
             'fact_voucher_no'=>$factvoucherNumber,
             'created_at'=>\Carbon\Carbon::now()->setTimezone(config('app.timezone'))->format('Y-m-d H:i:s')
           ];
+          
           $this->journalTransFactVoucher[] = $transfactvoucherData;
         }
+        $this->journalFactEndVoucherNumber = $factvoucherNumber;
+        $this->voucherNo = $this->voucherNo + 1;
+        $linkTransFactNumber = $this->getLinkTransFactNo($this->journalTransFactVoucher,$rvrsl->link_trans_id);
         $reversalRow = [
             'batch_no' =>  $batch_no,
             'transactions_id' =>  $rvrsl->trans_id,
@@ -340,9 +347,9 @@ class ApiController
             'invoice_no' =>   $invoice_no,
             'invoice_date' =>  $invoice_date,
             'ledger_name' =>  $bizName,
-            'amount' =>  $rvrsl->amount,
+            'amount' =>  ($rvrsl->amount * -1),
             'ref_no' =>  $invoice_no,
-            'ref_amount' =>  $rvrsl->amount,
+            'ref_amount' =>  ($rvrsl->amount * -1),
             'acc_no' =>  $accountDetails->acc_no ?? '',
             'ifsc_code' =>  $accountDetails->ifsc_code ?? '',
             'bank_name' =>  $accountDetails->bank->bank_name ?? '',
@@ -357,11 +364,9 @@ class ApiController
             'favoring_name' =>  '',
             'remarks' => '',
             'generated_by' => '0',
-            'narration' => 'Being '.$trans_type_name.' Booked towards UserId ' . $user_id . ', Invoice No '. $invoice_no .' & Batch no '. $batch_no,
+            'narration' => 'Being '.$trans_type_name.' Booked towards UserId ' . $user_id . ', Invoice No '. $invoice_no .' & Batch no '. $batch_no. ' & Fact No '. $linkTransFactNumber,
        ];
        $reversalPayment[] = $reversalRow;
-      }
-    }
     return $reversalPayment;
   }
 
@@ -428,9 +433,9 @@ class ApiController
           'invoice_no' =>   $invoice_no,
           'invoice_date' =>  $invoice_date,
           'ledger_name' =>  $userName,
-          'amount' =>  $rfnd->amount,
+          'amount' =>  ($rfnd->amount * -1),
           'ref_no' =>  $invoice_no,
-          'ref_amount' =>  $rfnd->amount,
+          'ref_amount' =>  ($rfnd->amount * -1),
           'acc_no' =>  '',
           'ifsc_code' =>  '',
           'bank_name' =>  '',
@@ -533,9 +538,9 @@ class ApiController
               'invoice_no' =>   $invoice_no,
               'invoice_date' =>  $invoice_date,
               'ledger_name' =>  $userName,
-              'amount' =>  $disburse_amt,
+              'amount' =>  ($disburse_amt * -1),
               'ref_no' =>  $invoice_no,
-              'ref_amount' =>  $disburse_amt,
+              'ref_amount' =>  ($disburse_amt * -1),
               'acc_no' =>  '',
               'ifsc_code' =>  '',
               'bank_name' =>  '',
@@ -706,13 +711,27 @@ class ApiController
   private function createReceiptData($receiptData, $batch_no) {
     
     $receiptPayment = [];
-    foreach($receiptData as $rcpt){
+    foreach($receiptData as $rcptApport) {
+     $rcpt = $rcptApport->payment;
      $this->paymentFactVoucherSeq++;
      $factvoucherNumber = 'SRP'.$this->voucherFormat.sprintf('%07d',$this->paymentFactVoucherSeq); 
      $this->paymentFactEndVoucherNumber = $factvoucherNumber;
      $this->voucherNo = $this->voucherNo + 1;
-     $settledTransactoions =  $rcpt->getSettledTxns;
-     $refrenceTxns = $rcpt->paymentRefrenceTxns->first();
+
+     $paymentId = $rcpt->payment_id;
+
+    $settledTransactoions = Transactions::where('payment_id', $paymentId)
+      ->where('apportionment_id', $rcptApport->apportionment_id)
+      ->where('is_posted_in_tally', 0)
+      ->whereNotIn('trans_type', [17])
+      ->get();
+
+    $refrenceTxns = Transactions::where('payment_id', $paymentId)
+      ->where('apportionment_id', $rcptApport->apportionment_id)
+      ->where('trans_type', 17)
+      ->where('is_posted_in_tally', 0)
+      ->first();
+
      $user_id = Helper::formatIdWithPrefix($rcpt->user_id, 'CUSTID');
      $userName = $rcpt->user->biz_name;
      $accountDetails = $rcpt->userRelation->companyBankDetails ?? NULL;
@@ -723,7 +742,21 @@ class ApiController
 
      $inst_no = $rcpt->refundReq->tran_no ?? NULL;
      $inst_date = $rcpt->refundReq->actual_refund_date ?? NULL;
+     $this->selectedTxnData[] = $refrenceTxns->trans_id;
      $this->selectedPaymentData[] = $rcpt->payment_id;
+
+     $getTransfactVoucherNumber = Helper::getTransfactVoucherNumber($refrenceTxns->trans_id);
+      if($getTransfactVoucherNumber){
+        $factvoucherNumber = $getTransfactVoucherNumber->fact_voucher_no;
+      }else{
+        $transfactvoucherData = [
+          'trans_id'=>$refrenceTxns->trans_id,
+          'fact_voucher_no'=>$factvoucherNumber,
+          'created_at'=>\Carbon\Carbon::now()->setTimezone(config('app.timezone'))->format('Y-m-d H:i:s')
+        ];
+        $this->receiptTransFactVoucher[] = $transfactvoucherData;
+      }
+
      switch ($rcpt->payment_type) {
        case '1':
          $mode_of_pay = 'e-Fund-Transfer';
@@ -748,15 +781,15 @@ class ApiController
               'fact_voucher_number'=>$factvoucherNumber,
               'voucher_type' => 'Receipt',
               'voucher_date' => $rcpt->date_of_payment,
-              'transaction_date'=>$refrenceTxns->created_at?:NULL,
+              'transaction_date'=>$refrenceTxns->created_at??NULL,
               'is_debit_credit' =>  'Debit',
               'trans_type' =>  ($accountDetails->bank->bank_name ?? '').' - Receipt',
               'invoice_no' =>   '',
               'invoice_date' =>  NULL,
               'ledger_name' =>  $accountDetails->bank->bank_name ?? '',
-              'amount' =>  $rcpt->amount,
+              'amount' =>  ($rcpt->amount * -1),
               'ref_no' =>  '',
-              'ref_amount' =>  $rcpt->amount,
+              'ref_amount' =>  ($rcpt->amount * -1),
               'acc_no' =>  $accountDetails->acc_no ?? '',
               'ifsc_code' =>  $accountDetails->ifsc_code ?? '',
               'bank_name' =>  $accountDetails->bank->bank_name ?? '',
@@ -845,13 +878,30 @@ class ApiController
   private function createReceipReversalData($receiptReversalData, $batch_no) {
     
     $receiptPayment = [];
-    foreach($receiptReversalData as $rcpt){
+    foreach ($receiptReversalData as $rcptApport) {
+     $rcpt = $rcptApport->payment;
      $this->paymentFactVoucherSeq++;
      $factvoucherNumber = 'SRP'.$this->voucherFormat.sprintf('%07d',$this->paymentFactVoucherSeq); 
      $this->paymentFactEndVoucherNumber = $factvoucherNumber;
      $this->voucherNo = $this->voucherNo + 1;
-     $settledTransactoions =  $rcpt->getSettledTxns;
-     $refrenceTxns = $rcpt->paymentRefrenceTxns->first();
+     $paymentId = $rcpt->payment_id;
+      $settledTransactoions = Transactions::where('apportionment_id', $rcptApport->apportionment_id)
+        ->whereHas('linkTransactions', function ($query) use ($paymentId) {
+          $query->where('payment_id', $paymentId)
+          ->whereNotIn('trans_type', [17]);
+        })
+        ->where('is_posted_in_tally', 0)
+        ->get();
+
+      $refrenceTxns = Transactions::where('payment_id', $rcpt->payment_id)
+        ->where('apportionment_id', $rcptApport->apportionment_id)
+        ->where('trans_type', 2)
+        ->whereHas('linkTransactions', function ($query) use ($paymentId) {
+          $query->where('payment_id', $paymentId)
+            ->where('trans_type', 17);
+        })
+        ->where('is_posted_in_tally', 0)
+        ->first();
      $user_id = Helper::formatIdWithPrefix($rcpt->user_id, 'CUSTID');
      $userName = $rcpt->user->biz_name;
      $accountDetails = $rcpt->userRelation->companyBankDetails ?? NULL;
@@ -862,7 +912,23 @@ class ApiController
 
      $inst_no = $rcpt->refundReq->tran_no ?? NULL;
      $inst_date = $rcpt->refundReq->actual_refund_date ?? NULL;
+     $this->selectedTxnData[] = $refrenceTxns->trans_id ;
      $this->selectedPaymentData[] = $rcpt->payment_id;
+
+      $getTransfactVoucherNumber = Helper::getTransfactVoucherNumber($refrenceTxns->trans_id);
+      if($getTransfactVoucherNumber){
+        $factvoucherNumber = $getTransfactVoucherNumber->fact_voucher_no;
+      }else{
+        $transfactvoucherData = [
+          'trans_id'=>$refrenceTxns->trans_id,
+          'fact_voucher_no'=>$factvoucherNumber,
+          'created_at'=>\Carbon\Carbon::now()->setTimezone(config('app.timezone'))->format('Y-m-d H:i:s')
+        ];
+        $this->receiptTransFactVoucher[] = $transfactvoucherData;
+      }
+
+     $linkTransFactNumber = $this->getLinkTransFactNo($this->receiptTransFactVoucher,$refrenceTxns->link_trans_id);
+
      switch ($rcpt->payment_type) {
        case '1':
          $mode_of_pay = 'e-Fund-Transfer';
@@ -887,15 +953,15 @@ class ApiController
               'fact_voucher_number'=>$factvoucherNumber,
               'voucher_type' => 'Receipt',
               'voucher_date' => $rcpt->date_of_payment,
-              'transaction_date'=>$refrenceTxns->created_at?:NULL,
+              'transaction_date'=>$refrenceTxns->created_at??NULL,
               'is_debit_credit' =>  'Credit',
               'trans_type' =>  ($accountDetails->bank->bank_name ?? '').' - Receipt',
               'invoice_no' =>   '',
               'invoice_date' =>  NULL,
               'ledger_name' =>  $accountDetails->bank->bank_name ?? '',
-              'amount' =>  $rcpt->amount,
+              'amount' =>  ($rcpt->amount),
               'ref_no' =>  '',
-              'ref_amount' =>  $rcpt->amount,
+              'ref_amount' =>  ($rcpt->amount),
               'acc_no' =>  $accountDetails->acc_no ?? '',
               'ifsc_code' =>  $accountDetails->ifsc_code ?? '',
               'bank_name' =>  $accountDetails->bank->bank_name ?? '',
@@ -910,11 +976,14 @@ class ApiController
               'company_bank_acc'=>$rcpt->companyUserAccount?$rcpt->companyUserAccount->acc_no:NULL,
               'remarks' => '',
               'generated_by' => '1',
-              'narration' => 'Being Repayment Reversed towards UserId ' . $user_id . ' & Batch no '. $batch_no,
+              'narration' => 'Being Repayment Reversed towards UserId ' . $user_id . ' & Batch no '. $batch_no. ' & Fact No '. $linkTransFactNumber,
      ];
      $receiptPayment[] = $BankRow;
      if (!empty($settledTransactoions)) {
        foreach ($settledTransactoions as $stldTxn) {
+          if ($stldTxn->amount == 0) {
+            continue;
+          }
           $trans_type_name = $stldTxn->getTransNameAttribute();
           $invoice_no = $stldTxn->userinvoicetrans->getUserInvoice->invoice_no ?? NULL;
           $invoice_date = $stldTxn->userinvoicetrans->getUserInvoice->created_at ?? NULL;
@@ -939,6 +1008,7 @@ class ApiController
             $this->receiptTransFactVoucher[] = $transfactvoucherData;
           }
           $this->selectedTxnData[] = $stldTxn->trans_id;
+          $linkTransFactNumber = $this->getLinkTransFactNo($this->receiptTransFactVoucher,$stldTxn->link_trans_id);
           $settledRow = [
               'batch_no' =>  $batch_no,
               'transactions_id' =>  $stldTxn->trans_id,
@@ -952,9 +1022,9 @@ class ApiController
               'invoice_no' =>   $invoice_no,
               'invoice_date' =>  $invoice_date,
               'ledger_name' =>  $userName,
-              'amount' =>  $stldTxn->amount,
+              'amount' =>  ($stldTxn->amount * -1),
               'ref_no' =>  $invoice_no,
-              'ref_amount' =>  $stldTxn->amount,
+              'ref_amount' => ($stldTxn->amount * -1),
               'acc_no' =>  '',
               'ifsc_code' =>  '',
               'bank_name' =>  '',
@@ -969,7 +1039,7 @@ class ApiController
               'company_bank_acc'=>$rcpt->companyUserAccount?$rcpt->companyUserAccount->acc_no:NULL,
               'remarks' => '',
               'generated_by' => '0',
-              'narration' => 'Being '.$trans_type_name.' towards UserId ' . $user_id . ', Invoice No '. $invoice_no .' & Batch no '. $batch_no,
+              'narration' => 'Being '.$trans_type_name.' towards UserId ' . $user_id . ', Invoice No '. $invoice_no .' & Batch no '. $batch_no. ' & Fact No '. $linkTransFactNumber,
           ];
           if (in_array($stldTxn->trans_type, [config('lms.TRANS_TYPE.MARGIN'), config('lms.TRANS_TYPE.NON_FACTORED_AMT')])) {
             $settledRow['generated_by'] = 1; 
@@ -993,12 +1063,27 @@ class ApiController
     return $dates;
   }
 
+  function getLinkTransFactNo($transFactVoucher,$linkTransId = NULL){
+    $linkTransFactNumber = '';
+    if($linkTransId){
+      $key = array_search($linkTransId, array_column($transFactVoucher, 'trans_id'));
+      if (!($key === false)) {
+        $linkTransFactNumber = $transFactVoucher[$key]['fact_voucher_no'];
+      }else{
+        $getTransfactVoucherNumber = Helper::getTransfactVoucherNumber($linkTransId);
+        $linkTransFactNumber = $getTransfactVoucherNumber->fact_voucher_no ?? '';
+      }
+    }
+    return $linkTransFactNumber;
+  }
+
   public function tally_entry_date_wise(){
     $activeDate = Carbon::now()->subDays(1)->setTimezone(config('common.timezone'))->format('Y-m-d');
     // $dates = $this->displayDates('2020-01-01', date('Y-m-d'));
     // foreach ($dates as $activeDate) {
       $startActiveDate  = "$activeDate 00:00:00"; 
-      $endActiveDate = "$activeDate 23:59:59";
+      $endActiveDate = Carbon::now()->setTimezone(config('common.timezone'))->format('Y-m-d H:i:s');
+      // $endActiveDate = "$activeDate 23:59:59";
       self::tally_entry($startActiveDate,$endActiveDate);
     // }
   }
@@ -1061,8 +1146,26 @@ class ApiController
     $journalData = Transactions::getJournalTxnTally($where);
     $disbursalData = Transactions::getDisbursalTxnTally($where);
     $refundData = Transactions::getRefundTxnTally($where);
-    $receiptData = Payment::with('userRelation')->where(['is_settled' => 1, 'trans_type' => config('lms.TRANS_TYPE.REPAYMENT'), 'action_type' => 1])->whereHas('paymentRefrenceTxns',function($query) use($where){ $query->whereNotIn('trans_type',[2])->where($where); })->get();
-    $receiptReversalData = Payment::with('userRelation')->where(['is_settled' => 0, 'trans_type' => config('lms.TRANS_TYPE.REPAYMENT'), 'action_type' => 1])->whereHas('paymentRefrenceTxns',function($query) use($where){ $query->whereIn('trans_type',[2])->where($where); })->get();
+
+    $receiptData = Apportionment::with('payment', 'payment.userRelation:user_id,company_id', 'payment.userRelation.companyBankDetails')
+      ->where('apportionment_type', 1)
+      ->whereHas('transaction', function ($query) use ($where) {
+        $query->where($where);
+      })
+      ->whereHas('payment', function ($query2) {
+        $query2->where(['trans_type' => config('lms.TRANS_TYPE.REPAYMENT'), 'action_type' => 1]);
+      })
+      ->get();
+
+    $receiptReversalData = Apportionment::with('payment', 'payment.userRelation:user_id,company_id', 'payment.userRelation.companyBankDetails')
+      ->where('apportionment_type', 2)
+      ->whereHas('transaction', function ($query) use ($where) {
+        $query->where($where);
+      })
+      ->whereHas('payment', function ($query2) {
+        $query2->where(['trans_type' => config('lms.TRANS_TYPE.REPAYMENT'), 'action_type' => 1]);
+      })
+      ->get();
 
     $journalArray = $this->createJournalData($journalData, $batch_no);
     $disbursalArray = $this->createDisbursalData($disbursalData, $batch_no);
@@ -1093,7 +1196,7 @@ class ApiController
         }
       }
       $totalRecords = $totalTxnRecords + $totalPaymentsRecords;
-      $recordsTobeInserted = count($selectedTxnData) + count($selectedPaymentData);
+      $recordsTobeInserted = count($selectedTxnData);
       if (empty($totalRecords)) {
         DB::rollback();
         $response['message'] =  'Some error occured. No Record can be posted in tally.';
@@ -1133,7 +1236,7 @@ class ApiController
       DB::commit();
     } catch (\Exception $e) {
       DB::rollback();
-      Helpers::getExceptionMessage($ex);
+      Helper::getExceptionMessage($e);
       $response['message'] =  ('DB error occured.').' No Record can be posted in tally.';
     }
     return $response;

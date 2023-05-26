@@ -510,11 +510,7 @@ class FinanceController extends Controller {
                     $bankCode = null;
 
                     if($fetchedArr['voucher_type'] == 'Payment'){
-                        if($entry_type == 'credit'){
-                            $amount = $fetchedArr['amount'];
-                        }else{
-                            $amount = '-'.$fetchedArr['amount'];
-                        }  
+                        $amount = $fetchedArr['amount'];
                         $bankName = $fetchedArr['bank'];
                         $bankAcNo = $fetchedArr['bank_acc_no'];
                         if($fetchedArr['bank'] == 'IDFC Bank' && $fetchedArr['bank_acc_no'] == '10006748999'){
@@ -531,11 +527,7 @@ class FinanceController extends Controller {
                             $bankCode = 24;
                         }
                     }elseif($fetchedArr['voucher_type'] == 'Receipt'){
-                        if($entry_type == 'credit'){
-                            $amount = $fetchedArr['amount'];
-                        }else{
-                            $amount = '-'.$fetchedArr['amount'];
-                        }
+                        $amount = $fetchedArr['amount'];
                         $bankName = $fetchedArr['company_bank_name'];
                         $bankAcNo = $fetchedArr['company_bank_acc'];
                         if($fetchedArr['company_bank_name'] == 'IDFC Bank' && $fetchedArr['company_bank_acc'] == '10006748999'){
@@ -582,45 +574,21 @@ class FinanceController extends Controller {
                 }
             }
 
-            if (empty($records['PAYMENT'])) {
-                $records['PAYMENT'][] =  [
-                    "voucher" => '',
-                    "sr"=>'',
-                    "date" => '',
-                    "description" => '',
-                    "chq_/_ref_number"=> '',
-                    "dt_value" => '',
-                    "fc_amount" => '',
-                    "amount" => '',
-                    "bank_code" => '',
-                    "bank_name" => '',
-                    "account_no" => '',
-                    "payment_vendor_name" => '',
-                    "paid_to_client" => '',
-                    "code" => '',
-                    "remarks" => '',
-                    "type" => '',
-                    "gL_code" => '',
-                    "remark" => '',
-                    "upload_status" => '',
-                    "vendor_code_exists" => '',
-                ];
-            }
 
             $toExportData = $records;
             if($tallyData->is_fact_payment_generated == "1"){
                 $payments = $records['PAYMENT'];
-                if(isset($batchNo)){
-                array_walk($payments,function(&$value,$key) use ($batchNo){ $value['batch_no'] = $batchNo; });
+                if(!empty($payments)){
+                    if(isset($batch_no)){
+                        array_walk($payments,function(&$value,$key) use ($batch_no){ $value['batch_no'] = $batch_no; });
+                    }
+                    foreach($payments as $key => $payment){
+                        $payments[$key]['date'] = date('Y-m-d', strtotime($payment['date']));
+                        $payments[$key]['dt_value'] = date('Y-m-d', strtotime($payment['dt_value']));
+                    }
+                    $data = FactPaymentEntry::insert($payments);
                 }
-                foreach($payments as $key => $payment){
-                    $payments[$key]['date'] = date('Y-m-d', strtotime($payment['date']));
-                    $payments[$key]['dt_value'] = date('Y-m-d', strtotime($payment['dt_value']));
-                }
-                $data = FactPaymentEntry::insert($payments);
-                if(!empty($data)){
-                    $tallyBatch = \DB::table('tally')->where('batch_no',$batch_no)->update(['is_fact_payment_generated'=>2]);
-                }
+                $tallyBatch = \DB::table('tally')->where('batch_no',$batch_no)->update(['is_fact_payment_generated'=>2]);
             }
             \DB::commit();
             $isFileSave = true;
@@ -881,47 +849,18 @@ class FinanceController extends Controller {
                 }
             }
 
-            if (empty($records['JOURNAL'])) {
-                $records['JOURNAL'][] =  [
-                    "voucher_no" => '',
-                    "voucher_date"=> '',
-                    "voucher_narration" => '',
-                    "general_ledger_code" => '',
-                    "document_class"=> '',
-                    "d_/_c" => '',
-                    "amount" => '',
-                    "description" => '',
-                    "item_serial_number" => '',
-                    "tax_code" => '',
-                    "name" => '',
-                    "gST_hSN_code" => '',
-                    "sAC_code" => '',
-                    "gST_state_name" => '',
-                    "address_line_1" => '',
-                    "address_line_2" => '',
-                    "address_line_3" => '',
-                    "city" => '',
-                    "country" => '',
-                    "postal_code" => '',
-                    "telephone_number" => '',
-                    "mobile_phone_number" => '',
-                    "fAX" => '',
-                    "email" => '',
-                    "gST_identification_number_(GSTIN)" => '',
-                ];
-            }
 
             $toExportData = $records;
             if($tallyData->is_fact_journal_generated == "1"){
                 $journals = $records['JOURNAL'];
-                array_walk($journals,function(&$value,$key) use ($batchNo){ $value['batch_no'] = $batchNo; });
-                foreach($journals as $key => $journal){
-                    $journals[$key]['voucher_date'] = date('Y-m-d', strtotime($journal['voucher_date']));
+                if(!empty($journals)){
+                    array_walk($journals,function(&$value,$key) use ($batch_no){ $value['batch_no'] = $batch_no; });
+                    foreach($journals as $key => $journal){
+                        $journals[$key]['voucher_date'] = date('Y-m-d', strtotime($journal['voucher_date']));
+                    }
+                    $data = FactJournalEntry::insert($journals);
                 }
-                $data = FactJournalEntry::insert($journals);
-                if(!empty($data)){
-                    $tallyBatch = \DB::table('tally')->where('batch_no',$batch_no)->update(['is_fact_journal_generated'=>2]);
-                }
+                $tallyBatch = \DB::table('tally')->where('batch_no',$batch_no)->update(['is_fact_journal_generated'=>2]);
             }
             \DB::commit();
             $isFileSave = true;

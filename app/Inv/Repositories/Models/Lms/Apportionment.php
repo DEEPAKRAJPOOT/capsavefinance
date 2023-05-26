@@ -55,7 +55,7 @@ class Apportionment extends BaseModel
     }
 
     public function transaction(){
-        return $this->belongsTo('App\Inv\Repositories\Models\Lms\Transactions', 'apportionment_id', 'apportionment_id');
+        return $this->hasMany('App\Inv\Repositories\Models\Lms\Transactions', 'apportionment_id', 'apportionment_id');
     }
 
     /**
