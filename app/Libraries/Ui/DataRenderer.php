@@ -432,7 +432,7 @@ class DataRenderer implements DataProviderInterface
                     'biz_entity_name',
                     function ($app) {          
                         $panInfo = '';
-                        $panNo = $app->ucicUser->pan_no ?? NULL;              
+                        $panNo = $app->ucicUserUcic->ucicUser->pan_no ?? NULL;              
                         if($panNo){
                             $panInfo = '<br><strong>PAN:</strong> ' . $panNo;
                         }

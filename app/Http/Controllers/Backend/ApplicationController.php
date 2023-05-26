@@ -156,7 +156,7 @@ class ApplicationController extends Controller
 
 			if($app_data){
 				$userId = $app_data->user_id;
-				$ucicCode = $app_data->ucicUser->ucic_code ?? null;
+				$ucicCode = $app_data->ucicUserUcic->ucicUser->ucic_code ?? null;
 				if(!$ucicCode){
 					$pan_no = $app_data->business->pan->pan_gst_hash;
 					$ucicCode = $this->ucicuser_repo->getUcicData(['pan_no' => $pan_no])->ucic_code ?? null;
@@ -223,9 +223,9 @@ class ApplicationController extends Controller
 				$this->userRepo->updateAnchorUserData($arrAnchUser, ['user_id' => $appData->user_id]);
 				
 				//Update UCIC Data only if appllication is not approved
-				if(!Helper::isAppApprByAuthorityForGroup($appId) && $appData->ucicUser->is_sync) {
+				if(!Helper::isAppApprByAuthorityForGroup($appId) && $appData->ucicUserUcic->ucicUser->is_sync) {
 					if($appData){
-						$userUcicId = $appData->ucicUser->user_ucic_id ?? null;
+						$userUcicId = $appData->ucicUserUcic->ucic_id ?? null;
 						if(!$userUcicId){
 							$pan_no = $appData->business->pan->pan_gst_hash;
 							$ucicData = $this->ucicuser_repo->createUpdateUcic(['pan_no' => $pan_no, 'user_id'=>$appData->user_id, 'app_id' => $appId]);
@@ -361,9 +361,9 @@ class ApplicationController extends Controller
 				$reqdDocs = $this->createAppRequiredDocs($prgmDocsWhere, $userId, $appId);
 
 				//Update UCIC Data only if appllication is not approved
-				if(!Helper::isAppApprByAuthorityForGroup($appId) && $appData->ucicUser->is_sync == 1) {
+				if(!Helper::isAppApprByAuthorityForGroup($appId) && $appData->ucicUserUcic->ucicUser->is_sync == 1) {
 					if($appData){
-						$userUcicId = $appData->ucicUser->user_ucic_id ?? null;
+						$userUcicId = $appData->ucicUserUcic->ucic_id ?? null;
 						if(!$userUcicId){
 							$pan_no = $appData->business->pan->pan_gst_hash;
 							$ucicData = $this->ucicuser_repo->createUpdateUcic(['pan_no' => $pan_no, 'user_id'=>$userId, 'app_id' => $appId]);
@@ -781,7 +781,7 @@ class ApplicationController extends Controller
 							}
 						}
 						$data = $this->ucicuser_repo->formatBusinessInfoDb($businessInfo, $product_ids);
-						$userUcicId = $appData->ucicUser->user_ucic_id ?? null;
+						$userUcicId = $appData->ucicUserUcic->ucic_id ?? null;
 						if (!$userUcicId) {
 							$pan_no = $appData->business->pan->pan_gst_hash;
 							$ucicData = $this->ucicuser_repo->createUpdateUcic(['pan_no' => $pan_no, 'user_id'=>$appData->user_id, 'app_id' => $appData->app_id]);
@@ -1712,7 +1712,7 @@ class ApplicationController extends Controller
 			
 			//Update UCIC Data only if appllication is not approved
 			$appData = $this->appRepo->getAppData($business_info['app_id']);
-			$userUcicId = $appData->ucicUser->user_ucic_id ?? null;
+			$userUcicId = $appData->ucicUserUcic->ucic_id ?? null;
 			$exitsUcicData = $this->ucicuser_repo->getUcicData(['user_ucic_id' => $userUcicId]);
 			if(!Helper::isAppApprByAuthorityForGroup($business_info['app_id']) && $exitsUcicData->is_sync){
 				if(isset($business_info['biz_id']) && isset($business_info['app_id'])){
