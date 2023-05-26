@@ -1101,11 +1101,11 @@ class ApportionmentController extends Controller
             $transactionList = [];
 
             foreach ($transactionsRunning as $key => $trans) {
-                $lastPostedTrans = Transactions::with('invoiceDisbursed:invoice_disbursed_id,invoice_id','invoiceDisbursed.invoice:invoice_id,program_id','invoiceDisbursed.invoice.program:prgm_id,interest_borne_by,overdue_interest_borne_by')->where('trans_running_id',$trans->trans_running_id)
+                $lastPostedTrans = Transactions::where('trans_running_id',$trans->trans_running_id)
                 ->where('entry_type', $trans->entry_type)
                 ->where('trans_type', $trans->trans_type)
                 ->orderBy('trans_date','desc')
-                ->orderBy('trans_id','desc')
+                ->select('trans_id','trans_date')
                 ->first();
                 $parsedDate = Carbon::parse($trans->trans_date);
                 $parsedDueDate = $trans->due_date ? Carbon::parse($trans->due_date) : null;
@@ -1145,8 +1145,10 @@ class ApportionmentController extends Controller
                 foreach ($transactionList as $key => $newTrans) {
                     $intBorneBy = $newTrans['interest_borne_by'];
                     $odBorneBy = $newTrans['overdue_interest_borne_by'];
+                    /* Interest and Overdue Interest borne by column is in rta_prgm tbl and does not exist in rta_transactions tbl
+                    */
                     unset($newTrans['interest_borne_by']);
-                    unset($newTrans['overdue_interest_borne_by']);
+                    unset($newTrans['overdue_interest_borne_by']); 
 
                     $transData = $this->lmsRepo->saveTransaction($newTrans);
                     $transactionList[$key]['trans_id'] = $transData->trans_id;

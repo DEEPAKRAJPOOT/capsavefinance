@@ -20,7 +20,6 @@ use App\Inv\Repositories\Contracts\MasterInterface as InvMasterRepoInterface;
 use Illuminate\Support\Facades\Crypt;
 use App\Inv\Repositories\Contracts\Traits\ActivityLogTrait;
 use App\Inv\Repositories\Models\Lms\PaymentApportionment;
-use Illuminate\Support\Facades\Validator;
 
 class ChargeController extends Controller
 {
@@ -122,13 +121,6 @@ class ChargeController extends Controller
        { 
         DB::beginTransaction();
         try { 
-            // $validator = Validator::make($request->all() , [
-            //     'level_charges' => 'required',
-            // ]);
-            // if ($validator->fails()){
-            //     // return Helper::sendResponse(0, $validator->errors()->first() , 200);
-            //     return redirect()->back()->withInput($request->all())->withErrors($validator->errors());
-            // }
             $getUserState = $this->lmsRepo->getUserAddress($request->app_id);
             $comAddrState = $this->lmsRepo->companyAdress();
             $getAmount =  str_replace(',', '', $request->amount);

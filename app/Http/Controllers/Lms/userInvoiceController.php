@@ -363,13 +363,14 @@ class userInvoiceController extends Controller
         }
         $company_data = $companyDetail['data'];
         $billingDetail = $this->_getBillingDetail($biz_addr_id);
-        $anchorDetails = AnchorUser::getAnchorsDetails($user_id);
-        $custDetails = User::getCustomerData($user_id);
+        
         if ($billingDetail['status'] != 'success') {
            return response()->json(['status' => 0,'message' => $billingDetail['message']]); 
         }
         $invoiceBorneBy = substr($invoice_type,1,2)  == 'A' ? 1 : 2;
         if($invoiceBorneBy == 1){
+            $anchorDetails = AnchorUser::getAnchorsDetails($user_id);
+            $custDetails = User::getCustomerData($user_id);
             $custId = $custDetails['customer_id'];
             $custName = $custDetails['biz_entity_name'];
             $anchorName = $anchorDetails['comp_name'];
@@ -900,7 +901,7 @@ class userInvoiceController extends Controller
                 'invoice_cat' => '1',
                 'invoice_type_name' => $invoiceTypeName, 
                 'invoice_no' => $newInvoiceNo,
-                'inv_financial_year' =>$InvoiceNoArr[2] ?? NULL,
+                'inv_financial_year' =>$InvoiceNoArr[1] ?? NULL,
                 'inv_serial_no' => $invSerialNo,
                 'invoice_date' => Carbon::createFromFormat('d/m/Y', $invoice_date)->format('Y-m-d H:i:s'),
                 'due_date' => Carbon::createFromFormat('d/m/Y', $due_date)->format('Y-m-d H:i:s'),
@@ -1476,7 +1477,7 @@ class userInvoiceController extends Controller
             $invCat = $inv_data[2];
             $borneBy = substr($invoiceType,1,2)  == 'A' ? 1 : 2;
             $invoiceType = ($borneBy == 1) ? "IA" : "IC";
-            $invoiceType = ($invCat == "NZ") ? (($borneBy == 1) ? "CA" : "CC") : $invoiceType;
+            $invoiceType = ($invCat == "DNZ") ? (($borneBy == 1) ? "CA" : "CC") : $invoiceType;
             $invoiceCode = substr($invoiceType,0,1);
 
             $invSerialNo = null;

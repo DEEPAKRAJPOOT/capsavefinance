@@ -101,7 +101,7 @@ class UserInvoiceRepository extends BaseRepositories implements UserInvoiceInter
 		return UserBankAccount::getAllCompanyBankAcc($company_id);
 	}
 
-	public function getUserInvoiceTxns($userId, $invoiceType = 'IC', $transIds = [], $is_force = false) {
+	public function getUserInvoiceTxns($userId, $invoiceType , $transIds = [], $is_force = false) {
 		$UserInvoiceTxns = Transactions::getUserInvoiceTxns($userId, $invoiceType, $transIds, $is_force);
 		if (!empty($UserInvoiceTxns)) {
 			foreach ($UserInvoiceTxns as $key => $txn) {
