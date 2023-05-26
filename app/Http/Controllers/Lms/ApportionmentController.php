@@ -1105,6 +1105,7 @@ class ApportionmentController extends Controller
                 ->where('entry_type', $trans->entry_type)
                 ->where('trans_type', $trans->trans_type)
                 ->orderBy('trans_date','desc')
+                ->orderBy('trans_id','desc')
                 ->select('trans_id','trans_date')
                 ->first();
                 $parsedDate = Carbon::parse($trans->trans_date);

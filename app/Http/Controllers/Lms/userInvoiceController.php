@@ -1265,7 +1265,7 @@ class userInvoiceController extends Controller
             $invCat = $inv_data[2];
             $borneBy = substr($invoiceType,1,2)  == 'A' ? 1 : 2;
             $invoiceType = ($borneBy == 1) ? "IA" : "IC";
-            $invoiceType = ($invCat == "NZ") ? (($borneBy == 1) ? "CA" : "CC") : $invoiceType;
+            $invoiceType = ($invCat == "CNZ") ? (($borneBy == 1) ? "CA" : "CC") : $invoiceType;
             $invoiceCode = substr($invoiceType,0,1);
 
             $invSerialNo = null;
