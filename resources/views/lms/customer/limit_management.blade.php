@@ -78,6 +78,7 @@ $anchorDatas = array_intersect_key($anchorDatas, $tempArr); @endphp
                 }
                      
                 @endphp
+                @if(isset($uLimit['supplyProgramLimit'][0]['offer'][0]['anchor_id']))
                 @if($uLimit['supplyProgramLimit'][0]['offer'][0]['anchor_id'] == $anchorData['anchor_id'])           
                 <div class="card-body limit-management"> 
                     @if($uLimit->is_deleted ==0 && $uLimit->status != 0)
@@ -396,6 +397,7 @@ $anchorDatas = array_intersect_key($anchorDatas, $tempArr); @endphp
 
                     @endforeach
                 </div>
+                @endif
                 @endif
                 @endif
 

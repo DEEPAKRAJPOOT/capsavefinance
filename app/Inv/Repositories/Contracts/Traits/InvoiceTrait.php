@@ -576,16 +576,12 @@ trait InvoiceTrait
             $getMargin =  self::invoiceMargin($inv_details);
             $dueDateGreaterCurrentdate =  self::limitExpire($cid, $attr['app_id']); /* get App limit by user_id*/
             $isOverDue     =  self::isOverDue($cid); /* get overdue by user_id*/
-
             $anchorData = Anchor::getAnchorById($attr['anchor_id']);
             $anchorApproveInvoiceAmt    = self::anchorInvoiceApproveAmount($attr['anchor_id']);
             $prgmApproveInvoiceAmt      = self::anchorPrgmInvoiceApproveAmount($attr['anchor_id'], $inv_details['program_id']);
             $customerApproveInvoiceAmt  = self::customerInvoiceApproveAmount($inv_details['supplier_id'], $attr['anchor_id']);
             $limitExceeded = false;
             $limitExceeded = self::isSupplierLimitExceeded($inv_details);
-
-           // dd($anchorApproveInvoiceAmt,$prgmApproveInvoiceAmt,$customerApproveInvoiceAmt,$limit);
-
             $prgmData = $anchorData->prgmData;
             $currInvoiceAmount = $inv_details['invoice_approve_amount'];
             $fungibleAnchorLimit = false;
@@ -1284,9 +1280,14 @@ trait InvoiceTrait
   }
 
   public static function anchorInvoiceApproveAmount($anchor_id){
-    $marginApprAmt   =   BizInvoice::whereIn('status_id',[8,9,10,12])->where(['is_adhoc' =>0,'anchor_id' =>$anchor_id])->sum('invoice_margin_amount');
-    $marginReypayAmt =   BizInvoice::whereIn('status_id',[8,9,10,12])->where(['is_adhoc' =>0,'anchor_id' =>$anchor_id])->sum('principal_repayment_amt');
-    return $marginApprAmt-$marginReypayAmt;
+    $prefix = DB::getTablePrefix(); 
+    $outstandingData = DB::table('invoice') 
+    ->select(DB::raw('sum('.$prefix.'invoice.invoice_approve_amount - round(('.$prefix.'invoice.invoice_approve_amount * '.$prefix.'invoice_disbursed.margin /100),2) - '.$prefix.'invoice.principal_repayment_amt) as amount')) 
+    ->join('invoice_disbursed','invoice.invoice_id','invoice_disbursed.invoice_id') 
+    ->where('invoice.anchor_id',$anchor_id) 
+    ->whereIn('invoice.status_id',[8,9,10,12,13,15])
+    ->first();
+    return $outstandingData->amount ?? 0;
   }
 
   // sub program utilized limit for fungible
@@ -1454,29 +1455,11 @@ trait InvoiceTrait
 
         $limit   =  self::ProgramLimit($inv_details);
         $remainAmount = ($customberOfferLimit - $utilizeAmount);
-       // dd($customberOfferLimit, $utilizeAmount, $remainAmount, $customerApproveInvoiceAmt, $limit,"anchor used amount :->", $anchorApproveInvoiceAmt,"Anchor total limit", $subPrgmData->anchor_limit, "program used Amount :->",$prgmApproveInvoiceAmt, "program Actual Limit ", $subPrgmData->anchor_sub_limit);
-
-       // $limitExceeded = false;
-       /* if (($utilizeAmount + $currInvoiceAmount) > $customberOfferLimit) {
-            $limitExceeded = true;
-        } */
-        //return $limitExceeded;
         $isPrgmLimitExceed = false;
-
-       /*if($prgmApproveInvoiceAmt > $subPrgmData->anchor_sub_limit) {
-         $msgCustomerLimitExceed = "Program Limit Exceed.";
-       } else if(($utilizeAmount + $currInvoiceAmount) > $customberOfferLimit) {
-           $msgCustomerLimitExceed = "Customer Limit Exceed.";
-       }*/
-       if($prgmApproveInvoiceAmt > $subPrgmData->anchor_sub_limit) {
-            $isPrgmLimitExceed = true;
-      }
+        if($prgmApproveInvoiceAmt > $subPrgmData->anchor_sub_limit) {
+              $isPrgmLimitExceed = true;
+        }
       return $isPrgmLimitExceed;
-      /* if($msgCustomerLimitExceed!='') {
-                InvoiceStatusLog::saveInvoiceStatusLog($inv_details['invoice_id'],7); 
-                BizInvoice::where(['invoice_id' =>$inv_details['invoice_id']])->update(['remark' =>$msgCustomerLimitExceed,'status_id' =>7,'status_update_time' => $cDate,'updated_by' =>$uid]); 
-                return 5;
-       } */
   }
 
 
@@ -1509,15 +1492,8 @@ trait InvoiceTrait
             }
           }
         }
-        $anchorApproveInvoiceAmt    = self::anchorInvoiceApproveAmount($anchorId);
-        $prgmApproveInvoiceAmt      = self::anchorPrgmInvoiceApproveAmount($anchorId, $inv_details['program_id']); 
-        $customerApproveInvoiceAmt  = self::customerInvoiceApproveAmount($SupplierId, $anchorId);
-        $subPrgmData                = Program::getProgram($inv_details['program_id']);
-
         $limit   =  self::ProgramLimit($inv_details);
         $remainAmount = ($customberOfferLimit - $utilizeAmount);
-       // dd($customberOfferLimit, $utilizeAmount, $remainAmount, $customerApproveInvoiceAmt, $limit,"anchor used amount :->", $anchorApproveInvoiceAmt,"Anchor total limit", $subPrgmData->anchor_limit, "program used Amount :->",$prgmApproveInvoiceAmt, "program Actual Limit ", $subPrgmData->anchor_sub_limit);
-        //dd($utilizeAmount,$currInvoiceAmount,$customberOfferLimit, $inv_details);
         $limitExceeded = false;
         if (($utilizeAmount + $currInvoiceAmount) > $customberOfferLimit) {
             $limitExceeded = true;
