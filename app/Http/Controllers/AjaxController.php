@@ -4004,11 +4004,9 @@ if ($err) {
        //$remainAmount = round(($limit - $inv_Total_limit), 2);
        $remainAmount = round(($customberOfferLimit - $inv_Total_limit), 2);
        $remainPrgmLimit = round(($limit - $consumeLimitByPrgm), 2);
-        
         $offer = AppProgramOffer::getAppPrgmOfferById($res['prgm_offer_id']);
         $margin = $offer && $offer->margin ? $offer->margin : 0;
-
-        return response()->json(['status' => 1,'tenor' => $getTenor['tenor'],'tenor_old_invoice' =>$getTenor['tenor_old_invoice'],'limit' => $remainPrgmLimit,'remain_limit' =>$remainAmount,'is_adhoc' => $is_adhoc,'margin' => $margin]);
+        return response()->json(['status' => 1,'tenor' => $getTenor['tenor'],'tenor_old_invoice' =>$getTenor['tenor_old_invoice'], 'limit' => $remainPrgmLimit, 'remain_limit' =>$remainAmount,'is_adhoc' => $is_adhoc,'margin' => $margin]);
     }
     
     public function getAdhoc(Request $request)
