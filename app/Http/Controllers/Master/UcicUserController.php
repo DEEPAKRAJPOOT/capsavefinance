@@ -25,6 +25,7 @@ use App\Inv\Repositories\Contracts\UcicUserInterface;
 use App\Inv\Repositories\Contracts\ApplicationInterface;
 use App\Inv\Repositories\Contracts\Traits\ActivityLogTrait;
 use App\Inv\Repositories\Contracts\Traits\ApplicationTrait;
+use Illuminate\Support\Facades\Validator;
 
 class UcicUserController extends Controller
 {
@@ -63,7 +64,14 @@ class UcicUserController extends Controller
 			$segmentList = $this->appRepo->getSegmentDropDown()->toArray();
 			$locationType = LocationType::getLocationDropDown();
 			$product_types = $this->masterRepo->getProductDataList();
-            $ucicDetails = UcicUser::find($userUcicId);
+            $ucicDetails = UcicUser::with('ucicUserDetail:user_ucic_id,invoice_level_mail')->find($userUcicId);
+            $emailIds = $ucicDetails->ucicUserDetail->pluck('invoice_level_mail')->filter()->toArray();
+
+            if (empty($emailIds)) {
+                echo "No email IDs found.";
+            } else {
+                $commaSeparatedEmails = str_replace(' ','',implode(',',$emailIds));
+            }
             if($ucicDetails){
                 $data = json_decode($ucicDetails->business_info ?? '{}',true); 
                 $businessDetails = $ucicDetails->app->business->cin ?? null;
@@ -91,7 +99,8 @@ class UcicUserController extends Controller
 						->with('product_types',$product_types)
 						->with('cinList',$cinList)
 						->with('gstList',$gstList)
-						->with('data',$data);
+						->with('data',$data)
+						->with('commaSeparatedEmails',$commaSeparatedEmails);
 			} else {
 				return redirect()->back()->withErrors(trans('auth.oops_something_went_wrong'));
 			}
@@ -103,9 +112,40 @@ class UcicUserController extends Controller
 	public function saveBusinessInfo(BusinessInformationRequest $request){
 		try {
 			$arrFileData = $request->all();
+            $invoiceLevelMail = explode(',',$arrFileData['invoice_level_mail']);
             $userUcicId = $arrFileData['userUcicId'];
+            $UcicUserDetail = [];
 
+            $validator = Validator::make($request->all(), [
+                'invoice_level_mail' => [
+                    'required',
+                    function ($attribute, $value, $fail) {
+                        $emails = explode(',', $value);
+    
+                        foreach ($emails as $email) {
+                            $trimmedEmail = trim($email);
+                            if (!filter_var($trimmedEmail, FILTER_VALIDATE_EMAIL)) {
+                                $fail("The Invoice Level Mail must be a comma-separated list of valid email addresses.");
+                                return;
+                            }
+                        }
+                    },
+                ],
+            ]);
+    
+            if ($validator->fails()) {
+                return redirect()->back()
+                    ->withErrors($validator)
+                    ->withInput();
+            }
+            
             if($userUcicId){
+                $UcicUserDetailDelete = $this->ucicuser_repo->deleteUcicUserDetail($userUcicId);
+                foreach($invoiceLevelMail as $invoiceMail){
+                    $UcicUserDetail = ['invoice_level_mail' => $invoiceMail,'user_ucic_id' => $userUcicId];
+                    $userUcicDetail = $this->ucicuser_repo->saveUserUcicDetail($UcicUserDetail);
+                }
+                unset($arrFileData['invoice_level_mail']);
                 $result = $this->ucicuser_repo->saveBusinessInfoUcic($arrFileData,$userUcicId);
                 if($result){
                     $whereActivi['activity_code'] = 'company_details_save';

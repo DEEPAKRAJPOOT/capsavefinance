@@ -233,6 +233,7 @@ function checkValidation(){
 	unsetError('input[name=msme_no]');
 	unsetError('input[name=email]');
 	unsetError('input[name=mobile]');
+	unsetError('input[name=invoice_level_mail]');
 	  
 	let flag = true;
 	let is_gst_manual = $('input[name=is_gst_manual]').val().trim();
@@ -280,6 +281,7 @@ function checkValidation(){
 	let msme_number = $('input[name=msme_no]').val().trim();
 	let email = $('input[name=email]').val().trim();
 	let mobile = $('input[name=mobile]').val().trim();
+	var invoiceLeveMail = $('#invoice_level_mail').val().split(',');
 
 	if(biz_pan_number.length != 10){
 		setError('input[name=biz_pan_number]', 'Enter valid PAN Number');
@@ -460,6 +462,33 @@ function checkValidation(){
 		setError('input[name=mobile]', 'Mobile No should not greater than 10 digits');
 		flag = false;
 	}
+
+	if(invoiceLeveMail == ''){
+		setError('input[name=invoice_level_mail]', 'Please enter Comma Seperated Email Id');
+		flag = false;
+	}
+	if(invoiceLeveMail != ''){
+		var validEmails = [];
+		var invalidEmails = [];
+
+		var emailPattern = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+
+		for (var i = 0; i < invoiceLeveMail.length; i++) {
+		var trimmedEmail = invoiceLeveMail[i].trim();
+
+		if (emailPattern.test(trimmedEmail)) {
+			validEmails.push(trimmedEmail);
+		} else {
+			invalidEmails.push(trimmedEmail);
+		}
+		}
+
+		if (invalidEmails.length != 0) {
+			setError('input[name=invoice_level_mail]', 'Invalid email IDs: ' + invalidEmails.join(', '));
+			flag = false;
+		} 
+	}
+    
 
 	if(flag){
 		return true;

@@ -12,6 +12,7 @@ use App\Inv\Repositories\Factory\Repositories\BaseRepositories;
 use App\Inv\Repositories\Contracts\Traits\CommonRepositoryTraits;
 use App\Inv\Repositories\Contracts\UcicUserInterface;
 use App\Inv\Repositories\Models\UcicUserUcic;
+use App\Inv\Repositories\Models\UcicUserDetail;
 
 
 class UcicUserRepository extends BaseRepositories implements UcicUserInterface
@@ -711,5 +712,13 @@ class UcicUserRepository extends BaseRepositories implements UcicUserInterface
    
     public function updateUcicByAppId($appId, $attributes){
         return UcicUser::updateUcicByAppId($appId, $attributes); 
+    }
+
+    public function saveUserUcicDetail($attributes){
+        return UcicUserDetail::saveUserUcicDetail($attributes);
+    }
+
+    public function deleteUcicUserDetail($userUcicId){
+        return UcicUserDetail::deleteUcicUserDetail($userUcicId);
     }
 }

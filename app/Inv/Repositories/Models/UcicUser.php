@@ -94,7 +94,6 @@ class UcicUser extends BaseModel
     public function ucicUserUcic(){
         return $this->hasMany('App\Inv\Repositories\Models\UcicUserUcic','ucic_id','user_ucic_id');
     }
-
     
     public static function create($attributes){
         //Check data is Array
@@ -222,5 +221,9 @@ class UcicUser extends BaseModel
             ->where('user_ucic.ucic_code', $ucicCode)
             ->first();
         return ($appData ? $appData : null);     
+    }
+
+    public function ucicUserDetail(){
+        return $this->hasMany('App\Inv\Repositories\Models\UcicUserDetail','user_ucic_id','user_ucic_id');
     }
 }
