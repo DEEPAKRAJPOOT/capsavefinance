@@ -463,7 +463,7 @@
                         //$("#pro_limit").html('Prgm. Limit : <span class="fa fa-inr"></span>  '+data.limit+'');
                         //$("#pro_remain_limit").html('Remaining Prgm. Balance : <span class="fa fa-inr"></span>  '+data.remain_limit+'');
                         $("#pro_limit").html('<b>Available Customer Limit:</b> <span class="fa fa-inr"></span>  '+IndianLocale.format(data.remain_limit)+'');
-                        $("#pro_remain_limit").html('<b>Available Program Limit:</b> <span class="fa fa-inr"></span>  '+IndianLocale.format(data.limit)+'');
+                        //$("#pro_remain_limit").html('<b>Available Program Limit:</b> <span class="fa fa-inr"></span>  '+IndianLocale.format(data.limit)+'');
                         $("#pro_limit_hide").val(data.remain_limit);  
                         $("#margin").val(data.margin);  
                 }
