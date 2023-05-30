@@ -52,12 +52,11 @@
                 <label for="chrg_type">Charge Type</label>&nbsp;&nbsp;<span id="RadioValidation" class="error"></span><br>            
                 <div class="form-check-inline ">              
                     <label class="form-check-label fnt">               
-                        <input type="radio" class="form-check-input chrgT" id="chrg_calculation_type1" name="chrg_calculation_type" value="1"> &nbsp;&nbsp;Fixed </label>            
+                        <input type="radio" class="form-check-input chrgT" id="chrg_calculation_type1" name="chrg_calculation_type" value="1"> &nbsp;&nbsp;Fixed </label> 
                 </div>
                 <div class="form-check-inline" id="cust_hide_div">               
                     <label class="form-check-label fnt">               
                         <input type="radio" class="form-check-input chrgT" id="chrg_calculation_type2"  name="chrg_calculation_type" value="2">&nbsp;&nbsp;Percentage</label>
-
                 </div>
             </div> 
 
@@ -75,14 +74,12 @@
             <div class="form-group col-md-6">
                 <label for="chrg_name" id="amount_label">Amount/Percent</label>
                 <input type="text"  class="form-control amount" readonly="readonly" id="amount" name="amount" placeholder="Charge Calculation Amount" maxlength="50">
-
             </div>
             <div class="form-group col-md-6 chargeTypeCal" id="approved_limit_div"  style="display: none">
                 <label for="chrg_type">Charge Applicable On</label>
                 <select class="form-control chrg_applicable_id" name="chrg_applicable_id" id="chrg_applicable_id">
 
                 </select>
-
             </div>
 
         </div>
@@ -96,7 +93,6 @@
                 <label for="chrg_name"> Charge Amount</label>
                 <input type="text" readonly="readonly"  class="form-control" id="charge_amount_new" name="charge_amount_new"  value="" >
             </div>
-
         </div>
         <div class="row">
             <div class="form-group col-md-6">
@@ -121,6 +117,22 @@
             <div class="form-group col-md-6">
                 <label for="chrg_name"> Date</label>
                 <input type="text" readonly="readonly"  class="form-control datepicker-charge_date" id="charge_date" name="charge_date" placeholder="Enter Date" value="{{ \Helpers::convertDateTimeFormat(\Helpers::getSysStartDate(), $fromDateFormat='Y-m-d H:i:s', $toDateFormat='d/m/Y') }}" >
+            </div>
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label for="txtCreditPeriod">Charges Borne By<span class="error_message_label">*</span> </label>
+                    {!!
+                    Form::select('level_charges',
+                    [
+                    ''=>'Select', '1'=>'Anchor',   '2'=>'Customer/Supplier',
+                    ],
+                    isset($subProgramData->overdue_interest_borne_by) ? $subProgramData->overdue_interest_borne_by : null,
+                    ['id' => 'level_charges',
+                    'name' => 'level_charges',
+                    'class'=>'form-control',
+                    ])
+                    !!}
+                </div>
             </div>
         </div>
 

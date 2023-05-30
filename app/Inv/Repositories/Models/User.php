@@ -940,4 +940,13 @@ class User extends Authenticatable
         $cnt = LmsUsersLog::where('user_id',$this->user_id)->where('status_id',config('common.USER_STATUS.ACCOUNT_CLOSURE'))->count();
         return ($cnt > 0) ? TRUE : FALSE;
     }
+
+    public static function getCustomerData($userId) {
+        $query = self::select('biz.biz_entity_name','lms_users.customer_id')
+            ->join('lms_users', 'users.user_id', '=', 'lms_users.user_id')
+            ->join('biz', 'users.user_id', '=', 'biz.user_id');
+        $query->where('users.user_id', $userId);
+        $customers = $query->first();            
+        return ($customers ? $customers : []);
+    }
 }

@@ -63,6 +63,7 @@ class Charges extends BaseModel
         'gst_percentage',
         'chrg_tiger_id',
         'based_on',
+        'level_charges',
         'is_active',
         'created_at',
         'created_by'
@@ -136,5 +137,10 @@ class Charges extends BaseModel
 
       }
     
+      public static function getChargeLevel($chrgMstId)
+    {
+        $res = self::where(['id' => $chrgMstId])->first('level_charges');
+        return $res ?: false;
+    }
     
 }

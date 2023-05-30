@@ -59,6 +59,7 @@ class UserInvoice extends BaseModel {
         'biz_entity_name',
         'reference_no',
         'invoice_type',
+        'invoice_borne_by',
         'invoice_cat',
         'invoice_type_name',
         'invoice_no',
@@ -76,6 +77,9 @@ class UserInvoice extends BaseModel {
         'tot_paid_amt',
         'tot_no_of_trans',
         'is_active',
+        'customer_id',
+        'customer_name',
+        'anchor_name',
         'file_id',
         'job_id',
         'created_by',
@@ -111,7 +115,6 @@ class UserInvoice extends BaseModel {
             $invoices['invoice_no'] = str_replace("/","",$invoices['invoice_no']);
             $invLen = strlen($invoices['invoice_no']);
             $newLen = $maxInvLen - $invLen;
-
             $invoiceSerialNo = self::where(['invoice_type'=> $invoices['invoice_type'],'invoice_cat' => $invoices['invoice_cat'],'inv_financial_year' => $invoices['inv_financial_year']])->orderBy('user_invoice_id','desc')->limit(1)->value('inv_serial_no');
             $invoiceSerialNo = sprintf('%0'.$newLen.'d', (($invoiceSerialNo ?? 0) + 1));
             $invoices['invoice_no'] = ($invoices['invoice_no'].$invoiceSerialNo);

@@ -6008,7 +6008,7 @@ if ($err) {
             ],['chrg_id.required' => 'Please select atleast one checked']);
     
             $chrgIds = is_array($request->chrg_id) && count($request->chrg_id) ? $request->chrg_id : [$request->chrg_id];
-            $chrgTrans = ChargesTransactions::whereIn('chrg_trans_id', $chrgIds)->get();
+            $chrgTrans = ChargesTransactions::with('chargePrgm:prgm_id,interest_borne_by')->whereIn('chrg_trans_id', $chrgIds)->get();
             $chrgTranReqDltLogs = ChargeTransactionDeleteLog::whereIn('chrg_trans_id', $chrgIds)
                                             ->reqForDeletion()
                                             ->get();
@@ -6029,8 +6029,9 @@ if ($err) {
             $chrgTransactions = [];
             $userId = '';
             $debitNoteTransIds = [];
+            $creditNoteTransIds = [];
             foreach($chrgTrans as $chrgTran) {
-
+                $bill = null;
                 if ($chrgTran->transaction && $chrgTran->transaction->amount != $chrgTran->transaction->outstanding) {
                     \DB::rollback();
                     return response()->json(['status' => 0,'msg' => "Selected Charges can't be cancelled because charge transaction is already settled."]);
@@ -6043,10 +6044,23 @@ if ($err) {
                     'created_by'    => auth()->user()->user_id
                 ];
 
-                if ($chrgTran->transaction->is_invoice_generated == 0) {
-                    $debitNoteTransIds[] = $chrgTran->trans_id;
+                if(isset($chrgTran->chargePrgm)){
+                    if($chrgTran->chargePrgm->interest_borne_by == 2){
+                        $bill = 'CC';
+                    }else{
+                        $bill = 'CA';
+                    }
+                }elseif($chrgTran->ChargeMaster->chrg_type == 2){
+                    if($chrgTran->level_charges == 2){
+                        $bill = 'CC';
+                    }else{
+                        $bill = 'CA';
+                    }
                 }
-                $chrgTransactions[] = $chrgTran->transaction;
+                if ($chrgTran->transaction->is_invoice_generated == 0) {
+                    $debitNoteTransIds[$bill][] = $chrgTran->trans_id;
+                }
+                $chrgTransactions[$bill][] = $chrgTran->transaction;
                 if (!$userId) {
                     $userId = $chrgTran->transaction->user_id;
                 }
@@ -6056,10 +6070,19 @@ if ($err) {
             $controller = app()->make('App\Http\Controllers\Lms\userInvoiceController');
 
             if (count($debitNoteTransIds)) {
-                $debitNoteResults = $controller->generateDebitNote($debitNoteTransIds, $userId, $billType = 'C');
+                foreach ($debitNoteTransIds as $billType => $transIds) {
+                    if($billType){
+                        $debitNoteResults = $controller->generateDebitNote($transIds, $userId, $billType);
+                    }
+                }
             }
-
-            $creditNoteTransIds = Transactions::processChrgTransDeletion($chrgTransactions);
+            if (count($chrgTransactions)) {
+                foreach ($chrgTransactions as $billType => $trans) {
+                    if($billType){
+                        $creditNoteTransIds[$billType] = Transactions::processChrgTransDeletion($trans);
+                    }
+                }
+            }
 
             \DB::commit();
         } catch (Exception $ex) {
@@ -6069,7 +6092,11 @@ if ($err) {
 
         try {
             if(count($creditNoteTransIds)) {
-                $creditNoteResults = $controller->generateCreditNote($creditNoteTransIds, $userId, $billType = 'C');
+                foreach ($creditNoteTransIds as $billType => $transIds) {
+                    if($billType){
+                        $debitNoteResults = $controller->generateCreditNote($transIds, $userId, $billType);
+                    }
+                }
             }
             return response()->json(['status' => 1,'msg' => "Charge cancellation approved successfully."]);
         } catch (Exception $ex) {

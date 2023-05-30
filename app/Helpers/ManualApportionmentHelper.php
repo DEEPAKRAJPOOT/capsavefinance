@@ -938,7 +938,7 @@ class ManualApportionmentHelper{
         $billData = [];
         $curdate = Helpers::getSysStartDate();
         $cDate = Carbon::parse($curdate)->format('Y-m-d');
-        $transList = Transactions::whereNull('parent_trans_id')
+        $transList = Transactions::with('invoiceDisbursed:invoice_disbursed_id,invoice_id','invoiceDisbursed.invoice:invoice_id,program_id','invoiceDisbursed.invoice.program:prgm_id,interest_borne_by,overdue_interest_borne_by','ChargesTransactions:trans_id,prgm_id','ChargesTransactions.chargePrgm:prgm_id,interest_borne_by')->whereNull('parent_trans_id')
         ->whereHas('transType', function($query){
             $query->where('chrg_master_id','>','0')
             ->orWhereIn('id',[config('lms.TRANS_TYPE.INTEREST'),config('lms.TRANS_TYPE.INTEREST_OVERDUE')]);
@@ -953,11 +953,29 @@ class ManualApportionmentHelper{
         foreach($transList as $trans){
             $billType = null;
             if($trans->trans_type == config('lms.TRANS_TYPE.INTEREST')){
-                $billType = 'I';
+                if(isset($trans->invoiceDisbursed->invoice->program)){
+                    if($trans->invoiceDisbursed->invoice->program->interest_borne_by == 2){
+                        $billType = 'IC';
+                    }else{
+                        $billType = 'IA';
+                    }
+                }
             }elseif($trans->trans_type == config('lms.TRANS_TYPE.INTEREST_OVERDUE')){
-                $billType = 'I';
+                if(isset($trans->invoiceDisbursed->invoice->program)){
+                    if($trans->invoiceDisbursed->invoice->program->overdue_interest_borne_by == 2){
+                        $billType = 'IC';
+                    }else{
+                        $billType = 'IA';
+                    }
+                }
             }elseif($trans->trans_type >= 50){
-                $billType = 'C';
+                if(isset($trans->ChargesTransactions->chargePrgm)){
+                    if($trans->ChargesTransactions->chargePrgm->interest_borne_by == 2){
+                        $billType = 'CC';
+                    }else{
+                        $billType = 'CA';
+                    }
+                }
             }
 
             $billData[$trans->user_id][$billType][$trans->gst][$trans->trans_id] = $trans->trans_id;
@@ -985,7 +1003,7 @@ class ManualApportionmentHelper{
         ->whereDate('created_at','<=',$cDate)
         ->where('entry_type','1')
         ->where('is_invoice_generated','0')
-        ->with('userInvParentTrans:trans_id,user_invoice_id','userInvParentTrans.getUserInvoice:user_invoice_id,user_invoice_rel_id');
+        ->with('userInvParentTrans:trans_id,user_invoice_id','userInvParentTrans.getUserInvoice:user_invoice_id,user_invoice_rel_id','userInvParentTrans.trans:trans_id,invoice_disbursed_id','userInvParentTrans.trans.invoiceDisbursed:invoice_disbursed_id,invoice_id','userInvParentTrans.trans.invoiceDisbursed.invoice:invoice_id,program_id','userInvParentTrans.trans.invoiceDisbursed.invoice.program:prgm_id,interest_borne_by,overdue_interest_borne_by','userInvParentTrans.trans.ChargesTransactions:trans_id,prgm_id','userInvParentTrans.trans.ChargesTransactions.chargePrgm:prgm_id,interest_borne_by');
 
         if($userId){
             $cancelTransList->where('user_id',$userId);
@@ -1000,11 +1018,29 @@ class ManualApportionmentHelper{
         foreach($cancelTransList as $trans){
             $billType = null;
             if($trans->parentTransactions->trans_type == config('lms.TRANS_TYPE.INTEREST')){
-                $billType = 'I';
+                if(isset($trans->userInvParentTrans->trans->invoiceDisbursed->invoice->program)){
+                    if($trans->userInvParentTrans->trans->invoiceDisbursed->invoice->program->interest_borne_by == 2){
+                        $billType = 'IC';
+                    }else{
+                        $billType = 'IA';
+                    }
+                }
             }elseif($trans->parentTransactions->trans_type == config('lms.TRANS_TYPE.INTEREST_OVERDUE')){
-                $billType = 'I';
+                if(isset($trans->userInvParentTrans->trans->invoiceDisbursed->invoice->program)){
+                    if($trans->userInvParentTrans->trans->invoiceDisbursed->invoice->program->overdue_interest_borne_by == 2){
+                        $billType = 'IC';
+                    }else{
+                        $billType = 'IA';
+                    }
+                }
             }elseif($trans->parentTransactions->trans_type >= 50){
-                $billType = 'C';
+                if(isset($trans->userInvParentTrans->trans->ChargesTransactions->chargePrgm)){
+                    if($trans->userInvParentTrans->trans->ChargesTransactions->chargePrgm->interest_borne_by == 2){
+                        $billType = 'CC';
+                    }else{
+                        $billType = 'CA';
+                    }
+                }
             }else{
                 $billType = $trans->parentTransactions->trans_type;
             }
@@ -1036,17 +1072,35 @@ class ManualApportionmentHelper{
             $cancelTransList->where('apportionment_id',$apportionmentId);
         }
 
-        $cancelTransList = $cancelTransList->with('userInvLinkTrans:trans_id,user_invoice_id','userInvLinkTrans.getUserInvoice:user_invoice_id,user_invoice_rel_id')->get();
+        $cancelTransList = $cancelTransList->with('userInvLinkTrans:trans_id,user_invoice_id','userInvLinkTrans.getUserInvoice:user_invoice_id,user_invoice_rel_id','userInvParentTrans:trans_id,trans_id','userInvParentTrans.trans:trans_id,invoice_disbursed_id','userInvParentTrans.trans.invoiceDisbursed:invoice_disbursed_id,invoice_id','userInvParentTrans.trans.invoiceDisbursed.invoice:invoice_id,program_id','userInvParentTrans.trans.invoiceDisbursed.invoice.program:prgm_id,interest_borne_by,overdue_interest_borne_by','userInvParentTrans.trans.ChargesTransactions:trans_id,prgm_id','userInvParentTrans.trans.ChargesTransactions.chargePrgm:prgm_id,interest_borne_by')->get();
 
         $creditData = [];
         foreach($cancelTransList as $trans){
             $billType = null;
             if($trans->parentTransactions->trans_type == config('lms.TRANS_TYPE.INTEREST')){
-                $billType = 'I';
+                if(isset($trans->userInvParentTrans->trans->invoiceDisbursed->invoice->program)){
+                    if($trans->userInvParentTrans->trans->invoiceDisbursed->invoice->program->interest_borne_by == 2){
+                        $billType = 'IC';
+                    }else{
+                        $billType = 'IA';
+                    }
+                }
             }elseif($trans->parentTransactions->trans_type == config('lms.TRANS_TYPE.INTEREST_OVERDUE')){
-                $billType = 'I';
+                if(isset($trans->userInvParentTrans->trans->invoiceDisbursed->invoice->program)){
+                    if($trans->userInvParentTrans->trans->invoiceDisbursed->invoice->program->overdue_interest_borne_by == 2){
+                        $billType = 'IC';
+                    }else{
+                        $billType = 'IA';
+                    }
+                }
             }elseif($trans->parentTransactions->trans_type >= 50){
-                $billType = 'C';
+                if(isset($trans->userInvParentTrans->trans->ChargesTransactions->chargePrgm)){
+                    if($trans->userInvParentTrans->trans->ChargesTransactions->chargePrgm->interest_borne_by == 2){
+                        $billType = 'CC';
+                    }else{
+                        $billType = 'CA';
+                    }
+                }
             }else{
                 $billType = $trans->parentTransactions->trans_type;
             }

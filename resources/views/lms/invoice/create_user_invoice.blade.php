@@ -37,8 +37,10 @@
                         <label class="float-left">Invoice Tag</label>
                         <select class="form-control form-control-sm" id="invoice_type" name="invoice_type">
                             <option value="" disabled selected>Select Invoice Type</option>
-                            <option value="I">Interest</option>
-                            <option value="C">Charges</option>
+                            <option value="IC">Interest Borne By Customer</option>
+                            <option value="IA">Interest Borne By Anchor</option>
+                            <option value="CC">Charges Borne By Customer</option>
+                            <option value="CA">Charges Borne By Anchor</option>
                         </select>
                     </div>
                   </div>
@@ -55,24 +57,34 @@
                                       <h2 class="sub-title bg">Billing Address  </h2>
                                       <div class="pl-4 pr-4 pb-4 pt-2">
                                           <div class="row">
+                                              <div class="col-md-12" id="cust_div">
+                                                <div class="form-group">
+                                                    <label class="m-0" >Customer Id: <span id="cust_id">{{$custDetails['customer_id']}}</span></label>
+                                                </div>
+                                              </div>
+                                              <div class="col-md-12" id="cust_div1">
+                                                <div class="form-group">
+                                                    <label class="m-0">Customer Name: <span id="cust_name">{{ $custDetails['biz_entity_name'] }}</span></label>
+                                                </div>
+                                              </div>
                                               <div class="col-md-12">
                                                   <div class="form-group">
-                                                      <label class="m-0">PAN Number: <span>{{$billingDetails['pan_no']}}</span></label>
+                                                      <label class="m-0">PAN Number: <span id="pan">{{$billingDetails['pan_no']}}</span></label>
                                                   </div>
                                               </div>
                                               <div class="col-md-12">
                                                   <div class="form-group">
-                                                      <label class="m-0">State Code:<span>{{substr($billingDetails['gstin_no'],0,2)}}</span></label>
+                                                      <label class="m-0">State Code:<span id="state_code" name="state_code">{{substr($billingDetails['gstin_no'],0,2)}}</span></label>
                                                   </div>
                                               </div>
                                               <div class="col-md-12">
                                                   <div class="form-group">
-                                                      <label class="m-0">GSTIN:<span>{{$billingDetails['gstin_no']}}</span></label>
+                                                      <label class="m-0">GSTIN:<span id="gst">{{$billingDetails['gstin_no']}}</span></label>
                                                   </div>
                                               </div>
                                               <div class="col-md-12">
                                                   <div class="form-group m-0">
-                                                      <label class="m-0">Address:<span>{{$billingDetails['address']}}</span></label>
+                                                      <label class="m-0">Address:<span id="addr" name="addr">{{$billingDetails['address']}}</span></label>
                                                   </div>
                                               </div>
                                           </div>
@@ -241,6 +253,16 @@
        interest_prefix: "{{ $origin_of_recipient['interest_prefix'] }}",
        invoice_state_code : "{{$origin_of_recipient['state_code'] . '/' .$origin_of_recipient['financial_year']}}/",
        invoice_fin : "/{{$origin_of_recipient['rand_4_no']}}",
+       anchorPan : "{{$anchorDetails['pan_no']}}",
+       custPan : "{{$billingDetails['pan_no']}}",
+       custGst : "{{$billingDetails['gstin_no']}}",
+       anchorGst : "{{$anchorDetails['gst_no']}}",
+       stateCode : "{{substr($anchorDetails['gst_no'],0,2)}}",
+       custstateCode : "{{substr($billingDetails['gstin_no'],0,2)}}",
+       address : "{{$anchorDetails['comp_addr']}}",
+       custAddress : "{{$billingDetails['address']}}",
+       custId : "{{$custDetails['customer_id']}}",
+       custName : "{{$custDetails['f_name'].' '.$custDetails['l_name']}}",
    }
    $(document).ready(function(){
        $("#invoice_date").datetimepicker({
@@ -348,8 +370,34 @@
       return false;
     }
     var invoice_user_code = message.charge_prefix;
-    if (invoice_type == 'I') {
+    if (invoice_type == 'IC' || invoice_type == 'IA') {
       invoice_user_code = message.interest_prefix;
+    }
+    if(invoice_type == 'IA' || invoice_type == 'CA'){
+      let anchorPan = message.anchorPan;
+      let anchorGst = message.anchorGst;
+      let stateCode = message.stateCode;
+      let addr = message.address;
+      let custId = message.custId;
+      let custName = message.custName;
+      $('#pan').text(anchorPan);
+      $('#gst').text(anchorGst);
+      $('#state_code').text(stateCode);
+      $('#addr').text(addr);
+      $('#cust_id').text(custId);
+      $('#cust_name').text(custName);
+    }
+    if(invoice_type == 'IC' || invoice_type == 'CC'){
+      let custPan = message.custPan;
+      let custGst = message.custGst;
+      let custstateCode = message.custstateCode;
+      let custAddress = message.custAddress;
+      $('#pan').text(custPan);
+      $('#gst').text(custGst);
+      $('#state_code').text(custstateCode);
+      $('#addr').text(custAddress);
+      $('#cust_div').hide('');
+      $('#cust_div1').hide('');
     }
     $('#invoice_user_code').val(invoice_user_code);
     fullInvoiceNo = message.invoice_state_code + invoice_user_code + message.invoice_fin;

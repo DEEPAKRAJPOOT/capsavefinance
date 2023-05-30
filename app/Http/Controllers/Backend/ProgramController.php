@@ -400,6 +400,7 @@ class ProgramController extends Controller {
             'max_loan_size' => ($request->get('max_loan_size')) ? str_replace(',', '', $request->get('max_loan_size')) : 0,
             'base_rate_id' => $request->get('interest_linkage'),
             'interest_borne_by' => $request->get('interest_borne_by'),
+            'overdue_interest_borne_by' => $request->get('overdue_interest_borne_by'),
             'margin' => $request->get('margin'),
             'is_adhoc_facility' => $request->get('is_adhoc_facility'),
             'adhoc_interest_rate' => $request->get('is_adhoc_facility') ? $request->get('adhoc_interest_rate') : null,

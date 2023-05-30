@@ -58,6 +58,7 @@ class ChargesTransactions extends BaseModel
         'chrg_applicable_id',
         'amount',
         'virtual_acc_id',
+        'level_charges',
         'created_at',
         'created_by'
     ];
@@ -105,4 +106,14 @@ class ChargesTransactions extends BaseModel
    {
       return $this->hasMany('App\Inv\Repositories\Models\Lms\ChargeTransactionDeleteLog','chrg_trans_id','chrg_trans_id');
    }
+
+   public function chargePrgm()
+    {
+       return $this->hasOne('App\Inv\Repositories\Models\Program','prgm_id','prgm_id');
+   
+    }
+
+    public static function getChrgTxnData($transId){
+       return self::where(['trans_id' => $transId])->value('prgm_id');
+    }
 }
