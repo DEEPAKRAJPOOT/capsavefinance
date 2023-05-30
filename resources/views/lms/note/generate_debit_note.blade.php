@@ -42,7 +42,8 @@
           <span>Invoice Date: {{date('d-M-Y', strtotime($origin_of_recipient['invoice_date']))}}</span><br />
           @endif
           @if(!empty($origin_of_recipient['due_date']))
-          <span>Due Date: {{date('d-M-Y', strtotime($origin_of_recipient['due_date']))}}</span><br />
+          {{-- <span>Due Date: {{date('d-M-Y', strtotime($origin_of_recipient['due_date']))}}</span><br /> --}}
+          <span>Due Date: Immediate.</span><br />
           @endif
           {{-- <span>Reference No: #{{$origin_of_recipient['reference_no']}}</span><br /> --}}
           <span>Place of Supply: {{$billingDetails['state_name']}}</span><br />
