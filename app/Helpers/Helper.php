@@ -1127,10 +1127,26 @@ class Helper extends PaypalHelper
                         $isViewOnly = 1;
                     } 
                     // get_trans_name added by Sudesh but needs to be discussed with Gaurav
-                    else if (in_array(request()->route()->getName(), ['list_lms_charges','get_chrg_amount','renew_application', 'create_enhanced_limit_app', 'create_reduced_limit_app','get_trans_name', 'ajax_get_program_balance_limit'])) {
+                    else if (in_array(request()->route()->getName(), [  'list_lms_charges',
+                                                                        'get_chrg_amount',
+                                                                        'renew_application', 
+                                                                        'create_enhanced_limit_app', 
+                                                                        'create_reduced_limit_app',
+                                                                        'get_trans_name', 
+                                                                        'ajax_get_program_balance_limit',
+                                                                        'save_manual_charges'
+                                                                    ])) {
                         $isViewOnly = 1;
                     } else {
-                        $isViewOnly = AppAssignment::isAppCurrentAssignee($app_id, $userArr, isset($roleData[0]) ? $roleData[0]->id : null);
+                        $appStatusArr = [
+                            config('common.mst_status_id.APP_SANCTIONED'),
+                            config('common.mst_status_id.APP_CLOSED'),
+                        ];
+                        if(in_array($appData->curr_status_id, $appStatusArr)) {
+                            $isViewOnly = 1;
+                        } else {
+                            $isViewOnly = AppAssignment::isAppCurrentAssignee($app_id, $userArr, isset($roleData[0]) ? $roleData[0]->id : null);
+                        }   
                     }
                 }
             }
