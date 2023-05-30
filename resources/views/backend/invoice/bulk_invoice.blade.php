@@ -138,6 +138,11 @@
                            
                             <div class="row" id="setInvoiceCount" data-count="{{count($getBulkInvoice)}}">
                                     <div class="col-sm-12">
+                                        @can('download_bulk_invoice')
+                                        @if(count($getBulkInvoice) > 0)
+                                        <a href="{{ route('download_bulk_invoice') }}" title="Download Bulk Invoice" class="btn btn-success btn-sm float-right ml-3" style="margin: 0px 0 10px 0;"><i class="fa fa-download" aria-hidden="true"></i> Download</a>
+                                        @endif
+                                        @endcan
                                         <table  class="text-capitalize table white-space table-striped cell-border dataTable no-footer overview-table" cellspacing="0" width="100%" role="grid" aria-describedby="supplier-listing_info" style="width: 100%;">
                                             <thead>
                                                 <tr role="row">
@@ -162,19 +167,24 @@
                                                   <td>{{$val->invoice_no}}</td>
                                             <td>
                                                     <span><b>Name:&nbsp;</b>{{$val->supplier->f_name}} {{$val->supplier->l_name}}</span><br>
-                                                    <span><b>Customer Id :&nbsp;</b>{{$val->lms_user->customer_id}}</span>
+                                                    <span><b>Customer Id :&nbsp;</b>{{$val->lms_user->customer_id}}</span><br/>
+                                                    <span><b>Business Name:&nbsp;</b>{{$val->business->biz_entity_name}}</span>
                                             </td>
                                             <td>
                                                     <span><b>Name:&nbsp;</b>{{$val->anchor->comp_name}}</span><br>
-                                                    <span><b>Program:&nbsp;</b>{{$val->program->prgm_name}}</span><br>
-                                                    <span><b>Business Name:&nbsp;</b>{{$val->business->biz_entity_name}}</span>
+                                                    <span><b>Program:&nbsp;</b>{{$val->program->prgm_name}}</span>
                                             </td>
                                              <td>
-                                                    <span><b>Date:&nbsp;</b>{{$val->invoice_date}}</span><br>
-                                                    <span><b>Due Date:&nbsp;</b>{{$val->invoice_due_date}}</span><br>
+                                                    <span><b>Date:&nbsp;</b>{{\Carbon\Carbon::parse($val->invoice_date)->format('d-m-Y')}}</span><br>
+                                                    <span><b>Due Date:&nbsp;</b>{{\Carbon\Carbon::parse($val->invoice_due_date)->format('d-m-Y')}}</span><br>
                                                     <span><b>Tenor In Days:&nbsp;</b>{{$val->tenor}}</span>
                                              </td>
-                                             <td>{{number_format($val->invoice_approve_amount)}}</td>
+                                             <td>
+                                                <span><b>Inv. Appr. Amt.:&nbsp;</b>{{number_format($val->invoice_approve_amount)}}</span><br>
+                                                @if(!empty($val->upfront_interest))
+                                                    <span><b>Upfront Int. Amt.:&nbsp;</b>{{$val->upfront_interest}}</span><br>
+                                                @endif
+                                            </td>
                                               <td>
                                                     <span><b>Name:&nbsp;</b>{{$val->user->f_name}} {{$val->user->l_name}}</span><br>
                                                     <span><b>Date:&nbsp;</b>{{date('d-m-Y',strtotime($val->created_at))}}</span>
@@ -191,7 +201,7 @@
                                           @endforeach     
                                           @php } else { @endphp      
                                           <tr>
-                                              <td colspan="6" class="error">No data found...</td>
+                                              <td colspan="9" class="error" align="center">No data found...</td>
                                           </tr>
                                           @php }@endphp       
                                         </table>

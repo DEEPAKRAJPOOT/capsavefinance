@@ -27,15 +27,15 @@ try {
                 }
             },
             columns: [
-                {data: 'anchor_id'},
-                {data: 'invoice_id'},
-                {data: 'anchor_name'},
-                {data: 'supplier_name'},
-                {data: 'invoice_date'},
-                {data: 'invoice_amount'},
-                {data: 'remark'},
-                {data: 'updated_at'},
-                {data: 'action'},
+                {data: 'anchor_id', width: '2%' },
+                {data: 'invoice_id', width: '10%' },
+                {data: 'anchor_name', width: '19%' },
+                {data: 'supplier_name', width: '15%' },
+                {data: 'invoice_date', width: '10%' },
+                {data: 'invoice_amount', width: '13%' },
+                {data: 'remark', width: '10%' },
+                {data: 'updated_at', width: '10%' },
+                {data: 'action', width: '5%' },
             ],
             aoColumnDefs: [{'bSortable': false, 'aTargets': [0,2]}]
         });

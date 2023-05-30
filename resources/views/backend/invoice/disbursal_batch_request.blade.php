@@ -28,15 +28,18 @@
                     @include('layouts.backend.invoice_status_links')
 
 
-                    <div class="card">
-                        <div class="card-body">       
+                    <div class="card mt-4">
+                        <div class="card-body">
                             <div class="row">
-                                <div class="col-md-4" style="margin-left: 20px;">
-                                    <input class="form-control form-control-sm" id="batch_id"  name="batch_id"  placeholder="Search by Batch ID" style="width: 350px;">
-                                </div> 
-                                <button id="searchbtn" type="button" class="btn  btn-primary btn-sm float-right">Search</button>
+                                <div class="col-md-4">
+                                    <div class="input-group" style="margin-left: 16px;">
+                                        <input class="form-control form-control-sm" id="batch_id"  name="batch_id"  placeholder="Search by Batch ID">
+                                        <div class="input-group-append ml-2">
+                                            <button id="searchbtn" type="button" class="btn  btn-primary btn-sm float-right">Search</button>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
-
                             <div class="col-12 dataTables_wrapper mt-4">
                                 <div class="overflow">
                                     <div id="supplier-listing_wrapper" class="dataTables_wrapper dt-bootstrap4 no-footer">

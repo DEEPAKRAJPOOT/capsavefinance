@@ -539,6 +539,10 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                         'as' => 'kotak_disbursal_payment_enquiry',
                         'uses' => 'Backend\InvoiceController@kotakDisbursalPaymentEnquiry',
                     ]);
+                    Route::get('download-bulk-invoice', [
+                        'as' => 'download_bulk_invoice',
+                        'uses' => 'Backend\InvoiceController@downloadBulkInvoice',
+                    ]);
                 }
             });
 

@@ -28,44 +28,42 @@
                     @include('layouts.backend.invoice_status_links')
 
 
-                    <div class="card">
+                    <div class="card mt-4">
                         <div class="card-body">       
                             <form id="manualDisburse" method="POST" action="{{ Route('download_batch_data') }}">
                                 @csrf
                                 <div class="row">
-                                    <div class="col-md-3" style="margin-left: 20px;">
-                                        {!!
-                                        Form::text('customer_code',
-                                        null,
-                                        [
-                                        'class' => 'form-control',
-                                        'placeholder' => 'Search by CustId and Batch Id',
-                                        'id'=>'customer_code'
-                                        ])
-                                        !!}
+                                    <div class="col-md-6" style="margin-left: 13px;">
+                                        <div class="input-group">
+                                            {!!
+                                            Form::text('customer_code',
+                                            null,
+                                            [
+                                            'class' => 'form-control',
+                                            'placeholder' => 'Search by CustId and Batch Id',
+                                            'id'=>'customer_code'
+                                            ])
+                                            !!}
+                                            {!!
+                                            Form::text('selected_date',
+                                            null,
+                                            [
+                                            'class' => 'form-control ml-2',
+                                            'placeholder' => 'Date',
+                                            'value' => "2013-01-08",
+                                            'id'=>'selected_date'
+                                            ])
+                                            !!}
+                                            <div class="input-group-append ml-2">
+                                                <button id="searchbtn" type="button" class="btn btn-primary btn-sm">Search</button>
+                                            </div>
+                                        </div>
                                     </div>
-                                    <div class="col-md-3">
-
-                                        {!!
-                                        Form::text('selected_date',
-                                        null,
-                                        [
-                                        'class' => 'form-control',
-                                        'placeholder' => 'Date',
-                                        'value' => "2013-01-08",
-                                        'id'=>'selected_date'
-                                        ])
-                                        !!}
-
+                                    <div class="col-md-5 text-right" style="margin-left: 113px;">
+                                        @can('download_batch_data')
+                                        <button type="submit" class="btn btn-primary btn-sm">Download Excel</button>
+                                        @endcan
                                     </div>
-                                    <div class="col-md-1">
-                                    <button id="searchbtn" type="button" class="btn  btn-primary btn-sm float-right">Search</button>
-                                    </div>
-                                    @can('download_batch_data')
-                                    <div class="col-md-2" style="padding-left:430px;">
-                                        <button type="submit" class="btn  btn-primary btn-sm float-right ml-4">Download Excel</button>
-                                    </div>
-                                    @endcan
                                 </div>
                             </form>
 

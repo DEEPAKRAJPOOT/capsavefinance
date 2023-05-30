@@ -26,12 +26,12 @@ try {
                 }
             },
             columns: [
-                {data: 'invoice_id'},
-                {data: 'anchor_name'},
-                {data: 'supplier_name'},
-                {data: 'invoice_date'},
-                {data: 'invoice_amount'},
-                {data: 'updated_at'},
+                {data: 'invoice_id', width: '10%' },
+                {data: 'anchor_name', width: '25%' },
+                {data: 'supplier_name', width: '25%' },
+                {data: 'invoice_date', width: '10%' },
+                {data: 'invoice_amount', width: '15%' },
+                {data: 'updated_at', width: '5%' },
                 // {data: 'action'},
                
             ],

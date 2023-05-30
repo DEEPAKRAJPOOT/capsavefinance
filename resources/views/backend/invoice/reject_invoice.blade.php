@@ -28,7 +28,7 @@
                     @include('layouts.backend.invoice_status_links')
                     <div class="tab-content">
 
-                        <div id="menu1" class=" active tab-pane "><br>
+                        <div id="menu1" class=" active tab-pane mt-4">
 
   <span id="moveCase" class="text-success"></span>
                             <div class="card">
@@ -37,11 +37,13 @@
                                         {{-- <div class="col-md-5"> --}}
                                             <input type="hidden" name="route" value="{{Route::currentRouteName()}}">                                
                                         {{-- </div> --}}
-                                        <div class="col-md-5" style="margin-left:10px;">
-                                            <input class="form-control form-control-sm"  name="search_biz"  placeholder="Search by CustId, Anchor, Business Name and Invoice number">
-                                        </div> 
-                                        <div class="col-md-1" style="padding-right: 35px;">
-                                            <button  type="button" id="search_biz" class="btn  btn-primary btn-sm float-right">Search</button>
+                                        <div class="col-md-4">
+                                            <div class="input-group">
+                                                <input class="form-control form-control-sm"  name="search_biz"  placeholder="Search by CustId, Anchor, Business Name and Invoice number">
+                                                <div class="input-group-append ml-2">
+                                                    <button  type="button" id="search_biz" class="btn  btn-primary btn-sm">Search</button>
+                                                </div>
+                                            </div>
                                         </div>  
                                         <!-- <div class="col-md-3">				 
                                             

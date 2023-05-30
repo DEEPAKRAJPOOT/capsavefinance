@@ -18,6 +18,7 @@ use App\Inv\Repositories\Models\Master\Role;
 use App\Inv\Repositories\Models\Business;
 use App\Inv\Repositories\Entities\User\Exceptions\InvalidDataTypeExceptions;
 use App\Inv\Repositories\Entities\User\Exceptions\BlankDataExceptions;
+use App\Inv\Repositories\Models\AppProgramOffer;
 
 class InvoiceBulkUpload extends BaseModel
 {
@@ -129,11 +130,11 @@ class InvoiceBulkUpload extends BaseModel
         if( $chkUser->id==11)
         {
             $res  = User::where('user_id',$id)->first();
-            return  self::with(['user','anchor','supplier','program','lms_user','business'])->whereIn('status',[0,2])->where(['created_by' => $id,'anchor_id' => $res->anchor_id])->get();
+            return  self::with(['user','anchor','supplier','program','lms_user','business','program_offer','userFile'])->whereIn('status',[0,2])->where(['created_by' => $id,'anchor_id' => $res->anchor_id])->get();
          }
         else 
        {
-            return  self::with(['user','anchor','supplier','program','lms_user','business'])->whereIn('status',[0,2])->where(['created_by' => $id])->get();
+            return  self::with(['user','anchor','supplier','program','lms_user','business','program_offer','userFile'])->whereIn('status',[0,2])->where(['created_by' => $id])->get();
         }
     
     } 
@@ -267,7 +268,17 @@ class InvoiceBulkUpload extends BaseModel
             {
                 return 0;
             }
-    } 
+    }
+    
+    public function userFile(){
+      return $this->hasOne('App\Inv\Repositories\Models\UserFile','file_id','file_id');
+    }
+
+    function program_offer()
+     {
+          return $this->belongsTo('App\Inv\Repositories\Models\AppProgramOffer', 'prgm_offer_id','prgm_offer_id');  
+     
+     }
      
    
 }

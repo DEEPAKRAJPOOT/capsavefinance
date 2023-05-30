@@ -30,63 +30,28 @@
 
                     <div class="tab-content">
 
-                        <div id="menu1" class=" active tab-pane "><br>
+                        <div id="menu1" class=" active tab-pane mt-4">
                             <span id="moveCase" class="text-success"></span>
 
                             <div class="card">
                                 <div class="card-body">
                                     <div class="row">
-
-                                        {{-- <div class="col-md-3"> --}}
-                                            <input type="hidden" name="route" value="{{Route::currentRouteName()}}">                                
-                                        {{-- </div> --}}
-                                        <div class="col-md-5" style="margin-left: 10px;">
-                                            <input class="form-control form-control-sm" style="width: 485px;" name="search_biz"  placeholder="Search by CustId, Anchor, Business Name and Invoice number">
+                                        <div class="col-md-4">
+                                            <input type="hidden" name="route" value="{{Route::currentRouteName()}}">
+                                            <div class="input-group">
+                                                <input class="form-control form-control-sm" name="search_biz"  placeholder="Search by CustId, Anchor, Business Name and Invoice number">
+                                                <div class="input-group-append ml-2">
+                                                    <button type="button" id="search_biz" class="btn btn-primary btn-sm">Search</button>
+                                                </div>
+                                            </div>
                                         </div>
-                                        <div class="col-md-1">
-                                            <button  type="button" id="search_biz" class="btn  btn-primary btn-sm float-right">Search</button>
-                                        </div>  
-
-                                        <!--
-                                        
-                                        <div class="col-md-2"></div>
-                                        <div class="col-md-3">				 
-                                            <input type="hidden" name="route" value="{{Route::currentRouteName()}}">                                
-                                            <select class="form-control form-control-sm changeBiz searchbtn"  name="search_biz" id="search_biz">
-                                                <option value="">Select Business Name  </option>
-                                               
-                                                @foreach($get_bus as $row)
-                                                @php if(isset($row->business->biz_id)) { @endphp
-                                                <option value="{{{$row->business->biz_id}}}">{{{$row->business->biz_entity_name}}} </option>
-                                                @php } @endphp
-                                                @endforeach
-
-
-                                            </select>
-                                            <span id="anchorMsg" class="error"></span>
-
-                                        </div>
-                                        <div class="col-md-2">				 
-
-                                            <select class="form-control form-control-sm changeAnchor searchbtn" id="changeAnchor"  name="search_anchor">
-
-                                            </select>
-                                        </div>
-                                        <div class="col-md-2">		    
-
-                                            <select readonly="readonly" class="form-control form-control-sm searchbtn" id="supplier_id" name="search_supplier">
-
-                                            </select>
-                                        </div>    
-                                        -->
-                                        <div class="col-md-2" style="margin-left: 370px;">
+                                        <div class="col-md-8 text-right">
                                             @php if($role!=11) { @endphp
-                                            @can('update_disburse_bulk_invoice')
-                                            <button type="button" id="bulkDisburseApprove" data-status="9" class="btn btn-primary btn-sm ml-2 btn-app">Send to Disbursement</button>
-                                            @endcan
-                                            @php } @endphp 
+                                                @can('update_disburse_bulk_invoice')
+                                                <button type="button" id="bulkDisburseApprove" data-status="9" class="btn btn-primary btn-sm ml-2 btn-app">Send to Disbursement</button>
+                                                @endcan
+                                                @php } @endphp
                                         </div>
-
                                     </div>
                                     <div class="row">
                                         <div class="col-12 dataTables_wrapper mt-4">

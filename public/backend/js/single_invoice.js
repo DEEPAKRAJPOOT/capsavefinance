@@ -245,6 +245,11 @@
       $("#limit_type").prop("checked", false);
       $("#adhoc_msg").hide();
       var anchor_id =  $("#anchor_id").val(); 
+      $("#offer_data").val('');
+      $('#text_payment_frequency').empty();
+      $('#text_benchmark_date').empty();
+      $("#upFrontAmount").empty().hide();
+      $('#calculateUpfrontInt').addClass('hide');
       if(anchor_id=='')
       {
             $("#pro_limit").empty();
@@ -326,6 +331,11 @@
       $("#limit_type").prop("checked", false);
       $("#adhoc_msg").hide();
       $("#invoice_date").val('');
+      $("#offer_data").val('');
+      $('#text_payment_frequency').empty();
+      $('#text_benchmark_date').empty();
+      $("#upFrontAmount").empty().hide();
+      $('#calculateUpfrontInt').addClass('hide');
       var program_id =  $(this).val(); 
       var anchor_id =  $("#anchor_id").val(); 
       if(program_id=='')
@@ -453,7 +463,54 @@
                         $("#pro_limit").html('Prgm. Limit : <span class="fa fa-inr"></span>  '+data.limit+'');
                         $("#pro_remain_limit").html('Remaining Prgm. Balance : <span class="fa fa-inr"></span>  '+data.remain_limit+'');
                         $("#pro_limit_hide").val(data.remain_limit);  
-                        $("#margin").val(data.margin);  
+                        $("#margin").val(data.margin);
+                        $('#calculateUpfrontInt').addClass('hide');
+                        $('#upFrontAmount').addClass('hide');
+                        if (data.offerData !== null) {
+                          // Parse the JSON string into an object
+                          const decodedOfferData = atob(data.offerData);
+                          const offerData = JSON.parse(decodedOfferData);
+                          if (offerData.payment_frequency != null){
+                            switch (offerData.payment_frequency) {
+                              case '1':
+                                 textPayFre = '<b>Payment Frequency :</b> Upfront';
+                                 $('#calculateUpfrontInt').removeClass('hide');
+                                 $('#upFrontAmount').removeClass('hide');
+                                break;
+                              case '2':
+                                textPayFre = '<b>Payment Frequency :</b> Monthly';
+                                break;
+                              case '3':
+                                textPayFre = '<b>Payment Frequency :</b> Rear Ended';
+                                break;
+                              default:
+                                // Handle the case where the payment frequency is not recognized
+                                textPayFre = '';
+                                break;
+                            }
+                            $('#text_payment_frequency').empty().html(textPayFre);
+                          }
+                          if (offerData.benchmark_date != null){
+                              switch (offerData.benchmark_date) {
+                                case '1':
+                                  textBencMarDate = '<b>Benchmark Date :</b> Invoice Date';
+                                  break;
+                                case '2':
+                                  textBencMarDate = '<b>Benchmark Date :</b> Date of discounting';
+                                  break;
+                                default:
+                                  // Handle the case where the payment frequency is not recognized
+                                  textBencMarDate = '';
+                                  break;
+                              }
+                              $('#text_benchmark_date').empty().html(textBencMarDate);
+                          }
+
+                          // Find the hidden input field on the page
+                          var hiddenInputField = $('input[id="offer_data"]');
+                          // Set the value of the hidden input field to the JSON string
+                          hiddenInputField.val('').val(data.offerData);
+                        }  
                 }
         }); }); 
   
@@ -509,4 +566,57 @@
     var selValue = $(this).val();
     var selValueArr = selValue.split(",");
     $("#prgm_offer_id").val(selValueArr[2]);       
-  });   
+  });
+
+  $('#calculateUpfrontInt').click(function(){
+    const offerDataJson = $('#offer_data').val();
+    // Decode the base64-encoded string
+    const decodedOfferData = atob(offerDataJson);
+    // Parse the JSON string into an object
+    const offerData = JSON.parse(decodedOfferData);
+    calculateUpfrontInterest(offerData);       
+  });
+  
+  function calculateUpfrontInterest(offerData) {
+    if (!offerData || offerData.payment_frequency != 1) {
+      return null;
+    }
+    $("#upFrontAmount").show();
+    var invoice_due_date  = $('#invoice_due_date').val();
+    var invoice_date = $('#invoice_date').val();
+    var invoice_approve_amount = $("#invoice_approve_amount").val();
+    var invoice_approve_amount = parseInt(invoice_approve_amount.replace(/\,/g,''));
+    if (!invoice_due_date || !invoice_date || !invoice_approve_amount) {
+      $("#upFrontAmount").empty().html('<b style="color:red;">Invoice Date, Invoice Due Date, Invoice Amount is required to Calculate Upfront Interest Amount</b>').show();
+      setTimeout(function(){ 
+          $("#upFrontAmount").hide();
+      }, 5000); // hide after 5 seconds
+      return false;
+    }
+    var tenor = findDaysWithDate(invoice_due_date, invoice_date);
+    var margin = calMargin(invoice_approve_amount, offerData.margin);
+    var fundedAmount = invoice_approve_amount - margin;
+    var interestRate = parseFloat(offerData.interest_rate);
+    if (offerData.benchmark_date == 1) {
+      var currentDate = new Date(offerData.currentDate);
+      var day = String(currentDate.getDate()).padStart(2, '0');
+      var month = String(currentDate.getMonth() + 1).padStart(2, '0');
+      var year = currentDate.getFullYear();
+      var curDate = day + '/' + month + '/' + year;
+      tenor = findDaysWithDate(invoice_due_date, curDate);
+    }
+    var upfrontInterest = calculateInterest(fundedAmount, interestRate, tenor);
+    $("#upFrontAmount").empty().html(
+      '<b style="color:rgb(5, 88, 19);">Upfront Interest Amount: ' + upfrontInterest.toFixed(2) + '</b>,&nbsp;&nbsp;' +
+      '<b style="color:rgb(5, 88, 19);">Upfront Interest Days: ' + tenor + '</b>'
+    );    
+  }
+  // Define the calMargin and calInterest functions as needed.
+  function calculateInterest(principalAmt, interestRate, tenorDays) {
+    var interest = parseFloat(((principalAmt * (interestRate / 365)) / 100).toFixed(2));
+    return parseFloat((tenorDays * interest).toFixed(2));
+  }
+
+  function calMargin(amt, val) {
+    return parseFloat(((amt * val) / 100).toFixed(2));
+  }  

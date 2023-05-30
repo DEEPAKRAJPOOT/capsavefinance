@@ -106,7 +106,7 @@
                                     </div> --}}
                                     <div class="col-md-4">
                                         <div class="form-group">
-                                            <label for="txtCreditPeriod">Invoice No. <span class="error_message_label">*</span> </label>
+                                            <label for="txtCreditPeriod">Invoice No. <span class="error_message_label">*</span>  <span id="text_payment_frequency" class="success"></span></label>
                                             <input type="text" minlength="3" maxlength="25" id="invoice_no" name="invoice_no" class="form-control" placeholder="Invoice No">
                                             <span id="msgInvoiceDupli" class="error"></span>  
                                         </div>
@@ -120,7 +120,7 @@
 									
 									<div class="col-md-4">
                                         <div class="form-group">
-                                            <label for="txtCreditPeriod">Invoice Due Date <span class="error_message_label">*</span> </label>
+                                            <label for="txtCreditPeriod">Invoice Due Date <span class="error_message_label">*</span>  <span id="text_benchmark_date" class="success"></span></label>
                                               <input type="text" id="invoice_due_date" readonly="readonly" name="invoice_due_date" class="form-control date_of_birth" placeholder="Invoice Due Date">
                                        
                                         </div>
@@ -159,13 +159,16 @@
                            <span  id="tenorMsg" style="color:red;"></span>
                        </div>
                        <div class="text-right mt-2" id="ApprovePro">
+                        <span id="upFrontAmount" class="mr-3"></span>
                            <input type="hidden" readonly="readonly" class="getTenor" id="supplier_id" name="supplier_id">
                             <input type="hidden" id="pro_limit_hide" name="pro_limit_hide">
                            <input type="hidden" value="" id="prgm_offer_id" name="prgm_offer_id">
                             <input type="hidden" value="" id="tenor" name="tenor">
                             <input type="hidden" value="" id="margin" name="margin">
                              <input type="hidden" value="" id="exception" name="exception">
-                             <input type="hidden" value="" id="tenor_old_invoice" name="tenor_old_invoice"> 
+                             <input type="hidden" value="" id="tenor_old_invoice" name="tenor_old_invoice">
+                             <input type="hidden" value="" id="offer_data" name="offer_data"> 
+                             <input type="button" id="calculateUpfrontInt" class="btn btn-primary btn-sm mr-5 hide" value="Calculate Upfront Interest">
                             <input type="reset"    class="btn btn-secondary btn-sm" value="Cancel">
                            <input type="submit" id="submit"   class="btn btn-primary ml-2 btn-sm" value="Submit">
                        </div>
@@ -393,6 +396,6 @@ var messages = {
    })
  
   </script> 
-  <script src="{{ asset('backend/js/single_invoice.js') }}"></script>
+  <script src="{{ asset('backend/js/single_invoice.js?v=1') }}"></script>
 @endsection
  

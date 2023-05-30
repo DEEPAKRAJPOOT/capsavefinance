@@ -29,7 +29,7 @@
 
                     <div class="tab-content">
 
-                        <div id="menu1" class=" active tab-pane "><br>
+                        <div id="menu1" class=" active tab-pane mt-1">
                         <span id="moveCase" class="text-success" style="margin: 34px;"></span>
                         <span id="errormoveCase" class="text-danger" style="margin: 34px;"></span>
 
@@ -39,17 +39,19 @@
                                         {{-- <div class="col-md-5"> --}}
                                             <input type="hidden" name="route" value="{{Route::currentRouteName()}}">                                
                                         {{-- </div> --}}
-                                        <div class="col-md-5" style="margin-left:10px;">
-                                            <input class="form-control form-control-sm"  name="search_biz"  placeholder="Search by CustId, Anchor, Business Name and Invoice number">
-                                        </div> 
-                                        <div class="col-md-1" style="padding-right: 30px;">
-                                            <button  type="button" id="search_biz" class="btn  btn-primary btn-sm float-right">Search</button>
-                                        </div> 
-                                        <div class="col-md-1" style="margin-left: -20px;">
+                                        <div class="col-md-4">
+                                            <div class="input-group">
+                                                <input class="form-control form-control-sm"  name="search_biz"  placeholder="Search by CustId, Anchor, Business Name and Invoice number">
+                                                <div class="input-group-append ml-2">
+                                                    <button  type="button" id="search_biz" class="btn  btn-primary btn-sm">Search</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-8 text-right">
                                             @can('update_invoice_pending_tab')
                                                 <button type="button" id="rejectExcep" data-status="14" class="btn btn-primary btn-sm ml-2 btn-app">Reject</button>
                                             @endcan
-                                            </div> 
+                                        </div>
                                     </div>
                                     <div class="row">
                                         <div class="col-12 dataTables_wrapper mt-4">

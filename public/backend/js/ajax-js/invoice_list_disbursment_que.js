@@ -27,17 +27,23 @@ try {
                 }
             },
             columns: [
-                {data: 'invoice_checkbox'},
-                {data: 'anchor_id'},
-                {data: 'anchor_name'},
-                {data: 'supplier_name'},
-                 {data: 'invoice_date'},
-                {data: 'invoice_amount'},
-                {data: 'updated_at'},
-                 {data: 'action'},
+                {data: 'invoice_checkbox', width: '2%' },
+                {data: 'anchor_id', width: '10%' },
+                {data: 'anchor_name', width: '25%' },
+                {data: 'supplier_name', width: '20%' },
+                 {data: 'invoice_date_detail', width: '10%' },
+                {data: 'invoice_amount', width: '15%' },
+                {data: 'updated_at', width: '10%' },
+                 {data: 'action', width: '10%' }
                
             ],
             aoColumnDefs: [{'bSortable': false, 'aTargets': [0,1,3]}],
+            createdRow: function(row, data) {
+                var upfrontInterest = data.upfront_interest; // assuming this value is in the data object
+                if (typeof upfrontInterest !== 'undefined' && upfrontInterest != null) {
+                    $('td:eq(5)', row).append('<br/><b>Upfront Int. Amt:</b> ' + upfrontInterest); // append the value to the 6th column (index 5)
+                }
+            }
         });
 
         //Search
