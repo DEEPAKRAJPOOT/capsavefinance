@@ -6063,7 +6063,7 @@ if ($err) {
             if (count($debitNoteTransIds)) {
                 foreach ($debitNoteTransIds as $billType => $transIds) {
                     if($billType){
-                        $debitNoteResults = $controller->generateDebitNote($transIds, $userId, $billType);
+                        $debitNoteResults = $controller->generateDebitNote($transIds, $userId, $billType, null, null, 1);
                     }
                 }
             }
@@ -6085,7 +6085,7 @@ if ($err) {
             if(count($creditNoteTransIds)) {
                 foreach ($creditNoteTransIds as $billType => $transIds) {
                     if($billType){
-                        $debitNoteResults = $controller->generateCreditNote($transIds, $userId, $billType);
+                        $debitNoteResults = $controller->generateCreditNote($transIds, $userId, $billType, null, null, 1);
                     }
                 }
             }

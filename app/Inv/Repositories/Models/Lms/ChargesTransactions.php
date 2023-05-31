@@ -54,6 +54,7 @@ class ChargesTransactions extends BaseModel
         'app_id',
         'prgm_id',
         'chrg_master_id',
+        'chrg_type',
         'percent',
         'chrg_applicable_id',
         'amount',

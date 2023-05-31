@@ -899,6 +899,7 @@ class userInvoiceController extends Controller
                 'invoice_type' => $invoiceCode,
                 'invoice_borne_by' => $borneBy,
                 'invoice_cat' => '1',
+                'invoice_gen' => '2',
                 'invoice_type_name' => $invoiceTypeName, 
                 'invoice_no' => $newInvoiceNo,
                 'inv_financial_year' =>$InvoiceNoArr[1] ?? NULL,
@@ -947,7 +948,7 @@ class userInvoiceController extends Controller
                    $totalGstRate = ($txnsRec['sgst_rate'] + $txnsRec['cgst_rate'] + $txnsRec['igst_rate']);
                    $data = ['is_invoice_generated' => 1, 'gst_per' => $totalGstRate, 'soa_flag' => 1, 'base_amt' => $txnsRec['base_amt'], 'gst_amt' => $totalGst];
 
-                   $isInvoiceGenerated = $this->UserInvRepo->updateIsInvoiceGenerated($update_transactions, $data);
+                   $this->UserInvRepo->updateIsInvoiceGenerated($update_transactions, $data);
                 }
                 $UserInvoiceTxns = $this->UserInvRepo->saveUserInvoiceTxns($user_invoice_trans_data);
                 if($UserInvoiceTxns){
@@ -974,7 +975,7 @@ class userInvoiceController extends Controller
         }
     }
 
-    public function generateDebitNote($transId = [], $userId, $invoiceType, $invoiceDate = null, $dueDate  = null){
+    public function generateDebitNote($transId = [], $userId, $invoiceType, $invoiceDate = null, $dueDate  = null, $invoiceGen = null){
         $status = 0;
         $invoiceType = substr(str_replace('_','',$invoiceType),0,2);
         $result = ['status' => &$status, 'error' => &$error, 'success' => &$success];
@@ -1048,7 +1049,6 @@ class userInvoiceController extends Controller
             $inv_data = $this->_calculateInvoiceTxns($txnsData, $is_state_diffrent, false, 1);
 
             $invoiceTypeName = substr($invoiceType,0,1) == "C" ? 1 : 2;
-            $invoiceTypeOld  = $invoiceType;
 
             $invCat = $inv_data[2];
             $borneBy = substr($invoiceType,1,2)  == 'A' ? 1 : 2;
@@ -1062,9 +1062,6 @@ class userInvoiceController extends Controller
             $intrest_charges = $inv_data[0];
             $total_sum_of_rental = $inv_data[1];
             $bank_id = bankDetailIsOfRegisteredCompanyInInvoice() ? $registeredCompany['bank_account_id'] : $company_data['bank_id'];
-            $created_at = Carbon::now();
-            $created_by = Auth::user()->user_id ?? null;
-
             
             $billingDetails = [];
             if($borneBy == 1){
@@ -1099,6 +1096,7 @@ class userInvoiceController extends Controller
                 'invoice_type' => $invoiceCode,
                 'invoice_borne_by' => $borneBy,
                 'invoice_cat' => '1',
+                'invoice_gen' => $invoiceGen,
                 'invoice_type_name' => $invoiceTypeName,
                 'invoice_no' => $newInvoiceNo,
                 'inv_financial_year' =>$origin_of_recipient['financial_year'],
@@ -1146,7 +1144,7 @@ class userInvoiceController extends Controller
                     $totalGst = ($txnsRec['sgst_amt'] + $txnsRec['cgst_amt'] + $txnsRec['igst_amt']);
                     $totalGstRate = ($txnsRec['sgst_rate'] + $txnsRec['cgst_rate'] + $txnsRec['igst_rate']);
                     $data = ['is_invoice_generated' => 1, 'gst_per' => $totalGstRate, 'soa_flag' => 1, 'base_amt' => $txnsRec['base_amt'], 'gst_amt' => $totalGst];
-                    $isInvoiceGenerated = $this->UserInvRepo->updateIsInvoiceGenerated([$txnsRec['trans_id']], $data);
+                    $this->UserInvRepo->updateIsInvoiceGenerated([$txnsRec['trans_id']], $data);
                 }
                 $UserInvoiceTxns = $this->UserInvRepo->saveUserInvoiceTxns($user_invoice_trans_data);
                 if ($UserInvoiceTxns == true) {   
@@ -1164,7 +1162,7 @@ class userInvoiceController extends Controller
         }
     }
     
-    public function generateCreditNote($transId = [], $userId, $invoiceType, $invoiceDate = null, $dueDate  = null){
+    public function generateCreditNote($transId = [], $userId, $invoiceType, $invoiceDate = null, $dueDate  = null, $invoiceGen = null){
         $status = 0;
         $result = ['status' => &$status, 'error' => &$error, 'success' => &$success];
         try {
@@ -1274,8 +1272,6 @@ class userInvoiceController extends Controller
             $intrest_charges = $inv_data[0];
             $total_sum_of_rental = $inv_data[1];
             $bank_id = bankDetailIsOfRegisteredCompanyInInvoice() ? $registeredCompany['bank_account_id'] : $company_data['bank_id'];
-            $created_at = Carbon::now();
-            $created_by = Auth::user()->user_id ?? null;
 
             $billingDetails = [];
             if($borneBy == 1){
@@ -1312,6 +1308,7 @@ class userInvoiceController extends Controller
                 'invoice_borne_by' => $borneBy,
                 'invoice_type_name' => $invoiceTypeName,
                 'invoice_cat' => '2',
+                'invoice_gen' => $invoiceGen,
                 'invoice_no' => $newInvoiceNo,
                 'inv_financial_year' =>$origin_of_recipient['financial_year'],
                 'inv_serial_no' => $invSerialNo,
@@ -1328,8 +1325,6 @@ class userInvoiceController extends Controller
                 'bank_id' => $bank_id,
                 'is_active' => 1,
 
-                'created_at' => $created_at,
-                'created_by' => $created_by,
                 'pan_no' => $billingDetails['pan_no'] ?? NULL, 
                 'biz_gst_no' => $billingDetails['biz_gst_no'] ?? NULL, 
                 'biz_gst_state_code' => $billingDetails['biz_gst_state_code'] ?? NULL, 
@@ -1360,7 +1355,7 @@ class userInvoiceController extends Controller
                 $totalGst = ($txnsRec['sgst_amt'] + $txnsRec['cgst_amt'] + $txnsRec['igst_amt']);
                 $totalGstRate = ($txnsRec['sgst_rate'] + $txnsRec['cgst_rate'] + $txnsRec['igst_rate']);
                 $data = ['is_invoice_generated' => 1, 'gst_per' => $totalGstRate, 'soa_flag' => 1, 'base_amt' => $txnsRec['base_amt'], 'gst_amt' => $totalGst];
-                $isInvoiceGenerated = $this->UserInvRepo->updateIsInvoiceGenerated([$txnsRec['trans_id']], $data);
+                $this->UserInvRepo->updateIsInvoiceGenerated([$txnsRec['trans_id']], $data);
                 }
                 $UserInvoiceTxns = $this->UserInvRepo->saveUserInvoiceTxns($user_invoice_trans_data);
                 if ($UserInvoiceTxns == true) {   
@@ -1378,7 +1373,7 @@ class userInvoiceController extends Controller
         }
     }
     
-    public function generateCreditNoteReversal($transId = [], $userId, $invoiceType=null, $appId  = null, $invoiceDate = null, $dueDate  = null, $paretUserInvoiceId = null){
+    public function generateCreditNoteReversal($transId = [], $userId, $invoiceType=null, $appId  = null, $invoiceDate = null, $dueDate  = null, $paretUserInvoiceId = null, $invoiceGen = null){
         $status = 0;
         $result = ['status' => &$status, 'error' => &$error, 'success' => &$success];
         try {
@@ -1486,8 +1481,6 @@ class userInvoiceController extends Controller
             $intrest_charges = $inv_data[0];
             $total_sum_of_rental = $inv_data[1];
             $bank_id = bankDetailIsOfRegisteredCompanyInInvoice() ? $registeredCompany['bank_account_id'] : $company_data['bank_id'];
-            $created_at = Carbon::now();
-            $created_by = Auth::user()->user_id ?? null;
 
             $billingDetails = [];
             if($borneBy == 1){
@@ -1525,6 +1518,7 @@ class userInvoiceController extends Controller
                 'invoice_borne_by' => $borneBy,
                 'invoice_type_name' => $invoiceTypeName,
                 'invoice_cat' => '3', //for reversal
+                'invoice_gen' => $invoiceGen,
                 'invoice_no' => $newInvoiceNo,
                 'inv_financial_year' =>$origin_of_recipient['financial_year'],
                 'inv_serial_no' => $invSerialNo,
@@ -1540,8 +1534,6 @@ class userInvoiceController extends Controller
                 'comp_addr_register' => json_encode($registeredCompany),
                 'bank_id' => $bank_id,
                 'is_active' => 1,
-                'created_at' => $created_at,
-                'created_by' => $created_by,
 
                 'pan_no' => $billingDetails['pan_no'] ?? NULL, 
                 'biz_gst_no' => $billingDetails['biz_gst_no'] ?? NULL, 
@@ -1573,7 +1565,7 @@ class userInvoiceController extends Controller
                 $totalGst = ($txnsRec['sgst_amt'] + $txnsRec['cgst_amt'] + $txnsRec['igst_amt']);
                 $totalGstRate = ($txnsRec['sgst_rate'] + $txnsRec['cgst_rate'] + $txnsRec['igst_rate']);
                 $data = ['is_invoice_generated' => 1, 'gst_per' => $totalGstRate, 'soa_flag' => 1, 'base_amt' => $txnsRec['base_amt'], 'gst_amt' => $totalGst];
-                $isInvoiceGenerated = $this->UserInvRepo->updateIsInvoiceGenerated([$txnsRec['trans_id']], $data);
+                $this->UserInvRepo->updateIsInvoiceGenerated([$txnsRec['trans_id']], $data);
                 }
                 $UserInvoiceTxns = $this->UserInvRepo->saveUserInvoiceTxns($user_invoice_trans_data);
                 if ($UserInvoiceTxns == true) {      

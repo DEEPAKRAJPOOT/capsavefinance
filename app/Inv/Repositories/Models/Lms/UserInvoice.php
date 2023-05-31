@@ -61,6 +61,7 @@ class UserInvoice extends BaseModel {
         'invoice_type',
         'invoice_borne_by',
         'invoice_cat',
+        'invoice_gen',
         'invoice_type_name',
         'invoice_no',
         'inv_serial_no',

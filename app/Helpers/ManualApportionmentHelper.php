@@ -986,7 +986,7 @@ class ManualApportionmentHelper{
                 foreach ($gstTypes as $gst => $trans){
                     $transIds = array_keys($trans);
                     if(!empty($transIds)){
-                        $controller->generateDebitNote($transIds, $userId, $billType);
+                        $controller->generateDebitNote($transIds, $userId, $billType, null, null, 1);
                     }
                 }
             }
@@ -1015,44 +1015,29 @@ class ManualApportionmentHelper{
         $cancelTransList = $cancelTransList->get();
 
         $creditData = [];
+        $userInvoices = [];
         foreach($cancelTransList as $trans){
             $billType = null;
-            if($trans->parentTransactions->trans_type == config('lms.TRANS_TYPE.INTEREST')){
-                if(isset($trans->userInvParentTrans->trans->invoiceDisbursed->invoice->program)){
-                    if($trans->userInvParentTrans->trans->invoiceDisbursed->invoice->program->interest_borne_by == 2){
-                        $billType = 'IC';
-                    }else{
-                        $billType = 'IA';
-                    }
-                }
-            }elseif($trans->parentTransactions->trans_type == config('lms.TRANS_TYPE.INTEREST_OVERDUE')){
-                if(isset($trans->userInvParentTrans->trans->invoiceDisbursed->invoice->program)){
-                    if($trans->userInvParentTrans->trans->invoiceDisbursed->invoice->program->overdue_interest_borne_by == 2){
-                        $billType = 'IC';
-                    }else{
-                        $billType = 'IA';
-                    }
-                }
-            }elseif($trans->parentTransactions->trans_type >= 50){
-                if(isset($trans->userInvParentTrans->trans->ChargesTransactions->chargePrgm)){
-                    if($trans->userInvParentTrans->trans->ChargesTransactions->chargePrgm->interest_borne_by == 2){
-                        $billType = 'CC';
-                    }else{
-                        $billType = 'CA';
-                    }
-                }
-            }else{
-                $billType = $trans->parentTransactions->trans_type;
+            $userInvoiceTrans = $trans->userInvParentTrans;
+            if(isset($userInvoiceTrans)){
+                $userInvoices[$userInvoiceTrans->user_invoice_id] = isset($userInvoices[$userInvoiceTrans->user_invoice_id]) ? $userInvoices[$userInvoiceTrans->user_invoice_id] : $userInvoiceTrans->getUserInvoice;
             }
 
-            $creditData[$trans->user_id][$billType][$trans->gst.'_'.$trans->userInvParentTrans->getUserInvoice->user_invoice_rel_id][$trans->trans_id] = $trans->trans_id;
+            if(isset($userInvoices[$userInvoiceTrans->user_invoice_id])){
+                $invTypeName = $userInvoices[$userInvoiceTrans->user_invoice_id]->invoice_type_name == 1 ? 'C' : 'I';
+                $invBorneBy = $userInvoices[$userInvoiceTrans->user_invoice_id]->invoice_borne_by == 1 ? 'A' : 'C';
+                $billType = $invTypeName.$invBorneBy;
+            }
+
+            $creditData[$trans->user_id][$billType][$trans->gst.'_'.$userInvoices[$userInvoiceTrans->user_invoice_id]->user_invoice_rel_id][$trans->trans_id] = $trans->trans_id;
         }
+
         foreach($creditData as $userId => $transTypes){
             foreach($transTypes as $billType => $gstRelation){
-                foreach ($gstRelation as $gstRelCode => $trans){
+                foreach ($gstRelation as $trans){
                     $transIds = array_keys($trans);
                     if(!empty($transIds)){
-                        $controller->generateCreditNote($transIds, $userId, $billType);
+                        $controller->generateCreditNote($transIds, $userId, $billType, null, null, 1);
                     }
                 }
             }
@@ -1075,44 +1060,29 @@ class ManualApportionmentHelper{
         $cancelTransList = $cancelTransList->with('userInvLinkTrans:trans_id,user_invoice_id','userInvLinkTrans.getUserInvoice:user_invoice_id,user_invoice_rel_id','userInvParentTrans:trans_id,trans_id','userInvParentTrans.trans:trans_id,invoice_disbursed_id','userInvParentTrans.trans.invoiceDisbursed:invoice_disbursed_id,invoice_id','userInvParentTrans.trans.invoiceDisbursed.invoice:invoice_id,program_id','userInvParentTrans.trans.invoiceDisbursed.invoice.program:prgm_id,interest_borne_by,overdue_interest_borne_by','userInvParentTrans.trans.ChargesTransactions:trans_id,prgm_id','userInvParentTrans.trans.ChargesTransactions.chargePrgm:prgm_id,interest_borne_by')->get();
 
         $creditData = [];
+        $userInvoices = [];
         foreach($cancelTransList as $trans){
             $billType = null;
-            if($trans->parentTransactions->trans_type == config('lms.TRANS_TYPE.INTEREST')){
-                if(isset($trans->userInvParentTrans->trans->invoiceDisbursed->invoice->program)){
-                    if($trans->userInvParentTrans->trans->invoiceDisbursed->invoice->program->interest_borne_by == 2){
-                        $billType = 'IC';
-                    }else{
-                        $billType = 'IA';
-                    }
-                }
-            }elseif($trans->parentTransactions->trans_type == config('lms.TRANS_TYPE.INTEREST_OVERDUE')){
-                if(isset($trans->userInvParentTrans->trans->invoiceDisbursed->invoice->program)){
-                    if($trans->userInvParentTrans->trans->invoiceDisbursed->invoice->program->overdue_interest_borne_by == 2){
-                        $billType = 'IC';
-                    }else{
-                        $billType = 'IA';
-                    }
-                }
-            }elseif($trans->parentTransactions->trans_type >= 50){
-                if(isset($trans->userInvParentTrans->trans->ChargesTransactions->chargePrgm)){
-                    if($trans->userInvParentTrans->trans->ChargesTransactions->chargePrgm->interest_borne_by == 2){
-                        $billType = 'CC';
-                    }else{
-                        $billType = 'CA';
-                    }
-                }
-            }else{
-                $billType = $trans->parentTransactions->trans_type;
+            $userInvoiceTrans = $trans->userInvLinkTrans;
+            if(isset($userInvoiceTrans)){
+                $userInvoices[$userInvoiceTrans->user_invoice_id] = isset($userInvoices[$userInvoiceTrans->user_invoice_id]) ? $userInvoices[$userInvoiceTrans->user_invoice_id] : $userInvoiceTrans->getUserInvoice;
             }
 
-            $creditData[$trans->user_id][$billType][$trans->gst.'_'.$trans->userInvLinkTrans->getUserInvoice->user_invoice_rel_id][$trans->trans_id] = $trans->trans_id;
+            if(isset($userInvoices[$userInvoiceTrans->user_invoice_id])){
+                $invTypeName = $userInvoices[$userInvoiceTrans->user_invoice_id]->invoice_type_name == 1 ? 'C' : 'I';
+                $invBorneBy = $userInvoices[$userInvoiceTrans->user_invoice_id]->invoice_borne_by == 1 ? 'A' : 'C';
+                $billType = $invTypeName.$invBorneBy;
+            }
+
+            $creditData[$trans->user_id][$billType][$trans->gst.'_'.$userInvoices[$userInvoiceTrans->user_invoice_id]->user_invoice_rel_id][$trans->trans_id] = $trans->trans_id;
         }
+
         foreach($creditData as $userId => $transTypes){
             foreach($transTypes as $billType => $gstRelation){
                 foreach ($gstRelation as $gstRelCode => $trans){
                     $transIds = array_keys($trans);
                     if(!empty($transIds)){
-                        $controller->generateCreditNoteReversal($transIds, $userId, $billType);
+                        $controller->generateCreditNoteReversal($transIds, $userId, $billType, null, null, null, null, 1);
                     }
                 }
             }

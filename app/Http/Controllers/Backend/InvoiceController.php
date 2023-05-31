@@ -579,10 +579,9 @@ class InvoiceController extends Controller {
                         "chrg_master_id" =>$chrgData->id,
                         "percent" => $chrgData->gst_percentage,
                         "chrg_applicable_id" =>  $chrgData->chrg_applicable_id,
+                        "chrg_type" => 1,
                         "amount" =>   $chrgData->chrg_calculation_amt,
-                        // "virtual_acc_id" =>  $this->lmsRepo->getVirtualAccIdByUserId($request->user_id),
                         "level_charges" =>$value['invoice']['program_offer']['program']['interest_borne_by'],
-                        // 'created_by' =>  $id,
                         'created_at' =>  Carbon::now(),
                     ];
                     $chrgTransId = $this->lmsRepo->saveChargeTrans($arr);
@@ -633,7 +632,7 @@ class InvoiceController extends Controller {
             $customerIntList = array_merge($customerIntLists,$customerIntListOverdue);
             $controller = app()->make('App\Http\Controllers\Lms\userInvoiceController');
             if(!empty($customerIntList)){
-                $controller->generateDebitNote($customerIntList, $userId, 'IC');
+                $controller->generateDebitNote($customerIntList, $userId, 'IC', null, null, 1);
                 unset($customerIntList);
             }
 
@@ -660,7 +659,7 @@ class InvoiceController extends Controller {
                                                 ->toArray();
             $anchorIntList = array_merge($anchorIntLists,$anchorIntListOverdue);
             if(!empty($anchorIntList)){
-                $controller->generateDebitNote($anchorIntList, $userId, 'IA');
+                $controller->generateDebitNote($anchorIntList, $userId, 'IA', null, null, 1);
                 unset($anchorIntList);
             }
             $customerChrgList = Transactions::whereIn('invoice_disbursed_id',$invDisbIds)
@@ -675,7 +674,7 @@ class InvoiceController extends Controller {
                                             ->toArray();
 
             if(!empty($customerChrgList)){
-                $controller->generateDebitNote($customerChrgList, $userId, 'CC');
+                $controller->generateDebitNote($customerChrgList, $userId, 'CC', null, null, 1);
                 unset($customerChrgList);
             }
 
@@ -690,7 +689,7 @@ class InvoiceController extends Controller {
                                             ->pluck('trans_id')
                                             ->toArray();
             if(!empty($anchorChrgList)){
-                $controller->generateDebitNote($anchorChrgList, $userId, 'CA');
+                $controller->generateDebitNote($anchorChrgList, $userId, 'CA', null, null, 1);
                 unset($anchorChrgList);
             }
         }

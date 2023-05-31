@@ -1184,7 +1184,7 @@ class ApportionmentController extends Controller
                 foreach($billTypes as $billType => $trans){
                     $transIds = array_keys($trans);
                     if(!empty($transIds)){
-                        $controller->generateDebitNote($transIds, $userId, $billType);
+                        $controller->generateDebitNote($transIds, $userId, $billType, null, null, 1);
                     }
                 }
             }

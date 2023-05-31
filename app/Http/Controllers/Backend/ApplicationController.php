@@ -1401,6 +1401,7 @@ class ApplicationController extends Controller
 										"chrg_master_id" => $chrgs->charge_id,
 										"percent" => $chrgs->chrg_value,
 										"chrg_applicable_id" =>  $chrgs->chrg_applicable_id,
+										"chrg_type" =>  1,
 										"amount" =>   $fData['amount'],
 										"virtual_acc_id" =>  $this->lmsRepo->getVirtualAccIdByUserId($user_id),
 										"level_charges" => $prgmData->interest_borne_by,

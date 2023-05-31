@@ -1347,7 +1347,7 @@ class Transactions extends BaseModel {
                 ->whereHas('invoiceDisbursed.invoice.program', function($newQuery) {
                     $newQuery->where('interest_borne_by',1);
                 })
-                ->orWhere(function($newQuery) use ($invoiceType) {
+                ->orWhere(function($newQuery) {
                     $newQuery->whereHas('transType', function($innerQuery) {
                         $innerQuery->whereIn('id',[config('lms.TRANS_TYPE.INTEREST_OVERDUE')]);
                     })

@@ -128,7 +128,7 @@ class GenerateDebitNote extends Command
                 foreach ($gstTypes as $gst => $trans){
                     $transIds = array_keys($trans);
                     if(!empty($transIds)){
-                        $controller->generateDebitNote($transIds, $userId, $billType);
+                        $controller->generateDebitNote($transIds, $userId, $billType, null, null, 1);
                     }
                 }
             }

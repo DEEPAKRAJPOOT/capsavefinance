@@ -15,11 +15,16 @@ class ChargeTransactionObserver
      */
     public function created(ChargesTransactions $chrgTransaction)
     {
-        if($chrgTransaction->level_charges == 2){
+        // if Chrg_type == 1 Auto Charge else Manual Charge 
+        if($chrgTransaction->chrg_type == 1){
             $invType = 'CC';
-        }
-        elseif($chrgTransaction->level_charges == 1){
-            $invType = 'CA';
+        }else{
+            if($chrgTransaction->level_charges == 2){
+                $invType = 'CC';
+            }
+            elseif($chrgTransaction->level_charges == 1){
+                $invType = 'CA';
+            }
         }
         
         $appId = $chrgTransaction->app_id ?? NULL;
@@ -27,8 +32,7 @@ class ChargeTransactionObserver
 
         if($appId && $userId && $chrgTransaction->trans_id){
             $controller = app()->make('App\Http\Controllers\Lms\userInvoiceController');
-            $controller->generateDebitNote([$chrgTransaction->trans_id], $userId, $invType);
-            // $controller->generateDebitNote([$chrgTransaction->trans_id], $userId, $invType, $appId);
+            $controller->generateDebitNote([$chrgTransaction->trans_id], $userId, $invType , NULL, NULL, 1);
         } 
     }
 
