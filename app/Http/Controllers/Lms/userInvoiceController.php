@@ -875,7 +875,8 @@ class userInvoiceController extends Controller
                     'gst_addr' => $anchorDetails['comp_addr'].','.$anchorDetails['comp_city'].','.$anchorDetails['name'].','.$anchorDetails['comp_zip'],
                     'customer_id' => $custDetails['customer_id'],
                     'customer_name' => $custDetails['biz_entity_name'],
-                    'anchor_name' => $anchorDetails['comp_name']
+                    'anchor_name' => $anchorDetails['comp_name'],
+                    'anchor_id' => $anchorDetails['anchor_id']
                 ];
             }else{
                 $billingDetails = [
@@ -886,6 +887,7 @@ class userInvoiceController extends Controller
                     'customer_id' => NULL,
                     'customer_name' => '',
                     'anchor_name' => '',
+                    'anchor_id' => '',
                 ];
             }
 
@@ -922,7 +924,8 @@ class userInvoiceController extends Controller
                 'gst_addr' => $billingDetails['gst_addr'] ?? NULL, 
                 'customer_id' => $billingDetails['customer_id'] ?? NULL, 
                 'customer_name' => $billingDetails['customer_name'] ?? NULL,
-                'anchor_name' => $billingDetails['anchor_name'] ?? NULL
+                'anchor_name' => $billingDetails['anchor_name'] ?? NULL,
+                'anchor_id' => $billingDetails['anchor_id'] ?? NULL
             ];
             $invoiceResp = $this->UserInvRepo->saveUserInvoice($userInvoiceData);
             if(!empty($invoiceResp->user_invoice_id)){
@@ -1077,7 +1080,8 @@ class userInvoiceController extends Controller
                     'gst_addr' => $anchorDetails['comp_addr'].','.$anchorDetails['comp_city'].','.$anchorDetails['name'].','.$anchorDetails['comp_zip'],
                     'customer_id' => $custDetails['customer_id'],
                     'customer_name' => $custDetails['biz_entity_name'],
-                    'anchor_name' => $anchorDetails['comp_name']
+                    'anchor_name' => $anchorDetails['comp_name'],
+                    'anchor_id' => $anchorDetails['anchor_id']
                 ];
             }else{
                 $billingDetails = [
@@ -1088,6 +1092,7 @@ class userInvoiceController extends Controller
                     'customer_id' => NULL,
                     'customer_name' => '',
                     'anchor_name' => '',
+                    'anchor_id' => '',
                 ];
             }
             $userInvoiceData = [
@@ -1122,7 +1127,8 @@ class userInvoiceController extends Controller
                 'gst_addr' => $billingDetails['gst_addr'] ?? NULL, 
                 'customer_id' => $billingDetails['customer_id'] ?? NULL, 
                 'customer_name' => $billingDetails['customer_name'] ?? NULL,
-                'anchor_name' => $billingDetails['anchor_name'] ?? NULL
+                'anchor_name' => $billingDetails['anchor_name'] ?? NULL,
+                'anchor_id' => $billingDetails['anchor_id'] ?? NULL
             ];
             $invoiceResp = $this->UserInvRepo->saveUserInvoice($userInvoiceData);
 
@@ -1288,7 +1294,8 @@ class userInvoiceController extends Controller
                     'gst_addr' => $anchorDetails['comp_addr'].','.$anchorDetails['comp_city'].','.$anchorDetails['name'].','.$anchorDetails['comp_zip'],
                     'customer_id' => $custDetails['customer_id'],
                     'customer_name' => $custDetails['biz_entity_name'],
-                    'anchor_name' => $anchorDetails['comp_name']
+                    'anchor_name' => $anchorDetails['comp_name'],
+                    'anchor_id' => $anchorDetails['anchor_id'],
                 ];
             }else{
                 $billingDetails = [
@@ -1299,6 +1306,7 @@ class userInvoiceController extends Controller
                     'customer_id' => NULL,
                     'customer_name' => '',
                     'anchor_name' => '',
+                    'anchor_id' => '',
                 ];
             }
             $userInvoiceData = [
@@ -1337,6 +1345,7 @@ class userInvoiceController extends Controller
                 'customer_id' => $billingDetails['customer_id'] ?? NULL, 
                 'customer_name' => $billingDetails['customer_name'] ?? NULL,
                 'anchor_name' => $billingDetails['anchor_name'] ?? NULL,
+                'anchor_id' => $billingDetails['anchor_id'] ?? NULL
             ];
             $invoiceResp = $this->UserInvRepo->saveUserInvoice($userInvoiceData);
 
@@ -1500,7 +1509,8 @@ class userInvoiceController extends Controller
                     'gst_addr' => $anchorDetails['comp_addr'].','.$anchorDetails['comp_city'].','.$anchorDetails['name'].','.$anchorDetails['comp_zip'],
                     'customer_id' => $custDetails['customer_id'],
                     'customer_name' => $custDetails['biz_entity_name'],
-                    'anchor_name' => $anchorDetails['comp_name']
+                    'anchor_name' => $anchorDetails['comp_name'],
+                    'anchor_id' => $anchorDetails['anchor_id'],
                 ];
             }else{
                 $billingDetails = [
@@ -1511,6 +1521,7 @@ class userInvoiceController extends Controller
                     'customer_id' => NULL,
                     'customer_name' => '',
                     'anchor_name' => '',
+                    'anchor_id' => '',
                 ];
             }
             $userInvoiceData = [
@@ -1549,7 +1560,8 @@ class userInvoiceController extends Controller
                 'gst_addr' => $billingDetails['gst_addr'] ?? NULL, 
                 'customer_id' => $billingDetails['customer_id'] ?? NULL, 
                 'customer_name' => $billingDetails['customer_name'] ?? NULL,
-                'anchor_name' => $billingDetails['anchor_name'] ?? NULL
+                'anchor_name' => $billingDetails['anchor_name'] ?? NULL,
+                'anchor_id' => $billingDetails['anchor_id'] ?? NULL
             ];
             $invoiceResp = $this->UserInvRepo->saveUserInvoice($userInvoiceData);
 
@@ -1590,15 +1602,6 @@ class userInvoiceController extends Controller
         }
     }
     
-    public function sendCapsaveInvoiceMail($pdfResult,$newInvoiceNo,$getEmail){
-        $emailData = array(
-            'invoice_no' => $newInvoiceNo,
-            'email' => $getEmail,
-            'body' => 'body',
-            'attachment' => $pdfResult,
-          );
-        // \Event::dispatch("USER_INVOICE_MAIL", serialize($emailData));
-    }
 
     public function unpublishUsereAddrApp(Request $request) {
         try{

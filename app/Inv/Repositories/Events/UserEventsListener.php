@@ -1578,14 +1578,21 @@ class UserEventsListener extends BaseEvent
                 //     $emailBcc = \Helpers::ccOrBccEmailsArray(env('SEND_MAIL_BCC'));
                 // }else{
                     $emailTo = $data["email"];
-                    $emailCc = \Helpers::ccOrBccEmailsArray($email_content->cc);
-                    $emailBcc = \Helpers::ccOrBccEmailsArray($email_content->bcc);
+                    if($data['custId'] == ''){
+                        $emailCc = \Helpers::ccOrBccEmailsArray($email_content->cc);
+                        $emailBcc = \Helpers::ccOrBccEmailsArray($email_content->bcc);
+                    }else{
+                        $emailCc = NULL;
+                        $emailBcc = NULL;
+                    }
                 // }
 
                 $message->from(config('common.FRONTEND_FROM_EMAIL'), config('common.FRONTEND_FROM_EMAIL_NAME'));
                 $message->to($emailTo);
-                $message->cc($emailCc);    
-                $message->bcc($emailBcc);
+                if($data['custId'] == ''){
+                    $message->cc($emailCc);    
+                    $message->bcc($emailBcc);
+                }
                 $message->subject($mail_subject);
 
                 if(!empty($data['attachment'])){
@@ -1596,8 +1603,8 @@ class UserEventsListener extends BaseEvent
                 $mailContent = [
                     'email_from' => config('common.FRONTEND_FROM_EMAIL'),
                     'email_to' => $emailTo,
-                    'email_cc' => $emailCc,
-                    'email_bcc' => $emailBcc,
+                    'email_cc' => $emailCc??NULL,
+                    'email_bcc' => $emailBcc??NULL,
                     'subject' => $mail_subject,
                     'body' => $email_content,
                     'attachment' => $data['attachment'] ?? NULL,

@@ -68,9 +68,9 @@ class UcicUserController extends Controller
             $emailIds = $ucicDetails->ucicUserDetail->pluck('invoice_level_mail')->filter()->toArray();
 
             if (empty($emailIds)) {
-                echo "No email IDs found.";
+                $commaSeparatedEmails = '';
             } else {
-                $commaSeparatedEmails = str_replace(' ','',implode(',',$emailIds));
+                $commaSeparatedEmails = implode(',',$emailIds);
             }
             if($ucicDetails){
                 $data = json_decode($ucicDetails->business_info ?? '{}',true); 
@@ -142,7 +142,7 @@ class UcicUserController extends Controller
             if($userUcicId){
                 $UcicUserDetailDelete = $this->ucicuser_repo->deleteUcicUserDetail($userUcicId);
                 foreach($invoiceLevelMail as $invoiceMail){
-                    $UcicUserDetail = ['invoice_level_mail' => $invoiceMail,'user_ucic_id' => $userUcicId];
+                    $UcicUserDetail = ['invoice_level_mail' => trim($invoiceMail),'user_ucic_id' => $userUcicId];
                     $userUcicDetail = $this->ucicuser_repo->saveUserUcicDetail($UcicUserDetail);
                 }
                 unset($arrFileData['invoice_level_mail']);
