@@ -395,26 +395,28 @@ class KarzaController extends Controller
                 ]);
             }
 
-            $whereCond=[];       
+           /* $whereCond=[];       
             $whereCond['pan_no'] = $requestArr['pan'];
             $whereCond['user_id'] = $requestArr['userID'];
             
             $userData  = $this->userRepo->getNonAnchorUserData($whereCond);
+           // dd($userData, $whereCond);
             if (!isset($userData[0])) {
                 $userData  = $this->userRepo->getAnchorUserData($whereCond); 
             }
 
             if(!isset($userData[0])) {
                 return false; 
-            }
-            $ucicData = $this->ucicuser_repo->createUpdateUcic(['pan_no' => $requestArr['pan'], 'user_id' => $userData[0]['user_id'] ?? null]);
+            } */
+            $ucicData = $this->ucicuser_repo->createUpdateUcic(['pan_no' => $requestArr['pan'], 'user_id' => $requestArr['userID'] ?? null]);
+
 
             $ucicNewData=[];
             $ucicNewData['pan_no'] = $ucicData->pan_no ?? $requestArr['pan'];
             $ucicNewData['ucic_code'] = $ucicData->ucic_code ?? '';
-            $ucicNewData['user_id'] = $userData[0]['user_id'] ?? '';
+            $ucicNewData['user_id'] = $requestArr['userID'] ?? '';
 
-          return response()->json(['response' =>$res,'ucic_code'=>$ucicNewData['ucic_code'], 'user_id' => $userData[0]['user_id']]);
+          return response()->json(['response' =>$res,'ucic_code'=>$ucicNewData['ucic_code'], 'user_id' => $requestArr['userID']]);
         }catch (Exception $e){
           return false;
         }      
