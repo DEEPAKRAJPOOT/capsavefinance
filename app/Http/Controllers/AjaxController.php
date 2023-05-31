@@ -5993,6 +5993,7 @@ if ($err) {
 
     public function approveChargeDeletion(Request $request)
     {
+        \DB::beginTransaction();
         try {
             $request->validate([
                 'chrg_id' => 'required'
@@ -6010,20 +6011,18 @@ if ($err) {
 
             if (count($chrgTrans) > 1) {
                 $chrgTransIds = $chrgTrans->pluck('trans_id')->toArray();
-                $valResult = Helpers::validateInvoiceTypes($chrgTransIds, $specificMsg = false);
+                $valResult = Helpers::validateInvoiceTypes($chrgTransIds, false);
                 if ($valResult && isset($valResult['status']) && $valResult['status'] == false) {
                     return response()->json(['status' => 0,'msg' => $valResult['message']]);
                 }
             }
-
-            \DB::beginTransaction();
-            $chrgTransactions = [];
+           
             $userId = '';
-            $debitNoteTransIds = [];
-            $creditNoteTransIds = [];
+            $cancelTransList =  [];
+            $cancelTran = [];
             foreach($chrgTrans as $chrgTran) {
-                $bill = null;
-                if ($chrgTran->transaction && $chrgTran->transaction->amount != $chrgTran->transaction->outstanding) {
+                $chrgTransaction = $chrgTran->transaction; 
+                if ($chrgTransaction && $chrgTransaction->amount != $chrgTransaction->outstanding) {
                     \DB::rollback();
                     return response()->json(['status' => 0,'msg' => "Selected Charges can't be cancelled because charge transaction is already settled."]);
                 }
@@ -6034,63 +6033,65 @@ if ($err) {
                     'created_at'    => now(),
                     'created_by'    => auth()->user()->user_id
                 ];
-
-                if(isset($chrgTran->chargePrgm)){
-                    if($chrgTran->chargePrgm->interest_borne_by == 2){
-                        $bill = 'CC';
-                    }else{
-                        $bill = 'CA';
-                    }
-                }elseif($chrgTran->ChargeMaster->chrg_type == 2){
-                    if($chrgTran->level_charges == 2){
-                        $bill = 'CC';
-                    }else{
-                        $bill = 'CA';
-                    }
-                }
-                if ($chrgTran->transaction->is_invoice_generated == 0) {
-                    $debitNoteTransIds[$bill][] = $chrgTran->trans_id;
-                }
-                $chrgTransactions[$bill][] = $chrgTran->transaction;
-                if (!$userId) {
-                    $userId = $chrgTran->transaction->user_id;
-                }
+                
                 $this->lmsRepo->saveChargeTransDeleteLog($attr);
+                $cancelTran[] = $chrgTransaction;
             }
-
+            $cancelTransIds = Transactions::processChrgTransDeletion($cancelTran);
+            
             $controller = app()->make('App\Http\Controllers\Lms\userInvoiceController');
 
-            if (count($debitNoteTransIds)) {
-                foreach ($debitNoteTransIds as $billType => $transIds) {
-                    if($billType){
-                        $debitNoteResults = $controller->generateDebitNote($transIds, $userId, $billType, null, null, 1);
-                    }
-                }
-            }
-            if (count($chrgTransactions)) {
-                foreach ($chrgTransactions as $billType => $trans) {
-                    if($billType){
-                        $creditNoteTransIds[$billType] = Transactions::processChrgTransDeletion($trans);
-                    }
-                }
-            }
+            $creditData = [];
+            $userInvoices = [];
+            $cancelTransList = Transactions::whereIn('trans_id',$cancelTransIds)->get();
+            foreach($cancelTransList as $trans){
+                $billType = null;
 
+                // Generate Debit Note for Parent Transaction 
+                $parentTransaction = $trans->parentTransactions; 
+                if($parentTransaction->is_invoice_generated == 0){
+                    $billType = null;
+                    if($parentTransaction->trans_type >= 50){
+                        if(isset($parentTransaction->ChargesTransactions->chargePrgm)){
+                            if($parentTransaction->ChargesTransactions->chargePrgm->interest_borne_by == 2){
+                                $billType = 'CC';
+                            }else{
+                                $billType = 'CA';
+                            }
+                        }
+                    }
+                    $controller->generateDebitNote([$parentTransaction->trans_id], $parentTransaction->user_id, $billType, null, null, 1);
+                }
+                
+                $userInvoiceTrans = $trans->userInvParentTrans;
+                if(isset($userInvoiceTrans)){
+                    $userInvoices[$userInvoiceTrans->user_invoice_id] = isset($userInvoices[$userInvoiceTrans->user_invoice_id]) ? $userInvoices[$userInvoiceTrans->user_invoice_id] : $userInvoiceTrans->getUserInvoice;
+                    
+                    if(isset($userInvoices[$userInvoiceTrans->user_invoice_id])){
+                        $invTypeName = $userInvoices[$userInvoiceTrans->user_invoice_id]->invoice_type_name == 1 ? 'C' : 'I';
+                        $invBorneBy = $userInvoices[$userInvoiceTrans->user_invoice_id]->invoice_borne_by == 1 ? 'A' : 'C';
+                        $billType = $invTypeName.$invBorneBy;
+                    }
+                    
+                    $creditData[$trans->user_id][$billType][$trans->gst.'_'.$userInvoices[$userInvoiceTrans->user_invoice_id]->user_invoice_rel_id][$trans->trans_id] = $trans->trans_id;
+                }
+            }
+            
+            foreach($creditData as $userId => $transTypes){
+                foreach($transTypes as $billType => $gstRelation){
+                    foreach ($gstRelation as $trans){
+                        $transIds = array_keys($trans);
+                        if(!empty($transIds)){
+                            $controller->generateCreditNote($transIds, $userId, $billType, null, null, 1);
+                        }
+                    }
+                }
+            }
             \DB::commit();
-        } catch (Exception $ex) {
-            \DB::rollback();
-            return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex))->withInput();
-        }
 
-        try {
-            if(count($creditNoteTransIds)) {
-                foreach ($creditNoteTransIds as $billType => $transIds) {
-                    if($billType){
-                        $debitNoteResults = $controller->generateCreditNote($transIds, $userId, $billType, null, null, 1);
-                    }
-                }
-            }
             return response()->json(['status' => 1,'msg' => "Charge cancellation approved successfully."]);
         } catch (Exception $ex) {
+            \DB::rollback();
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex))->withInput();
         }
     }
