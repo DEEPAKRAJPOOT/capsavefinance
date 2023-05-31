@@ -66,11 +66,11 @@ class UcicUserDetail extends BaseModel
         return self::create($attributes);
     }
 
-    public static function deleteUcicUserDetail($userUcicId){
+    public static function deleteUcicUserDetail($userUcicId,$deleteMail){
 
         if (empty($userUcicId)) {
             throw new BlankDataExceptions(trans('error_messages.data_not_found'));
         }
-        return self::where('user_ucic_id',$userUcicId)->delete();
+        return self::where(['user_ucic_id' => $userUcicId,'invoice_level_mail' => $deleteMail])->delete();
     }
 }

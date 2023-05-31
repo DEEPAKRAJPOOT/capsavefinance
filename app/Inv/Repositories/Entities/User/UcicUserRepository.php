@@ -718,7 +718,7 @@ class UcicUserRepository extends BaseRepositories implements UcicUserInterface
         return UcicUserDetail::saveUserUcicDetail($attributes);
     }
 
-    public function deleteUcicUserDetail($userUcicId){
-        return UcicUserDetail::deleteUcicUserDetail($userUcicId);
+    public function deleteUcicUserDetail($userUcicId,$deleteMail){
+        return UcicUserDetail::deleteUcicUserDetail($userUcicId,$deleteMail);
     }
 }

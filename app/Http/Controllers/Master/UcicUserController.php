@@ -114,6 +114,10 @@ class UcicUserController extends Controller
 			$arrFileData = $request->all();
             $invoiceLevelMail = explode(',',$arrFileData['invoice_level_mail']);
             $userUcicId = $arrFileData['userUcicId'];
+            $ucicDetails = UcicUser::with('ucicUserDetail:user_ucic_id,invoice_level_mail')->find($userUcicId);
+            $emailIds = $ucicDetails->ucicUserDetail->pluck('invoice_level_mail')->toArray();
+            $deleteMails = array_diff($emailIds,$invoiceLevelMail);
+            $emailIds = array_diff($invoiceLevelMail,$emailIds);
             $UcicUserDetail = [];
 
             $validator = Validator::make($request->all(), [
@@ -139,12 +143,18 @@ class UcicUserController extends Controller
                     ->withInput();
             }
             
-            if($userUcicId){
-                $UcicUserDetailDelete = $this->ucicuser_repo->deleteUcicUserDetail($userUcicId);
-                foreach($invoiceLevelMail as $invoiceMail){
-                    $UcicUserDetail = ['invoice_level_mail' => trim($invoiceMail),'user_ucic_id' => $userUcicId];
-                    $userUcicDetail = $this->ucicuser_repo->saveUserUcicDetail($UcicUserDetail);
+            if($userUcicId ){
+                if(!empty($deleteMails)){
+                    foreach($deleteMails as $deleteMail){
+                        $UcicUserDetailDelete = $this->ucicuser_repo->deleteUcicUserDetail($userUcicId,$deleteMail);
+                    }
                 }
+                if(!empty($emailIds)){
+                    foreach($emailIds as $emailId){
+                        $UcicUserDetail = ['invoice_level_mail' => trim($emailId),'user_ucic_id' => $userUcicId];
+                        $userUcicDetail = $this->ucicuser_repo->saveUserUcicDetail($UcicUserDetail);
+                    }
+                }               
                 unset($arrFileData['invoice_level_mail']);
                 $result = $this->ucicuser_repo->saveBusinessInfoUcic($arrFileData,$userUcicId);
                 if($result){
