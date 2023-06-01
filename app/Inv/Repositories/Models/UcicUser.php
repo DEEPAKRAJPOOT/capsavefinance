@@ -62,9 +62,7 @@ class UcicUser extends BaseModel
         'created_by',
         'created_at',
         'updated_at',
-        'updated_by',
-        'is_deleted',
-        'deleted_at'
+        'updated_by'
     ];
 
     public function app(){
