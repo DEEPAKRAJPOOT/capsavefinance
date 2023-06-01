@@ -117,16 +117,18 @@ class AnchorUser extends BaseModel {
         $result = self::select('anchor_user.*', 'anchor.comp_name','anchor.sales_user_id')
              ->leftJoin('anchor', 'anchor_user.anchor_id', '=', 'anchor.anchor_id');
 
-        if ($roleData[0]->is_superadmin != 1) {        
-             $result->whereIn('anchor_user.anchor_id', $anchorId);
-             //$result->where('anchor_user.created_by', \Auth::user()->user_id);
+        if ($roleData[0]->is_superadmin != 1) {      
+            if(is_array($anchorId)) {
+                $result->whereIn('anchor_user.anchor_id', $anchorId);
+            } 
+            else {
+                $result->where('anchor_user.anchor_id', $anchorId);
+            }
         }
         if (!$datatable) {
             $result =  $result->orderByRaw('anchor_user_id DESC');
         }
-        //$result->get();
-        //dd(DB::getQueryLog());
-                //->where('user_type', 1);
+
         return ($result ? $result : '');
     }
     
