@@ -162,7 +162,6 @@ class ApplicationController extends Controller
             $arrFileData = $request->all();
             
             $whereCond=[];
-            //$whereCond[] = ['anchor_id', '=', \Auth::user()->anchor_id];      
             $whereCond[] = ['user_id', '=', Auth::user()->user_id];            
             $anchUserData = $this->userRepo->getAnchorUserData($whereCond);            
             if (isset($anchUserData[0]) && $anchUserData[0]->pan_no != $arrFileData['biz_pan_number']) {                
@@ -394,11 +393,14 @@ class ApplicationController extends Controller
 
                 //Update UCIC Data only if appllication is not approved
                 if(!Helper::isAppApprByAuthorityForGroup($appId) && $appData->ucicUserUcic->ucicUser->is_sync == 1) {
-					$userUcicId = $appData->ucicUserUcic->ucic_id ?? null;
+                    $ucicUserData = $appData->ucicUserUcic;
+                    $userUcicId = $ucicUserData->ucic_id ?? null;
+                    $isSync = $ucicUserData->is_sync ?? false;
 					if(!$userUcicId){
 						$pan_no = $appData->business->pan->pan_gst_hash;
 						$ucicDetails = $this->ucicuser_repo->createUpdateUcic(['pan_no' => $pan_no, 'user_id'=>$userId, 'app_id' => $appId]);
 						$userUcicId = $ucicDetails->user_ucic_id;
+                        $isSync = $ucicDetails->is_sync;
 					}
 					if($userUcicId){
 						$product_ids = [];
@@ -411,13 +413,14 @@ class ApplicationController extends Controller
 								);
 							}
 						}
-						$businessInfo = $this->ucicuser_repo->formatBusinessInfoDb($business_info,$product_ids);
-						
-						$ownerPanApi = $this->userRepo->getOwnerApiDetail(['biz_id' => $appData->biz_id]);
-						$documentData = \Helpers::makeManagementInfoDocumentArrayData($ownerPanApi);
-						$managementData = $this->ucicuser_repo->formatManagementInfoDb($ownerPanApi,NULL);
-						$managementInfo = array_merge($managementData,$documentData);
-                        $this->ucicuser_repo->saveApplicationInfo($userUcicId, $businessInfo, $managementInfo, $appData->app_id);
+                        if($isSync){
+                            $businessInfo = $this->ucicuser_repo->formatBusinessInfoDb($business_info,$product_ids);
+                            $ownerPanApi = $this->userRepo->getOwnerApiDetail(['biz_id' => $appData->biz_id]);
+                            $documentData = \Helpers::makeManagementInfoDocumentArrayData($ownerPanApi);
+                            $managementData = $this->ucicuser_repo->formatManagementInfoDb($ownerPanApi,NULL);
+                            $managementInfo = array_merge($managementData,$documentData);
+                            $this->ucicuser_repo->saveApplicationInfo($userUcicId, $businessInfo, $managementInfo, $appData->app_id);
+                        }
 					}
 				}
 
