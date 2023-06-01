@@ -29,7 +29,6 @@ class UcicUser extends BaseModel
      */
     protected $primaryKey = 'user_ucic_id';
 
-    protected $softDelete = true;
     /**
      * Maintain created_at and updated_at automatically
      *
