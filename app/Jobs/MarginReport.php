@@ -100,6 +100,9 @@ class MarginReport implements ShouldQueue
         $storage_path = storage_path('app/'.$dirPath);
         $filePath = $storage_path.'/Margin Report'.time().'.xlsx';
         $objWriter->save($filePath);
-        return $filePath;
+        $s3path = env('S3_BUCKET_DIRECTORY_PATH').'/report/marginReport/'.date('Ymd');
+        $attributes['temp_file_path'] = $filePath;
+        $path = Helper::uploadAwsS3Bucket($s3path, $attributes, 'Margin Report'.time().'.xlsx');
+        return $path;
     }
 }

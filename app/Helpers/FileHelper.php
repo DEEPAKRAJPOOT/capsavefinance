@@ -76,22 +76,13 @@ class FileHelper {
     }
 
     public function uploadFileWithContent($active_filename_fullpath, $fileContents) {
-        $defaultPath = $this->diskStoragePath->path('');
+        $defaultPath = Storage::disk(env('STORAGE_TYPE'))->path('');
         $realPath = str_replace($defaultPath, '', $active_filename_fullpath);
-        $isSaved = $this->diskStoragePath->put($realPath, $fileContents);
-        if ($isSaved) {
-            $mimetype = $this->diskStoragePath->getMimeType($realPath);
-            $metadata = $this->diskStoragePath->getMetaData($realPath);
-            $inputArr['file_path'] = $realPath;
-            $inputArr['file_type'] = $mimetype;
-            $inputArr['file_name'] = basename($realPath);
-            $inputArr['file_size'] = $metadata['size'];
-            $inputArr['file_encp_key'] =  md5('2');
-            $inputArr['created_by'] = 1;
-            $inputArr['updated_by'] = 1;
-            return $inputArr;
-        }
-        return $isSaved;
+        $data['file_content'] = $fileContents;
+        $inputArr = Helper::uploadAwsS3Bucket($realPath,$data);
+
+        return $inputArr;
+       
     }
 
     public function readFileContent($active_filename_fullpath) {
@@ -442,6 +433,7 @@ public function exportCsv($data=[],$columns=[],$fileName='',$extraDataArray=[])
 
     public static function uploadUnSettledTransCsv($data=[],$columns=[],$fileName='',$extraDataArray=[],$paymentId=null,$type='upload')
     {
+      
       $respArray = [
         'status' => 'success',
         'message' => 'success',
@@ -473,21 +465,12 @@ public function exportCsv($data=[],$columns=[],$fileName='',$extraDataArray=[])
               $inputArr['file_size'] = \File::size($destinationPath);
               $inputArr['file_encp_key'] =  md5('2');
         }else{
-         
-          if ($data['upload_unsettled_trans']) {
-          $s3path = env('S3_BUCKET_DIRECTORY_PATH').'/payment/' . $paymentId.'/upload';
-          if (!Storage::disk('s3')->exists($s3path)) {
-              Storage::disk('s3')->makeDirectory($s3path, 0777, true);
+
+          if (isset($data['upload_unsettled_trans']) && !empty($data['upload_unsettled_trans'])) {
+             $s3path = env('S3_BUCKET_DIRECTORY_PATH').'/payment/' . $paymentId.'/upload';
+             $fileName = $data['upload_unsettled_trans']->getClientOriginalName();
+             $inputArr = Helper::uploadAwsS3Bucket($s3path, $data,$fileName);
           }
-         
-          $fileName = $data['upload_unsettled_trans']->getClientOriginalName();
-          $path = Storage::disk('s3')->putFileAs($s3path, $data['upload_unsettled_trans'], $fileName);
-          $inputArr['file_path'] = $path;
-        }
-        $inputArr['file_type'] = $data['upload_unsettled_trans']->getClientMimeType();
-        $inputArr['file_name'] = $data['upload_unsettled_trans']->getClientOriginalName();
-        $inputArr['file_size'] = $data['upload_unsettled_trans']->getClientSize();
-        $inputArr['file_encp_key'] =  md5('2');
         }
         $inputArr['created_by'] = 1;
         $inputArr['updated_by'] = 1;

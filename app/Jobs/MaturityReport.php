@@ -147,6 +147,9 @@ class MaturityReport implements ShouldQueue
         // $filePath = $storage_path.'/Maturity Report'.time().'_'.rand(1111, 9999).'_'.'.xlsx';
         $filePath = $storage_path.$reportName.'.xlsx';
         $objWriter->save($filePath);
-        return $filePath;
+        $s3path = env('S3_BUCKET_DIRECTORY_PATH').'/report/maturityReport/'.date('Ymd');
+        $attributes['temp_file_path'] = $filePath;
+        $path = Helper::uploadAwsS3Bucket($s3path, $attributes, $reportName.'.xlsx');
+        return $path;
     }
 }

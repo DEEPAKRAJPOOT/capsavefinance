@@ -207,7 +207,13 @@ class OutstandingReportManual implements ShouldQueue
             $objWriter = PHPExcel_IOFactory::createWriter($sheet, 'Excel2007');
         
             $objWriter->save($filePath);
-            return $filePath;
+            $s3path = env('S3_BUCKET_DIRECTORY_PATH').'/report/OutstandingReport/manual/console';
+            if(!App::runningInConsole()){
+                $s3path = env('S3_BUCKET_DIRECTORY_PATH').'/report/OutstandingReport/manual/http';
+            }
+            $attributes['temp_file_path'] = $filePath;
+            $path = Helper::uploadAwsS3Bucket($s3path, $attributes, $filename);
+            return $path;
         } catch (\Throwable $ex) {
             throw $th;
         } 

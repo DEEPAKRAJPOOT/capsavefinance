@@ -155,7 +155,13 @@ class OverdueReportManual implements ShouldQueue
         $storage_path = storage_path('app/'.$dirPath);
         $filePath = $storage_path.'/Overdue Report'.time().'.xlsx';
         $objWriter->save($filePath);
-        return $filePath;
+        $s3path = env('S3_BUCKET_DIRECTORY_PATH').'/report/overdueReport/manual/console';
+        if(!App::runningInConsole()){
+            $s3path = env('S3_BUCKET_DIRECTORY_PATH').'/report/overdueReport/manual/http';
+        }
+        $attributes['temp_file_path'] = $filePath;
+        $path = Helper::uploadAwsS3Bucket($s3path, $attributes, 'Overdue Report'.time().'.xlsx');
+        return $path;
     }
 
     private function isSecondFourthSaturday(){

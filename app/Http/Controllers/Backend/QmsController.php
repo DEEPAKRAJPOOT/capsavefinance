@@ -45,7 +45,7 @@ class QmsController extends Controller {
 
 
     public function showQueryForm(Request $request)
-    {
+    {   
         $app_id = $request->get('app_id');
         $arrRole = $this->userRepo->getRolesByType(2);
         return view('backend.qms.queryForm', compact('arrRole', 'app_id'));

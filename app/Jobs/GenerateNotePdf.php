@@ -156,7 +156,9 @@ class GenerateNotePdf implements ShouldQueue
             }
             
             if($pdf){
-                $fileData =  $this->fileHelper->uploadFileWithContent($path,$pdf->output());
+                $s3path = env('S3_BUCKET_DIRECTORY_PATH').'/'.$path;
+                $fileData =  $this->fileHelper->uploadFileWithContent($s3path,$pdf->output());
+                unlink($path, 'public/'.'capsaveInvoice/'.str_replace("/","_",strtoupper($data['origin_of_recipient']['invoice_no'])).'_'.time().'.pdf');
                 $userFile = UserFile::create($fileData);
                 if($userInvoiceId && $userFile){
                     UserInvoice::where('user_invoice_id',$userInvoiceId)->update(['file_id' => $userFile->file_id]);

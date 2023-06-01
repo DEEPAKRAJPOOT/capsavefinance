@@ -93,7 +93,7 @@
                                                     <td width="15%">
 
                                                         @if(isset($fiAdd->userFile->file_path))
-                                                        <a title="Download Document" href="{{ route('download_fi_doc', ['file_id' => $fiAdd->userFile->file_id]) }}" download="{{$fiAdd->userFile->file_name}}"><i class="fa fa-download"></i></a>
+                                                        <a title="Download Document" href="{{ route('download_s3_file', ['file_id' => $fiAdd->userFile->file_id]) }}" download="{{$fiAdd->userFile->file_name}}"><i class="fa fa-download"></i></a>
                                                         @endif
                                                         
                                                         @if(isset($fiAdd->status->id) && $fiAdd->status->id != 2)

@@ -424,7 +424,7 @@
                                                                     
                                                                     @if($main1[$key]['panNoFileStatus'] == 1)
                                                                     @can('download_storage_file')
-                                                                    <a  href="{{ isset($main1[$j]['panNoFileID']) ? route('download_storage_file', ['file_id' => $main1[$j]['panNoFileID'] ]) : '' }}" title="download" class="btn-upload   btn-sm" type="button" id="pandown{{isset($row->first_name) ? $i : '1'}}" style="display:{{ isset($main1[$j]['panNoFile']) ? 'inline' : 'none'}}"> <i class="fa fa-download"></i></a>
+                                                                    <a  href="{{ isset($main1[$j]['panNoFileID']) ? route('download_s3_file', ['file_id' => $main1[$j]['panNoFileID'] ]) : '' }}" title="download" class="btn-upload   btn-sm" type="button" id="pandown{{isset($row->first_name) ? $i : '1'}}" style="display:{{ isset($main1[$j]['panNoFile']) ? 'inline' : 'none'}}"> <i class="fa fa-download"></i></a>
                                                                     @endcan
                                                                     @can('view_uploaded_doc')
                                                                     <a  href="{{ isset($main1[$j]['panNoFileID']) ? route('view_uploaded_doc', ['file_id' => $main1[$j]['panNoFileID'] ]) : '' }}" title="View File" class="btn-upload   btn-sm" target="_blank" type="button" id="pandown{{isset($row->first_name) ? $i : '1'}}" style="display:{{ isset($main1[$j]['panNoFile']) ? 'inline' : 'none'}}" target="_blank"> <i class="fa fa-eye"></i></a>
@@ -486,9 +486,11 @@
 
                                                                     @if($main1[$key]['dlNoFileStatus'] == 1)
                                                                     @can('download_storage_file')
-                                                                    <a  href="{{ isset($main1[$j]['dlNoFileID']) ? route('download_storage_file', ['file_id' => $main1[$j]['dlNoFileID'] ]) : '' }}" class="btn-upload   btn-sm" type="button" id="dldown{{isset($row->first_name) ? $i : '1'}}" style="display:{{ isset($main1[$j]['dlNoFile']) ? 'inline' : 'none'}}" download> <i class="fa fa-download"></i></a>
+                                                                    <a  href="{{ isset($main1[$j]['dlNoFileID']) ? route('download_s3_file', ['file_id' => $main1[$j]['dlNoFileID'] ]) : '' }}" class="btn-upload   btn-sm" type="button" id="dldown{{isset($row->first_name) ? $i : '1'}}" style="display:{{ isset($main1[$j]['dlNoFile']) ? 'inline' : 'none'}}" download> <i class="fa fa-download"></i></a>
                                                                     @endcan
+                                                                    
                                                                     @can('view_uploaded_doc')
+                                                                    
                                                                     <a  href="{{ isset($main1[$j]['dlNoFileID']) ? route('view_uploaded_doc', ['file_id' => $main1[$j]['dlNoFileID'] ]) : '' }}" title="View File" class="btn-upload   btn-sm" type="button" id="dldown{{isset($row->first_name) ? $i : '1'}}" style="display:{{ isset($main1[$j]['dlNoFile']) ? 'inline' : 'none'}}" target="_blank"> <i class="fa fa-eye"></i></a>
                                                                     @endcan
                                                                     @can('protmoter_document_delete')
@@ -545,7 +547,7 @@
                                                                 @endcan
                                                                     @if($main1[$key]['voterNoFileStatus'] == 1)
                                                                     @can('download_storage_file')
-                                                                    <a  href="{{ isset($main1[$j]['voterNoFileID']) ? route('download_storage_file', ['file_id' => $main1[$j]['voterNoFileID'] ]) : '' }}" class="btn-upload   btn-sm" type="button" id="voterdown{{isset($row->first_name) ? $i : '1'}}" style="display:{{ isset($main1[$j]['voterNoFile']) ? 'inline' : 'none'}}" download> <i class="fa fa-download"></i></a>
+                                                                    <a  href="{{ isset($main1[$j]['voterNoFileID']) ? route('download_s3_file', ['file_id' => $main1[$j]['voterNoFileID'] ]) : '' }}" class="btn-upload   btn-sm" type="button" id="voterdown{{isset($row->first_name) ? $i : '1'}}" style="display:{{ isset($main1[$j]['voterNoFile']) ? 'inline' : 'none'}}" download> <i class="fa fa-download"></i></a>
                                                                     @endcan
                                                                     @can('view_uploaded_doc')
                                                                     <a  href="{{ isset($main1[$j]['voterNoFileID']) ? route('view_uploaded_doc', ['file_id' => $main1[$j]['voterNoFileID'] ]) : '' }}" title="View File" class="btn-upload   btn-sm" type="button" id="voterdown{{isset($row->first_name) ? $i : '1'}}" style="display:{{ isset($main1[$j]['voterNoFile']) ? 'inline' : 'none'}}" target="_blank"> <i class="fa fa-eye"></i></a>
@@ -606,7 +608,7 @@
                                                                 @endcan
                                                                     @if($main1[$key]['passNoFileStatus'] == 1)
                                                                     @can('download_storage_file')
-                                                                    <a  href="{{ isset($main1[$j]['passNoFile']) ? route('download_storage_file', ['file_id' => $main1[$j]['passNoFileID'] ]) : '' }}" class="btn-upload   btn-sm" type="button" id="passdown{{isset($row->first_name) ? $i : '1'}}" style="display:{{ isset($main1[$j]['passNoFile']) ? 'inline' : 'none'}}" download> <i class="fa fa-download"></i></a>
+                                                                    <a  href="{{ isset($main1[$j]['passNoFile']) ? route('download_s3_file', ['file_id' => $main1[$j]['passNoFileID'] ]) : '' }}" class="btn-upload   btn-sm" type="button" id="passdown{{isset($row->first_name) ? $i : '1'}}" style="display:{{ isset($main1[$j]['passNoFile']) ? 'inline' : 'none'}}" download> <i class="fa fa-download"></i></a>
                                                                     @endcan
                                                                     @can('view_uploaded_doc')
                                                                     <a  href="{{ isset($main1[$j]['passNoFile']) ? route('view_uploaded_doc', ['file_id' => $main1[$j]['passNoFileID'] ]) : '' }}" title="View File" class="btn-upload   btn-sm" type="button" id="passdown{{isset($row->first_name) ? $i : '1'}}" style="display:{{ isset($main1[$j]['passNoFile']) ? 'inline' : 'none'}}" target="_blank"> <i class="fa fa-eye"></i></a>
@@ -651,7 +653,7 @@
 
                                                                 @if($main1[$key]['photoFileStatus'] == 1)
                                                                 @can('download_storage_file')
-                                                                    <a  href="{{ isset($main1[$j]['photoFileID']) ? route('download_storage_file', ['file_id' => $main1[$j]['photoFileID'] ]) : '' }}" class="btn-upload   btn-sm" type="button" id="photodown{{isset($row->first_name) ? $i : '1'}}" style="display:{{ isset($main1[$j]['photoFile']) ? 'inline' : 'none'}}" download> <i class="fa fa-download"></i></a>
+                                                                    <a  href="{{ isset($main1[$j]['photoFileID']) ? route('download_s3_file', ['file_id' => $main1[$j]['photoFileID'] ]) : '' }}" class="btn-upload   btn-sm" type="button" id="photodown{{isset($row->first_name) ? $i : '1'}}" style="display:{{ isset($main1[$j]['photoFile']) ? 'inline' : 'none'}}" download> <i class="fa fa-download"></i></a>
                                                                 @endcan
                                                                 @can('view_uploaded_doc')
                                                                     <a  href="{{ isset($main1[$j]['photoFileID']) ? route('view_uploaded_doc', ['file_id' => $main1[$j]['photoFileID'] ]) : '' }}" title="View File" class="btn-upload   btn-sm" target="_blank" type="button" id="pandown{{isset($row->first_name) ? $i : '1'}}" style="display:{{ isset($main1[$j]['photoFile']) ? 'inline' : 'none'}}" target="_blank"> <i class="fa fa-eye"></i></a>
@@ -697,7 +699,7 @@
 
                                                                 @if($main1[$key]['aadharFileStatus'] == 1)
                                                                 @can('download_storage_file')
-                                                                    <a  href="{{ isset($main1[$j]['aadharFileID']) ? route('download_storage_file', ['file_id' => $main1[$j]['aadharFileID'] ]) : '' }}" class="btn-upload   btn-sm" type="button" id="aadhardown{{isset($row->first_name) ? $i : '1'}}" style="display:{{ isset($main1[$j]['aadharFile']) ? 'inline' : 'none'}}" download> <i class="fa fa-download"></i></a>
+                                                                    <a  href="{{ isset($main1[$j]['aadharFileID']) ? route('download_s3_file', ['file_id' => $main1[$j]['aadharFileID'] ]) : '' }}" class="btn-upload   btn-sm" type="button" id="aadhardown{{isset($row->first_name) ? $i : '1'}}" style="display:{{ isset($main1[$j]['aadharFile']) ? 'inline' : 'none'}}" download> <i class="fa fa-download"></i></a>
                                                                 @endcan
                                                                 @can('view_uploaded_doc')
                                                                     <a  href="{{ isset($main1[$j]['aadharFileID']) ? route('view_uploaded_doc', ['file_id' => $main1[$j]['aadharFileID'] ]) : '' }}" title="View File" class="btn-upload   btn-sm" target="_blank" type="button" id="pandown{{isset($row->first_name) ? $i : '1'}}" style="display:{{ isset($main1[$j]['aadharFile']) ? 'inline' : 'none'}}" target="_blank"> <i class="fa fa-eye"></i></a>
@@ -741,7 +743,7 @@
                                                                 
                                                                 @if($main1[$key]['electricityFileStatus'] == 1)
                                                                 @can('download_storage_file')
-                                                                    <a  href="{{ isset($main1[$j]['electricityFileID']) ? route('download_storage_file', ['file_id' => $main1[$j]['electricityFileID'] ]) : '' }}" class="btn-upload   btn-sm" type="button" id="electricitydown{{isset($row->first_name) ? $i : '1'}}" style="display:{{ isset($main1[$j]['electricityFile']) ? 'inline' : 'none'}}" download> <i class="fa fa-download"></i></a>
+                                                                    <a  href="{{ isset($main1[$j]['electricityFileID']) ? route('download_s3_file', ['file_id' => $main1[$j]['electricityFileID'] ]) : '' }}" class="btn-upload   btn-sm" type="button" id="electricitydown{{isset($row->first_name) ? $i : '1'}}" style="display:{{ isset($main1[$j]['electricityFile']) ? 'inline' : 'none'}}" download> <i class="fa fa-download"></i></a>
                                                                 @endcan
                                                                 @can('view_uploaded_doc')
                                                                     <a  href="{{ isset($main1[$j]['electricityFileID']) ? route('view_uploaded_doc', ['file_id' => $main1[$j]['electricityFileID'] ]) : '' }}" title="View File" class="btn-upload   btn-sm" target="_blank" type="button" id="pandown{{isset($row->first_name) ? $i : '1'}}" style="display:{{ isset($main1[$j]['electricityFile']) ? 'inline' : 'none'}}" target="_blank"> <i class="fa fa-eye"></i></a>
@@ -786,7 +788,7 @@
                                                                 
                                                                 @if($main1[$key]['telephoneFileStatus'] == 1)
                                                                 @can('download_storage_file')
-                                                                    <a  href="{{ isset($main1[$j]['telephoneFileID']) ? route('download_storage_file', ['file_id' => $main1[$j]['telephoneFileID'] ]) : '' }}" class="btn-upload   btn-sm" type="button" id="telephonedown{{isset($row->first_name) ? $i : '1'}}" style="display:{{ isset($main1[$j]['telephoneFile']) ? 'inline' : 'none'}}" download> <i class="fa fa-download"></i></a>
+                                                                    <a  href="{{ isset($main1[$j]['telephoneFileID']) ? route('download_s3_file', ['file_id' => $main1[$j]['telephoneFileID'] ]) : '' }}" class="btn-upload   btn-sm" type="button" id="telephonedown{{isset($row->first_name) ? $i : '1'}}" style="display:{{ isset($main1[$j]['telephoneFile']) ? 'inline' : 'none'}}" download> <i class="fa fa-download"></i></a>
                                                                 @endcan
                                                                 @can('view_uploaded_doc')
                                                                     <a  href="{{ isset($main1[$j]['telephoneFileID']) ? route('view_uploaded_doc', ['file_id' => $main1[$j]['telephoneFileID'] ]) : '' }}" title="View File" class="btn-upload   btn-sm" target="_blank" type="button" id="pandown{{isset($row->first_name) ? $i : '1'}}" style="display:{{ isset($main1[$j]['telephoneFile']) ? 'inline' : 'none'}}" target="_blank"> <i class="fa fa-eye"></i></a>

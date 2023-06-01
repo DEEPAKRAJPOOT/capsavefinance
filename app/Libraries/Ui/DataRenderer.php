@@ -2947,7 +2947,7 @@ class DataRenderer implements DataProviderInterface
                      }
 
                      if(Helpers::checkPermission('download_storage_file') && isset($users->file_path)){
-                        $act .= "<a  href=". route('download_storage_file', ['file_id' => $users->file_id ]) ." class=\"btn btn-action-btn   btn-sm\" type=\"button\" target=\"blank\" title=\"View CAM\"> <i class=\"fa fa-eye\"></i></a>";
+                        $act .= "<a  href=". route('download_s3_file', ['file_id' => $users->file_id ]) ." class=\"btn btn-action-btn   btn-sm\" type=\"button\" target=\"blank\" title=\"View CAM\"> <i class=\"fa fa-eye\"></i></a>";
                         //
                      }
                      if(Helpers::checkPermission('add_anchor_bank_account') && isset($users->bank_account_id)){

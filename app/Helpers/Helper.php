@@ -361,17 +361,17 @@ class Helper extends PaypalHelper
                     return  $attr;   
             }
                 if ($attributes['file_image_id']) {
-                    if (!Storage::disk('s3')->exists(env('S3_BUCKET_DIRECTORY_PATH').'/user/' .$userId .'/invoice/' . $batch_id.'/zip')) {
-                        Storage::disk('s3')->makeDirectory(env('S3_BUCKET_DIRECTORY_PATH').'/user/' .$userId .'/invoice/' . $batch_id.'/zip', 0777, true);
-                    }
+                    $s3path = env('S3_BUCKET_DIRECTORY_PATH').'/user/' .$userId .'/invoice/' . $batch_id.'/zip';
                     $zipExtension = $attributes['file_image_id']->getClientOriginalExtension();
                     $zipName   = $attributes['file_image_id']->getClientOriginalName();
                     $zipName  =  explode('.',$zipName);
                     $zipFilename =  $zipName[0].'.'.$zipExtension;
-                    $path = Storage::disk('s3')->putFileAs(env('S3_BUCKET_DIRECTORY_PATH').'/user/' .$userId .'/invoice/' . $batch_id.'/zip', $attributes['file_image_id'], $zipFilename); 
-                    $zipPath  = env('S3_BUCKET_URL').$path;
-                    $open_path =  env('S3_BUCKET_URL').$path;
-                    $extract_path =  env('S3_BUCKET_URL').$path;
+                    $inputArr = self::uploadAwsS3Bucket($s3path, $attributes, $zipFilename);
+                    
+                    
+                    // $zipPath  = env('S3_BUCKET_URL').$path;
+                    // $open_path =  env('S3_BUCKET_URL').$path;
+                    // $extract_path =  env('S3_BUCKET_URL').$path;
                     /*$zip =  Zip::open($open_path);
                 if(count($zip->listFiles()) > 50)
                     {
@@ -380,21 +380,14 @@ class Helper extends PaypalHelper
                         $attr['message']= 'You can not archive more than 50 file.';
                         return  $attr;   
                     } 
-                    $resExtract  =  $zip->extract($extract_path);*/
-                    $inputArr['file_path'] = $path;
+                    $resExtract  =  $zip->extract($extract_path);
+                    $inputArr['file_path'] = $path;*/
                 }   
                 /* $totalFiles = glob($open_path . "*");
                     if ($resExtract){
                         $countFile = count($totalFiles);
                     }
                     dd($countFile); */
-                $inputArr['file_type'] = $attributes['file_image_id']->getClientMimeType();
-                $inputArr['file_name'] = $attributes['file_image_id']->getClientOriginalName();
-                $inputArr['file_size'] = $attributes['file_image_id']->getClientSize();
-                $inputArr['file_encp_key'] =  md5('2');
-                $inputArr['created_by'] = 1;
-                $inputArr['updated_by'] = 1;
-                $inputArr['status'] =1;
                 return $inputArr;
         }
       }
@@ -448,20 +441,74 @@ class Helper extends PaypalHelper
         return $inputArr;
     }
 
-    public static function uploadAwsS3Bucket($s3path, $attributes, $filename = null){
+    /**
+     * uploading document data to s3 bucket
+     *
+     * @param Exception $exception
+     * @param string    $exMessage
+     * @param boolean   $handler
+     */
 
+    public static function uploadAwsS3Bucket($s3path, $attributes, $filename = null){
         $inputArr = [];
-        if ($attributes['doc_file']) {
-            if (!Storage::disk('s3')->exists($s3path)) {
-                Storage::disk('s3')->makeDirectory($s3path, 0777, true);
+        if (isset($attributes['doc_file'])) {
+
+            if (!Storage::disk(env('STORAGE_TYPE'))->exists($s3path)) {
+                Storage::disk(env('STORAGE_TYPE'))->makeDirectory($s3path, 0777, true);
             }
-            $path = Storage::disk('s3')->put($s3path, $attributes['doc_file'], $filename);
+            $path = Storage::disk(env('STORAGE_TYPE'))->put($s3path, $attributes['doc_file'], $filename);
             $inputArr['file_path'] = $path;
+            $inputArr['file_type'] = $attributes['doc_file']->getClientMimeType();
+            $inputArr['file_name'] = $attributes['doc_file']->getClientOriginalName();
+            $inputArr['file_size'] = $attributes['doc_file']->getClientSize();
+
+        }else if(isset($attributes['upload_unsettled_trans'])) {
+
+            if (!Storage::disk(env('STORAGE_TYPE'))->exists($s3path)) {
+                Storage::disk(env('STORAGE_TYPE'))->makeDirectory($s3path, 0777, true);
+            }
+            $path = Storage::disk(env('STORAGE_TYPE'))->putFileAs($s3path, $attributes['upload_unsettled_trans'], $filename);
+            $inputArr['file_path'] = $path;
+            $inputArr['file_type'] = $attributes['upload_unsettled_trans']->getClientMimeType();
+            $inputArr['file_name'] = $attributes['upload_unsettled_trans']->getClientOriginalName();
+            $inputArr['file_size'] = $attributes['upload_unsettled_trans']->getClientSize();
+
+        }else if(isset($attributes['file_contents'])) {
+
+            if (!Storage::disk(env('STORAGE_TYPE'))->exists(dirname($s3path))) {
+                Storage::disk(env('STORAGE_TYPE'))->makeDirectory(dirname($s3path), 0777, true);
+            }
+            $isSaved = Storage::disk(env('STORAGE_TYPE'))->put($s3path, $attributes['file_contents']);
+            if ($isSaved) {
+                $mimetype = Storage::disk(env('STORAGE_TYPE'))->getMimeType($s3path);
+                $metadata = Storage::disk(env('STORAGE_TYPE'))->getMetaData($s3path);
+                $inputArr['file_path'] = $s3path;
+                $inputArr['file_type'] = $mimetype;
+                $inputArr['file_name'] = basename($s3path);
+                $inputArr['file_size'] = $metadata['size'];
+            }
+        }else if(isset($attributes['file_image_id'])) {
+
+            if (!Storage::disk(env('STORAGE_TYPE'))->exists($s3path)) {
+                Storage::disk(env('STORAGE_TYPE'))->makeDirectory($s3path, 0777, true);
+            }
+            $path = Storage::disk(env('STORAGE_TYPE'))->putFileAs($s3path, $attributes['file_image_id'], $filename);
+            $inputArr['file_path'] = $path;
+            $inputArr['file_type'] = $attributes['file_image_id']->getClientMimeType();
+            $inputArr['file_name'] = $attributes['file_image_id']->getClientOriginalName();
+            $inputArr['file_size'] = $attributes['file_image_id']->getClientSize();
+
+        }else if(isset($attributes['temp_file_path'])) {
+
+            if (!Storage::disk(env('STORAGE_TYPE'))->exists($s3path)) {
+                Storage::disk(env('STORAGE_TYPE'))->makeDirectory($s3path, 0777, true);
+            }
+            $path = Storage::disk(env('STORAGE_TYPE'))->putFileAs($s3path, $attributes['temp_file_path'], $filename);
+            unlink($attributes['temp_file_path']);
+            return $path;
         }
 
-        $inputArr['file_type'] = $attributes['doc_file']->getClientMimeType();
-        $inputArr['file_name'] = $attributes['doc_file']->getClientOriginalName();
-        $inputArr['file_size'] = $attributes['doc_file']->getClientSize();
+        
         $inputArr['file_encp_key'] =  md5('2');
         $inputArr['created_by'] = 1;
         $inputArr['updated_by'] = 1;
@@ -481,58 +528,16 @@ class Helper extends PaypalHelper
         $s3path = env('S3_BUCKET_DIRECTORY_PATH').'/cam/' . $appId . "/" . config('common.PRODUCT.LEASE_LOAN');
         $inputArr = [];
         if ($pdfContent) {
-            if (!Storage::disk('s3')->exists($s3path)) {
-                Storage::disk('s3')->makeDirectory($s3path, 0777, true);
-            }
-            /*if (!Storage::exists('/public/cam/' . $appId . "/" . config('common.PRODUCT.LEASE_LOAN'))) {
-                Storage::makeDirectory('/public/cam/' . $appId . "/" . config('common.PRODUCT.LEASE_LOAN'), 0777, true);
-            }*/
+            $data['file_contents'] = $pdfContent;
             $businessDetails = Business::find($bizId);
             $fileName ='CAM_'.$appId.'_'.$businessDetails->biz_entity_name.'.pdf'; // 'CamReport_'.$appId."_".time().".pdf";
-            $path = $s3path."/".$fileName;            
-            $tempPath = Storage::disk('s3')->put($path, $pdfContent);
-            $dbpath = $s3path . "/" . $fileName;
-            $inputArr['file_path'] = $dbpath;
+            $path = $s3path."/".$fileName;
+            $inputArr = self::uploadAwsS3Bucket($path, $data);
         }
-
-        $inputArr['file_type'] = Storage::disk('s3')->mimeType($path);
-        $inputArr['file_name'] = $fileName;
-        $inputArr['file_size'] = Storage::disk('s3')->size($path);
-        $inputArr['file_encp_key'] =  md5(time());
-        $inputArr['created_by'] = 1;
-        $inputArr['updated_by'] = 1;
         return $inputArr;
     }
 
-    /**
-     * uploading document data
-     *
-     * @param Exception $exception
-     * @param string    $exMessage
-     * @param boolean   $handler
-     */
-    public static function uploadAwsBucket($attributes, $appId)
-    {
-        $userId = Auth::user()->user_id;
-        $inputArr = [];
-
-        if ($attributes['doc_file']) {
-            if (!Storage::disk('s3')->exists('/Development/user/' . $userId . '/' . $appId)) {
-                Storage::disk('s3')->makeDirectory('/Development/user/' . $userId . '/' . $appId, 0775, true);
-            }
-            $path = Storage::disk('s3')->put('/Development/user/' . $userId . '/' . $appId, $attributes['doc_file'], null);
-            $inputArr['file_path'] = $path;
-        }
-
-        $inputArr['file_type'] = $attributes['doc_file']->getClientMimeType();
-        $inputArr['file_name'] = $attributes['doc_file']->getClientOriginalName();
-        $inputArr['file_size'] = $attributes['doc_file']->getClientSize();
-        $inputArr['file_encp_key'] =  md5('2');
-        $inputArr['created_by'] = 1;
-        $inputArr['updated_by'] = 1;
-
-        return $inputArr;
-    }
+    
     /**
      * uploading document data
      *
@@ -2566,24 +2571,10 @@ class Helper extends PaypalHelper
                     $oldFileId = UserFile::deletes($appSecDocData->file_id);
                 }
             }
-            $file_dir_path = '/app_security_doc/'.$appId;
-            if (!Storage::disk('s3')->exists($file_dir_path)) {
-                Storage::disk('s3')->makeDirectory($file_dir_path, 0777, true);
-            }
-            // $path = Storage::disk('s3')->put($active_filename_fullpath, $content);
-            // if (!Storage::exists('/public/app_security_doc/' . $appId)) {
-            //     Storage::makeDirectory('/public/app_security_doc/' . $appId, 0777, true);
-            // }
-            $path = Storage::disk('s3')->put('/app_security_doc/' . $appId, $attributes['doc_file'], null);
-            $inputArr['file_path'] = $path;
+            $file_dir_path = env('S3_BUCKET_DIRECTORY_PATH').'/app_security_doc/'.$appId;
+            $inputArr = self::uploadAwsS3Bucket($file_dir_path, $attributes);
         }
 
-        $inputArr['file_type'] = $attributes['doc_file']->getClientMimeType();
-        $inputArr['file_name'] = $attributes['doc_file']->getClientOriginalName();
-        $inputArr['file_size'] = $attributes['doc_file']->getClientSize();
-        $inputArr['file_encp_key'] =  md5('2');
-        $inputArr['created_by'] = 1;
-        $inputArr['updated_by'] = 1;
         return $inputArr;
     }
     
@@ -2745,7 +2736,7 @@ class Helper extends PaypalHelper
         return false;
     }
 
-    public static function getfactVoucherNumber($startDate){
+    public static function getfactVoucherNumber($startDate) {
         $startDate = Helper::utcToIst($startDate,'Y-m-d H:i:s', 'Y-m-d H:i:s');
         $factvoucherData = TallyFactVoucher::getfactVoucherNumber();
         $month =  Carbon::parse($startDate)->format('M');
@@ -2780,8 +2771,7 @@ class Helper extends PaypalHelper
         return $factResult;
     }
 
-    public static function validateInvoiceTypes($transIds, $specificMsg = false, $noteType = 'debit')
-    {
+    public static function validateInvoiceTypes($transIds, $specificMsg = false, $noteType = 'debit') {
         $invTypes = Transactions::whereIn('trans_id', $transIds)
                                             ->distinct()
                                             ->pluck('gst')
@@ -2797,7 +2787,7 @@ class Helper extends PaypalHelper
         return ['status' => true];
     }
 
-    public static function getTransfactVoucherNumber($trans_id){
+    public static function getTransfactVoucherNumber($trans_id) {
         return TransFactVoucher::getTransFactVoucher($trans_id);
     }
 }
