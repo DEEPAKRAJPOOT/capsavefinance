@@ -13,7 +13,6 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class UcicUser extends BaseModel
 {
-    use SoftDeletes;
     
     /* The database table used by the model.
      *
