@@ -3863,13 +3863,16 @@ if ($err) {
     
      public function getProgramSingleList(Request $request)
      {
-       
+         $anchorRemainLimit = 0;
+         $anchorData = Anchor::getAnchorById($request['anchor_id']);
+         $anchorApproveInvoiceAmt    = InvoiceTrait::anchorInvoiceApproveAmount($request['anchor_id']);
          $get_program = $this->invRepo->getLimitProgram($request['anchor_id']);
          $get_program_limit = $this->invRepo->geAnchortLimitProgram($request['anchor_id']);
+         $anchorRemainLimit = round(($get_program_limit->anchor_limit-$anchorApproveInvoiceAmt),2);
          $get_supplier = [];
             foreach($get_program as $v){
                 $program_id = $v->program->prgm_id;
-                $supplierData = $this->invRepo->getProgramOfferByPrgmId($program_id);
+                $supplierData = $this->invRepo->getActiveProgramOfferByPrgmId($program_id);
                 foreach ($supplierData as $v1){
                     $get_supplierD['user_id'] = $v1->user_id;
                     $get_supplierD['app_id'] = $v1->app_id;
@@ -3879,7 +3882,7 @@ if ($err) {
                     $get_supplier[$program_id][] = $get_supplierD; 
                 }
             }
-         return response()->json(['status' => 1,'limit' => $get_program_limit,'get_program' =>$get_program,'get_supplier'=>$get_supplier]);
+         return response()->json(['status' => 1,'limit' => $get_program_limit,'get_program' =>$get_program,'get_supplier'=>$get_supplier,'anchorData' => $anchorData,'anchorRemainLimit' => $anchorRemainLimit]);
      }
        public function getProgramLmsSingleList(Request $request)
      {
@@ -3973,12 +3976,44 @@ if ($err) {
         $res['program_id']  = $res['prgm_id'];
         $getTenor   =  $this->invRepo->getTenor($res);
         $limit =   InvoiceTrait::ProgramLimit($res);
+        $customerLimitArray = $this->application->getUserLimit($supplier_id[0]);
+        $customerLimit      = ($customerLimitArray) ? $customerLimitArray->tot_limit_amt : 0;
+        //dd($customerLimit->tot_limit_amt);
         // $sum   =   InvoiceTrait::invoiceApproveLimit($res);
         // $sum   =   Helpers::anchorSupplierUtilizedLimitByInvoice($res['user_id'], $res['anchor_id']);
         $sum   =   Helpers::anchorSupplierPrgmUtilizedLimitByInvoice($res);
+        ///////////
+        $getUserProgramLimit = $this->application->getUserProgramLimit($supplier_id[0]);
+        $getUserActiveProgramLimit = $this->application->getUserActiveProgramLimit($supplier_id[0]);
+        $inv_Total_limit = 0; $customberOfferLimit = 0; $consumeLimitByPrgm = 0; $customberOfferLimit = 0;
+        foreach($getUserProgramLimit as $uLimit) {
+        foreach($uLimit->supplyProgramLimit as $Plimit){ 
+            foreach($Plimit->offer as $val) {
+                    $obj =  new \App\Helpers\Helper;
+                    $val['user_id']  = $uLimit->app->user_id;
+                    $inv_Total_limit +=  $obj->anchorSupplierUtilizedLimitByInvoiceByPrgm($val);
+                }
+            }
+        }
+        foreach($getUserActiveProgramLimit as $uLimit) {
+            foreach($uLimit->supplyProgramLimit as $Plimit){ 
+                foreach($Plimit->offer as $val) {
+                        $obj =  new \App\Helpers\Helper;
+                        $val['user_id']  = $uLimit->app->user_id;
+                        if($val['prgm_id'] == $res['program_id'] ) {
+                            $consumeLimitByPrgm +=  $obj->anchorSupplierUtilizedLimitByInvoiceByPrgm($val);
+                        }
+                        if($val['anchor_id'] ==  $res['anchor_id']) {
+                         $customberOfferLimit += $val->prgm_limit_amt;
+                        }
+                    }
+                }
+            }
+        /////////
         $adhocData   =  $this->invRepo->checkUserAdhoc($res);
         $is_adhoc   = $adhocData['amount'];
-        $remainAmount = round(($limit - $sum), 2);
+        $remainAmount = round(($customberOfferLimit - $inv_Total_limit), 2);
+        $remainPrgmLimit = round(($limit - $consumeLimitByPrgm), 2);
         $offer = AppProgramOffer::getAppPrgmOfferById($res['prgm_offer_id']);
         $margin = $offer && $offer->margin ? $offer->margin : 0;
         $offerDataJson = null;
@@ -3995,7 +4030,7 @@ if ($err) {
               //Convert the "$offerData" object to a JSON string
               $offerDataJson = base64_encode(json_encode($offerData));
         }
-        return response()->json(['status' => 1,'tenor' => $getTenor['tenor'],'tenor_old_invoice' =>$getTenor['tenor_old_invoice'],'limit' => $limit,'remain_limit' =>$remainAmount,'is_adhoc' => $is_adhoc,'margin' => $margin,'offerData' => $offerDataJson]);
+        return response()->json(['status' => 1,'tenor' => $getTenor['tenor'],'tenor_old_invoice' =>$getTenor['tenor_old_invoice'],'limit' => $remainPrgmLimit,'remain_limit' =>$remainAmount,'is_adhoc' => $is_adhoc,'margin' => $margin,'offerData' => $offerDataJson]);
     }
     
     public function getAdhoc(Request $request)
@@ -4081,9 +4116,9 @@ if ($err) {
                         $marginAmt = Helpers::getOfferMarginAmtOfInvoiceAmt($attr['prgm_offer_id'], $attr['invoice_approve_amount']);
                         $sum   =   InvoiceTrait::invoiceApproveLimit($attr);
                         $remainAmount = $userLimit - $sum;
-                        if ($marginAmt > $remainAmount) {
+                        /*if ($marginAmt > $remainAmount) {
                             return response()->json(['status' => 0,'message' => 'Invoice amount should not be greater than the remaining limit amount after excluding the margin amount for invoice no. '.$attr['invoice_no']]); 
-                        }
+                        }*/
                         $updateInvoice=  InvoiceTrait::updateBulkLimit($userLimit,$attr->invoice_approve_amount,$attr);  
                         $attr['comm_txt'] = $updateInvoice['comm_txt'];
                         $attr['status_id'] = $updateInvoice['status_id'];
@@ -4186,13 +4221,14 @@ if ($err) {
             \DB::rollback();
             return \response()->json(['duplicatestatus' => 0,'msg' => 'We are unable to process the selected Invoice as some Invoice has been already processed.']);
         }
-       $result = InvoiceTrait::checkInvoiceLimitExced($request); 
+       $result = InvoiceTrait::checkInvoiceLimitExced($request);
+       //$result = []; 
        foreach($request['invoice_id'] as $row)
        {  
           if($request->status==8)
           {
             $attr['invoice_id']=$row; 
-            $response =  InvoiceTrait::updateApproveStatus($attr);  
+           // $response =  InvoiceTrait::updateApproveStatus($attr);  
          
           }elseif($request->status==14)
           {
@@ -4243,7 +4279,7 @@ if ($err) {
             $this->activityLogByTrait($activity_type_id, $activity_desc, response()->json($request->all()), $arrActivity);
         }
         \DB::commit(); 
-      return \response()->json(['status' => 1,'msg' => substr($result,0,-1)]);
+      return \response()->json(['status' => 1,'msg' => substr($result['msg'],0,-1) ,'responseType' => $result['responseType']]);
     } catch (Exception $ex) {
         \DB::rollback();
         return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));

@@ -731,41 +731,74 @@ class InvoiceController extends Controller {
         
         $invoice_amount = str_replace(',', '', $attributes['invoice_approve_amount']);
         $invoice_approve_amount = str_replace(',', '', $attributes['invoice_approve_amount']);
-        // $invUtilizedAmt = Helpers::anchorSupplierUtilizedLimitByInvoice($attributes['supplier_id'], $request->anchor_id);
-        // $totalProductLimit = Helpers::getTotalProductLimit($appId, $productId = 1);
         $marginAmt = Helpers::getOfferMarginAmtOfInvoiceAmt($prgmOfferId, $invoice_amount);
+        $prgmApproveInvoiceAmt      = InvoiceTrait::anchorPrgmInvoiceApproveAmount($attributes['anchor_id'], $attributes['program_id']);
+        
+       
+        $offerData = $this->application->getOfferData(['prgm_offer_id' =>$attributes['prgm_offer_id']]);
+        $prmApproveLimit = 0;
+        $limit = 0;
+        $res['prgm_id']  = $attributes['program_id'];
+        $res['app_prgm_limit_id']  = $offerData['app_prgm_limit_id'];
+        $res['user_id']  = $attributes['supplier_id'];
+        $res['app_id']  = $attributes['app_id'];
+        $res['prgm_offer_id']  = $attributes['prgm_offer_id'];
+        $res['anchor_id']  = $attributes['anchor_id'];
+        $res['program_id']  = $attributes['program_id'];
+        $limit =   InvoiceTrait::ProgramLimit($res);
+        $prmApproveLimit = Helpers::anchorSupplierUtilizedLimitByInvoiceByPrgm($res);
 
-        // $limit =   InvoiceTrait::ProgramLimit($attributes);
-        // $sum   =   InvoiceTrait::invoiceApproveLimit($attributes);
-        // $remainAmount = $limit - $sum;
+        $prgmAvilableLimit  = $limit-$prmApproveLimit;
+        $subPrgmData                = $this->application->getProgram($attributes['program_id']);
+        $isSupplierLimitExceeded = false;
+        $isSupplierLimitExceeded = InvoiceTrait::isSupplierLimitExceeded($attributes);
+        $isProgramLimitExceeded = false;
+        $isProgramLimitExceeded = InvoiceTrait::isSupplierProgramLimitExceeded($prgmAvilableLimit,$invoice_approve_amount);
+        $isAnchorLimitExceeded = false;
+        $isAnchorLimitExceeded = InvoiceTrait::isAnchorLimitExceeded($attributes['anchor_id'], $invoice_approve_amount);
 
-        // if ($marginAmt > $remainAmount) {
-        //     Session::flash('error', 'Invoice amount should not be greater than the remaining limit amount after excluding the margin amount.');
-        //     return back();
-        // }
-
-        // if ($totalProductLimit > 0 && $invoice_amount > 0 && $marginAmt > ($totalProductLimit - $invUtilizedAmt)) {
-        //     Session::flash('error', 'Invoice amount should not be greater than the balance limit amount.');
-        //     return back();
-        // }
         if (!empty($attributes['exception'])) {
             $statusId = 28;
             $attributes['remark'] = 'Invoice date & current date difference should not be more than old tenor days';           
         } else {
           if(in_array($customer, $expl))  
           {
-            $statusId = 8; 
+            if($isAnchorLimitExceeded) {
+                $statusId = 28;
+                $attributes['remark'] = 'Anchor limit exceeded';
+            } else if($isSupplierLimitExceeded)
+            {
+                $statusId = 28;
+                $attributes['remark'] = 'Customer limit exceeded';
+            } else if($isProgramLimitExceeded) {
+                $statusId = 28;
+                $attributes['remark'] = 'Program limit exceeded'; 
+            } else {
+                $statusId = 8; 
+                $attributes['remark'] = 'Auto Approve'; 
+            } 
             
           }
           else if($getPrgm->invoice_approval==4)
           {
-              $statusId = 8;   
-             
+            if($isAnchorLimitExceeded) {
+                $statusId = 28;
+                $attributes['remark'] = 'Anchor limit exceeded';
+            } else if($isSupplierLimitExceeded)
+              {
+                $statusId = 28;
+                $attributes['remark'] = 'Customer limit exceeded';
+              } else if($isProgramLimitExceeded) {
+                $statusId = 28;
+                $attributes['remark'] = 'Program limit exceeded'; 
+              } else {
+                $statusId = 8; 
+                $attributes['remark'] = 'Auto Approve'; 
+              }
           }
           else
           {
             $statusId = 7;
-           
           }
         }
        //////* chk the adhoc condition  

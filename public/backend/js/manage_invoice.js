@@ -518,9 +518,25 @@ function uploadFile(app_id,id)
                        location.reload();
                     }else
                     {
-                      
-                       localStorage.setItem('Msg', JSON.stringify({text: 'You cannot move the selected invoices('+data.msg+') to the Approve tab, as the program/customer/anchor limit has been exceeded.', type: 'error'}));
-                       location.reload();
+                       // console.log(data.responseType, data.msg);
+                       // return false;
+                       if(data.responseType == "2") {
+                        localStorage.setItem('Msg', JSON.stringify({text: 'You cannot move the selected invoices('+data.msg+') to the Approve tab, as the program limit has been exceeded.', type: 'error'}));
+                        location.reload();
+ 
+                       } else if(data.responseType == "3") {
+                         localStorage.setItem('Msg', JSON.stringify({text: 'You cannot move the selected invoices('+data.msg+') to the Approve tab, as the Customer is in overdue.', type: 'error'}));
+                        location.reload();
+ 
+                       } else if(data.responseType == "4") {
+                         localStorage.setItem('Msg', JSON.stringify({text: 'You cannot move the selected invoices('+data.msg+') to the Approve tab, as the Customer limit has been exceeded.', type: 'error'}));
+                         
+                         location.reload();
+                     } else if(data.responseType == "5") {
+                         localStorage.setItem('Msg', JSON.stringify({text: 'You cannot move the selected invoices('+data.msg+') to the Approve tab, as the Anchor limit has been exceeded.', type: 'error'}));
+                         location.reload();
+                     }
+                       
                     }
 
                     
@@ -1193,8 +1209,22 @@ function uploadFile(app_id,id)
                     }
                     else
                     {
-                        localStorage.setItem('Msg', JSON.stringify({text: 'You cannot move the selected invoices('+data.msg+') to the Reject tab, as the program/customer/anchor limit has been exceeded.', type: 'error'}));
-                       location.reload();
+                        if(data.responseType == "2") {
+                            localStorage.setItem('Msg', JSON.stringify({text: 'You cannot move the selected invoices('+data.msg+') to the Approve tab, as the program limit has been exceeded.', type: 'error'}));
+                            location.reload();
+     
+                           } else if(data.responseType == "3") {
+                             localStorage.setItem('Msg', JSON.stringify({text: 'You cannot move the selected invoices('+data.msg+') to the Approve tab, as the Customer is in overdue.', type: 'error'}));
+                            location.reload();
+     
+                           } else if(data.responseType == "4") {
+                             localStorage.setItem('Msg', JSON.stringify({text: 'You cannot move the selected invoices('+data.msg+') to the Approve tab, as the Customer limit has been exceeded.', type: 'error'}));
+                             
+                             location.reload();
+                         } else if(data.responseType == "5") {
+                             localStorage.setItem('Msg', JSON.stringify({text: 'You cannot move the selected invoices('+data.msg+') to the Approve tab, as the Anchor limit has been exceeded.', type: 'error'}));
+                             location.reload();
+                         }
                     }
                }
             });

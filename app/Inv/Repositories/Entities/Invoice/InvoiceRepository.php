@@ -1420,5 +1420,11 @@ use CommonRepositoryTraits;
     {
         return InvoiceDisbursed::getReportAllOutstandingInvoice();
     }
+
+
+    public function getActiveProgramOfferByPrgmId($prgmId)
+    {
+        return AppProgramOffer::getActiveProgramOfferByPrgmId($prgmId);
+    } 
          
 }

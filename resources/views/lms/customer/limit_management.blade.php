@@ -2,11 +2,67 @@
 @section('content')
 @include('layouts.backend.partials.admin_customer_links',['active'=>'customer'])
 
-
+@php  $customberOfferLimit = 0;$j=0;$count = 0;@endphp
+@php $obj =  new \App\Helpers\Helper;@endphp
+@foreach($userActiveAppLimit as $uLimit) 
+    @foreach($uLimit->supplyProgramLimit as $limit) 
+        @foreach($limit->offer as $val)
+                @php
+                $val['user_id']  = $uLimit->app->user_id;
+                $anchorDatas[$j]['anchor_id'] = $val->anchor->anchor_id;
+                $anchorDatas[$j]['anchor_name'] = $val->anchor->comp_name;
+                $j++;
+                @endphp  
+        @endforeach
+    @endforeach
+@endforeach
+@php $tempArr = array_unique(array_column($anchorDatas, 'anchor_id'));
+$anchorDatas = array_intersect_key($anchorDatas, $tempArr); @endphp
 <div class="content-wrapper">
     <div class="row">
+    @foreach($anchorDatas as $anchorData)
         <div class=" col-lg-12 m-auto">
             <div class="card">
+            @php $inv_Total_limit = 0; $customberOfferLimit = 0;@endphp 
+            @foreach($userAppLimit as $uLimit) 
+                @foreach($uLimit->supplyProgramLimit as $limit) 
+                    @foreach($limit->offer as $val) 
+                    @php $val['user_id'] = $uLimit->app->user_id; 
+                        if($anchorData['anchor_id'] == $val->anchor->anchor_id) { 
+                            $inv_Total_limit += $obj->anchorSupplierUtilizedLimitByInvoiceByPrgm($val);
+                        } 
+                    @endphp 
+                    @endforeach 
+                @endforeach 
+            @endforeach
+
+            @foreach($userActiveAppLimit as $uLimit) 
+            @foreach($uLimit->supplyProgramLimit as $limit) 
+            @foreach($limit->offer as $val)
+                @php
+                $val['user_id']  = $uLimit->app->user_id;
+                if($anchorData['anchor_id'] == $val->anchor->anchor_id) {
+                $customberOfferLimit += $val->prgm_limit_amt;
+                }
+                $j++;
+                @endphp  
+            @endforeach
+            @endforeach
+            @endforeach
+
+            <table id="customerList" class="table table-striped cell-border dataTable no-footer overview-table" cellspacing="0" width="100%" role="grid" aria-describedby="supplier-listing_info" style="width: 100%;">
+                <thead>   
+                    <tr role="row"> 
+                        <th>{{$anchorData['anchor_name']}}</th>                                                   
+                        <th>Total Customer Limit</th>       
+                        <th>₹ {{number_format($customberOfferLimit, 2)}}</th>       
+                        <th>Utilized Customer Limit</th>		
+                        <th>₹ {{number_format($inv_Total_limit, 2)}}</th>
+                        <th>Available Customer Limit</th>
+                        <th>₹ {{number_format(($customberOfferLimit - $inv_Total_limit), 2)}}</th>
+                    </tr>
+            </thead> 
+            </table>
           
                 @foreach($userAppLimit as $uLimit) 
                 @php 
@@ -20,9 +76,12 @@
                 $limitEndDt   =  $uLimit->actual_end_date ? $uLimit->actual_end_date : $uLimit->end_date;
                 $isLimitExpired = strtotime($limitCurDt) > strtotime($limitEndDt);
                 }
-                @endphp          
+                     
+                @endphp
+                @if(isset($uLimit['supplyProgramLimit'][0]['offer'][0]['anchor_id']))
+                @if($uLimit['supplyProgramLimit'][0]['offer'][0]['anchor_id'] == $anchorData['anchor_id'])           
                 <div class="card-body limit-management"> 
-                    @if($uLimit->is_deleted ==0)
+                    @if($uLimit->is_deleted ==0 && $uLimit->status != 0)
                     <div class="limit-title"> 
                         <div class="row" style="margin-top:10px;">
                             <div class="col-lg-2 col-md-6 col-sm-6 col-xs-12">
@@ -192,6 +251,9 @@
                             @endif
                         @endcan
                     </div>
+
+
+
                     @foreach($uLimit->supplyProgramLimit as $limit)                      
                     <div class="limit-odd">  
                         <div class="row" style="margin-top:20px;">
@@ -229,7 +291,7 @@
                         @foreach($limit->offer as $val) 
                         @php
                         $val['user_id']  = $uLimit->app->user_id;
-                        $inv_limit =  $obj->anchorSupplierPrgmUtilizedLimitByInvoice($val);
+                        $inv_limit =  $obj->anchorSupplierUtilizedLimitByInvoiceByPrgm($val);
                         $getAdhoc   = $obj->getAdhoc($val);
                         @endphp  
                         @if ($val->status !=2 )
@@ -239,8 +301,8 @@
                                 <div class="label-bottom">{{ $val->anchor->comp_name ?? ''}}</div>
                             </div>
                             <div class="col-lg-2 col-md-6 col-sm-6 col-xs-12">
-                                <label>Anchor sub program </label>
-                                <div class="label-bottom">{{ $val->program->prgm_name ?? ''}}</div>
+                                <label>Anchor Sub Program </label>
+                                <div class="label-bottom">{{ $val->program->prgm_name ?? ''}} - {{ ($val->program->prgm_id)}}</div>
                             </div>
 
                             <div class="col-lg-2 col-md-6 col-sm-6 col-xs-12">
@@ -248,11 +310,11 @@
                                 <div class="label-bottom">{{number_format($val->prgm_limit_amt, 2)}}</div>
                             </div>
                             <div class="col-lg-2 col-md-6 col-sm-6 col-xs-12">
-                                <label>Utilize Limit	 </label>
+                                <label>Utilize Program Limit</label>
                                 <div class="label-bottom">{{number_format($inv_limit, 2)}}</div>
                             </div>
                             <div class="col-lg-2 col-md-6 col-sm-6 col-xs-12">
-                                <label>Available Limit </label>
+                                <label>Available Program Limit</label>
                                 <div class="label-bottom">{{number_format(($val->prgm_limit_amt-$inv_limit), 2)}}</div>
                             </div>
                             <div class="col-lg-2 col-md-6 col-sm-6 col-xs-12">
@@ -336,10 +398,13 @@
                     @endforeach
                 </div>
                 @endif
+                @endif
+                @endif
 
                 @endforeach 
             </div>
         </div>
+    @endforeach
     </div>
 </div>
 

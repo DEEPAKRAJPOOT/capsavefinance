@@ -109,16 +109,22 @@ public function limitManagement(Request $request) {
 	try {
 		$user_id = $request->get('user_id');
 		$customerLimit = $this->appRepo->getUserLimit($user_id);
+		$customerTotalLimit = $this->appRepo->getUserTotalLimit($user_id);
 		$AvaliablecustomerLimit = $this->appRepo->getAvaliableUserLimit($customerLimit);
+
 		$getUserProgramLimit = $this->appRepo->getUserProgramLimit($user_id);
+		
         $getAccountClosure =  $this->appRepo->getAccountActiveClosure($user_id);
 		$getAppLimitReview = $this->appRepo->getAppReviewLimit($user_id);
+		$getUserActiveProgramLimit = $this->appRepo->getUserActiveProgramLimit($user_id);
 		return view('lms.customer.limit_management')
 			->with(['userAppLimit' => $getUserProgramLimit,
 					'avaliablecustomerLimit' => $AvaliablecustomerLimit,
 					'userId' => $user_id,
 					'getAccountClosure' => $getAccountClosure,
-					'getAppLimitReview' => $getAppLimitReview
+					'getAppLimitReview' => $getAppLimitReview,
+					'customerTotalLimit' => $customerTotalLimit,
+					'userActiveAppLimit' => $getUserActiveProgramLimit
 		]);
 	} catch (Exception $ex) {
 		dd($ex);
