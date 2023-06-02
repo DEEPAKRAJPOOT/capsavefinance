@@ -1071,7 +1071,14 @@ class Transactions extends BaseModel {
                 $q->WhereIn('trans_type', [config('lms.TRANS_TYPE.INTEREST'), config('lms.TRANS_TYPE.INTEREST_OVERDUE')])->where('entry_type', '=', '0');
             })
             ->orWhere(function ($q) {
-                $q->WhereIn('trans_type', [config('lms.TRANS_TYPE.REVERSE')])->whereNull('payment_id');
+                $q->WhereIn('trans_type', [config('lms.TRANS_TYPE.REVERSE')])
+                    ->whereHas('linkTransactions', function ($q2) {
+                        $q2->where('soa_flag', 1)
+                            ->where(function ($q3) {
+                                $q3->whereNull('payment_id')
+                                    ->orWhere('trans_type', config('lms.TRANS_TYPE.TDS'));
+                            });
+                    });
             });
         })->where($where)->orderBy('trans_id')->get();
     }

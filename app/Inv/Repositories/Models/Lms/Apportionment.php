@@ -51,11 +51,11 @@ class Apportionment extends BaseModel
 
     
     public function payment(){
-        return $this->hasOne('App\Inv\Repositories\Models\Payment','payment_id','payment_id');
+        return $this->hasOne('App\Inv\Repositories\Models\Payment','payment_id','payment_id')->withTrashed();
     }
 
     public function transaction(){
-        return $this->belongsTo('App\Inv\Repositories\Models\Lms\Transactions', 'apportionment_id', 'apportionment_id');
+        return $this->hasMany('App\Inv\Repositories\Models\Lms\Transactions', 'apportionment_id', 'apportionment_id');
     }
 
     /**

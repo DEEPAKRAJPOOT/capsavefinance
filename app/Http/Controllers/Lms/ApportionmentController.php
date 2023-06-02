@@ -36,6 +36,7 @@ use App\Inv\Repositories\Models\Lms\InvoiceDisbursedDetail;
 use App\Helpers\FileHelper;
 use App\Inv\Repositories\Models\Lms\PaymentApportionment;
 use Illuminate\Support\Facades\Response;
+use App\Inv\Repositories\Models\Application;
 
 class ApportionmentController extends Controller
 {
@@ -1527,11 +1528,17 @@ class ApportionmentController extends Controller
                         $this->lmsRepo->saveTransaction($newTrans);
                     }
                 }
+
+                $bizId = Application::where('user_id',$transactions[0]->user_id)
+                        ->whereIn('curr_status_id',[50,51])
+                        ->orderBy('curr_status_updated_at','desc')
+                        ->limit(1)
+                        ->value('biz_id');
                 
                 foreach ($payments as $transDate => $payment) {
                     $paymentData = [
                         'user_id' => $transactions[0]->user_id,
-                        'biz_id' => $transactions[0]->payment->biz_id ?? NULL,
+                        'biz_id' => $bizId ?? NULL,
                         'virtual_acc' => $transactions[0]->payment->virtual_acc ?? NULL,
                         'action_type' => 5,
                         'trans_type' => config('lms.TRANS_TYPE.ADJUSTMENT'),
@@ -1561,7 +1568,7 @@ class ApportionmentController extends Controller
             }
         } catch (Exception $ex) {
             DB::rollback();
-            return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex))->withInput();
+            return redirect()->route('apport_refund_view')->withErrors(Helpers::getExceptionMessage($ex))->withInput();
         }
     }
     
@@ -1678,7 +1685,7 @@ class ApportionmentController extends Controller
 				$payment = Payment::find($paymentId);
                 $apportionment = $payment->apportionment()->orderBy('apportionment_id','desc')->first();
 				if($payment && $apportionment->apportionment_type == '1'){
-                    if($payment->is_settled == '1' && (($payment->action_type == '1' && $payment->trans_type == '17') ||($payment->action_type == '3' && $payment->trans_type == '7')) && $payment->validRevertPayment ){
+                    if($payment->is_settled == '1' && (($payment->action_type == '1' && $payment->trans_type == '17') || ($payment->action_type == '3' && $payment->trans_type == '7') || ($payment->action_type == '5' && $payment->trans_type == '31')) && $payment->validRevertPayment ){
 						$aporUndoPro = self::apportionmentUndoProcess($payment, $apportionment);
                         if($aporUndoPro['status']){
                             $payment->is_settled = '0';
