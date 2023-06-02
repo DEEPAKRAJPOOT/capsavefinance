@@ -166,7 +166,7 @@ class GenerateNotePdf implements ShouldQueue
                 $userFile = UserFile::create($fileData);
                 if($userInvoiceId && $userFile){
                     $isUpdated = UserInvoice::where('user_invoice_id',$userInvoiceId)->update(['file_id' => $userFile->file_id]);
-                    if($isUpdated){
+                    if($isUpdated && $invoice_type == 'I' && $invData->invoice_cat == 1){
                         // If custId is present then bill is Anchor based else customer based
                         $getEmail = [];
                         if($invData->customer_id != ''){
