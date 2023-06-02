@@ -55,6 +55,7 @@ class GenerateNotePdf implements ShouldQueue
             $invoice_no = $invData->invoice_no;
             $state_name = $invData->place_of_supply;
             $invoice_type = $invData->invoice_type;
+            $invoiceBorneBy = $invData->invoice_borne_by;
             $invoice_type_name = $invData->invoice_type_name;
             $invoice_date = $invData->invoice_date;
             $due_date = $invData->due_date;
@@ -127,7 +128,6 @@ class GenerateNotePdf implements ShouldQueue
                 $intrest_charges[$key]['total_rental'] =  $total_rental; 
             }
             $registeredCompany = json_decode($invData->comp_addr_register, true);
-            
             $data = [
                 'company_data' => $company_data,
                 'billingDetails' => $billingDetails,
@@ -137,7 +137,12 @@ class GenerateNotePdf implements ShouldQueue
                 'registeredCompany' => $registeredCompany,
                 'invoice_type'=>$invoice_type,
                 'invoice_type_name' => $invoice_type_name,
+                'invoiceBorneBy' => $invoiceBorneBy,
+                'custId' => $invData->customer_id ?? '',
+                'custName' => $invData->customer_name ?? '',
+                'anchorName' => $invData->anchor_name ?? '',
             ];
+
             view()->share($data);
             $path ='capsaveInvoice/'.str_replace("/","_",strtoupper($data['origin_of_recipient']['invoice_no'])).'.pdf';
             //$year = date("Y");   

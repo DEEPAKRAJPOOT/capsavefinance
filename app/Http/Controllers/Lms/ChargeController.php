@@ -270,8 +270,10 @@ class ChargeController extends Controller
                         "chrg_master_id" =>$request->chrg_name,
                         "percent" => $percent,
                         "chrg_applicable_id" =>  $chrg_applicable_id,
+                        "chrg_type" => 2,
                         "amount" =>   $totalSumAmount,
                         "virtual_acc_id" =>  $this->lmsRepo->getVirtualAccIdByUserId($request->user_id),
+                        "level_charges" =>$request->level_charges,
                         'created_by' =>  $id,
                         'created_at' =>  $mytime
                     ];

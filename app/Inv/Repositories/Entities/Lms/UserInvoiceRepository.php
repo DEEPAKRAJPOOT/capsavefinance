@@ -101,21 +101,6 @@ class UserInvoiceRepository extends BaseRepositories implements UserInvoiceInter
 		return UserBankAccount::getAllCompanyBankAcc($company_id);
 	}
 
-	public function getUserInvoiceTxns($userId, $invoiceType = 'I', $transIds = [], $is_force = false) {
-		$UserInvoiceTxns = Transactions::getUserInvoiceTxns($userId, $invoiceType, $transIds, $is_force);
-		if (!empty($UserInvoiceTxns)) {
-			foreach ($UserInvoiceTxns as $key => $txn) {
-				if($txn->trans_type == config('lms.TRANS_TYPE.INVOICE_PROCESSING_FEE')){
-					$txn->amount = $txn->amount;
-				}
-				if ($txn->amount == 0) {
-					unset($UserInvoiceTxns[$key]);
-				}
-			}
-		}
-		return $UserInvoiceTxns;
-	}
-
 	public function getTxnByTransId(int $trans_id) {
 		return Transactions::find($trans_id);
 	}
@@ -180,7 +165,24 @@ class UserInvoiceRepository extends BaseRepositories implements UserInvoiceInter
 		return UserInvoiceRelation::unPublishAddrApp($user_id);
 	}
 
-	public function getCreditNoteTxns($userId, $invoiceType = 'I', $transIds = []){
+	//Debit Note Transaction 
+	public function getUserInvoiceTxns($userId, $invoiceType , $transIds = [], $is_force = false) {
+		$UserInvoiceTxns = Transactions::getUserInvoiceTxns($userId, $invoiceType, $transIds, $is_force);
+		if (!empty($UserInvoiceTxns)) {
+			foreach ($UserInvoiceTxns as $key => $txn) {
+				if($txn->trans_type == config('lms.TRANS_TYPE.INVOICE_PROCESSING_FEE')){
+					$txn->amount = $txn->amount;
+				}
+				if ($txn->amount == 0) {
+					unset($UserInvoiceTxns[$key]);
+				}
+			}
+		}
+		return $UserInvoiceTxns;
+	}
+
+	//Credit Note Transaction 
+	public function getCreditNoteTxns($userId, $invoiceType, $transIds = []){
 		$sql = Transactions::with('transType')
 		->whereNull('payment_id')
 		->where('user_id', $userId)
@@ -191,7 +193,7 @@ class UserInvoiceRepository extends BaseRepositories implements UserInvoiceInter
 			$sql->whereIn('trans_id', $transIds);
 		}
 		return $sql->whereHas('parentTransactions.transType', function($query) use ($invoiceType) { 
-			if($invoiceType == 'I') {
+			if($invoiceType == 'IA' || $invoiceType == 'IC') {
 				$query->whereIn('id',[config('lms.TRANS_TYPE.INTEREST'),config('lms.TRANS_TYPE.INTEREST_OVERDUE')]);
 			} else {
 				$query->where('chrg_master_id','!=','0');
@@ -199,8 +201,8 @@ class UserInvoiceRepository extends BaseRepositories implements UserInvoiceInter
 		})->get();
 	}
 
-
-	public function getCreditNoteReversalTxns($userId, $invoiceType = 'I', $transIds){
+	//Credit Note Reversal Transaction 
+	public function getCreditNoteReversalTxns($userId, $invoiceType, $transIds){
 		$sql = Transactions::with('transType')
 		->where('user_id', $userId)
 		->where('entry_type',0)
@@ -210,7 +212,7 @@ class UserInvoiceRepository extends BaseRepositories implements UserInvoiceInter
 			$sql->whereIn('trans_id', $transIds);
 		}
 		return $sql->whereHas('parentTransactions.transType', function($query) use ($invoiceType) { 
-			if($invoiceType == 'I') {
+			if($invoiceType == 'IA' || $invoiceType == 'IC') {
 				$query->whereIn('id',[config('lms.TRANS_TYPE.INTEREST'),config('lms.TRANS_TYPE.INTEREST_OVERDUE')]);
 			} else {
 				$query->where('chrg_master_id','!=','0');

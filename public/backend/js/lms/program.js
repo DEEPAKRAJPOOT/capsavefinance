@@ -546,6 +546,9 @@ try {
                     interest_borne_by: {
                         required: true
                     },
+                    overdue_interest_borne_by: {
+                        required: true
+                    },
                     margin: {
                         required: true,
                         number: true,

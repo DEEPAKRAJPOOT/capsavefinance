@@ -575,6 +575,19 @@ class InvoiceController extends Controller {
                     $transData['link_trans_id'] = $createTransaction->trans_id;
                     $intrstCdtTrnsData = $this->createTransactionData($value['disbursal']['user_id'], $transData, config('lms.TRANS_TYPE.INVOICE_PROCESSING_FEE'), 1);
                     $createTransaction = $this->lmsRepo->saveTransaction($intrstCdtTrnsData);
+                    $arr = [   
+                        'app_id' => $value['invoice']['app_id'],
+                        "prgm_id" => $value['invoice']['program_offer']['program']['prgm_id'],
+                        'trans_id' => $transData['parent_trans_id'],
+                        "chrg_master_id" =>$chrgData->id,
+                        "percent" => $chrgData->gst_percentage,
+                        "chrg_applicable_id" =>  $chrgData->chrg_applicable_id,
+                        "chrg_type" => 1,
+                        "amount" =>   $chrgData->chrg_calculation_amt,
+                        "level_charges" =>$value['invoice']['program_offer']['program']['interest_borne_by'],
+                        'created_at' =>  Carbon::now(),
+                    ];
+                    $chrgTransId = $this->lmsRepo->saveChargeTrans($arr);
                 }
 
                 /// Margin transaction $tranType = 10
@@ -595,36 +608,97 @@ class InvoiceController extends Controller {
             }
             /* Sudesh: Code to save Invoice Disbursed details : E */
         }
-
+        $oldTimeZone = trim(strtolower(date_default_timezone_get()));
+        date_default_timezone_set("UTC");
         foreach($invDisbs as $userId => $invDisb){
             $invDisbIds = array_keys($invDisb);
 
-            $intList = Transactions::whereIn('invoice_disbursed_id',$invDisbIds)
-            ->whereIn('trans_type', [config('lms.TRANS_TYPE.INTEREST'),config('lms.TRANS_TYPE.INTEREST_OVERDUE')])
-            ->where('user_id',$userId)
-            ->where('entry_type','0')
-            ->where('is_invoice_generated','0')
-            ->pluck('trans_id')
-            ->toArray();
-        
-            $chrgList = Transactions::whereIn('invoice_disbursed_id',$invDisbIds)
-            ->whereHas('transType', function($query){ $query->where('chrg_master_id','!=','0'); })
-            ->where('user_id',$userId)
-            ->where('entry_type',0)
-            ->where('is_invoice_generated',0)
-            ->pluck('trans_id')
-            ->toArray();
-        
-            if(!empty($intList)){
-                $controller = app()->make('App\Http\Controllers\Lms\userInvoiceController');
-                $controller->generateDebitNote($intList, $userId, 'I');
+            $customerIntLists = Transactions::whereIn('invoice_disbursed_id',$invDisbIds)
+                ->where('trans_type', config('lms.TRANS_TYPE.INTEREST'))
+                ->where('user_id',$userId)
+                ->where('entry_type','0')
+                ->where('is_invoice_generated','0')
+                ->whereHas('invoiceDisbursed.invoice.program_offer.program',function($query){
+                    $query->where('interest_borne_by',2);
+                })
+                ->pluck('trans_id')
+                ->toArray();
+            $customerIntListOverdue = Transactions::whereIn('invoice_disbursed_id',$invDisbIds)
+                ->where('trans_type', config('lms.TRANS_TYPE.INTEREST_OVERDUE'))
+                ->where('user_id',$userId)
+                ->where('entry_type','0')
+                ->where('is_invoice_generated','0')
+                ->whereHas('invoiceDisbursed.invoice.program_offer.program',function($query){
+                    $query->where('overdue_interest_borne_by',2);
+                })
+                ->pluck('trans_id')
+                ->toArray();
+
+            $customerIntList = array_merge($customerIntLists,$customerIntListOverdue);
+            $controller = app()->make('App\Http\Controllers\Lms\userInvoiceController');
+            if(!empty($customerIntList)){
+                $controller->generateDebitNote($customerIntList, $userId, 'IC', null, null, 1);
+                unset($customerIntList);
             }
-        
-            if(!empty($chrgList)){
-                $controller = app()->make('App\Http\Controllers\Lms\userInvoiceController');
-                $controller->generateDebitNote($chrgList, $userId, 'C');
+
+            $anchorIntLists = Transactions::whereIn('invoice_disbursed_id',$invDisbIds)
+                                            ->where('trans_type', config('lms.TRANS_TYPE.INTEREST'))
+                                            ->where('user_id',$userId)
+                                            ->where('entry_type','0')
+                                            ->where('is_invoice_generated','0')
+                                            ->whereHas('invoiceDisbursed.invoice.program_offer.program',function($query){
+                                                $query->where('interest_borne_by',1);
+                                            })
+                                            ->pluck('trans_id')
+                                            ->toArray();
+
+            $anchorIntListOverdue = Transactions::whereIn('invoice_disbursed_id',$invDisbIds)
+                                                ->where('trans_type', config('lms.TRANS_TYPE.INTEREST_OVERDUE'))
+                                                ->where('user_id',$userId)
+                                                ->where('entry_type','0')
+                                                ->where('is_invoice_generated','0')
+                                                ->whereHas('invoiceDisbursed.invoice.program_offer.program',function($query){
+                                                    $query->where('overdue_interest_borne_by',1);
+                                                })
+                                                ->pluck('trans_id')
+                                                ->toArray();
+            $anchorIntList = array_merge($anchorIntLists,$anchorIntListOverdue);
+            if(!empty($anchorIntList)){
+                $controller->generateDebitNote($anchorIntList, $userId, 'IA', null, null, 1);
+                unset($anchorIntList);
+            }
+            $customerChrgList = Transactions::whereIn('invoice_disbursed_id',$invDisbIds)
+                                            ->whereHas('transType', function($query){ $query->where('chrg_master_id','!=','0'); })
+                                            ->where('user_id',$userId)
+                                            ->where('entry_type',0)
+                                            ->where('is_invoice_generated',0)
+                                            ->whereHas('invoiceDisbursed.invoice.program_offer.program',function($query){
+                                                $query->where('interest_borne_by',2);
+                                            })
+                                            ->pluck('trans_id')
+                                            ->toArray();
+
+            if(!empty($customerChrgList)){
+                $controller->generateDebitNote($customerChrgList, $userId, 'CC', null, null, 1);
+                unset($customerChrgList);
+            }
+
+            $anchorChrgList = Transactions::whereIn('invoice_disbursed_id',$invDisbIds)
+                                            ->whereHas('transType', function($query){ $query->where('chrg_master_id','!=','0'); })
+                                            ->where('user_id',$userId)
+                                            ->where('entry_type',0)
+                                            ->where('is_invoice_generated',0)
+                                            ->whereHas('invoiceDisbursed.invoice.program_offer.program',function($query){
+                                                $query->where('interest_borne_by',1);
+                                            })
+                                            ->pluck('trans_id')
+                                            ->toArray();
+            if(!empty($anchorChrgList)){
+                $controller->generateDebitNote($anchorChrgList, $userId, 'CA', null, null, 1);
+                unset($anchorChrgList);
             }
         }
+        date_default_timezone_set($oldTimeZone);
 
         $disbursals = $this->lmsRepo->getDisbursals($disbursalIds)->toArray();
         foreach ($disbursals as $key => $value) {
@@ -641,7 +715,6 @@ class InvoiceController extends Controller {
         $userMailArr['id'] = \Helpers::formatIdWithPrefix($value['user_id'], 'CUSTID');
         $userMailArr['app_id'] = \Helpers::formatIdWithPrefix($value['user_id'], 'APP');
         $userMailArr['utr_no'] = isset($value['tran_id']) ? $value['tran_id'] : '';
-        // $userMailArr['benefi_name'] = $benifiName;
         $userMailArr['disbursed_date'] = isset($value['disburse_date']) ? Carbon::parse($value['disburse_date'])->format('d-m-Y') : '';  
         $userMailArr['anchor_email'] = isset($value['user']['anchor']) && isset($value['user']['anchor']['comp_email']) ? $value['user']['anchor']['comp_email'] : null;
         $userMailArr['sales_email'] = isset($value['user']['anchor']) && isset($value['user']['anchor']['sales_user']) ? $value['user']['anchor']['sales_user']['email'] : null;

@@ -28,6 +28,8 @@ use Illuminate\Support\Facades\Storage;
 use App\Events\Event;
 use App\Jobs\GenerateNotePdf;
 use Illuminate\Support\Facades\Log;
+use App\Inv\Repositories\Models\AnchorUser;
+use App\Inv\Repositories\Models\User;
 
 class userInvoiceController extends Controller
 {
@@ -103,6 +105,8 @@ class userInvoiceController extends Controller
             $company_id = $userCompanyRelation->company_id;
             $biz_addr_id = $userCompanyRelation->biz_addr_id;
             $user_invoice_rel_id = $userCompanyRelation->user_invoice_rel_id;
+            $anchorDetails = AnchorUser::getAnchorsDetails($user_id);
+            $custDetails = User::getCustomerData($user_id);
             $billingDetails = $this->_getBillingDetail($biz_addr_id);
             if ($billingDetails['status'] != 'success') {
                return redirect()->route('view_user_invoice', ['user_id' => $user_id])->with('error', $billingDetails['message']); 
@@ -130,7 +134,7 @@ class userInvoiceController extends Controller
             }else{
                 Session::flash('lastInvMsg','Still Invoice not created for any customer.');
             }
-            return view('lms.invoice.create_user_invoice')->with(['user_id'=> $user_id, 'billingDetails' => $billingDetails, 'origin_of_recipient' => $origin_of_recipient, 'encData' => $encData, 'allApplications' => $allApplications, 'eodStartDate' => $eodStartDate, 'due_date' => $due_date]);
+            return view('lms.invoice.create_user_invoice')->with(['user_id'=> $user_id, 'billingDetails' => $billingDetails, 'origin_of_recipient' => $origin_of_recipient, 'encData' => $encData, 'allApplications' => $allApplications, 'eodStartDate' => $eodStartDate, 'due_date' => $due_date,'anchorDetails' => $anchorDetails,'custDetails' => $custDetails]);
         } catch (Exception $ex) {
              return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
         }
@@ -262,7 +266,7 @@ class userInvoiceController extends Controller
             'message' => 'Some error occured, Try after sometime'
         ];
         $invoice_type = $request->get('invoice_type');
-        if (!in_array($invoice_type, ['I', 'C'])) {
+        if (!in_array($invoice_type, ['IC','IA', 'CC','CA'])) {
             $response['message'] = 'Invalid Invoice Type';
             return response()->json($response);
         }
@@ -324,7 +328,7 @@ class userInvoiceController extends Controller
         }
 
 
-        if (!in_array($invoice_type, ['I', 'C'])) {
+        if (!in_array($invoice_type, ['IC','IA', 'CC','CA'])) {
            return response()->json(['status' => 0,'message' => "Invalid Invoice Type found."]); 
         }
 
@@ -359,10 +363,32 @@ class userInvoiceController extends Controller
         }
         $company_data = $companyDetail['data'];
         $billingDetail = $this->_getBillingDetail($biz_addr_id);
+        
         if ($billingDetail['status'] != 'success') {
            return response()->json(['status' => 0,'message' => $billingDetail['message']]); 
         }
-        $billing_data = $billingDetail['data'];
+        $invoiceBorneBy = substr($invoice_type,1,2)  == 'A' ? 1 : 2;
+        if($invoiceBorneBy == 1){
+            $anchorDetails = AnchorUser::getAnchorsDetails($user_id);
+            $custDetails = User::getCustomerData($user_id);
+            $custId = $custDetails['customer_id'];
+            $custName = $custDetails['biz_entity_name'];
+            $anchorName = $anchorDetails['comp_name'];
+            $billing_data = [
+                'pan_no' => $anchorDetails['pan_no'],
+                'gstin_no' => $anchorDetails['gst_no'],
+                'biz_gst_state_code' => substr($anchorDetails['gst_no'],0,2),
+                'address' => $anchorDetails['comp_addr'].','.$anchorDetails['comp_city'].','.$anchorDetails['name'].','.$anchorDetails['comp_zip'],
+                'customer_id' => $custDetails['customer_id'],
+                'customer_name' => $custDetails['biz_entity_name'],
+                'anchor_name' => $anchorDetails['comp_name'],
+                'state_id' => $company_data['state_id'],
+                'name' => $custDetails['biz_entity_name'],
+                'state_name' => ''
+            ];
+        }else{
+            $billing_data = $billingDetail['data'];
+        }
         $companyStateId = $company_data['state_id'];
         $userStateId = $billing_data['state_id'];
 
@@ -388,15 +414,23 @@ class userInvoiceController extends Controller
         $inv_data = $this->_calculateInvoiceTxns($txnsData, $is_state_diffrent, false, 1);
         $intrest_charges = $inv_data[0];
         $total_sum_of_rental = $inv_data[1];
-        $data = [
-            'company_data' => $company_data,
-            'billingDetails' => $billing_data,
-            'origin_of_recipient' => $origin_of_recipient, 
-            'intrest_charges' => $intrest_charges,
-            'total_sum_of_rental' => $total_sum_of_rental,
-            'registeredCompany' => $registeredCompany,
-            'invoice_type'=>$invoice_type,
-        ];
+      
+        $invoiceType = substr($invoice_type,1,2);
+        
+            $data = [
+                'company_data' => $company_data,
+                'billingDetails' => $billing_data,
+                'origin_of_recipient' => $origin_of_recipient, 
+                'intrest_charges' => $intrest_charges,
+                'total_sum_of_rental' => $total_sum_of_rental,
+                'registeredCompany' => $registeredCompany,
+                'invoice_type'=>$invoice_type,
+                'invoiceBorneBy'=>$invoiceBorneBy,
+                'custId'=>$custId ?? '',
+                'custName'=>$custName ?? '',
+                'anchorName'=>$anchorName ?? '',
+            ];
+        
         $view = $this->viewInvoiceAsPDF($data);
         return response()->json(['status' => 1,'view' => base64_encode($view)]); 
     }
@@ -446,7 +480,7 @@ class userInvoiceController extends Controller
                 $invoice_no = " ($invoice_no)";
             }
             $invCatName = '';
-            if($invCat == '1'){                
+            if($invCat == '1'){   
                 if($txn->trans_type == config('lms.TRANS_TYPE.INTEREST')){
                     $fromDate = $txn->fromIntDate;
                     $toDate = $txn->toIntDate;
@@ -822,22 +856,53 @@ class userInvoiceController extends Controller
             $requestedData['created_by'] = Auth::user()->user_id;
             unset($company_data['state']);
             $bank_id = bankDetailIsOfRegisteredCompanyInInvoice() ? $registeredCompany['bank_account_id'] : $company_data['bank_id'];
+
+            $invoiceType = $invoice_type;
+            $invoiceTypeName = substr($invoiceType,0,1)  == 'C' ? 1 : 2;
+            $invCat = $inv_data[2];
+            $borneBy = substr($invoiceType,1,2)  == 'A' ? 1 : 2;
+            $invoiceType = ($borneBy == 1) ? "IA" : "IC";
+            $invoiceType = ($invCat == "NZ") ? (($borneBy == 1) ? "CA" : "CC") : $invoiceType;
+            $invoiceCode = substr($invoiceType,0,1);
+            $billingDetails = [];
+            if($borneBy == 1){
+                $anchorDetails = AnchorUser::getAnchorsDetails($user_id);
+                $custDetails = User::getCustomerData($user_id);
+                $billingDetails = [
+                    'pan_no' => $anchorDetails['pan_no'],
+                    'biz_gst_no' => $anchorDetails['gst_no'],
+                    'biz_gst_state_code' => substr($anchorDetails['gst_no'],0,2),
+                    'gst_addr' => $anchorDetails['comp_addr'].','.$anchorDetails['comp_city'].','.$anchorDetails['name'].','.$anchorDetails['comp_zip'],
+                    'customer_id' => $custDetails['customer_id'],
+                    'customer_name' => $custDetails['biz_entity_name'],
+                    'anchor_name' => $anchorDetails['comp_name']
+                ];
+            }else{
+                $billingDetails = [
+                    'pan_no' => $billing_data['pan_no'],
+                    'biz_gst_no' => $billing_data['gstin_no'],
+                    'biz_gst_state_code' => substr($billing_data['gstin_no'],0,2),
+                    'gst_addr' => $billing_data['address'],
+                    'customer_id' => NULL,
+                    'customer_name' => '',
+                    'anchor_name' => '',
+                ];
+            }
+
             $userInvoiceData = [
                 'user_id' => $requestedData['user_id'],
                 'user_invoice_rel_id' => $user_invoice_rel_id,
                 'user_gst_state_id' => $userStateId,
                 'comp_gst_state_id' => $companyStateId,
-                'pan_no' => $billing_data['pan_no'],
-                'biz_gst_no' => $billing_data['gstin_no'],
-                'biz_gst_state_code' => substr($billing_data['gstin_no'],0,2),
-                'gst_addr' => $billing_data['address'],
                 'biz_entity_name' => $billing_data['name'],
                 'reference_no' => $reference_no,
-                'invoice_type' => $requestedData['invoice_type'],
+                'invoice_type' => $invoiceCode,
+                'invoice_borne_by' => $borneBy,
                 'invoice_cat' => '1',
-                'invoice_type_name' => $requestedData['invoice_type'] == "C" ? 1 : 2, 
+                'invoice_gen' => '2',
+                'invoice_type_name' => $invoiceTypeName, 
                 'invoice_no' => $newInvoiceNo,
-                'inv_financial_year' =>$InvoiceNoArr[2] ?? NULL,
+                'inv_financial_year' =>$InvoiceNoArr[1] ?? NULL,
                 'inv_serial_no' => $invSerialNo,
                 'invoice_date' => Carbon::createFromFormat('d/m/Y', $invoice_date)->format('Y-m-d H:i:s'),
                 'due_date' => Carbon::createFromFormat('d/m/Y', $due_date)->format('Y-m-d H:i:s'),
@@ -850,7 +915,15 @@ class userInvoiceController extends Controller
                 'registered_comp_id' => $registeredCompany['comp_addr_id'],
                 'comp_addr_register' => json_encode($registeredCompany),
                 'bank_id' => $bank_id,
-                'is_active' => 1
+                'is_active' => 1,
+
+                'pan_no' => $billingDetails['pan_no'] ?? NULL, 
+                'biz_gst_no' => $billingDetails['biz_gst_no'] ?? NULL, 
+                'biz_gst_state_code' => $billingDetails['biz_gst_state_code'] ?? NULL, 
+                'gst_addr' => $billingDetails['gst_addr'] ?? NULL, 
+                'customer_id' => $billingDetails['customer_id'] ?? NULL, 
+                'customer_name' => $billingDetails['customer_name'] ?? NULL,
+                'anchor_name' => $billingDetails['anchor_name'] ?? NULL
             ];
             $invoiceResp = $this->UserInvRepo->saveUserInvoice($userInvoiceData);
             if(!empty($invoiceResp->user_invoice_id)){
@@ -875,7 +948,7 @@ class userInvoiceController extends Controller
                    $totalGstRate = ($txnsRec['sgst_rate'] + $txnsRec['cgst_rate'] + $txnsRec['igst_rate']);
                    $data = ['is_invoice_generated' => 1, 'gst_per' => $totalGstRate, 'soa_flag' => 1, 'base_amt' => $txnsRec['base_amt'], 'gst_amt' => $totalGst];
 
-                   $isInvoiceGenerated = $this->UserInvRepo->updateIsInvoiceGenerated($update_transactions, $data);
+                   $this->UserInvRepo->updateIsInvoiceGenerated($update_transactions, $data);
                 }
                 $UserInvoiceTxns = $this->UserInvRepo->saveUserInvoiceTxns($user_invoice_trans_data);
                 if($UserInvoiceTxns){
@@ -902,14 +975,15 @@ class userInvoiceController extends Controller
         }
     }
 
-    public function generateDebitNote($transId = [], $userId, $invoiceType, $invoiceDate = null, $dueDate  = null){
+    public function generateDebitNote($transId = [], $userId, $invoiceType, $invoiceDate = null, $dueDate  = null, $invoiceGen = null){
         $status = 0;
+        $invoiceType = substr(str_replace('_','',$invoiceType),0,2);
         $result = ['status' => &$status, 'error' => &$error, 'success' => &$success];
         try {
             $success = [];
             $error = [];
             $reference_no = '';
-            $invoice_date = $invoiceDate ?? Carbon::now()->format('Y-m-d H:i:s');
+            $invoice_date = $invoiceDate ?? Carbon::now()->format('Y-m-d');
             $due_date = $dueDate ?? Carbon::now()->addDays(7)->format('Y-m-d H:i:s');
             $registeredCompany  = $this->UserInvRepo->getCompanyRegAddr();
             if (empty($registeredCompany) || $registeredCompany->isEmpty()) {
@@ -928,7 +1002,7 @@ class userInvoiceController extends Controller
                 return $result;
             }
 
-            $userCompanyRelation  = $this->UserInvRepo->getUserCompanyRelation($userId);
+            $userCompanyRelation  = $this->UserInvRepo->getUserCompanyRelation((int) $userId);
             if (empty($userCompanyRelation)) {
                 $error[] = 'No Relation found between Company and User.'; 
                 return $result;
@@ -963,7 +1037,6 @@ class userInvoiceController extends Controller
             $billing_data = $billingDetail['data'];
             $companyStateId = $company_data['state_id'];
             $userStateId = $billing_data['state_id'];
-           
             $txnsData = $this->UserInvRepo->getUserInvoiceTxns($userId, $invoiceType, $transId, true);
             if(empty($txnsData) ||  $txnsData->isEmpty()){
                 $error[] = 'No remaining txns found for the invoice.';
@@ -975,36 +1048,55 @@ class userInvoiceController extends Controller
             $is_state_diffrent = ($userStateId != $companyStateId);
             $inv_data = $this->_calculateInvoiceTxns($txnsData, $is_state_diffrent, false, 1);
 
-            $invoiceTypeName = $invoiceType == "C" ? 1 : 2;
-            $invoiceTypeOld  = $invoiceType;
+            $invoiceTypeName = substr($invoiceType,0,1) == "C" ? 1 : 2;
 
             $invCat = $inv_data[2];
-            $invoiceType = "I";
-            if ($invCat == "NZ") {
-                $invoiceType = "C";
-            }
-
+            $borneBy = substr($invoiceType,1,2)  == 'A' ? 1 : 2;
+            $invoiceType = ($borneBy == 1) ? "IA" : "IC";
+            $invoiceType = ($invCat == "NZ") ? (($borneBy == 1) ? "CA" : "CC") : $invoiceType;
+            $invoiceCode = substr($invoiceType,0,1);
+            
             $invSerialNo = null;
             $newInvoiceNo = $origin_of_recipient['state_code'] . '/' . $origin_of_recipient['financial_year'] . '/' . $invCat;
 
             $intrest_charges = $inv_data[0];
             $total_sum_of_rental = $inv_data[1];
             $bank_id = bankDetailIsOfRegisteredCompanyInInvoice() ? $registeredCompany['bank_account_id'] : $company_data['bank_id'];
-            $created_at = Carbon::now();
-            $created_by = Auth::user()->user_id ?? null;
+            
+            $billingDetails = [];
+            if($borneBy == 1){
+                $anchorDetails = AnchorUser::getAnchorsDetails($userId);
+                $custDetails = User::getCustomerData($userId);
+                $billingDetails = [
+                    'pan_no' => $anchorDetails['pan_no'],
+                    'biz_gst_no' => $anchorDetails['gst_no'],
+                    'biz_gst_state_code' => substr($anchorDetails['gst_no'],0,2),
+                    'gst_addr' => $anchorDetails['comp_addr'].','.$anchorDetails['comp_city'].','.$anchorDetails['name'].','.$anchorDetails['comp_zip'],
+                    'customer_id' => $custDetails['customer_id'],
+                    'customer_name' => $custDetails['biz_entity_name'],
+                    'anchor_name' => $anchorDetails['comp_name']
+                ];
+            }else{
+                $billingDetails = [
+                    'pan_no' => $billing_data['pan_no'],
+                    'biz_gst_no' => $billing_data['gstin_no'],
+                    'biz_gst_state_code' => substr($billing_data['gstin_no'],0,2),
+                    'gst_addr' => $billing_data['address'],
+                    'customer_id' => NULL,
+                    'customer_name' => '',
+                    'anchor_name' => '',
+                ];
+            }
             $userInvoiceData = [
                 'user_id' => $userId,
                 'user_invoice_rel_id' => $user_invoice_rel_id,
                 'user_gst_state_id' => $userStateId,
-                'comp_gst_state_id' => $companyStateId,
-                'pan_no' => $billing_data['pan_no'],
-                'biz_gst_no' => $billing_data['gstin_no'],
-                'biz_gst_state_code' => substr($billing_data['gstin_no'],0,2),
-                'gst_addr' => $billing_data['address'],
                 'biz_entity_name' => $billing_data['name'],
                 'reference_no' => $reference_no,
-                'invoice_type' => $invoiceType,
+                'invoice_type' => $invoiceCode,
+                'invoice_borne_by' => $borneBy,
                 'invoice_cat' => '1',
+                'invoice_gen' => $invoiceGen,
                 'invoice_type_name' => $invoiceTypeName,
                 'invoice_no' => $newInvoiceNo,
                 'inv_financial_year' =>$origin_of_recipient['financial_year'],
@@ -1020,7 +1112,15 @@ class userInvoiceController extends Controller
                 'registered_comp_id' => $registeredCompany['comp_addr_id'],
                 'comp_addr_register' => json_encode($registeredCompany),
                 'bank_id' => $bank_id,
-                'is_active' => 1
+                'is_active' => 1,
+
+                'pan_no' => $billingDetails['pan_no'] ?? NULL, 
+                'biz_gst_no' => $billingDetails['biz_gst_no'] ?? NULL, 
+                'biz_gst_state_code' => $billingDetails['biz_gst_state_code'] ?? NULL, 
+                'gst_addr' => $billingDetails['gst_addr'] ?? NULL, 
+                'customer_id' => $billingDetails['customer_id'] ?? NULL, 
+                'customer_name' => $billingDetails['customer_name'] ?? NULL,
+                'anchor_name' => $billingDetails['anchor_name'] ?? NULL
             ];
             $invoiceResp = $this->UserInvRepo->saveUserInvoice($userInvoiceData);
 
@@ -1044,7 +1144,7 @@ class userInvoiceController extends Controller
                     $totalGst = ($txnsRec['sgst_amt'] + $txnsRec['cgst_amt'] + $txnsRec['igst_amt']);
                     $totalGstRate = ($txnsRec['sgst_rate'] + $txnsRec['cgst_rate'] + $txnsRec['igst_rate']);
                     $data = ['is_invoice_generated' => 1, 'gst_per' => $totalGstRate, 'soa_flag' => 1, 'base_amt' => $txnsRec['base_amt'], 'gst_amt' => $totalGst];
-                    $isInvoiceGenerated = $this->UserInvRepo->updateIsInvoiceGenerated([$txnsRec['trans_id']], $data);
+                    $this->UserInvRepo->updateIsInvoiceGenerated([$txnsRec['trans_id']], $data);
                 }
                 $UserInvoiceTxns = $this->UserInvRepo->saveUserInvoiceTxns($user_invoice_trans_data);
                 if ($UserInvoiceTxns == true) {   
@@ -1062,7 +1162,7 @@ class userInvoiceController extends Controller
         }
     }
     
-    public function generateCreditNote($transId = [], $userId, $invoiceType, $invoiceDate = null, $dueDate  = null){
+    public function generateCreditNote($transId = [], $userId, $invoiceType, $invoiceDate = null, $dueDate  = null, $invoiceGen = null){
         $status = 0;
         $result = ['status' => &$status, 'error' => &$error, 'success' => &$success];
         try {
@@ -1158,13 +1258,13 @@ class userInvoiceController extends Controller
             $is_state_diffrent = ($userStateId != $companyStateId);
             $inv_data = $this->_calculateInvoiceTxns($txnsData, $is_state_diffrent,true,2);
 
-            $invoiceTypeName = $invoiceType == "C" ? 1 : 2;
+            $invoiceTypeName = substr($invoiceType,0,1) == "C" ? 1 : 2;
             
             $invCat = $inv_data[2];
-            $invoiceType = "I";
-            if ($invCat == "CNZ") {
-                $invoiceType = "C";
-            }
+            $borneBy = substr($invoiceType,1,2)  == 'A' ? 1 : 2;
+            $invoiceType = ($borneBy == 1) ? "IA" : "IC";
+            $invoiceType = ($invCat == "CNZ") ? (($borneBy == 1) ? "CA" : "CC") : $invoiceType;
+            $invoiceCode = substr($invoiceType,0,1);
 
             $invSerialNo = null;
             $newInvoiceNo = $origin_of_recipient['state_code'] . '/' . $origin_of_recipient['financial_year'] . '/' . $invCat;
@@ -1172,22 +1272,43 @@ class userInvoiceController extends Controller
             $intrest_charges = $inv_data[0];
             $total_sum_of_rental = $inv_data[1];
             $bank_id = bankDetailIsOfRegisteredCompanyInInvoice() ? $registeredCompany['bank_account_id'] : $company_data['bank_id'];
-            $created_at = Carbon::now();
-            $created_by = Auth::user()->user_id ?? null;
+
+            $billingDetails = [];
+            if($borneBy == 1){
+                $anchorDetails = AnchorUser::getAnchorsDetails($userId);
+                $custDetails = User::getCustomerData($userId);
+                $billingDetails = [
+                    'pan_no' => $anchorDetails['pan_no'],
+                    'biz_gst_no' => $anchorDetails['gst_no'],
+                    'biz_gst_state_code' => substr($anchorDetails['gst_no'],0,2),
+                    'gst_addr' => $anchorDetails['comp_addr'].','.$anchorDetails['comp_city'].','.$anchorDetails['name'].','.$anchorDetails['comp_zip'],
+                    'customer_id' => $custDetails['customer_id'],
+                    'customer_name' => $custDetails['biz_entity_name'],
+                    'anchor_name' => $anchorDetails['comp_name']
+                ];
+            }else{
+                $billingDetails = [
+                    'pan_no' => $billing_data['pan_no'],
+                    'biz_gst_no' => $billing_data['gstin_no'],
+                    'biz_gst_state_code' => substr($billing_data['gstin_no'],0,2),
+                    'gst_addr' => $billing_data['address'],
+                    'customer_id' => NULL,
+                    'customer_name' => '',
+                    'anchor_name' => '',
+                ];
+            }
             $userInvoiceData = [
                 'user_id' => $userId,
                 'user_invoice_rel_id' => $user_invoice_rel_id,
                 'user_gst_state_id' => $userStateId,
                 'comp_gst_state_id' => $companyStateId,
-                'pan_no' => $billing_data['pan_no'],
-                'biz_gst_no' => $billing_data['gstin_no'],
-                'biz_gst_state_code' => substr($billing_data['gstin_no'],0,2),
-                'gst_addr' => $billing_data['address'],
                 'biz_entity_name' => $billing_data['name'],
                 'reference_no' => $reference_no,
-                'invoice_type' => $invoiceType,
+                'invoice_type' => $invoiceCode,
+                'invoice_borne_by' => $borneBy,
                 'invoice_type_name' => $invoiceTypeName,
                 'invoice_cat' => '2',
+                'invoice_gen' => $invoiceGen,
                 'invoice_no' => $newInvoiceNo,
                 'inv_financial_year' =>$origin_of_recipient['financial_year'],
                 'inv_serial_no' => $invSerialNo,
@@ -1203,8 +1324,14 @@ class userInvoiceController extends Controller
                 'comp_addr_register' => json_encode($registeredCompany),
                 'bank_id' => $bank_id,
                 'is_active' => 1,
-                'created_at' => $created_at,
-                'created_by' => $created_by,
+
+                'pan_no' => $billingDetails['pan_no'] ?? NULL, 
+                'biz_gst_no' => $billingDetails['biz_gst_no'] ?? NULL, 
+                'biz_gst_state_code' => $billingDetails['biz_gst_state_code'] ?? NULL, 
+                'gst_addr' => $billingDetails['gst_addr'] ?? NULL, 
+                'customer_id' => $billingDetails['customer_id'] ?? NULL, 
+                'customer_name' => $billingDetails['customer_name'] ?? NULL,
+                'anchor_name' => $billingDetails['anchor_name'] ?? NULL,
             ];
             $invoiceResp = $this->UserInvRepo->saveUserInvoice($userInvoiceData);
 
@@ -1228,7 +1355,7 @@ class userInvoiceController extends Controller
                 $totalGst = ($txnsRec['sgst_amt'] + $txnsRec['cgst_amt'] + $txnsRec['igst_amt']);
                 $totalGstRate = ($txnsRec['sgst_rate'] + $txnsRec['cgst_rate'] + $txnsRec['igst_rate']);
                 $data = ['is_invoice_generated' => 1, 'gst_per' => $totalGstRate, 'soa_flag' => 1, 'base_amt' => $txnsRec['base_amt'], 'gst_amt' => $totalGst];
-                $isInvoiceGenerated = $this->UserInvRepo->updateIsInvoiceGenerated([$txnsRec['trans_id']], $data);
+                $this->UserInvRepo->updateIsInvoiceGenerated([$txnsRec['trans_id']], $data);
                 }
                 $UserInvoiceTxns = $this->UserInvRepo->saveUserInvoiceTxns($user_invoice_trans_data);
                 if ($UserInvoiceTxns == true) {   
@@ -1246,7 +1373,7 @@ class userInvoiceController extends Controller
         }
     }
     
-    public function generateCreditNoteReversal($transId = [], $userId, $invoiceType=null, $appId  = null, $invoiceDate = null, $dueDate  = null, $paretUserInvoiceId = null){
+    public function generateCreditNoteReversal($transId = [], $userId, $invoiceType=null, $appId  = null, $invoiceDate = null, $dueDate  = null, $paretUserInvoiceId = null, $invoiceGen = null){
         $status = 0;
         $result = ['status' => &$status, 'error' => &$error, 'success' => &$success];
         try {
@@ -1340,13 +1467,13 @@ class userInvoiceController extends Controller
             $is_state_diffrent = ($userStateId != $companyStateId);
             $inv_data = $this->_calculateInvoiceTxns($txnsData, $is_state_diffrent,true,3);
 
-            $invoiceTypeName = $invoiceType == "C" ? 1 : 2;
+            $invoiceTypeName = substr($invoiceType,0,1) == "C" ? 1 : 2;
             
             $invCat = $inv_data[2];
-            $invoiceType = "I";
-            if ($invCat == "DNZ") {
-                $invoiceType = "C";
-            }
+            $borneBy = substr($invoiceType,1,2)  == 'A' ? 1 : 2;
+            $invoiceType = ($borneBy == 1) ? "IA" : "IC";
+            $invoiceType = ($invCat == "DNZ") ? (($borneBy == 1) ? "CA" : "CC") : $invoiceType;
+            $invoiceCode = substr($invoiceType,0,1);
 
             $invSerialNo = null;
             $newInvoiceNo = $origin_of_recipient['state_code'] . '/' . $origin_of_recipient['financial_year'] . '/' . $invCat;
@@ -1354,23 +1481,44 @@ class userInvoiceController extends Controller
             $intrest_charges = $inv_data[0];
             $total_sum_of_rental = $inv_data[1];
             $bank_id = bankDetailIsOfRegisteredCompanyInInvoice() ? $registeredCompany['bank_account_id'] : $company_data['bank_id'];
-            $created_at = Carbon::now();
-            $created_by = Auth::user()->user_id ?? null;
+
+            $billingDetails = [];
+            if($borneBy == 1){
+                $anchorDetails = AnchorUser::getAnchorsDetails($userId);
+                $custDetails = User::getCustomerData($userId);
+                $billingDetails = [
+                    'pan_no' => $anchorDetails['pan_no'],
+                    'biz_gst_no' => $anchorDetails['gst_no'],
+                    'biz_gst_state_code' => substr($anchorDetails['gst_no'],0,2),
+                    'gst_addr' => $anchorDetails['comp_addr'].','.$anchorDetails['comp_city'].','.$anchorDetails['name'].','.$anchorDetails['comp_zip'],
+                    'customer_id' => $custDetails['customer_id'],
+                    'customer_name' => $custDetails['biz_entity_name'],
+                    'anchor_name' => $anchorDetails['comp_name']
+                ];
+            }else{
+                $billingDetails = [
+                    'pan_no' => $billing_data['pan_no'],
+                    'biz_gst_no' => $billing_data['gstin_no'],
+                    'biz_gst_state_code' => substr($billing_data['gstin_no'],0,2),
+                    'gst_addr' => $billing_data['address'],
+                    'customer_id' => NULL,
+                    'customer_name' => '',
+                    'anchor_name' => '',
+                ];
+            }
             $userInvoiceData = [
                 'parent_user_invoice_id' => $paretUserInvoiceId,
                 'user_id' => $userId,
                 'user_invoice_rel_id' => $user_invoice_rel_id,
                 'user_gst_state_id' => $userStateId,
                 'comp_gst_state_id' => $companyStateId,
-                'pan_no' => $billing_data['pan_no'],
-                'biz_gst_no' => $billing_data['gstin_no'],
-                'biz_gst_state_code' => substr($billing_data['gstin_no'],0,2),
-                'gst_addr' => $billing_data['address'],
                 'biz_entity_name' => $billing_data['name'],
                 'reference_no' => $reference_no,
-                'invoice_type' => $invoiceType,
+                'invoice_type' => $invoiceCode,
+                'invoice_borne_by' => $borneBy,
                 'invoice_type_name' => $invoiceTypeName,
                 'invoice_cat' => '3', //for reversal
+                'invoice_gen' => $invoiceGen,
                 'invoice_no' => $newInvoiceNo,
                 'inv_financial_year' =>$origin_of_recipient['financial_year'],
                 'inv_serial_no' => $invSerialNo,
@@ -1386,8 +1534,14 @@ class userInvoiceController extends Controller
                 'comp_addr_register' => json_encode($registeredCompany),
                 'bank_id' => $bank_id,
                 'is_active' => 1,
-                'created_at' => $created_at,
-                'created_by' => $created_by,
+
+                'pan_no' => $billingDetails['pan_no'] ?? NULL, 
+                'biz_gst_no' => $billingDetails['biz_gst_no'] ?? NULL, 
+                'biz_gst_state_code' => $billingDetails['biz_gst_state_code'] ?? NULL, 
+                'gst_addr' => $billingDetails['gst_addr'] ?? NULL, 
+                'customer_id' => $billingDetails['customer_id'] ?? NULL, 
+                'customer_name' => $billingDetails['customer_name'] ?? NULL,
+                'anchor_name' => $billingDetails['anchor_name'] ?? NULL
             ];
             $invoiceResp = $this->UserInvRepo->saveUserInvoice($userInvoiceData);
 
@@ -1411,7 +1565,7 @@ class userInvoiceController extends Controller
                 $totalGst = ($txnsRec['sgst_amt'] + $txnsRec['cgst_amt'] + $txnsRec['igst_amt']);
                 $totalGstRate = ($txnsRec['sgst_rate'] + $txnsRec['cgst_rate'] + $txnsRec['igst_rate']);
                 $data = ['is_invoice_generated' => 1, 'gst_per' => $totalGstRate, 'soa_flag' => 1, 'base_amt' => $txnsRec['base_amt'], 'gst_amt' => $totalGst];
-                $isInvoiceGenerated = $this->UserInvRepo->updateIsInvoiceGenerated([$txnsRec['trans_id']], $data);
+                $this->UserInvRepo->updateIsInvoiceGenerated([$txnsRec['trans_id']], $data);
                 }
                 $UserInvoiceTxns = $this->UserInvRepo->saveUserInvoiceTxns($user_invoice_trans_data);
                 if ($UserInvoiceTxns == true) {      

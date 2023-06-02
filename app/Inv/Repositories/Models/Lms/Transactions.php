@@ -1310,7 +1310,7 @@ class Transactions extends BaseModel {
     }
 
     public static function getUserInvoiceTxns($userId, $invoiceType, $trans_ids, $is_force = false){
-       $sql = self::with('transType')->whereNull('payment_id')->where(['user_id' => $userId, 'entry_type' => 0]);
+       $sql = self::with('transType','invoiceDisbursed:invoice_disbursed_id,invoice_id','invoiceDisbursed.invoice:invoice_id,program_id','invoiceDisbursed.invoice.program:prgm_id,interest_borne_by,overdue_interest_borne_by','ChargesTransactions:trans_id,prgm_id','ChargesTransactions.chargePrgm:prgm_id,interest_borne_by')->whereNull('payment_id')->where(['user_id' => $userId, 'entry_type' => 0]);
        if (!empty($trans_ids)) {
         if ($is_force) {
             $sql->where('is_invoice_generated', '=', 0);
@@ -1320,18 +1320,57 @@ class Transactions extends BaseModel {
           $sql->where('is_invoice_generated', '=', 0);
        }
 
-        if($invoiceType == 'C') {
+        if($invoiceType == 'CA') {
             if (!$is_force && empty($trans_ids)) {
                 $sql->whereHas('ChargesTransactions', function($newQuery) {
-                    $newQuery->doesntHave('deleteLogs');
+                    $newQuery->where('level_charges',1)->doesntHave('deleteLogs');
+                });
+            }
+        }elseif($invoiceType == 'CC') {
+            if (!$is_force && empty($trans_ids)) {
+                $sql->whereHas('ChargesTransactions', function($newQuery) {
+                    $newQuery->where('level_charges',2)->doesntHave('deleteLogs');
                 });
             }
         }
-
+        $sql->where(function($query) use ($invoiceType) {
+            if ($invoiceType == 'IC') {
+                $query->whereHas('transType', function($newQuery) {
+                    $newQuery->whereIn('id',[config('lms.TRANS_TYPE.INTEREST')]);
+                })
+                ->whereHas('invoiceDisbursed.invoice.program', function($newQuery) {
+                    $newQuery->where('interest_borne_by',2);
+                })
+                ->orWhere(function($newQuery) use ($invoiceType) {
+                    $newQuery->whereHas('transType', function($innerQuery) {
+                        $innerQuery->whereIn('id',[config('lms.TRANS_TYPE.INTEREST_OVERDUE')]);
+                    })
+                    ->whereHas('invoiceDisbursed.invoice.program', function($innerQuery) {
+                        $innerQuery->where('overdue_interest_borne_by',2);
+                    });
+                });
+            } elseif ($invoiceType == 'IA') {
+                $query->whereHas('transType', function($newQuery) {
+                    $newQuery->whereIn('id',[config('lms.TRANS_TYPE.INTEREST')]);
+                })
+                ->whereHas('invoiceDisbursed.invoice.program', function($newQuery) {
+                    $newQuery->where('interest_borne_by',1);
+                })
+                ->orWhere(function($newQuery) {
+                    $newQuery->whereHas('transType', function($innerQuery) {
+                        $innerQuery->whereIn('id',[config('lms.TRANS_TYPE.INTEREST_OVERDUE')]);
+                    })
+                    ->whereHas('invoiceDisbursed.invoice.program', function($innerQuery) {
+                        $innerQuery->where('overdue_interest_borne_by',1);
+                    });
+                });
+            }
+        });
+        
        return $sql->whereHas('transType', function($query) use ($invoiceType) { 
-            if($invoiceType == 'I') {
+            if($invoiceType == 'IC' || $invoiceType == 'IA') {
                 $query->whereIn('id',[config('lms.TRANS_TYPE.INTEREST'),config('lms.TRANS_TYPE.INTEREST_OVERDUE')]);
-             }  else {
+             }elseif($invoiceType == 'CC' || $invoiceType == 'CA') {
                 $query->where('chrg_master_id','!=','0');
             }
         })->get();
