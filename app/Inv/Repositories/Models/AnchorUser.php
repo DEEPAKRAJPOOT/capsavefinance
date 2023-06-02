@@ -109,7 +109,7 @@ class AnchorUser extends BaseModel {
         $userArr = \Helpers::getChildUsersWithParent(\Auth::user()->user_id);
         $roleData = User::getBackendUser(\Auth::user()->user_id);
         if($roleData[0]->name == 'Sales'){
-            $anchorId = \Helpers::getAnchorDetails(\Auth::user()->user_id);
+            $anchorId = \Helpers::getAnchorDetails(\Auth::user()->user_id)->toArray();
         }else{
             $anchorId = \Auth::user()->anchor_id;
         }
@@ -128,7 +128,6 @@ class AnchorUser extends BaseModel {
         if (!$datatable) {
             $result =  $result->orderByRaw('anchor_user_id DESC');
         }
-
         return ($result ? $result : '');
     }
     
