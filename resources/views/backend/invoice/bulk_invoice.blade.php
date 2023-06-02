@@ -1,5 +1,32 @@
 @extends('layouts.backend.admin-layout')
 @section('additional_css')
+<style>
+   select#program_bulk_id option {
+        padding: 5px 10px;
+    }
+
+    select#program_bulk_id option:not([value=""]) {
+        font-weight: bold;
+    }
+
+    select#program_bulk_id option[value=""] {
+        font-weight: normal;
+    }
+
+    select#program_bulk_id option[disabled] {
+        font-weight: normal;
+    }
+
+    select#program_bulk_id option[label]:not([value=""]) {
+        font-weight: bold;
+        padding-left: 10px;
+    }
+
+    select#program_bulk_id option:not([label]):not([value=""]) {
+        padding-left: 30px;
+    }
+
+  </style>  
 @endsection
 @section('content')
 <div class="content-wrapper">
@@ -79,12 +106,23 @@
                                                 @if($anchor==11)
                                                 <option value="">Please Select</option>
                                                 @if($get_program)
-                                                @foreach($get_program as $row1) 
-                                                <option value="{{{$row1->program->prgm_id}}},{{{$row1->app_prgm_limit_id}}}">{{{$row1->program->prgm_name}}}</option>
-
-                                                @endforeach
+                                                @foreach($get_program as $row1)
+                                                @php
+                                                    $getSupplierByPrgmId = $get_supplier[$row1->program->prgm_id]??'';
+                                                @endphp  
+                                                <option value="{{{$row1->program->prgm_id}}},{{{$row1->app_prgm_limit_id}}}">{{{$row1->program->prgm_name}}}&nbsp;&nbsp;(Sub-Program ID: {{ $row1->program->prgm_id }})</option>
+                                                @if(!empty($getSupplierByPrgmId))
+                                                    @foreach($getSupplierByPrgmId as $row2)
+                                                    <option value="{{{$row1->program->prgm_id}}},{{{$row1->app_prgm_limit_id}}},{{{$row2['user_id']}}},{{{$row2['app_id']}}},{{{$row2['prgm_offer_id']}}}" disabled>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{ $row2['biz_entity_name'] }}&nbsp;&nbsp;({{ $row2['customer_id'] }})</option>
+                                                    @endforeach
                                                 @endif
-                                                @endif          
+                                                @endforeach
+                                                @else
+                                                <option value="">No data Found</option>
+                                                @endif
+                                                @else
+                                                <option value="">No data Found</option>
+                                                @endif         
 
                                             </select>
                                             <input type="hidden" id="pro_limit_hide" name="pro_limit_hide">
@@ -118,7 +156,7 @@
                                             <span id="customFile_msg" class="error"></span>
                                             <span id="msgFile" class="text-success"></span>
                                         </div>
-   <a href="{{url('backend/assets/invoice/invoice-template.csv')}}" class="mt-1 float-left"><i class="fa fa-file-pdf-o" aria-hidden="true"></i> Download Template</a>
+   <a href="{{url('backend/assets/invoice/invoice-template.csv')}}" class="mt-1 float-left"><i class="fa fa-file-pdf-o" aria-hidden="true"></i> Download Bulk Invoice Template</a>
                                     </div>
 
                                     <div class="col-md-2">

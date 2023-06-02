@@ -162,10 +162,25 @@ class InvoiceController extends Controller {
         $get_program = $this->invRepo->getLimitProgram($aid);
         $get_program_limit = $this->invRepo->geAnchortLimitProgram($aid);
         $getBulkInvoice = $this->invRepo->getAllBulkInvoice();
+        $get_supplier = [];
+        foreach($get_program as $v){
+            $program_id = $v->program->prgm_id;
+            $supplierData = $this->invRepo->getProgramOfferByPrgmId($program_id);
+            foreach ($supplierData as $v1){
+                $get_supplierD['user_id'] = $v1->user_id;
+                $get_supplierD['app_id'] = $v1->app_id;
+                $get_supplierD['prgm_offer_id'] = $v1->prgm_offer_id;
+                $get_supplierD['biz_entity_name'] = $v1->biz_entity_name;
+                $get_supplierD['customer_id'] = $v1->customer_id;
+                $get_supplier[$program_id][] = $get_supplierD; 
+            }
+        }
+
         foreach ($getBulkInvoice as &$invoice) { //Data
             $invoice['upfront_interest'] = $this->calculateUpfrontInterest($invoice);// add the upfront interest to the invoice
         }
-        return view('backend.invoice.bulk_invoice')->with(['get_bus' => $get_bus, 'anchor_list' => $getAllInvoice,'anchor' => $chkUser->id,'id' =>  $aid,'limit' => $get_program_limit,'get_program' =>$get_program,'getBulkInvoice' =>$getBulkInvoice]);
+
+        return view('backend.invoice.bulk_invoice')->with(['get_bus' => $get_bus, 'anchor_list' => $getAllInvoice,'anchor' => $chkUser->id,'id' =>  $aid,'limit' => $get_program_limit,'get_program' =>$get_program,'getBulkInvoice' =>$getBulkInvoice,'get_supplier'=>$get_supplier]);
     }
 
     public function viewApproveInvoice(Request $req) {
