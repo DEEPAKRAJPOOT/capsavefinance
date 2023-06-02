@@ -225,13 +225,16 @@ class ApplicationController extends Controller
 				$this->userRepo->updateAnchorUserData($arrAnchUser, ['user_id' => $appData->user_id]);
 				
 				//Update UCIC Data only if appllication is not approved
-				if(!Helper::isAppApprByAuthorityForGroup($appId) && $appData->ucicUserUcic->ucicUser->is_sync) {
+				if(!Helper::isAppApprByAuthorityForGroup($appId)) {
 					if($appData){
-						$userUcicId = $appData->ucicUserUcic->ucic_id ?? null;
+						$ucicUserData = $appData->ucicUserUcic;
+						$userUcicId = $ucicUserData->ucic_id ?? null;
+						$isSync = $ucicUserData->is_sync ?? false;
 						if(!$userUcicId){
 							$pan_no = $appData->business->pan->pan_gst_hash;
 							$ucicData = $this->ucicuser_repo->createUpdateUcic(['pan_no' => $pan_no, 'user_id'=>$appData->user_id, 'app_id' => $appId]);
 							$userUcicId = $ucicData->user_ucic_id;
+							$isSync = $ucicData->is_sync;
 						}
 						if($userUcicId){
 							$product_ids = [];
@@ -244,13 +247,15 @@ class ApplicationController extends Controller
 									);
 								}
 							}
-							$businessInfo = $this->ucicuser_repo->formatBusinessInfoDb($business_info,$product_ids);
-						
-							$ownerPanApi = $this->userRepo->getOwnerApiDetail(['biz_id' => $appData->biz_id]);
-							$documentData = \Helpers::makeManagementInfoDocumentArrayData($ownerPanApi);
-							$managementData = $this->ucicuser_repo->formatManagementInfoDb($ownerPanApi,NULL);
-							$managementInfo = array_merge($managementData,$documentData);
-							$this->ucicuser_repo->saveApplicationInfo($userUcicId, $businessInfo, $managementInfo, $appData->app_id);
+
+							if($isSync){
+								$businessInfo = $this->ucicuser_repo->formatBusinessInfoDb($business_info,$product_ids);
+								$ownerPanApi = $this->userRepo->getOwnerApiDetail(['biz_id' => $appData->biz_id]);
+								$documentData = \Helpers::makeManagementInfoDocumentArrayData($ownerPanApi);
+								$managementData = $this->ucicuser_repo->formatManagementInfoDb($ownerPanApi,NULL);
+								$managementInfo = array_merge($managementData,$documentData);
+								$this->ucicuser_repo->saveApplicationInfo($userUcicId, $businessInfo, $managementInfo, $appData->app_id);
+							}
 						}
 					}
 				}
@@ -363,13 +368,16 @@ class ApplicationController extends Controller
 				$reqdDocs = $this->createAppRequiredDocs($prgmDocsWhere, $userId, $appId);
 
 				//Update UCIC Data only if appllication is not approved
-				if(!Helper::isAppApprByAuthorityForGroup($appId) && $appData->ucicUserUcic->ucicUser->is_sync == 1) {
+				if(!Helper::isAppApprByAuthorityForGroup($appId)) {
 					if($appData){
-						$userUcicId = $appData->ucicUserUcic->ucic_id ?? null;
+						$ucicUserData = $appData->ucicUserUcic;
+						$userUcicId = $ucicUserData->ucic_id ?? null;
+						$isSync = $ucicUserData->is_sync ?? false;
 						if(!$userUcicId){
 							$pan_no = $appData->business->pan->pan_gst_hash;
 							$ucicData = $this->ucicuser_repo->createUpdateUcic(['pan_no' => $pan_no, 'user_id'=>$userId, 'app_id' => $appId]);
 							$userUcicId = $ucicData->user_ucic_id;
+							$isSync = $ucicData->is_sync;
 						}
 
 						if($userUcicId){
@@ -383,12 +391,14 @@ class ApplicationController extends Controller
 									);
 								}
 							}
-							$businessInfo = $this->ucicuser_repo->formatBusinessInfoDb($business_info,$product_ids);
-							$ownerPanApi = $this->userRepo->getOwnerApiDetail(['biz_id' => $appData->biz_id]);
-							$documentData = \Helpers::makeManagementInfoDocumentArrayData($ownerPanApi);
-							$managementData = $this->ucicuser_repo->formatManagementInfoDb($ownerPanApi,NULL);
-							$managementInfo = array_merge($managementData,$documentData);
-							$this->ucicuser_repo->saveApplicationInfo($userUcicId, $businessInfo, $managementInfo, $appData->app_id);
+							if($isSync){
+								$businessInfo = $this->ucicuser_repo->formatBusinessInfoDb($business_info,$product_ids);
+								$ownerPanApi = $this->userRepo->getOwnerApiDetail(['biz_id' => $appData->biz_id]);
+								$documentData = \Helpers::makeManagementInfoDocumentArrayData($ownerPanApi);
+								$managementData = $this->ucicuser_repo->formatManagementInfoDb($ownerPanApi,NULL);
+								$managementInfo = array_merge($managementData,$documentData);
+								$this->ucicuser_repo->saveApplicationInfo($userUcicId, $businessInfo, $managementInfo, $appData->app_id);
+							}
 						}
 					}
 				}
