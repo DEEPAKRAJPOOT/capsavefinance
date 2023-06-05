@@ -5,8 +5,8 @@ use Auth;
 use Session;
 use Helpers;
 
-use PHPExcel; 
-use PHPExcel_IOFactory;
+use PhpOffice\PhpSpreadsheet\Spreadsheet; 
+use PhpOffice\PhpSpreadsheet\IOFactory;
 
 use Illuminate\Http\Request;
 use App\Libraries\Idfc_lib;
@@ -595,7 +595,7 @@ class RefundController extends Controller
     }
 
     public function export($data, $filename, $downloadFlag = 0) {
-        $sheet =  new PHPExcel();
+        $sheet =  new Spreadsheet();
         $sheet->getProperties()
                 ->setCreator("Capsave")
                 ->setLastModifiedBy("Capsave")
@@ -686,14 +686,14 @@ class RefundController extends Controller
             }
             $storage_path = storage_path('app/public/docs/bank_excel');
             $filePath = $storage_path.'/'.$filename.'.xlsx';
-           $objWriter = PHPExcel_IOFactory::createWriter($sheet, 'Excel2007');
+           $objWriter = IOFactory::createWriter($sheet, 'Xlsx');
             $objWriter->save($filePath);
 
             return [ 'status' => 1,
                 'file_path' => $filePath
             ];
         } else {
-            $objWriter = PHPExcel_IOFactory::createWriter($sheet, 'Excel2007');
+            $objWriter = IOFactory::createWriter($sheet, 'Xlsx');
             $objWriter->save('php://output');
         }
     }

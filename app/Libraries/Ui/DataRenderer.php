@@ -2777,8 +2777,7 @@ class DataRenderer implements DataProviderInterface
                   ->addColumn(
                     'update',
                     function ($invoice) {
-                          return '&nbsp;'.$invoice->user->f_name.'&nbsp;'.$invoice->user->l_name.'';
-
+                        return empty($invoice->user) ?  "-" : '&nbsp;'.$invoice->user->f_name.'&nbsp;'.$invoice->user->l_name.'';
                   })
                  ->addColumn(
                     'timestamp',

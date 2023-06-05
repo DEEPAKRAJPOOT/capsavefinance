@@ -6,9 +6,9 @@ use Auth;
 use Helpers;
 use Session;
 use Exception;
-use PHPExcel; 
+use PhpOffice\PhpSpreadsheet\Spreadsheet; 
 use Carbon\Carbon;
-use PHPExcel_IOFactory; 
+use PhpOffice\PhpSpreadsheet\IOFactory; 
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
@@ -2239,7 +2239,7 @@ class ApportionmentController extends Controller
                                     Session::flash('untrans_error', $fileHelper->validationMessage(10));
                                     return redirect()->back();
                                 }
-                                $selectedPayment = round(str_replace(",","",$value['Payment']),2);
+                                $selectedPayment = round((float)(str_replace(",","",$value['Payment'])),2);
                                 $is_negative = $selectedPayment < 0 ? true : false;
                                 if (!empty($selectedPayment)) {
                                     $checkV = 1;

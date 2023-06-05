@@ -28,7 +28,7 @@ class NotesController extends Controller {
         $app_id = $request->get('app_id');
         $user_id = Auth::user()->user_id;
         $arrData = AppNote::showData($app_id);
-        return view('backend.notes.notes', compact('arrData', 'app_id','user_id',$user_id));
+        return view('backend.notes.notes', compact('arrData', 'app_id','user_id'));
     }
 
     public function store(Request $request)

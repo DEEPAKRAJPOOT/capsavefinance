@@ -49,6 +49,15 @@ class GroupCompanyExposure extends BaseModel
     //protected $dates = ['deleted_at'];
 
     /**
+     * The attributes that should be cast.
+     *
+     * @var array
+     */
+    protected $casts = [
+        'updated_at' => 'datetime:Y-m-d H:i:s',
+    ];
+
+    /**
      * The attributes that are mass assignable.
      *
      * @var array

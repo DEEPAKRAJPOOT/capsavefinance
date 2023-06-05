@@ -14,6 +14,7 @@ use Helpers;
 use Auth;
 use App\Inv\Repositories\Contracts\Traits\ApplicationTrait;
 use Illuminate\Support\Facades\Storage;
+use Exception;
 
 class DocumentController extends Controller
 {

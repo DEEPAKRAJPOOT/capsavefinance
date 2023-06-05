@@ -5,16 +5,16 @@ use Auth;
 use Mail;
 use Helpers;
 use Session;
-use PHPExcel;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PDF as DPDF;
 use Carbon\Carbon;
 use App\Events\Event;
-use PHPExcel_IOFactory;
-use PHPExcel_Style_Fill;
+use PhpOffice\PhpSpreadsheet\IOFactory;
+use PhpOffice\PhpSpreadsheet\Style\Fill;
 use App\Helpers\FileHelper;
-use PHPExcel_Cell_DataType;
+use PhpOffice\PhpSpreadsheet\Cell\DataType;
 use Illuminate\Http\Request;
-use PHPExcel_Style_Alignment;
+use PhpOffice\PhpSpreadsheet\Style\Alignment;
 use App\Http\Controllers\Controller;
 use App\Inv\Repositories\Models\Anchor;
 use Illuminate\Support\Facades\Storage;
@@ -90,7 +90,7 @@ class ReportController extends Controller
 			'to_date' => $to_date ?? NULL,
 		];
 		$rows = 1;
-		$sheet =  new PHPExcel();
+		$sheet =  new Spreadsheet();
 		$sheet->getActiveSheet()->getStyle('A1:M1')->applyFromArray(['font' => ['bold'  => true]]);
 		$sheet->setActiveSheetIndex(0)
 				->setCellValue('A'.$rows, 'Loan #')
@@ -135,7 +135,7 @@ class ReportController extends Controller
 		// If you're serving to IE 9, then the following may be needed
 		header('Cache-Control: max-age=1');
 		
-		$objWriter = PHPExcel_IOFactory::createWriter($sheet, 'Excel2007');
+		$objWriter = IOFactory::createWriter($sheet, 'Xlsx');
 		$objWriter->save('php://output');     
 	}
 
@@ -155,7 +155,7 @@ class ReportController extends Controller
 			$rowWhere = "trans_date between '".$from_date."' AND '". $to_date."'";
 		}
 		$rows = 1;
-		$sheet =  new PHPExcel();
+		$sheet =  new Spreadsheet();
 		$sheet->getActiveSheet()->getStyle('A1:H1')->applyFromArray(['font' => ['bold'  => true]]);
 		$sheet->setActiveSheetIndex(0)
 				->setCellValue('A'.$rows, 'Loan #')
@@ -192,7 +192,7 @@ class ReportController extends Controller
 		// If you're serving to IE 9, then the following may be needed
 		header('Cache-Control: max-age=1');
 		
-		$objWriter = PHPExcel_IOFactory::createWriter($sheet, 'Excel2007');
+		$objWriter = IOFactory::createWriter($sheet, 'Xlsx');
 		$objWriter->save('php://output');
 	}
 
@@ -212,7 +212,7 @@ class ReportController extends Controller
 			$rowWhere = "trans_date between '".$from_date."' AND '". $to_date."'";
 		}
 		$rows = 1;
-		$sheet =  new PHPExcel();
+		$sheet =  new Spreadsheet();
 		$sheet->getActiveSheet()->getStyle('A1:M1')->applyFromArray(['font' => ['bold'  => true]]);
 		$sheet->setActiveSheetIndex(0)
 			->setCellValue('A'.$rows, 'Loan #')
@@ -247,7 +247,7 @@ class ReportController extends Controller
 		// If you're serving to IE 9, then the following may be needed
 		header('Cache-Control: max-age=1');
 		
-		$objWriter = PHPExcel_IOFactory::createWriter($sheet, 'Excel2007');
+		$objWriter = IOFactory::createWriter($sheet, 'Xlsx');
 		$objWriter->save('php://output');
 	}
 	
@@ -782,7 +782,7 @@ class ReportController extends Controller
 
     public function downloadMaturityReport($exceldata){
         $rows = 5;
-        $sheet =  new PHPExcel();
+        $sheet =  new Spreadsheet();
         $sheet->setActiveSheetIndex(0)
             ->setCellValue('A'.$rows, 'Customer Name')
             ->setCellValue('B'.$rows, 'Loan Account #')
@@ -827,7 +827,7 @@ class ReportController extends Controller
             $rows++;
         }
         
-        $objWriter = PHPExcel_IOFactory::createWriter($sheet, 'Excel2007');
+        $objWriter = IOFactory::createWriter($sheet, 'Xlsx');
         
         $dirPath = 'public/report/temp/maturityReport/'.date('Ymd');
         if (!Storage::exists($dirPath)) {
@@ -841,7 +841,7 @@ class ReportController extends Controller
 
     public function downloadDailyDisbursalReport($exceldata){
         $rows = 5;
-        $sheet =  new PHPExcel();
+        $sheet =  new Spreadsheet();
         $sheet->setActiveSheetIndex(0)
             ->setCellValue('A'.$rows, 'Borrower name')
             ->setCellValue('B'.$rows, 'RM')
@@ -945,7 +945,7 @@ class ReportController extends Controller
             $rows++;
         }
         
-        $objWriter = PHPExcel_IOFactory::createWriter($sheet, 'Excel2007');
+        $objWriter = IOFactory::createWriter($sheet, 'Xlsx');
 
         $dirPath = 'public/report/temp/dailyDisbursalReport/'.date('Ymd');
         if (!Storage::exists($dirPath)) {
@@ -961,7 +961,7 @@ class ReportController extends Controller
     
         $rows = 5;
 
-        $sheet =  new PHPExcel();
+        $sheet =  new Spreadsheet();
         foreach($exceldata as $rowData){
             $sheet->setActiveSheetIndex(0)
             ->setCellValue('A'.$rows, 'Anchor Name')
@@ -1047,7 +1047,7 @@ class ReportController extends Controller
             $rows++;
         }
         
-        $objWriter = PHPExcel_IOFactory::createWriter($sheet, 'Excel2007');
+        $objWriter = IOFactory::createWriter($sheet, 'Xlsx');
         
         $dirPath = 'public/report/temp/utilizationReport/'.date('Ymd');
         if (!Storage::exists($dirPath)) {
@@ -1061,7 +1061,7 @@ class ReportController extends Controller
 
     public function downloadOverdueReport($exceldata){
         $rows = 5;
-        $sheet =  new PHPExcel();
+        $sheet =  new Spreadsheet();
         $sheet->setActiveSheetIndex(0)
             ->setCellValue('A'.$rows, 'Customer Name')
             ->setCellValue('B'.$rows, 'Customer ID')
@@ -1092,7 +1092,7 @@ class ReportController extends Controller
             $rows++;
         }
         
-        $objWriter = PHPExcel_IOFactory::createWriter($sheet, 'Excel2007');
+        $objWriter = IOFactory::createWriter($sheet, 'Xlsx');
         
         $dirPath = 'public/report/temp/overdueReport/'.date('Ymd');
         if (!Storage::exists($dirPath)) {
@@ -1106,7 +1106,7 @@ class ReportController extends Controller
 
     public function downloadAccountDailyDisbursalReport($exceldata){
         $rows = 5;
-        $sheet =  new PHPExcel();
+        $sheet =  new Spreadsheet();
         $sheet->setActiveSheetIndex(0)
             ->setCellValue('A'.$rows, 'Customer Name')
             ->setCellValue('B'.$rows, 'Loan Account #')
@@ -1146,7 +1146,7 @@ class ReportController extends Controller
             $rows++;
         }
         
-        $objWriter = PHPExcel_IOFactory::createWriter($sheet, 'Excel2007');
+        $objWriter = IOFactory::createWriter($sheet, 'Xlsx');
 
         $dirPath = 'public/report/temp/accountDailyDisbursalReport/'.date('Ymd');
         if (!Storage::exists($dirPath)) {

@@ -101,13 +101,13 @@ class BaseModel extends Model
      *
      * @return bool
      */
-    public function touch()
-    {
-        $this->updateUserstamps();
-        $this->updateDeviceTrack();
+    // public function touch()
+    // {
+    //     $this->updateUserstamps();
+    //     $this->updateDeviceTrack();
 
-        parent::touch();
-    }
+    //     parent::touch();
+    // }
 
     /**
      * Override the default updateTimestamps
@@ -117,7 +117,7 @@ class BaseModel extends Model
      * @return void
      * @since 0.1
      */
-    protected function updateTimestamps()
+    public function updateTimestamps()
     {
         $this->updateUserstamps();
         $this->updateDeviceTrack();

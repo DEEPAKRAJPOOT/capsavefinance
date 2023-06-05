@@ -50,6 +50,7 @@ use App\Events\Event;
 use App\Inv\Repositories\Models\WfAppStage;
 use App\Inv\Repositories\Contracts\UcicUserInterface as InvUcicUserRepoInterface;
 use App\Inv\Repositories\Models\Program;
+use Exception;
 
 
 class ApplicationController extends Controller
@@ -1848,6 +1849,8 @@ class ApplicationController extends Controller
 
 		try {
 			$offerData = [];
+			$appData = $this->appRepo->getAppDataByAppId($appId);
+			$userId = $appData ? $appData->user_id : null;
 			if ($request->has('btn_accept_offer')) {
 				$offerData['status'] = 1;
 				$message = trans('backend_messages.accept_offer_success');
@@ -1935,7 +1938,8 @@ class ApplicationController extends Controller
 			}
 
 		} catch (Exception $ex) {
-			return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
+			return redirect()->route('view_offer', ['app_id' => $appId, 'biz_id' => $bizId,'user_id' => $userId ])
+					->withErrors(Helpers::getExceptionMessage($ex));;
 		}
 	}
 
@@ -3282,6 +3286,7 @@ class ApplicationController extends Controller
 
 	public function userInvoiceLocationApp(Request $request) {
         try {
+			// dd( $request->all()); // getting user_id as null
             $user_id = $request->get('user_id');
 			$biz_id = $request->get('biz_id');
 			$app_id = $request->get('app_id');

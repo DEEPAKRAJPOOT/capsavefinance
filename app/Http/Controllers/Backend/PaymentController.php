@@ -15,14 +15,14 @@ use App\Inv\Repositories\Models\BizApi;
 use App\Inv\Repositories\Contracts\Traits\LmsTrait;
 use App\Inv\Repositories\Models\Payment;
 use App\Inv\Repositories\Models\PaymentExcel;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use Session;
 use Helpers;
 use DB;
 use App\Libraries\Pdf;
 use Carbon\Carbon;
 use App\Inv\Repositories\Contracts\ApplicationInterface;
-use PHPExcel;
-use PHPExcel_IOFactory;
+use PhpOffice\PhpSpreadsheet\IOFactory;
 use App\Inv\Repositories\Models\Lms\Disbursal;
 use App\Inv\Repositories\Models\Lms\Transactions;
 use App\Helpers\ApportionmentHelper;
@@ -457,8 +457,8 @@ class PaymentController extends Controller {
 	}
 	
 	//dd($repayment, $repaymentTrails, $disbursalIds, $marginAmountData, $totalMarginAmount);
-	$objPHPExcel =  new PHPExcel();
-	$objPHPExcel->getProperties()
+	$objSpreadsheet =  new Spreadsheet();
+	$objSpreadsheet->getProperties()
 				->setCreator("Capsave")
 				->setLastModifiedBy("Capsave")
 				->setTitle("Payment Advice Excel")
@@ -467,15 +467,15 @@ class PaymentController extends Controller {
 				->setKeywords("Payment Advice Excel")
 				->setCategory("Payment Advice Excel");
 	
-	$objPHPExcel->getActiveSheet()->getStyle("A".$counter.":F".$counter)->getFont()->setBold(true);
+	$objSpreadsheet->getActiveSheet()->getStyle("A".$counter.":F".$counter)->getFont()->setBold(true);
 
 	foreach(range('A','F') as $columnID) {
-	  $objPHPExcel->getActiveSheet()
+	  $objSpreadsheet->getActiveSheet()
 				  ->getColumnDimension($columnID)
 				  ->setAutoSize(true);
 	}
 
-	$objPHPExcel->setActiveSheetIndex(0)
+	$objSpreadsheet->setActiveSheetIndex(0)
 				->setCellValue('A'.$counter, 'Tran Date')
 				->setCellValue('B'.$counter, 'Value Date')
 				->setCellValue('C'.$counter, 'Tran Type')
@@ -486,7 +486,7 @@ class PaymentController extends Controller {
 
 	if($repayment->count()>0){
 	  $counter++;
-	  $objPHPExcel->setActiveSheetIndex(0)
+	  $objSpreadsheet->setActiveSheetIndex(0)
 	  ->setCellValue('A'.$counter, date('d-M-Y',strtotime($repayment->trans_date)))
 	  ->setCellValue('B'.$counter, date('d-M-Y',strtotime($repayment->created_at)))
 	  ->setCellValue('C'.$counter, ($repayment->transType->chrg_master_id!='0')?$repayment->transType->charge->chrg_name:$repayment->transType->trans_name)
@@ -496,7 +496,7 @@ class PaymentController extends Controller {
 
 	  foreach($repaymentTrails as $rtrail){
 		$counter++;
-		$objPHPExcel->setActiveSheetIndex(0)
+		$objSpreadsheet->setActiveSheetIndex(0)
 		->setCellValue('A'.$counter, date('d-M-Y',strtotime($rtrail->trans_date)))
 		->setCellValue('B'.$counter, date('d-M-Y',strtotime($rtrail->created_at)))
 		->setCellValue('C'.$counter, ($rtrail->transType->chrg_master_id!='0')?$rtrail->transType->charge->chrg_name:$rtrail->transType->trans_name)
@@ -515,26 +515,26 @@ class PaymentController extends Controller {
 	}
  
 	$counter +=2;
-	$objPHPExcel->setActiveSheetIndex(0)
+	$objSpreadsheet->setActiveSheetIndex(0)
 				->setCellValue('A'.$counter, 'Total Factored')
 				->setCellValue('E'.$counter, $repayment->amount);
 
 
 	$counter +=1;
-	$objPHPExcel->setActiveSheetIndex(0)
+	$objSpreadsheet->setActiveSheetIndex(0)
 				->setCellValue('A'.$counter, 'Non Factored')
 				->setCellValue('E'.$counter, $nonFactoredAmount);
-	$objPHPExcel->getActiveSheet()->getStyle("A".$counter.":F".$counter)->getFont()->setBold(true);
+	$objSpreadsheet->getActiveSheet()->getStyle("A".$counter.":F".$counter)->getFont()->setBold(true);
 	
 	$counter +=2;
-	$objPHPExcel->setActiveSheetIndex(0)
+	$objSpreadsheet->setActiveSheetIndex(0)
 				->setCellValue('A'.$counter, 'Total amt for Margin')
 				->setCellValue('E'.$counter, $amountForMargin);
 	
 	foreach($marginAmountData as $margin){
 
 	  $counter +=1;
-	  $objPHPExcel->setActiveSheetIndex(0)
+	  $objSpreadsheet->setActiveSheetIndex(0)
 	  ->setCellValue('A'.$counter, '% Margin')
 	  ->setCellValue('D'.$counter, $margin['margin'].' %')
 	  ->setCellValue('E'.$counter, $margin['margin_amount']);
@@ -542,52 +542,52 @@ class PaymentController extends Controller {
 	}
 	
 	$counter +=1;
-	$objPHPExcel->setActiveSheetIndex(0)
+	$objSpreadsheet->setActiveSheetIndex(0)
 				->setCellValue('A'.$counter, 'Overdue Interest')
 				->setCellValue('E'.$counter, $overdueInterest);
 	
 	$totalMarginAmount -= $overdueInterest;
 	
 	// $counter +=1;
-	// $objPHPExcel->setActiveSheetIndex(0)
+	// $objSpreadsheet->setActiveSheetIndex(0)
 	//             ->setCellValue('A'.$counter, 'Interest Sept')
 	//             ->setCellValue('E'.$counter, '');
 
 	$counter +=1;
-	$objPHPExcel->setActiveSheetIndex(0)
+	$objSpreadsheet->setActiveSheetIndex(0)
 				->setCellValue('A'.$counter, 'Margin Released')
 				->setCellValue('E'.$counter, ($totalMarginAmount>0)?$totalMarginAmount:0);
-	$objPHPExcel->getActiveSheet()->getStyle("A".$counter.":F".$counter)->getFont()->setBold(true);
+	$objSpreadsheet->getActiveSheet()->getStyle("A".$counter.":F".$counter)->getFont()->setBold(true);
 
 	$counter +=2;
-	$objPHPExcel->setActiveSheetIndex(0)
+	$objSpreadsheet->setActiveSheetIndex(0)
 				->setCellValue('A'.$counter, 'Interest Refund')
 				->setCellValue('E'.$counter, $interestRefund);
-	$objPHPExcel->getActiveSheet()->getStyle("A".$counter.":F".$counter)->getFont()->setBold(true);
+	$objSpreadsheet->getActiveSheet()->getStyle("A".$counter.":F".$counter)->getFont()->setBold(true);
 	$totalMarginAmount += $interestRefund;
 
 	$counter +=1;
-	$objPHPExcel->setActiveSheetIndex(0)
+	$objSpreadsheet->setActiveSheetIndex(0)
 				->setCellValue('F'.$counter, $totalMarginAmount);
 	
     /*  $counter +=1;
-	$objPHPExcel->setActiveSheetIndex(0)
+	$objSpreadsheet->setActiveSheetIndex(0)
 				->setCellValue('A'.$counter, 'Overdue')
 				->setCellValue('E'.$counter, '');
 	
 	$counter +=1;
-	$objPHPExcel->setActiveSheetIndex(0)
+	$objSpreadsheet->setActiveSheetIndex(0)
 				->setCellValue('A'.$counter, 'Int Type')
 				->setCellValue('E'.$counter, '');
 	*/
 	// Rename worksheet
-	$objPHPExcel->getActiveSheet()
+	$objSpreadsheet->getActiveSheet()
 				->setTitle('Payment Advice');
 
 
 
 	// Set active sheet index to the first sheet, so Excel opens this as the first sheet
-	$objPHPExcel->setActiveSheetIndex(0);
+	$objSpreadsheet->setActiveSheetIndex(0);
 
 	// Redirect output to a client’s web browser (Excel2007)
 	header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
@@ -602,7 +602,7 @@ class PaymentController extends Controller {
 	header ('Cache-Control: cache, must-revalidate'); // HTTP/1.1
 	header ('Pragma: public'); // HTTP/1.0
 
-	$objWriter = PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel2007');
+	$objWriter = IOFactory::createWriter($objSpreadsheet, 'Xlsx');
 	$objWriter->save('php://output');
 	
   }
@@ -876,7 +876,7 @@ class PaymentController extends Controller {
                         if (preg_match("/^(0[1-9]|[1-2][0-9]|3[0-1])-(0[1-9]|1[0-2])-[0-9]{4}$/",$txn_date)) {
                             
                         } else {
-                            Session::flash('error','Date formate is not correct(txnDate), Use only dd-mm-yyyy formate');
+                            Session::flash('error','Date format is not correct(txnDate), Use only dd-mm-yyyy format');
                             //Session::flash('operation_status', 1);
                             return redirect()->route('payment_list');
                         }
@@ -887,7 +887,7 @@ class PaymentController extends Controller {
                         if (preg_match("/^(0[1-9]|[1-2][0-9]|3[0-1])-(0[1-9]|1[0-2])-[0-9]{4}$/",$TrnTimeStamp)) {
 
                         } else {
-                            Session::flash('error','Date formate is not correct(Trn TimeStamp), Use only dd-mm-yyyy formate');
+                            Session::flash('error','Date format is not correct(Trn TimeStamp), Use only dd-mm-yyyy format');
                             //Session::flash('operation_status', 1);
                             return redirect()->route('payment_list');
                         }

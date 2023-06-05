@@ -165,7 +165,7 @@ class BankAccountController extends Controller {
             foreach ($attr->file() as $files):
                 $docname = $files->getClientOriginalName();
                 $ext = $files->getClientOriginalExtension();
-                $fileSize = $files->getClientSize();
+                $fileSize = $files->getSize();
                 if ($fileSize < config('common.MAX_UPLOAD_SIZE')) {
                     $userBaseDir = 'appDocs/Document/bankDoc/' . auth()->user()->user_id;
                     $userFileName = rand(0, 9999) . time() . '.' . $ext;

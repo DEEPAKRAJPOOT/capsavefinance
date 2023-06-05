@@ -2,9 +2,9 @@
 
 namespace App\Jobs;
 use Helpers;
-use PHPExcel;
 use Carbon\Carbon;
-use PHPExcel_IOFactory;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\IOFactory;
 use Illuminate\Bus\Queueable;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\App;
@@ -84,7 +84,7 @@ class OutstandingReportManual implements ShouldQueue
             ini_set("memory_limit", "-1");
             ini_set('max_execution_time', 10000);
             $rows = 1;
-            $sheet =  new PHPExcel();
+            $sheet =  new Spreadsheet();
             $sheet->setActiveSheetIndex(0)
                 ->setCellValue('A'.$rows, 'UCIC ID')
                 ->setCellValue('B'.$rows, 'Customer Name')
@@ -204,12 +204,12 @@ class OutstandingReportManual implements ShouldQueue
             header("Cache-Control: post-check=0, pre-check=0", false);
             header("Pragma: no-cache");
             
-            $objWriter = PHPExcel_IOFactory::createWriter($sheet, 'Excel2007');
+            $objWriter = IOFactory::createWriter($sheet, 'Xlsx');
         
             $objWriter->save($filePath);
             return $filePath;
         } catch (\Throwable $ex) {
-            throw $th;
+            throw $ex;
         } 
     }
 
@@ -221,7 +221,7 @@ class OutstandingReportManual implements ShouldQueue
             $fourthSat = date('Ymd', strtotime('fourth sat of '.$month.' '.$year));
             return in_array(date('Ymd'),[$secondSat,$fourthSat]);
         } catch (\Throwable $ex) {
-            throw $th;
+            throw $ex;
         } 
     }
 }

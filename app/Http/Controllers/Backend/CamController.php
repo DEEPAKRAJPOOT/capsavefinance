@@ -8,9 +8,9 @@ use Mail;
 use Helpers;
 use Session;
 use Storage;
-use PHPExcel;
 use Validator;
 use PDF as DPDF;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use Carbon\Carbon;
 use App\Libraries\Pdf;
 use App\Helpers\Helper;
@@ -648,7 +648,7 @@ class CamController extends Controller
     }
 
     private function _getXLSXTable($appId, $fileType = 'finance', $sheet_no = 0){
-     $objPHPExcel =  new PHPExcel();
+     $objSpreadsheet =  new Spreadsheet();
      $files = $this->getLatestFileName($appId, $fileType, 'xlsx');
      $file_name = $files['curr_file'];
      if (empty($file_name)) {
@@ -658,10 +658,9 @@ class CamController extends Controller
      if (!file_exists($inputFileName)) {
        return ['', ''];
      }
-
-     $objPHPExcel = IOFactory::load($inputFileName);
-     $objWriter = IOFactory::createWriter($objPHPExcel, 'Html');
-     $allsheets = $objPHPExcel->getSheetNames();
+     $objSpreadsheet = IOFactory::load($inputFileName);
+     $objWriter = IOFactory::createWriter($objSpreadsheet, 'HTML');
+     $allsheets = $objSpreadsheet->getSheetNames();
      $pagination = $this->_getPaginate($allsheets, $sheet_no);
      $objWriter->setSheetIndex($sheet_no);
      $html = $objWriter->generateHtmlAll();
@@ -1091,7 +1090,7 @@ class CamController extends Controller
         $inputArr[$key]['file_path'] = $path . $fileName;
         $inputArr[$key]['file_type'] = $reqFile->getClientMimeType();
         $inputArr[$key]['file_name'] = $reqFile->getClientOriginalName();
-        $inputArr[$key]['file_size'] = $reqFile->getClientSize();
+        $inputArr[$key]['file_size'] = $reqFile->getSize();
         $inputArr[$key]['file_encp_key'] =  md5($fullPath);
         $inputArr[$key]['created_by'] = 1;
         $inputArr[$key]['updated_by'] = 1;

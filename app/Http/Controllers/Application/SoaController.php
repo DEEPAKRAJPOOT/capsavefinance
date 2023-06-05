@@ -8,11 +8,11 @@ use App\Http\Controllers\Controller;
 use App\Inv\Repositories\Contracts\ApplicationInterface as AppRepoInterface;
 use App\Inv\Repositories\Contracts\LmsInterface as InvLmsRepoInterface;
 use App\Inv\Repositories\Contracts\UserInterface as InvUserRepoInterface;
-use PHPExcel;
-use PHPExcel_IOFactory;
-use PHPExcel_Style_Fill;
-use PHPExcel_Cell_DataType;
-use PHPExcel_Style_Alignment;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\IOFactory;
+use PhpOffice\PhpSpreadsheet\Style\Fill;
+use PhpOffice\PhpSpreadsheet\Cell\DataType;
+use PhpOffice\PhpSpreadsheet\Style\Alignment;
 use Carbon\Carbon;
 
 class SoaController extends Controller {
@@ -227,13 +227,13 @@ class SoaController extends Controller {
             });        
         }
         $exceldata = $this->prepareDataForRendering($transactionList->get()->chunk(1));
-        $sheet =  new PHPExcel();
+        $sheet =  new Spreadsheet();
         $sheet->getActiveSheet()->mergeCells('A2:K2');
         $sheet->getActiveSheet()->mergeCells('A3:K3');
         $sheet->getActiveSheet()
         ->getStyle('A2:K3')
         ->getAlignment()
-        ->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
+        ->setHorizontal(Alignment::HORIZONTAL_CENTER);
         $sheet->setActiveSheetIndex(0)
             ->setCellValue('A2', 'CAPSAVE FINANCE PRIVATE LIMITED')
             ->setCellValue('A3', 'Statement Of Account');
@@ -247,7 +247,7 @@ class SoaController extends Controller {
             ->setCellValue('H5', 'Full Name')
             ->setCellValue('H6', 'Mobile')
             ->setCellValue('J5', $data['userInfo']->f_name." ".$data['userInfo']->m_name." ".$data['userInfo']->l_name)
-            ->setCellValueExplicit('J6', $data['userInfo']->mobile_no, PHPExcel_Cell_DataType::TYPE_STRING);
+            ->setCellValueExplicit('J6', $data['userInfo']->mobile_no, DataType::TYPE_STRING);
         }
         
         $sheet->getActiveSheet()->getStyle('A1:I7')->applyFromArray(['font' => ['bold'  => true]]);
@@ -279,20 +279,22 @@ class SoaController extends Controller {
                 ->setCellValue('L'.$rows, 'Credit')
                 ->setCellValue('M'.$rows, 'Balance');
         
-        $sheet->getActiveSheet()->getStyle('A'.$rows.':M'.$rows)->getFill()->applyFromArray(array(
-            'type' => PHPExcel_Style_Fill::FILL_SOLID,
-            'startcolor' => [ 'rgb' => "CAD7D3" ],
+        $sheet->getActiveSheet()->getStyle('A'.$rows.':M'.$rows)->applyFromArray(array(
+            'fill' => array(
+                'fillType' => Fill::FILL_SOLID,
+                'startColor' => [ 'rgb' => "CAD7D3" ],
+            ),
             'font' => [ 'bold'  => true ]
         ));
               
         $sheet->getActiveSheet()
         ->getStyle('J:L')
         ->getAlignment()
-        ->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_RIGHT);
+        ->setHorizontal(Alignment::HORIZONTAL_RIGHT);
         $sheet->getActiveSheet()
         ->getStyle('B:C')
         ->getAlignment()
-        ->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_RIGHT);
+        ->setHorizontal(Alignment::HORIZONTAL_RIGHT);
 
         $rows++;
 
@@ -318,9 +320,11 @@ class SoaController extends Controller {
                     $color = trim($rowData['soabackgroundcolor'],'#');
                 }
                 
-                $sheet->getActiveSheet()->getStyle('A'.$rows.':M'.$rows)->getFill()->applyFromArray(array(
-                    'type' => PHPExcel_Style_Fill::FILL_SOLID,
-                    'startcolor' => array( 'rgb' => $color)
+                $sheet->getActiveSheet()->getStyle('A'.$rows.':M'.$rows)->applyFromArray(array(
+                    'fill' => array(
+                        'fillType' => Fill::FILL_SOLID,
+                        'startColor' => array( 'rgb' => $color)
+                    ),
                 ));
                 $rows++;
             }
@@ -337,7 +341,7 @@ class SoaController extends Controller {
         // If you're serving to IE 9, then the following may be needed
         header('Cache-Control: max-age=1');
         
-        $objWriter = PHPExcel_IOFactory::createWriter($sheet, 'Excel2007');
+        $objWriter = IOFactory::createWriter($sheet, 'Xlsx');
         ob_end_clean();
         $objWriter->save('php://output');
         exit;
