@@ -1590,7 +1590,7 @@ class UserEventsListener extends BaseEvent
 
                 $message->from(config('common.FRONTEND_FROM_EMAIL'), config('common.FRONTEND_FROM_EMAIL_NAME'));
                 $message->to($emailTo);
-                if($data['custId'] == ''){
+                if($data['invoiceBorneBy'] == 2){
                     $message->cc($emailCc);    
                     $message->bcc($emailBcc);
                 }

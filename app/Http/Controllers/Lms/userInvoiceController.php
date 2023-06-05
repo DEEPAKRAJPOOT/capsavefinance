@@ -1092,9 +1092,9 @@ class userInvoiceController extends Controller
                     'biz_gst_state_code' => substr($billing_data['gstin_no'],0,2),
                     'gst_addr' => $billing_data['address'],
                     'customer_id' => $custDetails['customer_id'],
-                    'customer_name' => '',
+                    'customer_name' => $custDetails['biz_entity_name'],
                     'anchor_name' => '',
-                    'anchor_id' => '',
+                    'anchor_id' => NULL,
                 ];
             }
             $userInvoiceData = [
