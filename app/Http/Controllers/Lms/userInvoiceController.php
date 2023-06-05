@@ -865,6 +865,8 @@ class userInvoiceController extends Controller
             $invoiceType = ($invCat == "NZ") ? (($borneBy == 1) ? "CA" : "CC") : $invoiceType;
             $invoiceCode = substr($invoiceType,0,1);
             $billingDetails = [];
+            $custDetails = User::getCustomerData($user_id);
+
             if($borneBy == 1){
                 $anchorDetails = AnchorUser::getAnchorsDetails($user_id);
                 $custDetails = User::getCustomerData($user_id);
@@ -884,7 +886,7 @@ class userInvoiceController extends Controller
                     'biz_gst_no' => $billing_data['gstin_no'],
                     'biz_gst_state_code' => substr($billing_data['gstin_no'],0,2),
                     'gst_addr' => $billing_data['address'],
-                    'customer_id' => NULL,
+                    'customer_id' => $custDetails['customer_id'],
                     'customer_name' => '',
                     'anchor_name' => '',
                     'anchor_id' => '',
@@ -1067,12 +1069,12 @@ class userInvoiceController extends Controller
             $bank_id = bankDetailIsOfRegisteredCompanyInInvoice() ? $registeredCompany['bank_account_id'] : $company_data['bank_id'];
             $created_at = Carbon::now();
             $created_by = Auth::user()->user_id ?? null;
+            $custDetails = User::getCustomerData($userId);
 
             
             $billingDetails = [];
             if($borneBy == 1){
                 $anchorDetails = AnchorUser::getAnchorsDetails($userId);
-                $custDetails = User::getCustomerData($userId);
                 $billingDetails = [
                     'pan_no' => $anchorDetails['pan_no'],
                     'biz_gst_no' => $anchorDetails['gst_no'],
@@ -1089,7 +1091,7 @@ class userInvoiceController extends Controller
                     'biz_gst_no' => $billing_data['gstin_no'],
                     'biz_gst_state_code' => substr($billing_data['gstin_no'],0,2),
                     'gst_addr' => $billing_data['address'],
-                    'customer_id' => NULL,
+                    'customer_id' => $custDetails['customer_id'],
                     'customer_name' => '',
                     'anchor_name' => '',
                     'anchor_id' => '',

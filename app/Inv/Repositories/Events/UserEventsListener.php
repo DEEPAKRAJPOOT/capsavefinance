@@ -1568,9 +1568,10 @@ class UserEventsListener extends BaseEvent
         $this->func_name = __FUNCTION__;
         $email_content = EmailTemplate::getEmailTemplate("USER_INVOICE_MAIL");
         if($email_content) {
-            $mail_subject = str_replace(['%invoice_no'], [ucwords($data['invoice_no'])], $email_content->subject);
+            $mail_subject = str_replace(['%custName','%custId'], [ucwords($data['custName']),ucwords($data['custId'])], $email_content->subject);
+            $mail_content = str_replace(['%custName','%custId'], [ucwords($data['custName']),ucwords($data['custId'])], $email_content->message);
 
-            Mail::send('email', ['baseUrl'=> env('REDIRECT_URL',''), 'varContent' => $email_content->message],
+            Mail::send('email', ['baseUrl'=> env('REDIRECT_URL',''), 'varContent' => $mail_content],
             function ($message) use ($data,$email_content,$mail_subject) {
                 // if( env('SEND_MAIL_ACTIVE') == 1){
                 //     $email = explode(',', env('SEND_MAIL'));

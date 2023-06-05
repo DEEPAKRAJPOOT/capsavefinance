@@ -180,7 +180,7 @@ class GenerateNotePdf implements ShouldQueue
                         if(!empty($getEmail)){
                             $fullPath = storage_path('app/public/'.$path);
                             if(Storage::exists('public/'.$path))
-                                $mailData = $this->sendCapsaveInvoiceMail($fullPath,$invoice_no,$getEmail,$invData->customer_id);
+                                $mailData = $this->sendCapsaveInvoiceMail($fullPath,$invoice_no,$getEmail,$invData->customer_id,$invData->customer_name);
                         }
                     }
                 }
@@ -189,7 +189,7 @@ class GenerateNotePdf implements ShouldQueue
 
     }
 
-    public function sendCapsaveInvoiceMail($pdfResult,$newInvoiceNo,$getEmails,$custId = NULL){
+    public function sendCapsaveInvoiceMail($pdfResult,$newInvoiceNo,$getEmails,$custId = NULL,$custName = NULL){
         foreach($getEmails as $getEmail){
             $emailData = array(
                 'invoice_no' => $newInvoiceNo,
@@ -197,6 +197,7 @@ class GenerateNotePdf implements ShouldQueue
                 'body' => 'body',
                 'attachment' => $pdfResult,
                 'custId' => $custId,
+                'custName' => $custName,
             );
             \Event::dispatch("USER_INVOICE_MAIL", serialize($emailData));
         }
