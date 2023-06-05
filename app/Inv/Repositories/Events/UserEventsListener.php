@@ -1579,7 +1579,7 @@ class UserEventsListener extends BaseEvent
                 //     $emailBcc = \Helpers::ccOrBccEmailsArray(env('SEND_MAIL_BCC'));
                 // }else{
                     $emailTo = $data["email"];
-                    if($data['custId'] == ''){
+                    if($data['invoiceBorneBy'] == 2){
                         $emailCc = \Helpers::ccOrBccEmailsArray($email_content->cc);
                         $emailBcc = \Helpers::ccOrBccEmailsArray($email_content->bcc);
                     }else{

@@ -169,7 +169,7 @@ class GenerateNotePdf implements ShouldQueue
                     if($isUpdated && $invoice_type == 'I' && $invData->invoice_cat == 1){
                         // If custId is present then bill is Anchor based else customer based
                         $getEmail = [];
-                        if($invData->customer_id != ''){
+                        if($invoiceBorneBy == 1){
                             $getEmail[] = $invData->anchor->salesUser->email;
                         }else{
                             $ucicDetails = UcicUser::with('ucicUserDetail:user_ucic_id,invoice_level_mail')->where('user_id',$invData->user_id)->first();
@@ -180,7 +180,7 @@ class GenerateNotePdf implements ShouldQueue
                         if(!empty($getEmail)){
                             $fullPath = storage_path('app/public/'.$path);
                             if(Storage::exists('public/'.$path))
-                                $mailData = $this->sendCapsaveInvoiceMail($fullPath,$invoice_no,$getEmail,$invData->customer_id,$invData->customer_name);
+                                $mailData = $this->sendCapsaveInvoiceMail($fullPath,$invoice_no,$getEmail,$invData->customer_id,$invData->customer_name,$invoiceBorneBy);
                         }
                     }
                 }
@@ -189,7 +189,7 @@ class GenerateNotePdf implements ShouldQueue
 
     }
 
-    public function sendCapsaveInvoiceMail($pdfResult,$newInvoiceNo,$getEmails,$custId = NULL,$custName = NULL){
+    public function sendCapsaveInvoiceMail($pdfResult,$newInvoiceNo,$getEmails,$custId = NULL,$custName = NULL,$invoiceBorneBy =NULL){
         foreach($getEmails as $getEmail){
             $emailData = array(
                 'invoice_no' => $newInvoiceNo,
@@ -198,6 +198,7 @@ class GenerateNotePdf implements ShouldQueue
                 'attachment' => $pdfResult,
                 'custId' => $custId,
                 'custName' => $custName,
+                'invoiceBorneBy' => $invoiceBorneBy,
             );
             \Event::dispatch("USER_INVOICE_MAIL", serialize($emailData));
         }
