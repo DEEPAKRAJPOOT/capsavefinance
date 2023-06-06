@@ -1108,9 +1108,9 @@ class CamController extends Controller
         $filePath = storage_path("app/public/") . $path;
         $fullPath = $filePath . $fileName;
         $inputArr[$key]['file_path'] = $path . $fileName;
-        $inputArr[$key]['file_type'] = $reqFile->getClientMimeType();
+        $inputArr[$key]['file_type'] = $reqFile->getMimeType();
         $inputArr[$key]['file_name'] = $reqFile->getClientOriginalName();
-        $inputArr[$key]['file_size'] = $reqFile->getClientSize();
+        $inputArr[$key]['file_size'] = $reqFile->getSize();
         $inputArr[$key]['file_encp_key'] =  md5($fullPath);
         $inputArr[$key]['created_by'] = 1;
         $inputArr[$key]['updated_by'] = 1;

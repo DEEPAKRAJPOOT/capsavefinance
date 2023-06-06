@@ -319,7 +319,7 @@ class Helper extends PaypalHelper
              $attr['message']= 'You can not upload more than 50 records in csv file.';
              return  $attr;   
        } 
-      else if($attributes['file_id']->getClientSize() > 1000000)
+      else if($attributes['file_id']->getSize() > 1000000)
        {
              $attr['status'] =0;
              $attr['message']= 'File size should be upload Only 1 Mb.';
@@ -348,7 +348,7 @@ class Helper extends PaypalHelper
        $inputArr = []; 
        $attr[] = "";   
         if(!empty($attributes['file_image_id'])) {
-            if($attributes['file_image_id']->getClientSize() > 30000000)
+            if($attributes['file_image_id']->getSize() > 30000000)
             {
                     $attr['status'] =0;
                     $attr['message']= 'File size should be upload Only 30 Mb.';
@@ -458,9 +458,9 @@ class Helper extends PaypalHelper
             }
             $path = Storage::disk(env('STORAGE_TYPE'))->put($s3path, $attributes['doc_file'], $filename);
             $inputArr['file_path'] = $path;
-            $inputArr['file_type'] = $attributes['doc_file']->getClientMimeType();
+            $inputArr['file_type'] = $attributes['doc_file']->getMimeType();
             $inputArr['file_name'] = $attributes['doc_file']->getClientOriginalName();
-            $inputArr['file_size'] = $attributes['doc_file']->getClientSize();
+            $inputArr['file_size'] = $attributes['doc_file']->getSize();
 
         }else if(isset($attributes['upload_unsettled_trans'])) {
 
@@ -469,9 +469,9 @@ class Helper extends PaypalHelper
             }
             $path = Storage::disk(env('STORAGE_TYPE'))->putFileAs($s3path, $attributes['upload_unsettled_trans'], $filename);
             $inputArr['file_path'] = $path;
-            $inputArr['file_type'] = $attributes['upload_unsettled_trans']->getClientMimeType();
+            $inputArr['file_type'] = $attributes['upload_unsettled_trans']->getMimeType();
             $inputArr['file_name'] = $attributes['upload_unsettled_trans']->getClientOriginalName();
-            $inputArr['file_size'] = $attributes['upload_unsettled_trans']->getClientSize();
+            $inputArr['file_size'] = $attributes['upload_unsettled_trans']->getSize();
 
         }else if(isset($attributes['file_contents'])) {
 
@@ -494,9 +494,9 @@ class Helper extends PaypalHelper
             }
             $path = Storage::disk(env('STORAGE_TYPE'))->putFileAs($s3path, $attributes['file_image_id'], $filename);
             $inputArr['file_path'] = $path;
-            $inputArr['file_type'] = $attributes['file_image_id']->getClientMimeType();
+            $inputArr['file_type'] = $attributes['file_image_id']->getMimeType();
             $inputArr['file_name'] = $attributes['file_image_id']->getClientOriginalName();
-            $inputArr['file_size'] = $attributes['file_image_id']->getClientSize();
+            $inputArr['file_size'] = $attributes['file_image_id']->getSize();
 
         }else if(isset($attributes['temp_file_path'])) {
 
@@ -559,9 +559,9 @@ class Helper extends PaypalHelper
                 $inputArr[$i]['file_path'] = $path;
             }
 
-            $inputArr[$i]['file_type'] = $attributes['doc_file'][$i]->getClientMimeType();
+            $inputArr[$i]['file_type'] = $attributes['doc_file'][$i]->getMimeType();
             $inputArr[$i]['file_name'] = $attributes['doc_file'][$i]->getClientOriginalName();
-            $inputArr[$i]['file_size'] = $attributes['doc_file'][$i]->getClientSize();
+            $inputArr[$i]['file_size'] = $attributes['doc_file'][$i]->getSize();
             $inputArr[$i]['file_encp_key'] =  md5('2');
             $inputArr[$i]['created_by'] = 1;
             $inputArr[$i]['updated_by'] = 1;

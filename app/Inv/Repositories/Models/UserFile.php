@@ -107,9 +107,9 @@ class UserFile extends BaseModel
                 $inputArr[$i]['file_path'] = $path['file_path'];
             }
              
-            $inputArr[$i]['file_type'] = $attributes['doc_file'][$i]->getClientMimeType();
+            $inputArr[$i]['file_type'] = $attributes['doc_file'][$i]->getMimeType();
             $inputArr[$i]['file_name'] = $attributes['doc_file'][$i]->getClientOriginalName();
-            $inputArr[$i]['file_size'] = $attributes['doc_file'][$i]->getClientSize();
+            $inputArr[$i]['file_size'] = $attributes['doc_file'][$i]->getSize();
             $inputArr[$i]['file_encp_key'] =  !empty($path['file_path']) ? md5(basename($path['file_path'])) : md5('2');
             $inputArr[$i]['created_by'] = 1;
             $inputArr[$i]['updated_by'] = 1;
@@ -173,9 +173,9 @@ class UserFile extends BaseModel
                 $inputArr[$i]['file_path'] = $path;
             }
              
-            $inputArr[$i]['file_type'] = $attributes['doc_file'][$i]->getClientMimeType();
+            $inputArr[$i]['file_type'] = $attributes['doc_file'][$i]->getMimeType();
             $inputArr[$i]['file_name'] = $attributes['doc_file'][$i]->getClientOriginalName();
-            $inputArr[$i]['file_size'] = $attributes['doc_file'][$i]->getClientSize();
+            $inputArr[$i]['file_size'] = $attributes['doc_file'][$i]->getSize();
             $inputArr[$i]['file_encp_key'] =  !empty($path) ? md5(basename($path)) : md5('2');
             $inputArr[$i]['created_by'] = 1;
             $inputArr[$i]['updated_by'] = 1;
