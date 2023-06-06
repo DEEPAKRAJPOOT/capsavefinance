@@ -50,10 +50,15 @@ use App\Inv\Repositories\Models\TransFactVoucher;
 use App\Inv\Repositories\Models\AppGroupDetail;
 use App\Inv\Repositories\Models\UcicUser;
 use App\Inv\Repositories\Models\UcicUserUcic;
+use App\Inv\Repositories\Models\AppDocumentFile;
+use App\Inv\Repositories\Models\OfferPTPQ;
+use App\Inv\Repositories\Models\UserAppDoc;
+use App\Inv\Repositories\Models\CamReviewSummRiskCmnt;
+use App\Inv\Repositories\Contracts\Traits\CommonTrait;
 
 class Helper extends PaypalHelper
 {
-
+    use CommonTrait;
     /**
      * Send exception emails
      *
@@ -1255,6 +1260,9 @@ class Helper extends PaypalHelper
         //dd($allEmailData['cc_mails']);
         $allEmailData['cc_mails'] = array_unique($Array_CC);
         $allEmailData['product_id'] = array_unique($productIdArr);
+        $allEmailData['biz_entity_name'] = $application->business->biz_entity_name;
+        $helper = new Helper();
+        $helper->_getReviewerSummaryData($allEmailData,$application->app_id,$application->business->biz_id);
         \Event::dispatch("APPLICATION_APPROVER_MAIL", serialize($allEmailData));
         return $approvers;
     }
@@ -3574,6 +3582,139 @@ class Helper extends PaypalHelper
     public static function getAnchorDetails($userId){
         $anchId = Anchor::where('sales_user_id',$userId)->get('anchor_id');
         return $anchId;
+    }
         
+    private function _getReviewerSummaryData(&$allEmailData, $appId, $bizId) {
+        $mstRepo = \App::make('App\Inv\Repositories\Contracts\MasterInterface');
+        $preCondArr = [];
+        $postCondArr = [];
+        $offerPTPQ = '';
+        $businessDetails = Business::find($bizId);
+        $preCondArr = $postCondArr = array();
+        $limitOfferData = AppProgramLimit::getLimitWithOffer($appId, $bizId, config('common.PRODUCT.LEASE_LOAN'));
+        $reviewerSummaryData = CamReviewerSummary::where('biz_id','=',$bizId)->where('app_id','=',$appId)->first();        
+        if(isset($limitOfferData->prgm_offer_id) && $limitOfferData->prgm_offer_id) {
+            $offerPTPQ = OfferPTPQ::getOfferPTPQR($limitOfferData->prgm_offer_id);
+        }
+        $preCondArr=[];
+        $postCondArr=[];
+        if(isset($reviewerSummaryData['cam_reviewer_summary_id'])) {
+            $dataPrePostCond = AppSecurityDoc::with(['mstSecurityDocs'])->where('cam_reviewer_summary_id', $reviewerSummaryData['cam_reviewer_summary_id'])->where('app_id', $appId)->where('is_active', 1)->whereIn('status', [1,2])->whereIn('is_non_editable', [0,1])->get();
+            $dataPrePostCond = $dataPrePostCond ? $dataPrePostCond->toArray() : [];
+            if(!empty($dataPrePostCond)) {
+              $preCondArr = array_filter($dataPrePostCond, array($this, "filterPreCondSecurity"));
+              $postCondArr = array_filter($dataPrePostCond, array($this, "filterPostCondSecurity"));
+            }
+        } 
+    
+        $positiveRiskCmntArr=[];
+        $negativeRiskCmntArr=[];
+        if(isset($reviewerSummaryData['cam_reviewer_summary_id'])) {
+            $dataRiskComments = CamReviewSummRiskCmnt::where('cam_reviewer_summary_id', $reviewerSummaryData['cam_reviewer_summary_id'])
+                            ->where('is_active', 1)->get();
+            $dataRiskComments = $dataRiskComments ? $dataRiskComments->toArray() : [];
+            if(!empty($dataRiskComments)) {
+              $positiveRiskCmntArr = array_filter($dataRiskComments, array($this, "filterRiskCommentPositive"));
+              $negativeRiskCmntArr = array_filter($dataRiskComments, array($this, "filterRiskCommentNegative"));
+            }
+        }
+        //Get PreOffer Docs
+        $appRepo = \App::make('App\Inv\Repositories\Contracts\ApplicationInterface');  
+        $appProductIds = [];
+        $appProducts = $appRepo->getApplicationProduct($appId);
+        foreach($appProducts->products as $product){
+            array_push($appProductIds, $product->pivot->product_id);
+        }        
+        $preOfferDocs=[];        
+        $prgmDocs = $appRepo->getRequiredDocs(['doc_type_id' => 4], $appProductIds);
+        foreach ($prgmDocs as $key => $value) {
+            $preOfferDocs[] = $value->doc_id;
+        }
+        //config('common.review_summ_mail_docs_id') + 
+        $fileArray = AppDocumentFile::getReviewerSummaryPreDocs($appId, $preOfferDocs);
+        $leaseOfferData = $facilityTypeList = array();
+        $leaseOfferData = AppProgramOffer::getAllOffers($appId, '3');
+        $facilityTypeList= $mstRepo->getFacilityTypeList()->toarray();
+        $arrStaticData = array();
+        $arrStaticData['rentalFrequency'] = array('1'=>'Yearly','2'=>'Bi-Yearly','3'=>'Quarterly','4'=>'Monthly');
+        $arrStaticData['rentalFrequencyForPTPQ'] = array('1'=>'Year','2'=>'Bi-Yearly','3'=>'Quarter','4'=>'Months');
+        $arrStaticData['securityDepositType'] = array('1'=>'INR','2'=>'%');
+        $arrStaticData['securityDepositOf'] = array('1'=>'Loan Amount','2'=>'Asset Value','3'=>'Asset Base Value','4'=>'Sanction');
+        $arrStaticData['rentalFrequencyType'] = array('1'=>'Advance','2'=>'Arrears');  
+        $dispAppId = Helper::formatIdWithPrefix($appId, 'APP');
+        $supplyOfferData = $appRepo->getAllOffers($appId, 1);//for supply chain 
+        $fee = [];
+        foreach($supplyOfferData as $key=>$val){
+            $offerCharges = $val->offerCharges;
+            $chrg_id0 = isset($offerCharges[0]) ? $offerCharges[0]->charge_id : '';
+            $fee[$chrg_id0]['chrg_type'] = isset($offerCharges[0]) ? $offerCharges[0]->chrg_type : '';
+            $fee[$chrg_id0]['chrg_name'] = isset($offerCharges[0]) ? $offerCharges[0]->chargeName->chrg_name : '';
+            $fee[$chrg_id0]['chrg_value'] = isset($offerCharges[0]) ? $offerCharges[0]->chrg_value : '';
+            $chrg_id1 = isset($offerCharges[1]) ? $offerCharges[1]->charge_id : '';
+            $fee[$chrg_id1]['chrg_type'] = isset($offerCharges[1]) ? $offerCharges[1]->chrg_type : '';
+            $fee[$chrg_id1]['chrg_name'] = isset($offerCharges[1]) ? $offerCharges[1]->chargeName->chrg_name : '';
+            $fee[$chrg_id1]['chrg_value'] = isset($offerCharges[1]) ? $offerCharges[1]->chrg_value : '';
+        }
+    
+        $is_shown = $appRepo->getOfferStatus([['app_id', $appId], ['is_approve', 1], ['status', 1],['is_active', 1]]);
+        $borrowerLimitData['single_limit'] = config('common.DEFAULT_BORROWER_LIMIT.Single_limit');
+        $borrowerLimitData['multiple_limit'] = config('common.DEFAULT_BORROWER_LIMIT.multiple_limit');
+        
+        if($is_shown){
+        $Limitdata =  $appRepo->getAppBorrowerLimit($appId);
+        if($Limitdata){
+            $borrowerLimitData['single_limit'] = $Limitdata['single_limit'];
+            $borrowerLimitData['multiple_limit'] = $Limitdata['multiple_limit'];
+        }
+        }else{
+            $Limitdata = $mstRepo->getCurrentBorrowerLimitData();
+            if($Limitdata){
+            $borrowerLimitData['single_limit'] = $Limitdata['single_limit'];
+            $borrowerLimitData['multiple_limit'] = $Limitdata['multiple_limit'];
+            }
+        }
+        $email_subject = 'New Application is waiting for your approval ' . $businessDetails->biz_entity_name;
+        $fileAttachments = [];
+        if($fileArray) {
+            foreach($fileArray as $key => $val) {
+                if(file_exists(storage_path('app/public/'.$val['file_path']))) {
+                    $fileAttachments[] = [
+                        'file_path' => storage_path('app/public/'.$val['file_path']),
+                        'file_name' => $val['file_name'],
+                        'isBinaryData' => false,
+                    ];
+                }
+            }
+        }
+        //Cam report files
+        $camFile = UserAppDoc::getLatestDoc($appId, config('common.PRODUCT.LEASE_LOAN'), '2');
+        if($camFile) {
+            if(file_exists(storage_path('app/public/'.$camFile['file_path']))) {
+                $fileAttachments[] = [
+                    'file_path' => storage_path('app/public/'.$camFile['file_path']),
+                    'file_name' => $camFile['file_name'],
+                    'isBinaryData' => false,
+                ];
+            }
+        }
+        // Add elements one by one
+        $allEmailData['limitOfferData'] = $limitOfferData;
+        $allEmailData['reviewerSummaryData'] = $reviewerSummaryData;
+        $allEmailData['offerPTPQ'] = $offerPTPQ;
+        $allEmailData['preCondArr'] = $preCondArr;
+        $allEmailData['postCondArr'] = $postCondArr;
+        $allEmailData['leaseOfferData'] = $leaseOfferData;
+        $allEmailData['arrStaticData'] = $arrStaticData;
+        $allEmailData['facilityTypeList'] = $facilityTypeList;
+        $allEmailData['appId'] = $appId;
+        $allEmailData['url'] = 'https://'. config('proin.backend_uri');
+        $allEmailData['dispAppId'] = $dispAppId;
+        $allEmailData['supplyOfferData'] = $supplyOfferData;
+        $allEmailData['positiveRiskCmntArr'] = $positiveRiskCmntArr;
+        $allEmailData['negativeRiskCmntArr'] = $negativeRiskCmntArr;
+        $allEmailData['fee'] = $fee;
+        $allEmailData['borrowerLimitData'] = $borrowerLimitData;
+        $allEmailData['email_subject'] = $email_subject;
+        $allEmailData['fileAttachments'] = $fileAttachments;            
     }
 }

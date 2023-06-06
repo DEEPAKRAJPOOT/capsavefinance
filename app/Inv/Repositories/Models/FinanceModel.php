@@ -261,6 +261,7 @@ class FinanceModel extends BaseModel
             'name' => $emailData['name'] ?? NULL,
             'fileid' => $emailData['fileid'] ?? NULL,
             'sent_by' => \Auth::user() ? \Auth::user()->user_id : 1,
+            'status' => 0,
         ];
 
         if (!empty($emailData['email_cc'])) {

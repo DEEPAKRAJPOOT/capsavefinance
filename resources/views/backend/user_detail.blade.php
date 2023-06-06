@@ -923,8 +923,6 @@ User Detail
 @section('jscript')
 <script>
 var messages = {
-    get_users_wci: "{{ URL::route('get_users_wci') }}",
-    get_users_wci_single: "{{ URL::route('get_users_wci_single') }}",
     delete_users: "{{ URL::route('delete_users') }}",
     data_not_found: "{{ trans('error_messages.data_not_found') }}",
     token: "{{ csrf_token() }}",

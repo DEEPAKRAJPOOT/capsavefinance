@@ -533,6 +533,7 @@ class User extends Authenticatable
      */
     public static function getUserRoles($user_id)
     {
+        // dd($user_id);
         /**
          * Check id is not blank
          */
@@ -546,9 +547,8 @@ class User extends Authenticatable
         if (!is_int($user_id)) {
             throw new InvalidDataTypeExceptions(trans('error_message.invalid_data_type'));
         }
-
         $arrRoles = self::find($user_id)->roles;
-
+        // dd($arrRoles);
         return ($arrRoles ? : false);
     }
     
