@@ -124,14 +124,29 @@ class UcicUserController extends Controller
                 'invoice_level_mail' => [
                     'required',
                     function ($attribute, $value, $fail) {
-                        $emails = explode(',', $value);
-    
+                        $emails = array_map('trim', explode(',', $value));
+                        $uniqueEmails = [];
+                        $invalidEmails = [];
+                        $duplicateEmails = [];
+            
                         foreach ($emails as $email) {
-                            $trimmedEmail = trim($email);
-                            if (!filter_var($trimmedEmail, FILTER_VALIDATE_EMAIL)) {
-                                $fail("The Invoice Level Mail must be a comma-separated list of valid email addresses.");
-                                return;
+                            if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+                                $invalidEmails[] = $email;
+                            } elseif (in_array($email, $uniqueEmails)) {
+                                $duplicateEmails[] = $email;
+                            } else {
+                                $uniqueEmails[] = $email;
                             }
+                        }
+            
+                        if (!empty($invalidEmails)) {
+                            $fail("Invalid email IDs: " . implode(', ', $invalidEmails));
+                            return;
+                        }
+            
+                        if (!empty($duplicateEmails)) {
+                            $fail("Duplicate email IDs: " . implode(', ', $duplicateEmails));
+                            return;
                         }
                     },
                 ],

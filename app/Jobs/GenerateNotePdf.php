@@ -190,10 +190,9 @@ class GenerateNotePdf implements ShouldQueue
     }
 
     public function sendCapsaveInvoiceMail($pdfResult,$newInvoiceNo,$getEmails,$custId = NULL,$custName = NULL,$invoiceBorneBy =NULL){
-        foreach($getEmails as $getEmail){
             $emailData = array(
                 'invoice_no' => $newInvoiceNo,
-                'email' => $getEmail,
+                'email' => $getEmails,
                 'body' => 'body',
                 'attachment' => $pdfResult,
                 'custId' => $custId,
@@ -201,6 +200,5 @@ class GenerateNotePdf implements ShouldQueue
                 'invoiceBorneBy' => $invoiceBorneBy,
             );
             \Event::dispatch("USER_INVOICE_MAIL", serialize($emailData));
-        }
     }
 }

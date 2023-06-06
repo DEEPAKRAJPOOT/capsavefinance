@@ -463,31 +463,46 @@ function checkValidation(){
 		flag = false;
 	}
 
-	if(invoiceLeveMail == ''){
-		setError('input[name=invoice_level_mail]', 'Please enter Comma Seperated Email Id');
-		flag = false;
-	}
-	if(invoiceLeveMail != ''){
-		var validEmails = [];
-		var invalidEmails = [];
-
-		var emailPattern = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
-
-		for (var i = 0; i < invoiceLeveMail.length; i++) {
-		var trimmedEmail = invoiceLeveMail[i].trim();
-
-		if (emailPattern.test(trimmedEmail)) {
-			validEmails.push(trimmedEmail);
-		} else {
-			invalidEmails.push(trimmedEmail);
-		}
-		}
-
-		if (invalidEmails.length != 0) {
-			setError('input[name=invoice_level_mail]', 'Invalid email IDs: ' + invalidEmails.join(', '));
-			flag = false;
-		} 
-	}
+	// if(invoiceLeveMail == ''){
+	// 	setError('input[name=invoice_level_mail]', 'Invoice level Mail Field cannont be left Blank');
+	// 	flag = false;
+	// }
+	// if (invoiceLeveMail !== '') {
+	// 	var validEmails = [];
+	// 	var invalidEmails = [];
+	// 	var duplicateEmails = [];
+	// 	var uniqueEmails = new Set();
+	  
+	// 	var emailPattern = /^\w+([\.-]?\w+)@\w+([\.-]?\w+)(\.\w{2,3})+$/;
+	  
+	// 	for (var i = 0; i < invoiceLeveMail.length; i++) {
+	// 	  var trimmedEmail = invoiceLeveMail[i].trim();
+	  
+	// 	  if (emailPattern.test(trimmedEmail)) {
+	// 		if (uniqueEmails.has(trimmedEmail)) {
+	// 		  // Duplicate email ID found
+	// 		  if (!duplicateEmails.includes(trimmedEmail)) {
+	// 			duplicateEmails.push(trimmedEmail);
+	// 		  }
+	// 		} else {
+	// 		  validEmails.push(trimmedEmail);
+	// 		  uniqueEmails.add(trimmedEmail);
+	// 		}
+	// 	  } else {
+	// 		invalidEmails.push(trimmedEmail);
+	// 	  }
+	// 	}
+	  
+	// 	if (invalidEmails.length !== 0) {
+	// 	  setError('input[name=invoice_level_mail]', 'Invalid email IDs: ' + invalidEmails.join(', '));
+	// 	  flag = false;
+	// 	}
+	  
+	// 	if (duplicateEmails.length !== 0) {
+	// 	  setError('input[name=invoice_level_mail]', 'Duplicate email IDs: ' + duplicateEmails.join(', '));
+	// 	  flag = false;
+	// 	}
+	//   }
     
 
 	if(flag){
