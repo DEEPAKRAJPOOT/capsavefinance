@@ -81,6 +81,7 @@ class UserInvoice extends BaseModel {
         'anchor_id',
         'customer_name',
         'anchor_name',
+        'is_gst',
         'file_id',
         'job_id',
         'created_by',

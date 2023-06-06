@@ -142,7 +142,8 @@ class GenerateNotePdf implements ShouldQueue
                 'invoiceBorneBy' => $invoiceBorneBy,
                 'custId' => $invData->customer_id ?? '',
                 'custName' => $invData->customer_name ?? '',
-                'anchorName' => $invData->anchor_name ?? ''
+                'anchorName' => $invData->anchor_name ?? '',
+                'isGst' => $invData->is_gst
             ];
             view()->share($data);
             $path ='capsaveInvoice/'.str_replace("/","_",strtoupper($data['origin_of_recipient']['invoice_no'])).'.pdf';

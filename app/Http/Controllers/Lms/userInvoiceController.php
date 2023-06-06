@@ -604,8 +604,9 @@ class userInvoiceController extends Controller
             $total_rental = round($base_amt + $sgst_amt + $cgst_amt + $igst_amt, 2);
             $total_sum_of_rental += $total_rental; 
             $intrest_charges[$key]['total_rental'] =  $total_rental; 
+            $isGst = $txn->gst;
         }
-        return [$intrest_charges, $total_sum_of_rental, $invCatName];
+        return [$intrest_charges, $total_sum_of_rental, $invCatName,$isGst];
     }
 
     /**
@@ -857,6 +858,7 @@ class userInvoiceController extends Controller
             unset($company_data['state']);
             $bank_id = bankDetailIsOfRegisteredCompanyInInvoice() ? $registeredCompany['bank_account_id'] : $company_data['bank_id'];
 
+            $isGst = $inv_data[3];
             $invoiceType = $invoice_type;
             $invoiceTypeName = substr($invoiceType,0,1)  == 'C' ? 1 : 2;
             $invCat = $inv_data[2];
@@ -919,6 +921,7 @@ class userInvoiceController extends Controller
                 'comp_addr_register' => json_encode($registeredCompany),
                 'bank_id' => $bank_id,
                 'is_active' => 1,
+                'is_gst' => $isGst,
 
                 'pan_no' => $billingDetails['pan_no'] ?? NULL, 
                 'biz_gst_no' => $billingDetails['biz_gst_no'] ?? NULL, 
@@ -1052,6 +1055,7 @@ class userInvoiceController extends Controller
             $is_state_diffrent = ($userStateId != $companyStateId);
             $inv_data = $this->_calculateInvoiceTxns($txnsData, $is_state_diffrent, false, 1);
 
+            $isGst = $inv_data[3];
             $invoiceTypeName = substr($invoiceType,0,1) == "C" ? 1 : 2;
             $invoiceTypeOld  = $invoiceType;
 
@@ -1122,6 +1126,7 @@ class userInvoiceController extends Controller
                 'comp_addr_register' => json_encode($registeredCompany),
                 'bank_id' => $bank_id,
                 'is_active' => 1,
+                'is_gst' => $isGst,
 
                 'pan_no' => $billingDetails['pan_no'] ?? NULL, 
                 'biz_gst_no' => $billingDetails['biz_gst_no'] ?? NULL, 
