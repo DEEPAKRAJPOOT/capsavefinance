@@ -14,10 +14,10 @@
                     <td> 
                     <!-- <a  href="{{ isset($arr->file_path) ? Storage::url($arr->file_path) : '' }}" class="add-btn-cls btn btn-success btn-sm " style="padding: 0.25rem 0.5rem;" title="Download File" type="button" download="{{$arr->file_name}}"><i class="fa fa-download"></i></a> -->
                     @can('download_storage_file')
-                    <a href="{{ isset($arr->file_path) ? route('download_storage_file', ['file_id' => $arrData->file_id ]) : '' }}" title="Download File" class="btn-upload   btn-sm" type="button" style="padding: 0.25rem 0.5rem;"> <i class="fa fa-download"></i></a>
+                    <a href="{{ isset($arr->file_path) ? route('download_s3_file', ['file_id' => $arrData->file_id ]) : '' }}" title="Download File" class="btn-upload   btn-sm" type="button" style="padding: 0.25rem 0.5rem;"> <i class="fa fa-download"></i></a>
                     @endcan
                     @can('view_qms_doc')
-                    <a  href="{{ isset($arr->file_path) ? route('view_qms_doc', ['file_id' => $arrData->file_id ]) : '' }}" title="View File" class="btn-upload   btn-sm" type="button" target="_blank" style="padding: 0.25rem 0.5rem;"> <i class="fa fa-eye"></i></a>
+                    <a  href="{{ isset($arr->file_path) ? route('view_uploaded_doc', ['file_id' => $arrData->file_id ]) : '' }}" title="View File" class="btn-upload   btn-sm" type="button" target="_blank" style="padding: 0.25rem 0.5rem;"> <i class="fa fa-eye"></i></a>
                     @endcan
                     </td>
                 </tr>

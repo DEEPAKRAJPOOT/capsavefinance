@@ -25,7 +25,7 @@
                         <li><span class="icon"><i class="fa fa-file-pdf-o"></i></span></li>
                         <li>
                         @can('download_storage_file')
-                        <a href="{{ route('download_storage_file', ['file_id' => $bankdoc->file_id ]) }}" target="_blank">Download Bank Statement</a>
+                        <a href="{{ route('download_s3_file', ['file_id' => $bankdoc->file_id ]) }}" target="_blank">Download Bank Statement</a>
                         @endcan
                         </li>
                         <li>

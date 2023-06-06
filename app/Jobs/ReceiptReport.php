@@ -103,6 +103,9 @@ class ReceiptReport implements ShouldQueue
         $storage_path = storage_path('app/'.$dirPath);
         $filePath = $storage_path.'/Receipt Report'.time().'.xlsx';
         $objWriter->save($filePath);
-        return $filePath;
+        $s3path = env('S3_BUCKET_DIRECTORY_PATH').'/report/receiptReport/'.date('Ymd');
+        $attributes['temp_file_path'] = $filePath;
+        $path = Helper::uploadAwsS3Bucket($s3path, $attributes, 'Receipt Report'.time().'.xlsx');
+        return $path;
     }
 }

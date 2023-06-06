@@ -2160,6 +2160,7 @@ class ApportionmentController extends Controller
     }
 
     public function uploadApportUnsettledTrans(Request $request){
+        
         set_time_limit(0);
         $sanctionPageView = false;
         if ($request->has('sanctionPageView')) {
@@ -2190,9 +2191,9 @@ class ApportionmentController extends Controller
                             return redirect()->back();
                         }
                         $uploadFileData = $uploadData['data'];
-                        $fullFilePath = storage_path('app') . '/public/' . $uploadFileData['file_path'];
-                        if (file_exists($fullFilePath)) {
-                            $fileArrayData = $fileHelper->csvToArray($fullFilePath, $delimiter = ',');
+                    //     $fullFilePath = storage_path('app') . '/public/' . $uploadFileData['file_path'];
+                    //    if (file_exists($fullFilePath)) {
+                            $fileArrayData = $fileHelper->csvToArray($uploadFileData['file_path'], $delimiter = ',');
                             if ($fileArrayData['status'] != 'success') {
                                 Session::flash('untrans_error', $fileHelper->validationMessage(5));
                                 return redirect()->back();
@@ -2297,10 +2298,11 @@ class ApportionmentController extends Controller
                                 Session::flash('untrans_error', $fileHelper->validationMessage(12));
                                 return redirect()->back();
                             }
-                        } else {
-                            Session::flash('untrans_error', $fileHelper->validationMessage(14));
-                            return redirect()->back();
-                        }
+                        // } else {
+                        //     echo "this error";die;
+                        //     Session::flash('untrans_error', $fileHelper->validationMessage(14));
+                        //     return redirect()->back();
+                        // }
                     } else {
                         Session::flash('untrans_error', $fileHelper->validationMessage(15));
                         return redirect()->back();

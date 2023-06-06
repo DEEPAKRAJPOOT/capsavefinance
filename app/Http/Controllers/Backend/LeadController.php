@@ -413,9 +413,9 @@ class LeadController extends Controller {
      */
     public function saveaddAnchorReg(Request $request) {
         try {
+            
             //$string = Helpers::randomPassword();
             $string = time();
-           
             $validator = Validator::make($request->all(), [
                 'doc_file' => 'required|mimes:jpeg,jpg,png,pdf',
                 'is_fungible' => 'required|numeric',
@@ -729,6 +729,7 @@ class LeadController extends Controller {
                 $fileId = $anchorUserInfo->file_id;
                 $fileName = UserFile::where(['file_id' => $fileId, 'is_active' => 1])->pluck('file_name');
                 $file = $fileName[0];
+                
                 $anchorVal = $this->userRepo->getAnchorById($anchorId);
             }
             // dd($anchorVal);
@@ -1237,12 +1238,9 @@ class LeadController extends Controller {
             
             $file_id = $request->get('fileId');
             $fileData = $this->docRepo->getFileByFileId($file_id);
-
-            $filePath = 'app/public/'.$fileData->file_path;
-            $path = storage_path($filePath);
             
-            if (file_exists($path)) {
-                return response()->file($path);
+            if (Storage::disk(env('STORAGE_TYPE'))->exists($fileData->file_path)) {
+                return Storage::disk(env('STORAGE_TYPE'))->download($fileData->file_path);
             }else{
                 exit('Requested file does not exist on our server!');
             }

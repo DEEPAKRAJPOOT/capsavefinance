@@ -534,7 +534,6 @@ class ApplicationController extends Controller
             $docId = $request->get('doc_id'); //  fetch document id
             $appId = $request->get('app_id'); //  fetch document id
             $ownerId = $request->get('owner_id'); //  fetch document id
-//            $uploadData = Helpers::uploadAwsBucket($arrFileData, $appId);
             $uploadData = Helpers::uploadAppFile($arrFileData, $appId);
             $userFile = $this->docRepo->saveFile($uploadData);
             if(!empty($userFile->file_id)) {

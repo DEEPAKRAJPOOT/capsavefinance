@@ -8,6 +8,7 @@ use File;
 use App\Inv\Repositories\Models\AppDocumentFile;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\Storage;
+use Helpers;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use App\Inv\Repositories\Factory\Models\BaseModel;
 
@@ -99,18 +100,17 @@ class UserFile extends BaseModel
         $appId = (isset($attributes['appId'])) ? $attributes['appId'] : $attributes['app_id'];
         for ( $i=0; $i < $count; $i++) 
         {   
+            $s3path = env('S3_BUCKET_DIRECTORY_PATH').'/user/' .$userId. '/' .$appId;
             if($attributes['doc_file'][$i]) {
-                if(!Storage::exists('/public/user/' .$userId. '/' .$appId)) {
-                    Storage::makeDirectory('/public/user/' .$userId. '/' .$appId, 0775, true);
-                }
-                $path = Storage::disk('public')->put('/user/' .$userId. '/' .$appId, $attributes['doc_file'][$i], null);
-                $inputArr[$i]['file_path'] = $path;
+                $data['doc_file'] = $attributes['doc_file'][$i];
+                $path = Helpers::uploadAwsS3Bucket($s3path,$data);
+                $inputArr[$i]['file_path'] = $path['file_path'];
             }
              
-            $inputArr[$i]['file_type'] = $attributes['doc_file'][$i]->getClientMimeType();
+            $inputArr[$i]['file_type'] = $attributes['doc_file'][$i]->getMimeType();
             $inputArr[$i]['file_name'] = $attributes['doc_file'][$i]->getClientOriginalName();
             $inputArr[$i]['file_size'] = $attributes['doc_file'][$i]->getSize();
-            $inputArr[$i]['file_encp_key'] =  !empty($path) ? md5(basename($path)) : md5('2');
+            $inputArr[$i]['file_encp_key'] =  !empty($path['file_path']) ? md5(basename($path['file_path'])) : md5('2');
             $inputArr[$i]['created_by'] = 1;
             $inputArr[$i]['updated_by'] = 1;
         }
@@ -173,7 +173,7 @@ class UserFile extends BaseModel
                 $inputArr[$i]['file_path'] = $path;
             }
              
-            $inputArr[$i]['file_type'] = $attributes['doc_file'][$i]->getClientMimeType();
+            $inputArr[$i]['file_type'] = $attributes['doc_file'][$i]->getMimeType();
             $inputArr[$i]['file_name'] = $attributes['doc_file'][$i]->getClientOriginalName();
             $inputArr[$i]['file_size'] = $attributes['doc_file'][$i]->getSize();
             $inputArr[$i]['file_encp_key'] =  !empty($path) ? md5(basename($path)) : md5('2');

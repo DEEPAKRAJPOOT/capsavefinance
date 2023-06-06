@@ -1300,7 +1300,7 @@ class ReportController extends Controller
 	public function downloadOverdueReportFromLogs(Request $request)
 	{
 		$reportLog = OverdueReportLog::findOrfail($request->report_log_id);
-		return response()->download($reportLog->file_path);
+		return Storage::disk(env('STORAGE_TYPE'))->download($reportLog->file_path);
 	}
 	
     public function etlReportSync(){
@@ -1318,7 +1318,7 @@ class ReportController extends Controller
 	public function downloadOutstandingReportFromLogs(Request $request)
 	{
 		$reportLog = OutstandingReportLog::findOrfail($request->report_log_id);
-		return response()->download($reportLog->file_path);
+		return Storage::disk(env('STORAGE_TYPE'))->download($reportLog->file_path);
 	}
 
 	public function reconReport(Request $request){
@@ -1332,6 +1332,6 @@ class ReportController extends Controller
 	public function downloadReconReportFromLogs(Request $request)
 	{
 		$reportLog = ReconReportLog::findOrfail($request->report_log_id);
-		return response()->download($reportLog->file_path);
+		return Storage::disk(env('STORAGE_TYPE'))->download($reportLog->file_path);
 	}
 }

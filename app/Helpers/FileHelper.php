@@ -75,22 +75,13 @@ class FileHelper {
     }
 
     public function uploadFileWithContent($active_filename_fullpath, $fileContents) {
-        $defaultPath = $this->diskStoragePath->path('');
+        $defaultPath = Storage::disk(env('STORAGE_TYPE'))->path('');
         $realPath = str_replace($defaultPath, '', $active_filename_fullpath);
-        $isSaved = $this->diskStoragePath->put($realPath, $fileContents);
-        if ($isSaved) {
-            $mimetype = $this->diskStoragePath->mimeType($realPath);
-            $size = $this->diskStoragePath->size($realPath);
-            $inputArr['file_path'] = $realPath;
-            $inputArr['file_type'] = $mimetype;
-            $inputArr['file_name'] = basename($realPath);
-            $inputArr['file_size'] = $size;
-            $inputArr['file_encp_key'] =  md5('2');
-            $inputArr['created_by'] = 1;
-            $inputArr['updated_by'] = 1;
-            return $inputArr;
-        }
-        return $isSaved;
+        $data['file_content'] = $fileContents;
+        $inputArr = Helper::uploadAwsS3Bucket($realPath,$data);
+
+        return $inputArr;
+       
     }
 
     public function readFileContent($active_filename_fullpath) {
@@ -377,11 +368,11 @@ public function exportCsv($data=[],$columns=[],$fileName='',$extraDataArray=[])
             'data' => [],
           ];
       try{
-        if (!file_exists($filename) || !is_readable($filename))
-            return false;
+        // if (!file_exists($filename) || !is_readable($filename))
+        //     return false;
 
         $header = null;
-        if (($handle = fopen($filename, 'r')) !== false)
+        if (($handle = fopen(env('S3_BUCKET_URL').$filename, 'r')) !== false)
         {
             $rows=1;
             while (($row = fgetcsv($handle, 1000, $delimiter)) !== false)
@@ -411,20 +402,23 @@ public function exportCsv($data=[],$columns=[],$fileName='',$extraDataArray=[])
         $respArray['status'] = 'fail';
         $respArray['message'] = str_replace($filename, '', $e->getMessage());
     }
+
     return $respArray;
     }
 
     public static function uploadUnSettledTransCsv($data=[],$columns=[],$fileName='',$extraDataArray=[],$paymentId=null,$type='upload')
     {
+      
       $respArray = [
         'status' => 'success',
         'message' => 'success',
         'data' => [],
       ];
-      try{
+     // try{
         $inputArr = [];
         if ($data) {
           if($type == 'download'){
+             
               if (!Storage::exists('/public/payment/' . $paymentId.'/download')) {
                 Storage::makeDirectory('/public/payment/' . $paymentId.'/download', 0777, true);
               }
@@ -446,34 +440,28 @@ public function exportCsv($data=[],$columns=[],$fileName='',$extraDataArray=[])
               $inputArr['file_size'] = \File::size($destinationPath);
               $inputArr['file_encp_key'] =  md5('2');
         }else{
-          if ($data['upload_unsettled_trans']) {
-          if (!Storage::exists('/public/payment/' . $paymentId.'/upload')) {
-            Storage::makeDirectory('/public/payment/' . $paymentId.'/upload', 0777, true);
+
+          if (isset($data['upload_unsettled_trans']) && !empty($data['upload_unsettled_trans'])) {
+             $s3path = env('S3_BUCKET_DIRECTORY_PATH').'/payment/' . $paymentId.'/upload';
+             $fileName = $data['upload_unsettled_trans']->getClientOriginalName();
+             $inputArr = Helper::uploadAwsS3Bucket($s3path, $data,$fileName);
           }
-          $destinationPath = '/payment/' . $paymentId.'/upload';
-          $fileName = $data['upload_unsettled_trans']->getClientOriginalName();
-          //$path = Storage::put($destinationPath,$data['upload_unsettled_trans'],'file.csv');
-          $path = Storage::disk('public')->putFileAs($destinationPath, $data['upload_unsettled_trans'],$fileName);
-          $inputArr['file_path'] = $path;
-        }
-        $inputArr['file_type'] = $data['upload_unsettled_trans']->getClientMimeType();
-        $inputArr['file_name'] = $data['upload_unsettled_trans']->getClientOriginalName();
-        $inputArr['file_size'] = $data['upload_unsettled_trans']->getSize();
-        $inputArr['file_encp_key'] =  md5('2');
         }
         $inputArr['created_by'] = 1;
         $inputArr['updated_by'] = 1;
+        
         $respArray = [
           'status' => 'success',
           'message' => 'success',
           'data' => $inputArr,
         ];
+        
        }
-      }catch(\Exception $e){
-        $respArray['data'] = [];
-        $respArray['status'] = 'fail';
-        $respArray['message'] = str_replace($fileName, '', $e->getMessage());
-      }
+      // }catch(\Exception $e){
+      //   $respArray['data'] = [];
+      //   $respArray['status'] = 'fail';
+      //   $respArray['message'] = str_replace($fileName, '', $e->getMessage());
+      // }
       return $respArray;
     }
 

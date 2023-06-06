@@ -1088,7 +1088,7 @@ class CamController extends Controller
         $filePath = storage_path("app/public/") . $path;
         $fullPath = $filePath . $fileName;
         $inputArr[$key]['file_path'] = $path . $fileName;
-        $inputArr[$key]['file_type'] = $reqFile->getClientMimeType();
+        $inputArr[$key]['file_type'] = $reqFile->getMimeType();
         $inputArr[$key]['file_name'] = $reqFile->getClientOriginalName();
         $inputArr[$key]['file_size'] = $reqFile->getSize();
         $inputArr[$key]['file_encp_key'] =  md5($fullPath);
@@ -2736,6 +2736,7 @@ class CamController extends Controller
 
     public function generateCamReport(Request $request){
       try{
+        
         $viewData = $this->getCamReportData($request);
         $bizId = $request->get('biz_id');
         $appId = $request->get('app_id');
