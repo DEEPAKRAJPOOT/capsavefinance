@@ -461,7 +461,7 @@ class userInvoiceController extends Controller
         }
         $total_sum_of_rental = 0;
         $activeGst = (in_array($invCat, [1,3])) ? GstTax::getActiveGST()->first() : NULL;
-
+        $isGst = 0;
         foreach ($txnsData as  $key => $txn) {
             $desc = $txn->customerTransactionSOA->trans_name??'';
             $totalamount = $txn->amount;
@@ -604,7 +604,9 @@ class userInvoiceController extends Controller
             $total_rental = round($base_amt + $sgst_amt + $cgst_amt + $igst_amt, 2);
             $total_sum_of_rental += $total_rental; 
             $intrest_charges[$key]['total_rental'] =  $total_rental; 
-            $isGst = $txn->gst;
+            if($txn->gst == 1){
+                $isGst = 1;
+            }
         }
         return [$intrest_charges, $total_sum_of_rental, $invCatName,$isGst];
     }
