@@ -184,9 +184,9 @@ class DocumentController extends Controller
             $fileId = $request->get('file_id');
             $fileData = $this->docRepo->getFileByFileId($fileId);
             if (!empty($fileData->file_path )) {
-                $file = Storage::disk('public')->exists($fileData->file_path);
+                $file = Storage::exists('public/'.$fileData->file_path);
                 if ($file) {
-                    return Storage::disk('public')->download($fileData->file_path, $fileData->file_name);
+                    return Storage::download('public/'.$fileData->file_path, $fileData->file_name);
                 } else {
                     return redirect()->back()->withErrors(trans('error_messages.documentNotFound'));
                 }
@@ -205,12 +205,12 @@ class DocumentController extends Controller
 
         $fileId = $request->get('file_id');
         $fileData = $this->docRepo->getFileByFileId($fileId);
-        
-        if (Storage::disk(env('STORAGE_TYPE'))->exists($fileData->file_path)) {
-            $s3_filepath = $fileData->file_path;
+
+        $filePath = 'public/'.$fileData->file_path;
+        if (Storage::exists($filePath)) {
             $fileName = time().$fileData->file_name;
             $temp_filepath = tempnam(sys_get_temp_dir(), 'file');
-            $file_data = Storage::disk(env('STORAGE_TYPE'))->get($s3_filepath);
+            $file_data = Storage::get($filePath);
             file_put_contents($temp_filepath, $file_data);
 
             return response()
@@ -226,11 +226,11 @@ class DocumentController extends Controller
         try {
             $fileId = $request->get('file_id');
             $fileData = $this->docRepo->getFileByFileId($fileId);
-            if (!empty($fileData->file_path )) {
-                $file = Storage::disk(env('STORAGE_TYPE'))->exists($fileData->file_path);
-                $path = $fileData->file_path;
+            $filePath = $fileData->file_path; 
+            if (!empty($fileData->file_path)) {
+                $file = Storage::exists($filePath);
                 if ($file) {
-                    return Storage::disk(env('STORAGE_TYPE'))->download($fileData->file_path, $fileData->file_name);
+                    return Storage::download($filePath, $fileData->file_name);
                 } else {
                     return redirect()->back()->withErrors(trans('error_messages.documentNotFound'));
                 }

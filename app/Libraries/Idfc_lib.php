@@ -250,7 +250,7 @@ class Idfc_lib{
 
 	private function _saveLogFile($data, $w_filename = '', $w_folder = '') {
 		list($year, $month, $date, $hour) = explode('-', strtolower(date('Y-M-dmy-H')));
-		$path = Storage::disk('public')->put("/IDFCH2H/CAPSAVEUAT/ACHDR/$w_folder/$w_filename", $data);
+		$path = Storage::put("public/IDFCH2H/CAPSAVEUAT/ACHDR/$w_folder/$w_filename", $data);
 		return True;
 	}
 

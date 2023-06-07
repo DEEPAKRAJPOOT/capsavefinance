@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Jobs;
-use Helpers;
+use App\Helpers\Helper;
 use Carbon\Carbon;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\IOFactory;
@@ -14,7 +14,6 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use App\Inv\Repositories\Contracts\ReportInterface;
-use App\Inv\Repositories\Models\Master\EmailTemplate;
 use App\Inv\Repositories\Models\Lms\OutstandingReportLog;
 
 class OutstandingReportManual implements ShouldQueue
@@ -193,7 +192,7 @@ class OutstandingReportManual implements ShouldQueue
             if (!Storage::exists($dirPath)) {
                 Storage::makeDirectory($dirPath);
             }
-            $storage_path = storage_path('app/'.$dirPath);
+            $storage_path = Storage::path($dirPath);
             $filename = 'Invoice Outstanding Report'.'_'.Carbon::now()->setTimezone(config('common.timezone'))->format('Ymd_hisA').'.xlsx';
             $filePath = $storage_path.'/'.$filename;
             
@@ -204,15 +203,16 @@ class OutstandingReportManual implements ShouldQueue
             header("Cache-Control: post-check=0, pre-check=0", false);
             header("Pragma: no-cache");
             
+            $tmpHandle = tmpfile();
+            $metaDatas = stream_get_meta_data($tmpHandle);
+            $tmpFilename = $metaDatas['uri'];
+
             $objWriter = IOFactory::createWriter($sheet, 'Xlsx');
         
-            $objWriter->save($filePath);
-            $s3path = env('S3_BUCKET_DIRECTORY_PATH').'/report/OutstandingReport/manual/console';
-            if(!App::runningInConsole()){
-                $s3path = env('S3_BUCKET_DIRECTORY_PATH').'/report/OutstandingReport/manual/http';
-            }
-            $attributes['temp_file_path'] = $filePath;
-            $path = Helper::uploadAwsS3Bucket($s3path, $attributes, $filename);
+            $objWriter->save($tmpFilename);
+            $attributes['temp_file_path'] = $tmpFilename;
+            $path = Helper::uploadAwsS3Bucket($storage_path, $attributes, $filename);
+            unlink($tmpFilename);
             return $path;
         } catch (\Throwable $ex) {
             throw $ex;

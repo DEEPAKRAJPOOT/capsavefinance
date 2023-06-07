@@ -313,17 +313,22 @@ public function listInvoice() {
 
 public function viewAdhocUploadedFile(Request $request){
 	try {
-		$file_id  = $request->get('file_id');
-		$fileData = $this->docRepo->getFileByFileId($file_id);
+		$fileId = $request->get('file_id');
+        $fileData = $this->docRepo->getFileByFileId($fileId);
 
-		$filePath = 'app/public/'.$fileData->file_path;
-		$path     = storage_path($filePath);
+        $filePath = 'public/'.$fileData->file_path;
+        if (Storage::exists($filePath)) {
+            $fileName = time().$fileData->file_name;
+            $temp_filepath = tempnam(sys_get_temp_dir(), 'file');
+            $file_data = Storage::get($filePath);
+            file_put_contents($temp_filepath, $file_data);
 
-		if (file_exists($path)) {
-			return response()->file($path);
-		} else{
-			exit('Requested file does not exist on our server!');
-		}
+            return response()
+                ->download($temp_filepath, $fileName, [], 'inline')
+                ->deleteFileAfterSend();
+        }else{
+            exit('Requested file does not exist on our server!');
+        }
 	} catch (Exception $ex) {
 		return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
 	}

@@ -780,19 +780,22 @@ class PaymentController extends Controller {
 
 	public function viewUploadedFile(Request $request){
         try {
-            
-            $file_id = $request->get('file_id');
-            $fileData = $this->docRepo->getFileByFileId($file_id);
-            
-            $filePath = 'app/public/'.$fileData->file_path;
-            $path = storage_path($filePath);
-           
-            if (file_exists($path)) {
-                return response()->file($path);
-            }else{
-                exit('Requested file does not exist on our server!');
-			}
-			
+            $fileId = $request->get('file_id');
+			$fileData = $this->docRepo->getFileByFileId($fileId);
+
+			$filePath = 'public/'.$fileData->file_path;
+			if (Storage::exists($filePath)) {
+				$fileName = time().$fileData->file_name;
+				$temp_filepath = tempnam(sys_get_temp_dir(), 'file');
+				$file_data = Storage::get($filePath);
+				file_put_contents($temp_filepath, $file_data);
+
+				return response()
+					->download($temp_filepath, $fileName, [], 'inline')
+					->deleteFileAfterSend();
+			}else{
+				exit('Requested file does not exist on our server!');
+			}			
         } catch (Exception $ex) {                
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
         }
@@ -820,38 +823,26 @@ class PaymentController extends Controller {
     public function importExcelPayment(Request $request)
     {
         try {
-            $arrFileData = $request->files;
-            $inputArr = [];
-            $path = '';
-            $userId = Auth::user()->user_id;
-            if ($request['doc_file']) {
-                if (!Storage::exists('/public/nachexcel/response')) {
-                    Storage::makeDirectory('/public/nachexcel/response');
-                }
-                $path = Storage::disk('public')->put('/nachexcel/response', $request['doc_file'], null);
-            }
             $uploadedFile = $request->file('doc_file');
-            $destinationPath = storage_path() . '/app/public/nachexcel/response';
-            $date = new DateTime;
-            $currentDate = $date->format('Y-m-d H:i:s');
-            $fileName = $currentDate.'_nachexcel.xlsx';
+			$fileContent = file_get_contents($uploadedFile);
+			$fileName = $uploadedFile->getClientOriginalName();
+
+			$realPath = 'public/nachexcel/response';
+			$fullFilePath  = Storage::path($realPath) . '/' . $fileName;
+			$realFullPath = $realPath  . '/' . $fileName;
             if ($uploadedFile->isValid()) {
-                $uploadedFile->move($destinationPath, $fileName);
-                $filePath = $destinationPath.'/'.$fileName;
-                $fileContent = $this->fileHelper->readFileContent($filePath);
-                $fileData = $this->fileHelper->uploadFileWithContent($filePath, $fileContent);
+                $fileData = $this->fileHelper->uploadFileWithContent($fullFilePath, $fileContent);
                 $file = UserFile::create($fileData);
                 $nachBatchData['res_file_id'] = $file->file_id;
                 $this->appRepo->saveNachBatch($nachBatchData, null);
                 $file_id = $file->file_id;
             }
-            $fullFilePath  = $destinationPath . '/' . $fileName;
             //echo $fullFilePath; exit;
 
             $header = [
                 0,1,2,3,4,5,6,7,8,9,10,11,12,13,14
             ];
-            $fileArrayData = $this->fileHelper->excelNcsv_to_array($fullFilePath, $header);
+            $fileArrayData = $this->fileHelper->excelNcsv_to_array($realFullPath, $header);
 
            // dd($fileArrayData);
             if($fileArrayData['status'] != 'success'){

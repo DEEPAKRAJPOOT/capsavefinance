@@ -286,8 +286,7 @@ class FinanceModel extends BaseModel
                 Storage::makeDirectory('public/user/docs/attachments', 0777, true);
           }
           $saveFileName = _uuid_rand(40) . ".$ext";
-          $myfile = fopen(storage_path('app/public/user/docs/attachments/'.$saveFileName), "w");
-          \File::put(storage_path('app/public/user/docs/attachments/'.$saveFileName), $attachment);
+          Storage::put('public/user/docs/attachments/'.$saveFileName, $attachment);
           $loggerData['file_path'] = 'user/docs/attachments/'.$saveFileName;
         }
         return SELF::dataLogger($loggerData, 'email_logger');

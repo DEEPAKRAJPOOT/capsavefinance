@@ -648,9 +648,12 @@ class User extends Authenticatable
         // dd($anchId);
 
         $arrAnchUser = self::select('users.*', 'user_app_doc.file_id')
-            ->join('user_app_doc', 'users.user_id', '=', 'user_app_doc.user_id')
-            ->where('user_app_doc.is_active', 1)
-            ->where('user_app_doc.file_type', 1)
+            ->leftJoin('user_app_doc', function($join)
+            {
+                $join->on('users.user_id', '=', 'user_app_doc.user_id')
+                ->where('user_app_doc.is_active', '=', 1)
+                ->where('user_app_doc.file_type', '=', 1);
+            })
             ->where('users.anchor_id', (int) $anchId)
             ->first();
         return ($arrAnchUser ?: false);

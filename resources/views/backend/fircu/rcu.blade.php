@@ -107,7 +107,7 @@
                                                       <td width="25%">{{\Carbon\Carbon::parse($document->created_at)->format('d/m/Y h:i A')}}</td>
                                                     <td width="25%">
                                                         @can('download_storage_file')
-                                                        <a class="btn-sm" title="Download Document" href="{{ route('download_s3_file', ['file_id' => $document->userFile->file_id ]) }}" >
+                                                        <a class="btn-sm" title="Download Document" href="{{ route('download_storage_file', ['file_id' => $document->userFile->file_id ]) }}" >
                                                             <button class="btn-upload btn-sm" type="button"> <i class="fa fa-download"></i>
                                                             </button>
                                                         </a>
@@ -175,7 +175,7 @@
                                                            
                                                         @if(isset($value2->userFile->file_path))
                                                         @can('download_storage_file')
-                                                        <a title="Download Report Document" href="{{ route('download_s3_file', ['file_id' => $value2->userFile->file_id ]) }}"><i class="fa fa-download"></i></a>
+                                                        <a title="Download Report Document" href="{{ route('download_storage_file', ['file_id' => $value2->userFile->file_id ]) }}"><i class="fa fa-download"></i></a>
                                                         @endcan
                                                         @endif                                                        
                                                         

@@ -14,7 +14,7 @@ use Illuminate\Support\Facades\Storage;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use Carbon\Carbon;
-use Helpers;
+use App\Helpers\Helper;
 
 class MarginReport implements ShouldQueue
 {
@@ -51,7 +51,7 @@ class MarginReport implements ShouldQueue
                 $emailData               = Helpers::getDailyReportsEmailData($emailTemplate);
                 $filePath                = $this->downloadMarginReport($data);
                 $emailData['to']      = $this->emailTo;
-                $emailData['attachment'] = $filePath;
+                $emailData['attachment'] = Storage::url($filePath);
                 \Event::dispatch("NOTIFY_MARGIN_REPORT", serialize($emailData));
             }
         }
@@ -91,18 +91,22 @@ class MarginReport implements ShouldQueue
             $rows++;
         }
 
+        $tmpHandle = tmpfile();
+        $metaDatas = stream_get_meta_data($tmpHandle);
+        $tmpFilename = $metaDatas['uri'];
+
         $objWriter = IOFactory::createWriter($sheet, 'Xlsx');
 
         $dirPath = 'public/report/temp/marginReport/'.date('Ymd');
         if (!Storage::exists($dirPath)) {
             Storage::makeDirectory($dirPath);
         }
-        $storage_path = storage_path('app/'.$dirPath);
-        $filePath = $storage_path.'/Margin Report'.time().'.xlsx';
-        $objWriter->save($filePath);
-        $s3path = env('S3_BUCKET_DIRECTORY_PATH').'/report/marginReport/'.date('Ymd');
-        $attributes['temp_file_path'] = $filePath;
-        $path = Helper::uploadAwsS3Bucket($s3path, $attributes, 'Margin Report'.time().'.xlsx');
+        $storage_path = Storage::path($dirPath);
+        $fileName = '/Margin Report'.time().'.xlsx';
+        $objWriter->save($tmpFilename);
+        $attributes['temp_file_path'] = $tmpFilename;
+        $path = Helper::uploadAwsS3Bucket($storage_path, $attributes, $fileName);
+        unlink($tmpFilename);
         return $path;
     }
 }

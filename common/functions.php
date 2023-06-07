@@ -894,28 +894,28 @@ function logFile($data, $w_mode = 'D', $w_filename = '', $w_folder = '', $txn_id
 		$folderTime = strtolower(date('Y-M-dmy-H', strtotime($reverseTime)));
 	  }
 	  list($year, $month, $date, $hour) = explode('-', $folderTime);
-      $main_dir = storage_path('app/public/user/');
+      $main_dir = 'public/user/';
       $log_dir = $main_dir . "logs/";
       $year_dir = $log_dir . "$year/";
       $month_dir = $year_dir . "$month/";
       $date_dir = $month_dir . "$date/";
       $hour_dir = $date_dir . "$hour/";
 
-      if (!file_exists($log_dir)) {
-        mkdir($log_dir, 0777, true);
+      if (!Storage::exists($log_dir)) {
+        Storage::makeDirectory($log_dir, 0777, true);
       }
 
-      if (!file_exists($year_dir)) {
-        mkdir($year_dir, 0777, true);
+      if (!Storage::exists($year_dir)) {
+        Storage::makeDirectory($year_dir, 0777, true);
       }
-      if (!file_exists($month_dir)) {
-        mkdir($month_dir, 0777, true);
+      if (!Storage::exists($month_dir)) {
+        Storage::makeDirectory($month_dir, 0777, true);
       }
-      if (!file_exists($date_dir)) {
-        mkdir($date_dir, 0777, true);
+      if (!Storage::exists($date_dir)) {
+        Storage::makeDirectory($date_dir, 0777, true);
       }
-      if (!file_exists($hour_dir)) {
-        mkdir($hour_dir, 0777, true);
+      if (!Storage::exists($hour_dir)) {
+        Storage::makeDirectory($hour_dir, 0777, true);
       }
       $data = is_array($data) || is_object($data) ? json_encode($data) : $data;
       if (strtolower($w_mode) == 'f') {
@@ -923,21 +923,19 @@ function logFile($data, $w_mode = 'D', $w_filename = '', $w_folder = '', $txn_id
         $filepath = explode('/', $w_folder);
         foreach ($filepath as $value) {
           $final_dir .= "$value/";
-          if (!file_exists($final_dir)) {
-            mkdir($final_dir, 0777, true);
+          if (!Storage::exists($final_dir)) {
+            Storage::makeDirectory($final_dir, 0777, true);
           }
         }
         $my_file = $final_dir . $w_filename;
-        $handle = fopen($my_file, 'w');
-        return fwrite($handle, PHP_EOL . $data . PHP_EOL);
+		return Storage::put($my_file,PHP_EOL . $data . PHP_EOL);
+
       } else {
         $my_file = $hour_dir . date('ymd') . '.log';
-        $handle = fopen($my_file, 'a');
-        $time = date('H:i:s');
-        fwrite($handle, PHP_EOL . 'Log ' . $time);
-        return fwrite($handle, PHP_EOL . $data . PHP_EOL);
+		$time = date('H:i:s');
+		Storage::append($my_file,PHP_EOL . 'Log ' . $time);
+		return Storage::append($my_file,PHP_EOL . $data . PHP_EOL);
       }
-      return FALSE;
 }
 
 function xmlToArrayWithCDATA($xml, $format = 'ARRAY') {

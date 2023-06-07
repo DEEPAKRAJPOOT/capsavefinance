@@ -24,6 +24,7 @@ use App\Inv\Repositories\Models\Cam;
 use App\Inv\Repositories\Models\Master\NewGroup;
 
 use App\Inv\Repositories\Models\Application;
+use Storage;
 
 class ReviewerSummary extends Mailable
 {
@@ -227,13 +228,13 @@ class ReviewerSummary extends Mailable
 
         if($fileArray) {
             foreach($fileArray as $key=>$val) {
-                if(file_exists(storage_path('app/public/'.$val['file_path']))) {
+                if(Storage::exists('public/'.$val['file_path'])) {
                     
-                    $email->attach(storage_path('app/public/'.$val['file_path']),
+                    $email->attach(Storage::path('public/'.$val['file_path']),
                     [
                         'as' => $val['file_name']
                     ]);
-                    //$loggerData['file_path'][] = 'app/public/'.$val['file_path'];
+                    //$loggerData['file_path'][] = 'public/'.$val['file_path'];
                 }
             }
         }
@@ -241,12 +242,12 @@ class ReviewerSummary extends Mailable
         //Cam report files
         $camFile = UserAppDoc::getLatestDoc($appId, config('common.PRODUCT.LEASE_LOAN'), '2');
         if($camFile) {
-            if(file_exists(storage_path('app/public/'.$camFile['file_path']))) {
-                $email->attach(storage_path('app/public/'.$camFile['file_path']),
+            if(Storage::exists('public/'.$camFile['file_path'])) {
+                $email->attach(Storage::path('public/'.$camFile['file_path']),
                 [
                     'as' => $camFile['file_name']
                 ]);
-                //$loggerData['file_path'][] = 'app/public/'.$camFile['file_path'];
+                //$loggerData['file_path'][] = 'public/'.$camFile['file_path'];
             }
         }
         //$filepath = implode('||', $loggerData['file_path']);

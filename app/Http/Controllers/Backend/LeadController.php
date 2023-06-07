@@ -413,9 +413,9 @@ class LeadController extends Controller {
      */
     public function saveaddAnchorReg(Request $request) {
         try {
-            
             //$string = Helpers::randomPassword();
             $string = time();
+           
             $validator = Validator::make($request->all(), [
                 'doc_file' => 'required|mimes:jpeg,jpg,png,pdf',
                 'is_fungible' => 'required|numeric',
@@ -595,22 +595,19 @@ class LeadController extends Controller {
             }
 
             $uploadedFile = $request->file('anchor_lead');
-            $destinationPath = storage_path() . '/uploads';
+            //$destinationPath = Storage::path('') . 'uploads';
             
-            $fileName = time();
+            $fileName = time().$request->file('anchor_lead')->getClientOriginalName();
             if ($uploadedFile->isValid()) {
-                $uploadedFile->move($destinationPath, $fileName);
+                $path = Storage::putFileAs('uploads', $request->file('anchor_lead'), $fileName);
             }
-
-            $fullFilePath  = $destinationPath . '/' . $fileName;
+            
             $header = [
                 0,1,2,3,4,5
             ];
-
-            // $fileHelper = new FileHelper();
-            // $fileArrayData = $fileHelper->excelNcsv_to_array($fullFilePath, $header);
-            $fileArrayData = $this->fileHelper->excelNcsv_to_array($fullFilePath, $header);
-            // dd($fileArrayData);
+           
+            $fileArrayData = $this->fileHelper->excelNcsv_to_array($path, $header);
+            
             if($fileArrayData['status'] != 'success'){
                 Session::flash('message', 'Please fill the data countiously till 6th column in the sheet');
                 return redirect()->back();
@@ -706,7 +703,7 @@ class LeadController extends Controller {
                 }
             }
             //chmod($destinationPath . '/' . $fileName, 0775, true);
-            unlink($destinationPath . '/' . $fileName);
+            //unlink($destinationPath . '/' . $fileName);
             //Session::flash('message', trans('backend_messages.anchor_registration_success'));
             //return redirect()->route('get_anchor_lead_list');
             Session::flash('is_accept', 1);
@@ -728,7 +725,7 @@ class LeadController extends Controller {
                 $anchorUserInfo = $this->userRepo->getUserByAnchorId($anchorId);
                 $fileId = $anchorUserInfo->file_id;
                 $fileName = UserFile::where(['file_id' => $fileId, 'is_active' => 1])->pluck('file_name');
-                $file = $fileName[0];
+                $file = $fileName[0] ?? NULL;
                 
                 $anchorVal = $this->userRepo->getAnchorById($anchorId);
             }
@@ -1238,9 +1235,10 @@ class LeadController extends Controller {
             
             $file_id = $request->get('fileId');
             $fileData = $this->docRepo->getFileByFileId($file_id);
-            
-            if (Storage::disk(env('STORAGE_TYPE'))->exists($fileData->file_path)) {
-                return Storage::disk(env('STORAGE_TYPE'))->download($fileData->file_path);
+
+            $filePath = 'public/'.$fileData->file_path;
+            if (Storage::exists($filePath)) {
+                return Storage::download($filePath);
             }else{
                 exit('Requested file does not exist on our server!');
             }

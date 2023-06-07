@@ -1105,12 +1105,16 @@ class FinanceController extends Controller {
             Storage::makeDirectory($dirPath);
         }
         $filePath = '';
-        $fileData = [];
-        $storage_path = storage_path('app'.$dirPath);
+        $storage_path = Storage::path($dirPath);
         $filePath = $storage_path.'/'.$file_name;
+        $tmpHandle = tmpfile();
+        $metaDatas = stream_get_meta_data($tmpHandle);
+        $tmpFilename = $metaDatas['uri'];
         $objWriter = IOFactory::createWriter($objSpreadsheet, 'Xlsx');
-        $objWriter->save($filePath); 
-        
+        $objWriter->save($tmpFilename); 
+        $attributes['temp_file_path'] = $tmpFilename;
+        $path = Helper::uploadAwsS3Bucket($storage_path, $attributes, $file_name);
+        unlink($tmpFilename);
       }
       if(!App::runningInConsole()){
         $objWriter = IOFactory::createWriter($objSpreadsheet, 'Xlsx');
@@ -1253,10 +1257,16 @@ class FinanceController extends Controller {
         }
         $filePath = '';
         $fileData = [];
-        $storage_path = storage_path('app'.$dirPath);
+        $storage_path = Storage::path($dirPath);
         $filePath = $storage_path.'/'.$file_name;
+        $tmpHandle = tmpfile();
+        $metaDatas = stream_get_meta_data($tmpHandle);
+        $tmpFilename = $metaDatas['uri'];
         $objWriter = IOFactory::createWriter($objSpreadsheet, 'Xlsx');
-        $objWriter->save($filePath); 
+        $objWriter->save($tmpFilename); 
+        $attributes['temp_file_path'] = $tmpFilename;
+        $path = Helper::uploadAwsS3Bucket($storage_path, $attributes, $file_name);
+        unlink($tmpFilename);
         
       }
       if(!App::runningInConsole()){

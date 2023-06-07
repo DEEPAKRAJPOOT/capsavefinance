@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Jobs;
-use Helpers;
+use App\Helpers\Helper;
 use Carbon\Carbon;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\IOFactory;
@@ -114,7 +114,7 @@ class ReconReport implements ShouldQueue
             if (!Storage::exists($dirPath)) {
                 Storage::makeDirectory($dirPath);
             }
-            $storage_path = storage_path('app/'.$dirPath);
+            $storage_path = Storage::path($dirPath);
             $filename = 'Recon Report'.'_'.Carbon::now()->setTimezone(config('common.timezone'))->format('Ymd_hisA').'.xlsx';
             $filePath = $storage_path.'/'.$filename;
             
@@ -125,15 +125,16 @@ class ReconReport implements ShouldQueue
             header("Cache-Control: post-check=0, pre-check=0", false);
             header("Pragma: no-cache");
             
+            $tmpHandle = tmpfile();
+            $metaDatas = stream_get_meta_data($tmpHandle);
+            $tmpFilename = $metaDatas['uri'];
+
             $objWriter = IOFactory::createWriter($sheet, 'Xlsx');
         
-            $objWriter->save($filePath);
-            $s3path = env('S3_BUCKET_DIRECTORY_PATH').'/report/ReconReport/manual/console';
-            if(!App::runningInConsole()){
-                $s3path = env('S3_BUCKET_DIRECTORY_PATH').'/report/ReconReport/manual/http';
-            }
-            $attributes['temp_file_path'] = $filePath;
-            $path = Helper::uploadAwsS3Bucket($s3path, $attributes, $filename);
+            $objWriter->save($tmpFilename);
+            $attributes['temp_file_path'] = $tmpFilename;
+            $path = Helper::uploadAwsS3Bucket($storage_path, $attributes, $filename);
+            unlink($tmpFilename);
             return $path;
         } catch (\Throwable $th) {
             throw $th;

@@ -14,6 +14,7 @@ use App\Inv\Repositories\Libraries\Storage\Contract\StorageManagerInterface;
 use App\Inv\Repositories\Contracts\ApplicationInterface as InvAppRepoInterface;
 use App\Inv\Repositories\Contracts\DocumentInterface as InvDocumentRepoInterface;
 use App\Inv\Repositories\Contracts\Traits\ActivityLogTrait;
+use Storage;
 
 class BankAccountController extends Controller {
 
@@ -170,7 +171,7 @@ class BankAccountController extends Controller {
                     $userBaseDir = 'appDocs/Document/bankDoc/' . auth()->user()->user_id;
                     $userFileName = rand(0, 9999) . time() . '.' . $ext;
                     $pathName = $files->getPathName();
-                    $this->storage->engine()->put($userBaseDir . DIRECTORY_SEPARATOR . $userFileName, File::get($pathName));
+                    Storage::put($userBaseDir . DIRECTORY_SEPARATOR . $userFileName, File::get($pathName));
                     $doc = [
                         'doc_name' => $userFileName,
                         'doc_ext' => $ext,
@@ -196,28 +197,27 @@ class BankAccountController extends Controller {
         $user_id = $request->all('user_id');
     
         $file = $this->appRepo->seeUploadFilePopup($acc_id, $user_id);
-        $filePath = 'app/appDocs/Document/bankDoc/' . auth()->user()->user_id . '/' . $file->doc_name;
-        $path = storage_path($filePath);
+        $filePath = 'appDocs/Document/bankDoc/' . auth()->user()->user_id . '/' . $file->doc_name;
+        if (Storage::exists($filePath)) {
+            $temp_filepath = tempnam(sys_get_temp_dir(), 'file');
+            $file_data = Storage::get($filePath);
+            file_put_contents($temp_filepath, $file_data);
 
-         if (file_exists($path)) {
-            
-            return response()->file($path);
+            return response()
+                ->download($temp_filepath, $file->doc_name, [], 'inline')
+                ->deleteFileAfterSend();
+        }else{
+            exit('Requested file does not exist on our server!');
         }
     }
 
     public function downloadUploadFile(Request $request) {
-
         $acc_id = $request->all('bank_account_id');
         $user_id = $request->all('user_id');
-
-        $download = $request->get('download');
-
         $file = $this->appRepo->seeUploadFilePopup($acc_id, $user_id);
-        $filePath = 'app/appDocs/Document/bankDoc/' . auth()->user()->user_id . '/' . $file->doc_name;
-        $path = storage_path($filePath);
-
-        if (file_exists($path)) {
-            return response()->download($path);
+        $filePath = 'appDocs/Document/bankDoc/' . auth()->user()->user_id . '/' . $file->doc_name;
+        if (Storage::exists($filePath)) {
+           return Storage::download($filePath);
         }
         return response(['status' => 'failure', 'message' => 'The file You have Requested to view / Download is not valid.',], 404)
                   ->header('Content-Type', 'application/json');

@@ -49,12 +49,12 @@ class FactFileTransferJob implements ShouldQueue
             $datewiseJournalPath = NULL;
             $paymentDestinationPath = NULL;
             $datewisePaymentPath = NULL;
-            if (file_exists($this->journalSourcePath)) {
+            if (Storage::exists($this->journalSourcePath)) {
                 $journalDestinationPath = 'Daily_Journal_FACT_File/CAPFIN_SCF_FACT_Journal' . '.xlsx';
                 $datewiseJournalPath = 'Datewise_Journal_FACT_File/CAPFIN_SCF_FACT_Journal'. '_' . $this->date . '.xlsx';
             }
                 
-            if (file_exists($this->paymentSourcePath)) {
+            if (Storage::exists($this->paymentSourcePath)) {
                 $paymentDestinationPath = 'Daily_Payment_FACT_File/CAPFIN_SCF_FACT_Payment'. '.xlsx';
                 $datewisePaymentPath = 'Datewise_Payment_FACT_File/CAPFIN_SCF_FACT_Payment' . '_' . $this->date . '.xlsx';
             }
@@ -67,10 +67,10 @@ class FactFileTransferJob implements ShouldQueue
                     throw new Exception("SFTP connection failure for tally_id = ".$this->tally_id." and executed at" .Carbon::now()."!");
                 }else{
                     $filesystem = new Filesystem($sftpAdapter);
-                    $factJournalUpload =  $filesystem->put($journalDestinationPath, file_get_contents($this->journalSourcePath));
-                    $factJournalUploadDate = $filesystem->put($datewiseJournalPath, file_get_contents($this->journalSourcePath));
-                    $factPaymentUpload = $filesystem->put($paymentDestinationPath,  file_get_contents($this->paymentSourcePath));
-                    $factPaymentUploadDate = $filesystem->put($datewisePaymentPath, file_get_contents($this->paymentSourcePath));
+                    $factJournalUpload =  $filesystem->put($journalDestinationPath, Storage::get($this->journalSourcePath));
+                    $factJournalUploadDate = $filesystem->put($datewiseJournalPath, Storage::get($this->journalSourcePath));
+                    $factPaymentUpload = $filesystem->put($paymentDestinationPath,  Storage::get($this->paymentSourcePath));
+                    $factPaymentUploadDate = $filesystem->put($datewisePaymentPath, Storage::get($this->paymentSourcePath));
                     
                     if($factJournalUpload && $factPaymentUpload && $factJournalUploadDate && $factPaymentUploadDate){
                         $tallyUpdate = \DB::table('tally')->where('id',$this->tally_id)->update(['is_sftp_transfer'=>2]);

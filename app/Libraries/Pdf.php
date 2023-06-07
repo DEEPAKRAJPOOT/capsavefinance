@@ -41,7 +41,7 @@ class Pdf
         try {
             $process->mustRun();
 
-            return File::get($path);
+            return Storage::get($path);
         } catch (ProcessFailedException $exception) {
             //throw $exception;
         }

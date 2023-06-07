@@ -25,7 +25,7 @@
                         <li><span class="icon"><i class="fa fa-file-pdf-o"></i></span></li>
                         <li>
                         @can('download_storage_file')
-                        <a href="{{ route('download_s3_file', ['file_id' => $bankdoc->file_id ]) }}" target="_blank">Download Bank Statement</a>
+                        <a href="{{ route('download_storage_file', ['file_id' => $bankdoc->file_id ]) }}" target="_blank">Download Bank Statement</a>
                         @endcan
                         </li>
                         <li>
@@ -40,7 +40,7 @@
                   <div class="clearfix"></div>
 
                   <div style="text-align: right;">                  
-                  @if(!empty($active_json_filename) && file_exists(storage_path("app/public/user/docs/$appId/banking/".$active_xlsx_filename)))
+                  @if(!empty($active_json_filename) && Storage::exists("public/user/docs/$appId/banking/".$active_xlsx_filename))
                      <a class="btn btn-success btn-sm" href="{{ Storage::url('user/docs/'.$appId.'/banking/'.$active_xlsx_filename) }}" download>Download</a>
                      @can('upload_xlsx_document')
                      <a class="btn btn-success btn-sm" href="javascript:void(0)"  data-toggle="modal" data-target="#uploadXLSXdoc" data-url ="{{route('upload_xlsx_document', ['app_id' => request()->get('app_id'), 'file_type' => 'banking']) }}" data-height="150px" data-width="100%">Upload XLSX</a>

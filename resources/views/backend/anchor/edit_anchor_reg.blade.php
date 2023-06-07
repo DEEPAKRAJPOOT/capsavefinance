@@ -192,7 +192,6 @@
                         @if(isset($anchorUserData->file_id) && !empty($anchorUserData->file_id))
                         @can('view_uploaded_file')
                         <div class="custom-file mb-3 mt-2">
-                           {{-- @php dd($anchorUserData->file);  @endphp --}}
                            <a target="_blank" href = "{{ route('view_uploaded_file',['fileId' => $anchorUserData->file_id]) }}" title="View File"><i style="color:green" class="fa fa-file-pdf-o"> View Uploaded File</i></a>
                         </div> 
                         @endcan

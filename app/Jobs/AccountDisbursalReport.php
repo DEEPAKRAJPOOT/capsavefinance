@@ -15,7 +15,7 @@ use Carbon\Carbon;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Cell\DataType;
-use Helpers;
+use App\Helpers\Helper;
 
 class AccountDisbursalReport implements ShouldQueue
 {
@@ -52,7 +52,7 @@ class AccountDisbursalReport implements ShouldQueue
                 $emailData               = Helpers::getDailyReportsEmailData($emailTemplate);
                 $filePath                = $this->downloadAccountDailyDisbursalReport($data);
                 $emailData['to']      = $this->emailTo;
-                $emailData['attachment'] = $filePath;
+                $emailData['attachment'] = Storage::url($filePath);
                 \Event::dispatch("NOTIFY_ACCOUNT_DISBURSAL_REPORT", serialize($emailData));
             }
         }
@@ -101,18 +101,22 @@ class AccountDisbursalReport implements ShouldQueue
             $rows++;
         }
 
+        $tmpHandle = tmpfile();
+        $metaDatas = stream_get_meta_data($tmpHandle);
+        $tmpFilename = $metaDatas['uri'];
+
         $objWriter = IOFactory::createWriter($sheet, 'Xlsx');
 
         $dirPath = 'public/report/temp/accountDailyDisbursalReport/'.date('Ymd');
         if (!Storage::exists($dirPath)) {
             Storage::makeDirectory($dirPath);
         }
-        $storage_path = storage_path('app/'.$dirPath);
-        $filePath = $storage_path.'/Account Daily Disbursal Report'.time().'.xlsx';
-        $objWriter->save($filePath);
-        $s3path = env('S3_BUCKET_DIRECTORY_PATH').'/report/accountDailyDisbursalReport/'.date('Ymd');
-        $attributes['temp_file_path'] = $filePath;
-        $path = Helper::uploadAwsS3Bucket($s3path, $attributes, 'Account Daily Disbursal Report'.time().'.xlsx');
+        $storage_path = Storage::path($dirPath);
+        $fileName = 'Account Daily Disbursal Report'.time().'.xlsx';
+        $objWriter->save($tmpFilename);
+        $attributes['temp_file_path'] = $tmpFilename;
+        $path = Helper::uploadAwsS3Bucket($storage_path, $attributes, $fileName);
+        unlink($tmpFilename);
         return $path;
     }
 }

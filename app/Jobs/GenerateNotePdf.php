@@ -6,25 +6,23 @@ use PDF;
 use Exception;
 use App\Helpers\FileHelper;
 use Illuminate\Bus\Queueable;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\App;
 use Illuminate\Queue\SerializesModels;
-use Illuminate\Support\Facades\Storage;
 use App\Inv\Repositories\Models\LmsUser;
 use Illuminate\Queue\InteractsWithQueue;
 use App\Inv\Repositories\Models\UserFile;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use App\Inv\Repositories\Models\Lms\UserInvoice;
-use App\Inv\Repositories\Contracts\ReportInterface;
-use App\Inv\Repositories\Models\Master\EmailTemplate;
 use App\Inv\Repositories\Contracts\UserInvoiceInterface;
+use Storage;
 
 
 class GenerateNotePdf implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
+    protected $UserInvRepo;
+    protected $fileHelper;
     private $userInvoice_id;
     /**
      * Create a new job instance.
@@ -60,11 +58,9 @@ class GenerateNotePdf implements ShouldQueue
             $invoice_date = $invData->invoice_date;
             $due_date = $invData->due_date;
             $company_id = $invData->comp_addr_id;
-            $registered_comp_id = $invData->registered_comp_id;
             $bank_account_id = $invData->bank_id;
             $totalTxnsInInvoice = $invData->userInvoiceTxns;
             $userStateId = $invData->user_gst_state_id;
-            $companyStateId = $invData->comp_gst_state_id;
             $lmsDetails = LmsUser::getLmsDetailByUserId($user_id);
             $virtual_acc_id = $lmsDetails[0]->virtual_acc_id;
             $stateDetail = $this->UserInvRepo->getStateById($userStateId);
@@ -97,7 +93,6 @@ class GenerateNotePdf implements ShouldQueue
             }else{
                 $company_data = json_decode($invData->inv_comp_data, true);
             }
-            $is_state_diffrent = ($userStateId != $companyStateId);
             $intrest_charges = [];
             $total_sum_of_rental = 0;
             foreach ($totalTxnsInInvoice as  $key => $invTrans) {
@@ -144,13 +139,7 @@ class GenerateNotePdf implements ShouldQueue
             ];
 
             view()->share($data);
-            $path ='capsaveInvoice/'.str_replace("/","_",strtoupper($data['origin_of_recipient']['invoice_no'])).'.pdf';
-            //$year = date("Y");   
-            //$month = date("m");
-            //$path ='capsaveInvoice/'.$year.'/'.$month.'/'.str_replace("/","_",strtoupper($data['origin_of_recipient']['invoice_no'])).'.pdf';
-            if(Storage::exists('public/'.$path)){
-                Storage::move('public/'.$path, 'public/'.'capsaveInvoice/'.str_replace("/","_",strtoupper($data['origin_of_recipient']['invoice_no'])).'_'.time().'.pdf');
-            }
+            $path = Storage::path('public/capsaveInvoice/'.str_replace("/","_",strtoupper($data['origin_of_recipient']['invoice_no'])).'.pdf');
             switch ($invData->invoice_cat) {
                 case '1':
                     $pdf = PDF::loadView('lms.note.generate_debit_note');
@@ -161,9 +150,7 @@ class GenerateNotePdf implements ShouldQueue
             }
             
             if($pdf){
-                $s3path = env('S3_BUCKET_DIRECTORY_PATH').'/'.$path;
-                $fileData =  $this->fileHelper->uploadFileWithContent($s3path,$pdf->output());
-                unlink($path, 'public/'.'capsaveInvoice/'.str_replace("/","_",strtoupper($data['origin_of_recipient']['invoice_no'])).'_'.time().'.pdf');
+                $fileData =  $this->fileHelper->uploadFileWithContent($path,$pdf->output());
                 $userFile = UserFile::create($fileData);
                 if($userInvoiceId && $userFile){
                     UserInvoice::where('user_invoice_id',$userInvoiceId)->update(['file_id' => $userFile->file_id]);

@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Jobs;
-use Helpers;
+use App\Helpers\Helper;
 use Carbon\Carbon;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\IOFactory;
@@ -142,6 +142,10 @@ class OverdueReportManual implements ShouldQueue
             $rows++;
         }
 
+        $tmpHandle = tmpfile();
+        $metaDatas = stream_get_meta_data($tmpHandle);
+        $tmpFilename = $metaDatas['uri'];
+
         $objWriter = IOFactory::createWriter($sheet, 'Xlsx');
         $objWriter->setPreCalculateFormulas(true);
 
@@ -152,15 +156,12 @@ class OverdueReportManual implements ShouldQueue
         if (!Storage::exists($dirPath)) {
             Storage::makeDirectory($dirPath);
         }
-        $storage_path = storage_path('app/'.$dirPath);
-        $filePath = $storage_path.'/Overdue Report'.time().'.xlsx';
-        $objWriter->save($filePath);
-        $s3path = env('S3_BUCKET_DIRECTORY_PATH').'/report/overdueReport/manual/console';
-        if(!App::runningInConsole()){
-            $s3path = env('S3_BUCKET_DIRECTORY_PATH').'/report/overdueReport/manual/http';
-        }
-        $attributes['temp_file_path'] = $filePath;
-        $path = Helper::uploadAwsS3Bucket($s3path, $attributes, 'Overdue Report'.time().'.xlsx');
+        $fileName = '/Overdue Report'.time().'.xlsx';
+        $storage_path = Storage::path($dirPath);
+        $objWriter->save($tmpFilename);
+        $attributes['temp_file_path'] = $tmpFilename;
+        $path = Helper::uploadAwsS3Bucket($storage_path, $attributes, $fileName);
+        unlink($tmpFilename);
         return $path;
     }
 

@@ -16,7 +16,7 @@ use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Cell\DataType;
 
 use Carbon\Carbon;
-use Helpers;
+use App\Helpers\Helper;
 
 class DisbursalReport implements ShouldQueue
 {
@@ -86,7 +86,7 @@ class DisbursalReport implements ShouldQueue
             $emailData               = Helpers::getDailyReportsEmailData($emailTemplate, $compName);
             $filePath                = $this->downloadDailyDisbursalReport($data, $reportName);
             $emailData['to']      = $this->emailTo;
-            $emailData['attachment'] = $filePath;
+            $emailData['attachment'] = Storage::url($filePath);
             // \Event::dispatch("NOTIFY_DISBURSAL_REPORT", serialize($emailData));
         }
     }
@@ -205,19 +205,23 @@ class DisbursalReport implements ShouldQueue
             $rows++;
         }
 
+        $tmpHandle = tmpfile();
+        $metaDatas = stream_get_meta_data($tmpHandle);
+        $tmpFilename = $metaDatas['uri'];
+        
         $objWriter = IOFactory::createWriter($sheet, 'Xlsx');
 
         $dirPath = 'public/report/temp/dailyDisbursalReport/'.date('Ymd');
         if (!Storage::exists($dirPath)) {
             Storage::makeDirectory($dirPath);
         }
-        $storage_path = storage_path('app/'.$dirPath);
+        $storage_path = Storage::path($dirPath);
         // $filePath = $storage_path.'/Daily Disbursal Report'.time().'_'.rand(1111, 9999).'_'.'.xlsx';
-        $filePath = $storage_path.$reportName.'.xlsx';
-        $objWriter->save($filePath);
-        $s3path = env('S3_BUCKET_DIRECTORY_PATH').'/report/dailyDisbursalReport/'.date('Ymd');
-        $attributes['temp_file_path'] = $filePath;
-        $path = Helper::uploadAwsS3Bucket($s3path, $attributes, $reportName.'.xlsx');
+        $fileName = $reportName.'.xlsx';
+        $objWriter->save($tmpFilename);
+        $attributes['temp_file_path'] = $tmpFilename;
+        $path = Helper::uploadAwsS3Bucket($storage_path, $attributes, $fileName);
+        unlink($tmpFilename);
         return $path;
     }
 }

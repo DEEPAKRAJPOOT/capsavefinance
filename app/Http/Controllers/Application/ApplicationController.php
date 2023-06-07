@@ -557,7 +557,6 @@ class ApplicationController extends Controller
                     'result' => $response, 
                     'status' => 1, 
                     'file_path' => Storage::url($response->file_path)  
-//                    'file_path' => Storage::disk('s3')->url($response->file_path)  
                 ]);
             } else {
                 return response()->json([
@@ -1017,8 +1016,7 @@ class ApplicationController extends Controller
           $this->logdata($response['result'], 'F', $fname.'.json');
           $json_decoded = json_decode($response['result'], TRUE);
           $file_name = $fname.'.pdf';
-          $myfile = fopen(storage_path('app/public/user').'/'.$file_name, "w");
-          \File::put(storage_path('app/public/user').'/'.$file_name, file_get_contents($json_decoded['pdfDownloadLink'])); 
+          Storage::put('public/user/'.$file_name, file_get_contents($json_decoded['pdfDownloadLink'])); 
           $file= url('storage/user/'. $file_name);
         return response()->json(['message' =>'GST data pulled successfully.','status' => 1]);
       }else{
@@ -1094,7 +1092,7 @@ class ApplicationController extends Controller
 
   public function logdata($data, $w_mode = 'D', $w_filename = '', $w_folder = '') {
     list($year, $month, $date, $hour) = explode('-', strtolower(date('Y-M-dmy-H')));
-    $main_dir = storage_path('app/public/user/');
+    $main_dir = 'public/user/';
    /* $year_dir = $main_dir . "$year/";
     $month_dir = $year_dir . "$month/";
     $date_dir = $month_dir . "$date/";
@@ -1123,21 +1121,20 @@ class ApplicationController extends Controller
       $filepath = explode('/', $w_folder);
       foreach ($filepath as $value) {
         $final_dir .= "$value/";
-        if (!file_exists($final_dir)) {
-          mkdir($final_dir, 0777, true);
+        if (!Storage::exists($final_dir)) {
+            Storage::makeDirectory($final_dir, 0777, true);
         }
       }
       $my_file = $final_dir . $w_filename;
-      $handle = fopen($my_file, 'w');
-      return fwrite($handle, PHP_EOL . $data . PHP_EOL);
+      return Storage::put($my_file,PHP_EOL . $data . PHP_EOL);
+      
     } else {
+
       $my_file = $hour_dir . date('ymd') . '.log';
-      $handle = fopen($my_file, 'a');
       $time = date('H:i:s');
-      fwrite($handle, PHP_EOL . 'Log ' . $time);
-      return fwrite($handle, PHP_EOL . $data . PHP_EOL);
+      Storage::append($my_file,PHP_EOL . 'Log ' . $time);
+      return Storage::append($my_file,PHP_EOL . $data . PHP_EOL);
     }
-    return FALSE;
   }
 
 	 /**

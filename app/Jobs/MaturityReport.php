@@ -15,7 +15,7 @@ use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Cell\DataType;
 use Carbon\Carbon;
-use Helpers;
+use App\Helpers\Helper;
 
 class MaturityReport implements ShouldQueue
 {
@@ -84,7 +84,7 @@ class MaturityReport implements ShouldQueue
             $emailData               = Helpers::getDailyReportsEmailData($emailTemplate, $compName);
             $filePath                = $this->downloadMaturityReport($data, $reportName);
             $emailData['to']      = $this->emailTo;
-            $emailData['attachment'] = $filePath;
+            $emailData['attachment'] = Storage::url($filePath);
             \Event::dispatch("NOTIFY_MATURITY_REPORT", serialize($emailData));
         }
     }
@@ -137,6 +137,10 @@ class MaturityReport implements ShouldQueue
             $rows++;
         }
 
+        $tmpHandle = tmpfile();
+        $metaDatas = stream_get_meta_data($tmpHandle);
+        $tmpFilename = $metaDatas['uri'];
+
         $objWriter = IOFactory::createWriter($sheet, 'Xlsx');
 
         $dirPath = 'public/report/temp/maturityReport/'.date('Ymd');
@@ -144,13 +148,13 @@ class MaturityReport implements ShouldQueue
             Storage::makeDirectory($dirPath);
         }
 
-        $storage_path = storage_path('app/'.$dirPath);
+        $storage_path = Storage::path($dirPath);
         // $filePath = $storage_path.'/Maturity Report'.time().'_'.rand(1111, 9999).'_'.'.xlsx';
-        $filePath = $storage_path.$reportName.'.xlsx';
-        $objWriter->save($filePath);
-        $s3path = env('S3_BUCKET_DIRECTORY_PATH').'/report/maturityReport/'.date('Ymd');
-        $attributes['temp_file_path'] = $filePath;
-        $path = Helper::uploadAwsS3Bucket($s3path, $attributes, $reportName.'.xlsx');
+        $fileName = $reportName.'.xlsx';
+        $objWriter->save($tmpFilename);
+        $attributes['temp_file_path'] = $tmpFilename;
+        $path = Helper::uploadAwsS3Bucket($storage_path, $attributes, $fileName);
+        unlink($tmpFilename);
         return $path;
     }
 }

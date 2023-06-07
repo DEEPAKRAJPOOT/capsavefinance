@@ -1296,8 +1296,7 @@ class ApiController
       $fname = $app_id.'_'.$gst_no;
       $this->logdata($result, 'F', $fname.'.json');
       $file_name = $fname.'.pdf';
-      $myfile = fopen(storage_path('app/public/user').'/'.$file_name, "w");
-      \File::put(storage_path('app/public/user').'/'.$file_name, file_get_contents($result['pdfDownloadLink'])); 
+      Storage::put('public/user/'.$file_name,file_get_contents($result['pdfDownloadLink'])); 
       $response['message'] =  'Response generated Successfully';
       $response['status'] =  'success';
       return $this->_setResponse($response, 200);
@@ -1442,11 +1441,11 @@ class ApiController
   }
 
   private function getToUploadPath($appId, $type = 'banking'){
-      $touploadpath = storage_path('app/public/user/docs/'.$appId);
+      $touploadpath = Storage::path('public/user/docs/'.$appId);
       if(!Storage::exists('public/user/docs/' .$appId)) {
           Storage::makeDirectory('public/user/docs/' .$appId.'/banking', 0777, true);
           Storage::makeDirectory('public/user/docs/' .$appId.'/finance', 0777, true);
-          $touploadpath = storage_path('public/user/docs/' .$appId);
+          $touploadpath = Storage::path('public/user/docs/' .$appId);
       }
       return $touploadpath .= ($type == 'banking' ? '/banking' : '/finance');
   }
@@ -1513,8 +1512,7 @@ class ApiController
               $final_res['perfiosTransactionId'] = $perfiostransactionid;
               return $final_res;
           }else{
-          	 $myfile = fopen($this->getToUploadPath($appId, 'finance').'/'.$file_name, "w");
-          	 \File::put($this->getToUploadPath($appId, 'finance').'/'.$file_name, $final_res['result']);
+          	 Storage::put($this->getToUploadPath($appId, 'finance').'/'.$file_name, $final_res['result']);
           }
         }
         $file= url("storage/user/docs/$appId/finance/". $file_name);
@@ -1528,8 +1526,7 @@ class ApiController
           $final_res['result'] = base64_encode($final_res['result']);
           $nameArr = $this->getLatestFileName($appId, 'finance', 'json');
           $json_file_name = $nameArr['new_file'];
-          $myfile = fopen($this->getToUploadPath($appId, 'finance') .'/'.$json_file_name, "w");
-          \File::put($this->getToUploadPath($appId, 'finance') .'/'.$json_file_name, $final_res['result']);
+          Storage::put($this->getToUploadPath($appId, 'finance') .'/'.$json_file_name, $final_res['result']);
           $log_data = array(
             'status' => $final_res['status'],
             'updated_by' => NULL,
@@ -1559,8 +1556,7 @@ class ApiController
               $final_res['perfiosTransactionId'] = $perfiostransactionid;
               return $final_res;
           }else{
-          	$myfile = fopen($this->getToUploadPath($appId, 'banking').'/'.$file_name, "w");
-            \File::put($this->getToUploadPath($appId, 'banking').'/'.$file_name, $final_res['result']);
+            Storage::put($this->getToUploadPath($appId, 'banking').'/'.$file_name, $final_res['result']);
           } 
         }
         $file= url("storage/user/docs/$appId/banking/". $file_name);
@@ -1574,8 +1570,7 @@ class ApiController
           $final_res['result'] = base64_encode($final_res['result']);
           $nameArr = $this->getLatestFileName($appId, 'banking', 'json');
           $json_file_name = $nameArr['new_file'];
-          $myfile = fopen($this->getToUploadPath($appId, 'banking') .'/'.$json_file_name, "w");
-          \File::put($this->getToUploadPath($appId, 'banking') .'/'.$json_file_name, $final_res['result']);
+          Storage::put($this->getToUploadPath($appId, 'banking') .'/'.$json_file_name, $final_res['result']);
           $log_data = array(
             'status' => $final_res['status'],
             'updated_by' => NULL,
@@ -1597,7 +1592,7 @@ class ApiController
 
     public function logdata($data, $w_mode = 'D', $w_filename = '', $w_folder = '') {
       list($year, $month, $date, $hour) = explode('-', strtolower(date('Y-M-dmy-H')));
-      $main_dir = storage_path('app/public/user/');
+      $main_dir = 'public/user/';
      /*$year_dir = $main_dir . "$year/";
       $month_dir = $year_dir . "$month/";
       $date_dir = $month_dir . "$date/";
@@ -1623,21 +1618,18 @@ class ApiController
         $filepath = explode('/', $w_folder);
         foreach ($filepath as $value) {
           $final_dir .= "$value/";
-          if (!file_exists($final_dir)) {
-            mkdir($final_dir, 0777, true);
+          if (!Storage::exists($final_dir)) {
+            Storage::makeDirectory($final_dir, 0777, true);
           }
         }
         $my_file = $final_dir . $w_filename;
-        $handle = fopen($my_file, 'w');
-        return fwrite($handle, PHP_EOL . $data . PHP_EOL);
+        return Storage::put($my_file,PHP_EOL . $data . PHP_EOL);
       } else {
         $my_file = $hour_dir . date('ymd') . '.log';
-        $handle = fopen($my_file, 'a');
         $time = date('H:i:s');
-        fwrite($handle, PHP_EOL . 'Log ' . $time);
-        return fwrite($handle, PHP_EOL . $data . PHP_EOL);
+        Storage::append($my_file,PHP_EOL . 'Log ' . $time);
+        return Storage::append($my_file,PHP_EOL . $data . PHP_EO);;
       }
-      return FALSE;
   }
 
   public function changeFinancialYear(Request $request) {
@@ -1667,7 +1659,7 @@ class ApiController
         // return $response;
       }
       $toUploadPath = $this->getToUploadPath($appId, 'finance');
-      $contents = json_decode(base64_decode(file_get_contents($toUploadPath.'/'. $nameArr['curr_file'])),true);
+      $contents = json_decode(base64_decode(Storage::get($toUploadPath.'/'. $nameArr['curr_file'])),true);
       $fy = $contents['FinancialStatement']['FY'] ?? [];
       if (empty($fy)) {
         Session::flash('error', trans('No Content found to update the year'));
@@ -1683,10 +1675,8 @@ class ApiController
       }
       $contents['FinancialStatement']['FY'] = $fy;
       $json_file_name = $nameArr['new_file'];
-      $myfile = fopen($toUploadPath .'/'.$json_file_name, "w");
       $changeContent = base64_encode(json_encode($contents));
-      \File::put($toUploadPath .'/'.$json_file_name, $changeContent);
-      dump($nameArr, $toUploadPath .'/'.$json_file_name,$changeContent);
+      Storage::put($toUploadPath .'/'.$json_file_name, $changeContent);
         Session::flash('message', trans('Year changes successfully'));
         return redirect()->route('api_change_year'); 
       // $response['status'] = 'success';
