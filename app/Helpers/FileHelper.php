@@ -13,6 +13,7 @@ use PhpOffice\PhpSpreadsheet\Style\Alignment;
 use PhpOffice\PhpSpreadsheet\Style\Border;
 use App\Inv\Repositories\Models\UserFile;
 use App\Inv\Repositories\Contracts\ApplicationInterface as InvAppRepoInterface;
+use Session;
 
 class FileHelper {
 
@@ -20,7 +21,6 @@ class FileHelper {
     protected $appRepo;
 
     public function __construct(InvAppRepoInterface $app_repo) {
-       $this->diskStoragePath = Storage::disk('public');
        $this->appRepo = $app_repo;
     }
 
@@ -64,30 +64,40 @@ class FileHelper {
     }
 
     public function getToUploadPath($appId, $type = 'banking'){
-      $storageDiskPath = $this->diskStoragePath;
-      $touploadpath = $storageDiskPath->path('user/docs/'.$appId);
-      if(!$storageDiskPath->exists('user/docs/' .$appId)) {
-          $storageDiskPath->makeDirectory('user/docs/' .$appId.'/banking', 0777, true);
-          $storageDiskPath->makeDirectory('user/docs/' .$appId.'/finance', 0777, true);
-          $touploadpath = $storageDiskPath->path('user/docs/' .$appId);
+      $touploadpath = Storage::path('public/user/docs/'.$appId);
+      if(!Storage::exists('public/user/docs/' .$appId)) {
+          Storage::makeDirectory('public/user/docs/' .$appId.'/banking', 0777, true);
+          Storage::makeDirectory('public/user/docs/' .$appId.'/finance', 0777, true);
+          $touploadpath = Storage::path('public/user/docs/' .$appId);
       }
-      return $touploadpath .= ($type == 'banking' ? '/banking' : '/finance');
+      $touploadpath .= ($type == 'banking' ? '/banking' : '/finance');
+      $defaultPath = Storage::path('');
+      return str_replace($defaultPath, '', $touploadpath);
     }
 
     public function uploadFileWithContent($active_filename_fullpath, $fileContents) {
-        $defaultPath = Storage::disk(env('STORAGE_TYPE'))->path('');
+        $defaultPath = Storage::path('public');
         $realPath = str_replace($defaultPath, '', $active_filename_fullpath);
-        $data['file_content'] = $fileContents;
-        $inputArr = Helper::uploadAwsS3Bucket($realPath,$data);
-
-        return $inputArr;
-       
+        $realPath = 'public'.$realPath;
+        $isSaved = Storage::put($realPath, $fileContents);
+        if ($isSaved) {
+            $mimetype = Storage::mimeType($realPath);
+            $size = Storage::size($realPath);
+            $inputArr['file_path'] = $realPath;
+            $inputArr['file_type'] = $mimetype;
+            $inputArr['file_name'] = basename($realPath);
+            $inputArr['file_size'] = $size;
+            $inputArr['file_encp_key'] =  md5('2');
+            $inputArr['created_by'] = 1;
+            $inputArr['updated_by'] = 1;
+            return $inputArr;
+        }
     }
 
     public function readFileContent($active_filename_fullpath) {
-        $defaultPath = $this->diskStoragePath->path('');
+        $defaultPath = Storage::path('public');
         $realPath = str_replace($defaultPath, '', $active_filename_fullpath);
-        $fileContent = $this->diskStoragePath->get($realPath);
+        $fileContent = Storage::get('public/'.$realPath);
         return $fileContent;
     }
 
@@ -246,10 +256,20 @@ class FileHelper {
             }
             $filePath = '';
             $fileData = [];
-            $storage_path = storage_path('app/public/nach/request');
+            $storage_path = Storage::path('public/nach/request');
             $filePath = $storage_path.'/'.$file_name;
+
+            $tmpHandle = tmpfile();
+            $metaDatas = stream_get_meta_data($tmpHandle);
+            $tmpFilename = $metaDatas['uri'];
+
             $objWriter = IOFactory::createWriter($objSpreadsheet, 'Xlsx');
-            $objWriter->save($filePath); 
+            $objWriter->save($tmpFilename); 
+
+            $attributes['temp_file_path'] = $tmpFilename;
+            $path = Helper::uploadAwsS3Bucket($storage_path, $attributes, $file_name);
+            unlink($tmpFilename);
+
             $fileContent = $this->readFileContent($filePath);
             $fileData = $this->uploadFileWithContent($filePath, $fileContent);
             $file = UserFile::create($fileData);
@@ -301,10 +321,16 @@ class FileHelper {
         'message' => 'success',
         'data' => [],
       ];
+
       try{
-          $inputFileType  =   IOFactory::identify($inputFileName);
+          $fileDetails = pathinfo($inputFileName);
+          $tempFileName = Session::getId().'_'.$fileDetails['basename'];
+          $localPath = Storage::disk('temp')->put($tempFileName, Storage::get($inputFileName));
+          $localPath = Storage::disk('temp')->path($tempFileName);
+          $inputFileType  =   IOFactory::identify($localPath);
           $objReader      =   IOFactory::createReader($inputFileType);
-          $objSpreadsheet    =   $objReader->load($inputFileName);
+          $objSpreadsheet    =   $objReader->load($localPath);
+          Storage::disk('temp')->delete($tempFileName);
           $sheet = $objSpreadsheet->getActiveSheet();
           // $sheet = $sheet->removeColumnByIndex(15);
           $highestRow = $sheet->getHighestRow(); 
@@ -368,11 +394,16 @@ public function exportCsv($data=[],$columns=[],$fileName='',$extraDataArray=[])
             'data' => [],
           ];
       try{
-        // if (!file_exists($filename) || !is_readable($filename))
-        //     return false;
+        if (!Storage::exists($filename))
+          return false;
 
         $header = null;
-        if (($handle = fopen(env('S3_BUCKET_URL').$filename, 'r')) !== false)
+
+        $fileDetails = pathinfo($filename);
+        $tempFileName = Session::getId().'_'.$fileDetails['basename'];
+        $localPath = Storage::disk('temp')->put($tempFileName, Storage::get($filename));
+        $localPath = Storage::disk('temp')->path($tempFileName);
+        if (($handle = fopen($localPath, 'r')) !== false)
         {
             $rows=1;
             while (($row = fgetcsv($handle, 1000, $delimiter)) !== false)
@@ -396,6 +427,7 @@ public function exportCsv($data=[],$columns=[],$fileName='',$extraDataArray=[])
               }
             }
             fclose($handle);
+            Storage::disk('temp')->delete($tempFileName);
         }
     }catch(\Exception $e){
         $respArray['data'] = [];
@@ -408,22 +440,22 @@ public function exportCsv($data=[],$columns=[],$fileName='',$extraDataArray=[])
 
     public static function uploadUnSettledTransCsv($data=[],$columns=[],$fileName='',$extraDataArray=[],$paymentId=null,$type='upload')
     {
-      
       $respArray = [
         'status' => 'success',
         'message' => 'success',
         'data' => [],
       ];
-     // try{
+      try{
         $inputArr = [];
         if ($data) {
           if($type == 'download'){
-             
               if (!Storage::exists('/public/payment/' . $paymentId.'/download')) {
                 Storage::makeDirectory('/public/payment/' . $paymentId.'/download', 0777, true);
               }
-              $destinationPath = storage_path('app').'/public/payment/' . $paymentId.'/download/'.$fileName;
-              $fp = fopen($destinationPath, 'w+');
+              $tmpHandle = tmpfile();
+              $metaDatas = stream_get_meta_data($tmpHandle);
+              $tmpFilename = $metaDatas['uri'];
+              $fp = fopen($tmpFilename, 'w+');
               fputcsv($fp, ['Token ID='.$extraDataArray['TOKEN_ID']]);
               fputcsv($fp, [$extraDataArray['NOTE']]);
               fputcsv($fp, []);
@@ -432,36 +464,44 @@ public function exportCsv($data=[],$columns=[],$fileName='',$extraDataArray=[])
                   fputcsv($fp, $data);
               }
               fclose($fp);
+              $filePath = 'public/payment/' . $paymentId.'/download/';
+              Storage::putFileAs($filePath, $tmpFilename, $fileName);
+              unlink($tmpFilename);
+
               $dbpath = 'payment/' . $paymentId.'/download/'.$fileName;
               $inputArr['file_path'] = $dbpath;
-              $fileInfo =  pathinfo($destinationPath);
-              $inputArr['file_type'] = 'text/'.$fileInfo['extension'];//\File::mimeType($destinationPath);
+              $inputArr['file_type'] = Storage::mimeType($filePath.$fileName);
               $inputArr['file_name'] = $fileName;
-              $inputArr['file_size'] = \File::size($destinationPath);
+              $inputArr['file_size'] = Storage::size($filePath.$fileName);
               $inputArr['file_encp_key'] =  md5('2');
         }else{
-
-          if (isset($data['upload_unsettled_trans']) && !empty($data['upload_unsettled_trans'])) {
-             $s3path = env('S3_BUCKET_DIRECTORY_PATH').'/payment/' . $paymentId.'/upload';
-             $fileName = $data['upload_unsettled_trans']->getClientOriginalName();
-             $inputArr = Helper::uploadAwsS3Bucket($s3path, $data,$fileName);
+          if ($data['upload_unsettled_trans']) {
+          if (!Storage::exists('/public/payment/' . $paymentId.'/upload')) {
+            Storage::makeDirectory('/public/payment/' . $paymentId.'/upload', 0777, true);
           }
+          $destinationPath = 'public/payment/' . $paymentId.'/upload';
+          $fileName = $data['upload_unsettled_trans']->getClientOriginalName();
+          $path = Storage::put($destinationPath.'/'.$fileName, $data['upload_unsettled_trans']);
+          $inputArr['file_path'] = $path;
+        }
+        $inputArr['file_type'] = $data['upload_unsettled_trans']->getClientMimeType();
+        $inputArr['file_name'] = $data['upload_unsettled_trans']->getClientOriginalName();
+        $inputArr['file_size'] = $data['upload_unsettled_trans']->getSize();
+        $inputArr['file_encp_key'] =  md5('2');
         }
         $inputArr['created_by'] = 1;
         $inputArr['updated_by'] = 1;
-        
         $respArray = [
           'status' => 'success',
           'message' => 'success',
           'data' => $inputArr,
         ];
-        
        }
-      // }catch(\Exception $e){
-      //   $respArray['data'] = [];
-      //   $respArray['status'] = 'fail';
-      //   $respArray['message'] = str_replace($fileName, '', $e->getMessage());
-      // }
+      }catch(\Exception $e){
+        $respArray['data'] = [];
+        $respArray['status'] = 'fail';
+        $respArray['message'] = str_replace($fileName, '', $e->getMessage());
+      }
       return $respArray;
     }
 

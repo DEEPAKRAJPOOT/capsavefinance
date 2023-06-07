@@ -362,7 +362,7 @@
                                                  <td width="20%">
                                                  <a  href="{{ route('download_s3_file', ['file_id' =>$allCkycDoc->file_id ]) }}" class="btn-upload   btn-sm" type="button" id="pandown{{$i}}" > <i class="fa fa-download"></i></a>
 
-                                                 <a  href="{{ Storage::disk('s3')->url($allCkycDoc->file->file_path) }}" title="View File" class="btn-upload   btn-sm" target="_blank" type="button" id="pandowneye{{$i}}" target="_blank"> <i class="fa fa-eye"></i></a>
+                                                 <a  href="{{ Storage::url($allCkycDoc->file->file_path) }}" title="View File" class="btn-upload   btn-sm" target="_blank" type="button" id="pandowneye{{$i}}" target="_blank"> <i class="fa fa-eye"></i></a>
                                                  </td>
                                                  <td></td>
                                                  <td></td>
@@ -819,7 +819,7 @@
                                                  <td width="20%">
                                                  <a  href="{{ route('download_s3_file', ['file_id' =>$allCkycDoc->file_id ]) }}" class="btn-upload   btn-sm" type="button" id="pandown{{$i}}" > <i class="fa fa-download"></i></a>
 
-                                                 <a  href="{{ Storage::disk('s3')->url($allCkycDoc->file->file_path) }}" title="View File" class="btn-upload   btn-sm" target="_blank" type="button" id="pandowneye{{$i}}" target="_blank"> <i class="fa fa-eye"></i></a>
+                                                 <a  href="{{ Storage::url($allCkycDoc->file->file_path) }}" title="View File" class="btn-upload   btn-sm" target="_blank" type="button" id="pandowneye{{$i}}" target="_blank"> <i class="fa fa-eye"></i></a>
                                                  </td>
                                                  <td></td>
                                                  <td></td>

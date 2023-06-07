@@ -818,7 +818,7 @@ class CkycController extends Controller
     public static function getCKYCResponse($res_file_id){
 
         $fileData = UserFile::find($res_file_id);
-        return $data = file_get_contents(env('S3_BUCKET_URL').$fileData['file_path']);
+        return Storage::get($fileData['file_path']);
     }
 
 }

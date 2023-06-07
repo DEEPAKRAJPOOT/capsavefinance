@@ -447,7 +447,7 @@ class userInvoiceController extends Controller
 
         $file = 'public/capsaveInvoice/'.str_replace("/","_",strtoupper($invoice_no)).'.pdf';
 
-        if (Storage::disk('local')->exists($file)) {
+        if (Storage::exists($file)) {
             $result = Storage::download($file);
         }
 

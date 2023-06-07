@@ -22,8 +22,8 @@ use App\Inv\Repositories\Models\Master\Group;
 use App\Inv\Repositories\Models\CamReviewSummRiskCmnt;
 use App\Inv\Repositories\Models\AppSecurityDoc;
 use App\Inv\Repositories\Models\Application;
-use App\Inv\Repositories\Models\AppGroupDetail;
 use App\Inv\Repositories\Models\Master\NewGroup;
+use Storage;
 
 trait CamTrait
 {
@@ -45,17 +45,16 @@ trait CamTrait
 
             $active_json_filename = $json_files['curr_file'];
             $contents = array();
-            if (!empty($active_json_filename) && file_exists($this->getToUploadPath($appId, 'finance').'/'. $active_json_filename)) {
-              $contents = json_decode(base64_decode(file_get_contents($this->getToUploadPath($appId, 'finance').'/'. $active_json_filename)),true);
+            if (!empty($active_json_filename) && Storage::exists($this->getToUploadPath($appId, 'finance').'/'. $active_json_filename)) {
+              $contents = json_decode(base64_decode(Storage::get($this->getToUploadPath($appId, 'finance').'/'. $active_json_filename)),true);
               $contents = array_replace_recursive(json_decode(base64_decode(getFinContent()),true) , $contents);
             }else{
               if ($this->genBlankfinJSON) {
                 $active_json_filename = $this->getCommonFilePath('common_finance.json');
-                if (!file_exists($active_json_filename)) {
-                  $myfile = fopen($active_json_filename, "w");
-                  \File::put($active_json_filename, getFinContent());
+                if (!Storage::exists($active_json_filename)) {
+                  Storage::put($active_json_filename, getFinContent());
                 }
-                $contents = json_decode(base64_decode(file_get_contents($active_json_filename)),true);
+                $contents = json_decode(base64_decode(Storage::get($active_json_filename)),true);
               }
             }
             

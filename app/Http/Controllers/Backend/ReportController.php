@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Http\Controllers\Backend;
+use App\Helpers\Helper;
 use Auth;
 use Mail;
 use Helpers;
@@ -689,7 +690,7 @@ class ReportController extends Controller
                     $emailData['email'] = $emailTo;
                     $emailData['name'] = $anchor->comp_name;
                     $emailData['body'] = 'PFA';
-                    $emailData['attachment'] = $filePath;
+                    $emailData['attachment'] = Storage::url($filePath);
                     $emailData['subject'] ="Maturity Report (".$anchor->comp_name.")";
                     \Event::dispatch("NOTIFY_MATURITY_REPORT", serialize($emailData));
                 }
@@ -704,7 +705,7 @@ class ReportController extends Controller
             $emailData['email'] = $emailTo;
             $emailData['name'] = 'Capsave Team';
             $emailData['body'] = 'PFA';
-            $emailData['attachment'] = $filePath;
+            $emailData['attachment'] = Storage::url($filePath);
             $emailData['subject'] ="Utilization Report";
             \Event::dispatch("NOTIFY_UTILIZATION_REPORT", serialize($emailData));
 			         
@@ -732,7 +733,7 @@ class ReportController extends Controller
             $emailData['email'] = $emailTo;
             $emailData['name'] = 'Capsave Team';
             $emailData['body'] = 'PFA';
-            $emailData['attachment'] = $filePath;
+            $emailData['attachment'] = Storage::url($filePath);
             $emailData['subject'] ="Disbursal Report";
             \Event::dispatch("NOTIFY_DISBURSAL_REPORT", serialize($emailData));
             
@@ -760,7 +761,7 @@ class ReportController extends Controller
             $emailData['email'] = $emailTo;
             $emailData['name'] = 'Capsave Team';
             $emailData['body'] = 'PFA';
-            $emailData['attachment'] = $filePath;
+            $emailData['attachment'] = Storage::url($filePath);
             $emailData['subject'] ="Overdue Report";
             \Event::dispatch("NOTIFY_OVERDUE_REPORT", serialize($emailData));
         }
@@ -773,7 +774,7 @@ class ReportController extends Controller
             $emailData['email'] = $emailTo;
             $emailData['name'] = 'Capsave Team';
             $emailData['body'] = 'PFA';
-            $emailData['attachment'] = $filePath;
+            $emailData['attachment'] = Storage::url($filePath);
             $emailData['subject'] ="Disbursal Report";
             \Event::dispatch("NOTIFY_ACCOUNT_DISBURSAL_REPORT", serialize($emailData));
         }
@@ -828,16 +829,23 @@ class ReportController extends Controller
             $rows++;
         }
         
+		$tmpHandle = tmpfile();
+		$metaDatas = stream_get_meta_data($tmpHandle);
+		$tmpFilename = $metaDatas['uri'];
+
         $objWriter = IOFactory::createWriter($sheet, 'Xlsx');
         
         $dirPath = 'public/report/temp/maturityReport/'.date('Ymd');
         if (!Storage::exists($dirPath)) {
             Storage::makeDirectory($dirPath);
         }
-        $storage_path = storage_path('app/'.$dirPath);
-        $filePath = $storage_path.'/Maturity Report'.time().'.xlsx';
-        $objWriter->save($filePath);
-        return $filePath;
+        $storage_path = Storage::path($dirPath);
+        $filename = '/Maturity Report'.time().'.xlsx';
+        $objWriter->save($tmpFilename);
+		$attributes['temp_file_path'] = $tmpFilename;
+		$path = Helper::uploadAwsS3Bucket($storage_path, $attributes, $filename);
+		unlink($tmpFilename);
+        return $path;
     }
 
     public function downloadDailyDisbursalReport($exceldata){
@@ -946,16 +954,23 @@ class ReportController extends Controller
             $rows++;
         }
         
+		$tmpHandle = tmpfile();
+		$metaDatas = stream_get_meta_data($tmpHandle);
+		$tmpFilename = $metaDatas['uri'];
+
         $objWriter = IOFactory::createWriter($sheet, 'Xlsx');
 
         $dirPath = 'public/report/temp/dailyDisbursalReport/'.date('Ymd');
         if (!Storage::exists($dirPath)) {
             Storage::makeDirectory($dirPath);
         }
-        $storage_path = storage_path('app/'.$dirPath);
-        $filePath = $storage_path.'/Daily Disbursal Report'.time().'.xlsx';
-        $objWriter->save($filePath);
-        return $filePath;
+        $storage_path = Storage::path($dirPath);
+        $filename = '/Daily Disbursal Report'.time().'.xlsx';
+        $objWriter->save($tmpFilename);
+		$attributes['temp_file_path'] = $tmpFilename;
+		$path = Helper::uploadAwsS3Bucket($storage_path, $attributes, $filename);
+		unlink($tmpFilename);
+        return $path;
     }
 
     public function downloadUtilizationExcel($exceldata) {
@@ -1047,17 +1062,23 @@ class ReportController extends Controller
             }
             $rows++;
         }
-        
+        $tmpHandle = tmpfile();
+		$metaDatas = stream_get_meta_data($tmpHandle);
+		$tmpFilename = $metaDatas['uri'];
+
         $objWriter = IOFactory::createWriter($sheet, 'Xlsx');
         
         $dirPath = 'public/report/temp/utilizationReport/'.date('Ymd');
         if (!Storage::exists($dirPath)) {
             Storage::makeDirectory($dirPath);
         }
-        $storage_path = storage_path('app/'.$dirPath);
-        $filePath = $storage_path.'/Utilization Report'.time().'.xlsx';
-        $objWriter->save($filePath);
-        return $filePath;
+        $storage_path = Storage::path($dirPath);
+        $filename = '/Utilization Report'.time().'.xlsx';
+        $objWriter->save($tmpFilename);
+		$attributes['temp_file_path'] = $tmpFilename;
+		$path = Helper::uploadAwsS3Bucket($storage_path, $attributes, $filename);
+		unlink($tmpFilename);
+        return $path;
     }
 
     public function downloadOverdueReport($exceldata){
@@ -1092,17 +1113,23 @@ class ReportController extends Controller
             ->setCellValue('I'.$rows, $rowData['sales_person_name']);
             $rows++;
         }
-        
+        $tmpHandle = tmpfile();
+		$metaDatas = stream_get_meta_data($tmpHandle);
+		$tmpFilename = $metaDatas['uri'];
+		
         $objWriter = IOFactory::createWriter($sheet, 'Xlsx');
         
         $dirPath = 'public/report/temp/overdueReport/'.date('Ymd');
         if (!Storage::exists($dirPath)) {
             Storage::makeDirectory($dirPath);
         }
-        $storage_path = storage_path('app/'.$dirPath);
-        $filePath = $storage_path.'/Overdue Report'.time().'.xlsx';
-        $objWriter->save($filePath);
-        return $filePath;
+        $storage_path = Storage::path($dirPath);
+        $filename = '/Overdue Report'.time().'.xlsx';
+        $objWriter->save($tmpFilename);
+		$attributes['temp_file_path'] = $tmpFilename;
+		$path = Helper::uploadAwsS3Bucket($storage_path, $attributes, $filename);
+		unlink($tmpFilename);
+        return $path;
     }
 
     public function downloadAccountDailyDisbursalReport($exceldata){
@@ -1146,17 +1173,22 @@ class ReportController extends Controller
             ->setCellValue('O'.$rows, $rowData['status_des']);
             $rows++;
         }
-        
+		$tmpHandle = tmpfile();
+		$metaDatas = stream_get_meta_data($tmpHandle);
+		$tmpFilename = $metaDatas['uri'];
         $objWriter = IOFactory::createWriter($sheet, 'Xlsx');
 
         $dirPath = 'public/report/temp/accountDailyDisbursalReport/'.date('Ymd');
         if (!Storage::exists($dirPath)) {
             Storage::makeDirectory($dirPath);
         }
-        $storage_path = storage_path('app/'.$dirPath);
-        $filePath = $storage_path.'/Account Daily Disbursal Report'.time().'.xlsx';
-        $objWriter->save($filePath);
-        return $filePath;
+        $storage_path = Storage::path($dirPath);
+        $filename = '/Account Daily Disbursal Report'.time().'.xlsx';
+        $objWriter->save($tmpFilename);
+		$attributes['temp_file_path'] = $tmpFilename;
+		$path = Helper::uploadAwsS3Bucket($storage_path, $attributes, $filename);
+		unlink($tmpFilename);
+        return $path;
     }
 
 	/**
@@ -1300,7 +1332,7 @@ class ReportController extends Controller
 	public function downloadOverdueReportFromLogs(Request $request)
 	{
 		$reportLog = OverdueReportLog::findOrfail($request->report_log_id);
-		return Storage::disk(env('STORAGE_TYPE'))->download($reportLog->file_path);
+		return Storage::download($reportLog->file_path);
 	}
 	
     public function etlReportSync(){
@@ -1318,7 +1350,7 @@ class ReportController extends Controller
 	public function downloadOutstandingReportFromLogs(Request $request)
 	{
 		$reportLog = OutstandingReportLog::findOrfail($request->report_log_id);
-		return Storage::disk(env('STORAGE_TYPE'))->download($reportLog->file_path);
+		return Storage::download($reportLog->file_path);
 	}
 
 	public function reconReport(Request $request){
@@ -1332,6 +1364,6 @@ class ReportController extends Controller
 	public function downloadReconReportFromLogs(Request $request)
 	{
 		$reportLog = ReconReportLog::findOrfail($request->report_log_id);
-		return Storage::disk(env('STORAGE_TYPE'))->download($reportLog->file_path);
+		return Storage::download($reportLog->file_path);
 	}
 }

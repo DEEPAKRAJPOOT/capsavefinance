@@ -37,6 +37,7 @@ use App\Helpers\FileHelper;
 use App\Inv\Repositories\Models\Lms\PaymentApportionment;
 use Illuminate\Support\Facades\Response;
 use App\Inv\Repositories\Models\Application;
+use Storage;
 
 class ApportionmentController extends Controller
 {
@@ -2083,7 +2084,6 @@ class ApportionmentController extends Controller
             $transactions = null;
             $unInvCnt = BizInvoice::where('supplier_id', $userId)->whereHas('invoice_disbursed')->where('is_repayment', '0')->count();
             $showSuggestion = ($unInvCnt <= 50) ? true : false;
-            //dd($showSuggestion);
             $date_of_payment = null;
             if ($request->has('payment_id')) {
                 $paymentId = $request->payment_id;
@@ -2160,7 +2160,6 @@ class ApportionmentController extends Controller
     }
 
     public function uploadApportUnsettledTrans(Request $request){
-        
         set_time_limit(0);
         $sanctionPageView = false;
         if ($request->has('sanctionPageView')) {
@@ -2191,9 +2190,9 @@ class ApportionmentController extends Controller
                             return redirect()->back();
                         }
                         $uploadFileData = $uploadData['data'];
-                    //     $fullFilePath = storage_path('app') . '/public/' . $uploadFileData['file_path'];
-                    //    if (file_exists($fullFilePath)) {
-                            $fileArrayData = $fileHelper->csvToArray($uploadFileData['file_path'], $delimiter = ',');
+                        $fullFilePath = $uploadFileData['file_path'];
+                        if (Storage::exists($fullFilePath)) {
+                            $fileArrayData = $fileHelper->csvToArray($fullFilePath, $delimiter = ',');
                             if ($fileArrayData['status'] != 'success') {
                                 Session::flash('untrans_error', $fileHelper->validationMessage(5));
                                 return redirect()->back();
@@ -2298,11 +2297,10 @@ class ApportionmentController extends Controller
                                 Session::flash('untrans_error', $fileHelper->validationMessage(12));
                                 return redirect()->back();
                             }
-                        // } else {
-                        //     echo "this error";die;
-                        //     Session::flash('untrans_error', $fileHelper->validationMessage(14));
-                        //     return redirect()->back();
-                        // }
+                        } else {
+                            Session::flash('untrans_error', $fileHelper->validationMessage(14));
+                            return redirect()->back();
+                        }
                     } else {
                         Session::flash('untrans_error', $fileHelper->validationMessage(15));
                         return redirect()->back();

@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Storage;
 use App\Inv\Repositories\Models\ETL\UtilizationReport as UtilizationReportModel;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use Carbon\Carbon;
+use Session;
 
 class UtilizationReport extends Command
 {
@@ -42,19 +43,23 @@ class UtilizationReport extends Command
     public function handle()
     {
         ini_set('memory_limit', '-1');
-        $reportDate = now()->format('Ymd'); // now()->subDays(1)->format('Ymd');
+        $reportDate = now()->format('Ymd');
         $dirPath = 'public/report/temp/utilizationReport/'.$reportDate;
         
         if (Storage::exists($dirPath)) {
-            $files = Storage::disk('local')->files($dirPath);
-            foreach($files as $file)
+            $files = Storage::files($dirPath);
+            foreach($files as $filePath)
             {
-                $filePath = storage_path('app/'.$file);
-                if (file_exists($filePath) && $file == $dirPath."/Consolidated Report.xlsx") {
+                if (Storage::exists($filePath) && $filePath == Storage::path($dirPath."/Consolidated Report.xlsx")) {
                     try {
-                        $inputFileType = IOFactory::identify($filePath);
+                        $fileDetails = pathinfo($filePath);
+                        $tempFileName = Session::getId().'_'.$fileDetails['basename'];
+                        $localPath = Storage::disk('temp')->put($tempFileName, Storage::get($filePath));
+                        $localPath = Storage::disk('temp')->path($tempFileName);
+                        $inputFileType = IOFactory::identify($localPath);
                         $objReader = IOFactory::createReader($inputFileType);
-                        $objSpreadsheet = $objReader->load($filePath);
+                        $objSpreadsheet = $objReader->load($localPath);
+                        Storage::disk('temp')->delete($tempFileName);
                     } catch (\Exception $e) {
                         die('Error loading file "'.pathinfo($filePath,PATHINFO_BASENAME).'": '.$e->getMessage());
                     }

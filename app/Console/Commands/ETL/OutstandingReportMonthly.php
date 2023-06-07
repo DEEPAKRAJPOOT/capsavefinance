@@ -9,6 +9,7 @@ use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Storage;
 use App\Inv\Repositories\Models\Lms\OutstandingReportLog;
 use App\Inv\Repositories\Models\ETL\OutstandingReportMonthly as OutstandingReportMonthlyModel;
+use Session;
 
 class OutstandingReportMonthly extends Command
 {
@@ -48,12 +49,17 @@ class OutstandingReportMonthly extends Command
         $filePath = $outstandingReportLog->file_path ?? NULL;
         $reportLogId = $outstandingReportLog->id ?? NULL;
         $currDate = NULL;
-        if(file_exists($filePath)) {
+        if(Storage::exists($filePath)) {
             $currDate = Helper::utcToIst($outstandingReportLog->created_at);
             try {
-                $inputFileType = IOFactory::identify($filePath);
+                $fileDetails = pathinfo($filePath);
+                $tempFileName = Session::getId().'_'.$fileDetails['basename'];
+                $localPath = Storage::disk('temp')->put($tempFileName, Storage::get($filePath));
+                $localPath = Storage::disk('temp')->path($tempFileName);
+                $inputFileType = IOFactory::identify($localPath);
                 $objReader = IOFactory::createReader($inputFileType);
-                $objSpreadsheet = $objReader->load($filePath);
+                $objSpreadsheet = $objReader->load($localPath);
+                Storage::disk('temp')->delete($tempFileName);
             } catch (\Exception $e) {
                 $this->error('Error loading file "'.pathinfo($filePath,PATHINFO_BASENAME).'": '.$e->getMessage());
                 die();

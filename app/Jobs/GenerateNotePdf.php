@@ -9,7 +9,6 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\App;
 use Illuminate\Queue\SerializesModels;
-use Illuminate\Support\Facades\Storage;
 use App\Inv\Repositories\Models\LmsUser;
 use Illuminate\Queue\InteractsWithQueue;
 use App\Inv\Repositories\Models\UserFile;
@@ -19,6 +18,7 @@ use App\Inv\Repositories\Models\Lms\UserInvoice;
 use App\Inv\Repositories\Contracts\ReportInterface;
 use App\Inv\Repositories\Models\Master\EmailTemplate;
 use App\Inv\Repositories\Contracts\UserInvoiceInterface;
+use Storage;
 
 
 class GenerateNotePdf implements ShouldQueue
@@ -144,13 +144,7 @@ class GenerateNotePdf implements ShouldQueue
             ];
 
             view()->share($data);
-            $path ='capsaveInvoice/'.str_replace("/","_",strtoupper($data['origin_of_recipient']['invoice_no'])).'.pdf';
-            //$year = date("Y");   
-            //$month = date("m");
-            //$path ='capsaveInvoice/'.$year.'/'.$month.'/'.str_replace("/","_",strtoupper($data['origin_of_recipient']['invoice_no'])).'.pdf';
-            if(Storage::exists('public/'.$path)){
-                Storage::move('public/'.$path, 'public/'.'capsaveInvoice/'.str_replace("/","_",strtoupper($data['origin_of_recipient']['invoice_no'])).'_'.time().'.pdf');
-            }
+            $path =Storage::path('public/capsaveInvoice/'.str_replace("/","_",strtoupper($data['origin_of_recipient']['invoice_no'])).'.pdf');
             switch ($invData->invoice_cat) {
                 case '1':
                     $pdf = PDF::loadView('lms.note.generate_debit_note');
@@ -161,9 +155,7 @@ class GenerateNotePdf implements ShouldQueue
             }
             
             if($pdf){
-                $s3path = env('S3_BUCKET_DIRECTORY_PATH').'/'.$path;
-                $fileData =  $this->fileHelper->uploadFileWithContent($s3path,$pdf->output());
-                unlink($path, 'public/'.'capsaveInvoice/'.str_replace("/","_",strtoupper($data['origin_of_recipient']['invoice_no'])).'_'.time().'.pdf');
+                $fileData =  $this->fileHelper->uploadFileWithContent($path,$pdf->output());
                 $userFile = UserFile::create($fileData);
                 if($userInvoiceId && $userFile){
                     UserInvoice::where('user_invoice_id',$userInvoiceId)->update(['file_id' => $userFile->file_id]);

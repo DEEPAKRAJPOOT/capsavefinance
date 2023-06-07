@@ -1735,14 +1735,20 @@ public function disburseTableInsert($exportData = [], $supplierIds = [], $allinv
         if (!Storage::exists('/public/docs/bank_excel')) {
             Storage::makeDirectory('/public/docs/bank_excel');
         }
-        $storage_path = storage_path('app/public/docs/bank_excel');
-        $filePath = $storage_path.'/'.$filename.'.xlsx';
+        $storage_path = Storage::path('public/docs/bank_excel');
+        $file_name = $filename.'.xlsx';
 
+        $tmpHandle = tmpfile();
+        $metaDatas = stream_get_meta_data($tmpHandle);
+        $tmpFilename = $metaDatas['uri'];
         $objWriter = IOFactory::createWriter($sheet, 'Xlsx');
-        $objWriter->save($filePath);
+        $objWriter->save($tmpFilename);
+        $attributes['temp_file_path'] = $tmpFilename;
+        $path = Helper::uploadAwsS3Bucket($storage_path, $attributes, $file_name);
+        unlink($tmpFilename);
 
         return [ 'status' => 1,
-                'file_path' => $filePath
+                'file_path' => $path
                 ];
     }
 
@@ -1922,7 +1928,6 @@ public function disburseTableInsert($exportData = [], $supplierIds = [], $allinv
            $resFile =  $this->invRepo->saveInvoiceBatch($userFile);
            if($resFile)
            {
-              
               $uploadData = Helpers::uploadZipInvoiceFile($attributes, $batch_id); ///Upload zip file
               if(!empty($uploadData) && $uploadData['status']==0)
              {
@@ -1940,7 +1945,7 @@ public function disburseTableInsert($exportData = [], $supplierIds = [], $allinv
                 }
                 //   if($resZipFile)
                 //   {
-                    $csvPath = storage_path('app/public/'.$userFile->file_path);
+                    $csvPath = $request->file('file_id')->getRealPath();
                     $handle = fopen($csvPath, "r");
                     $data = fgetcsv($handle, 1000, ",");
                     if(count($data) < 5 || count($data) > 6)
@@ -1950,7 +1955,7 @@ public function disburseTableInsert($exportData = [], $supplierIds = [], $allinv
                           return back(); 
                     }
                     
-                    $csvPath1 = storage_path('app/public/'.$userFile->file_path);
+                    $csvPath1 = $request->file('file_id')->getRealPath();
                     $handle1 = fopen($csvPath1, "r");
                     $data1 = fgetcsv($handle1, 1000, ",");
                     $key=0;
@@ -2042,7 +2047,7 @@ public function disburseTableInsert($exportData = [], $supplierIds = [], $allinv
                         else
                         {
                            $FileId  = Null; 
-                           $comm_txt  =  $getImage['message']; 
+                           $comm_txt  =  $getImage['message'] ?? ''; 
                         }
                       }
                       else
@@ -2324,15 +2329,20 @@ public function disburseTableInsert($exportData = [], $supplierIds = [], $allinv
 
     public function viewUploadedFile(Request $request){
         try {
-            
-            $file_id = $request->get('file_id');
-            $fileData = $this->docRepo->getFileByFileId($file_id);
-            // dd($fileData);
-            $filePath = 'app/public/'.$fileData->file_path;
-            $path = storage_path($filePath);
-           
-            if (file_exists($path)) {
-                return response()->file($path);
+
+            $fileId = $request->get('file_id');
+            $fileData = $this->docRepo->getFileByFileId($fileId);
+
+            $filePath = 'public/'.$fileData->file_path;
+            if (Storage::exists($filePath)) {
+                $fileName = time().$fileData->file_name;
+                $temp_filepath = tempnam(sys_get_temp_dir(), 'file');
+                $file_data = Storage::get($filePath);
+                file_put_contents($temp_filepath, $file_data);
+
+                return response()
+                    ->download($temp_filepath, $fileName, [], 'inline')
+                    ->deleteFileAfterSend();
             }else{
                 exit('Requested file does not exist on our server!');
             }
@@ -3270,7 +3280,7 @@ public function disburseTableInsert($exportData = [], $supplierIds = [], $allinv
             return back();
         }
         $data = $this->invRepo->getAllBulkInvoice()->toArray();
-        $sheet =  new PHPExcel();
+        $sheet =  new Spreadsheet();
         $sheet->getProperties()
                 ->setCreator("Capsave")
                 ->setLastModifiedBy("Capsave")
@@ -3328,7 +3338,7 @@ public function disburseTableInsert($exportData = [], $supplierIds = [], $allinv
         header ('Cache-Control: cache, must-revalidate'); // HTTP/1.1
         header ('Pragma: public'); // HTTP/1.0
         
-        $objWriter = PHPExcel_IOFactory::createWriter($sheet, 'Excel2007');
+        $objWriter = IOFactory::createWriter($sheet, 'Xlsx');
         $objWriter->save('php://output');
     }
 

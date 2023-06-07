@@ -507,7 +507,7 @@ class ApplicationController extends Controller
 					'result' => $response,
 					'status' => 1,
 					'file_path' => Storage::url($response->file_path)
-//                    'file_path' => Storage::disk('s3')->url($response->file_path)
+//                    
 				]);
 			} else {
 				return response()->json([
@@ -1958,10 +1958,10 @@ class ApplicationController extends Controller
 		if ($request->has('offer_id') && !empty($request->get('offer_id'))) {
 			$offerId = $request->get('offer_id');
 		}
-		$supplyChainFormFile = storage_path('app/public/user/'.$appId.'_supplychain.json');
+		$supplyChainFormFile = 'public/user/'.$appId.'_supplychain.json';
 		$supplyChainFormData = [];
-		if (file_exists($supplyChainFormFile)) {
-		  $supplyChainFormData = json_decode(base64_decode(file_get_contents($supplyChainFormFile)),true);
+		if (Storage::exists($supplyChainFormFile)) {
+		  $supplyChainFormData = json_decode(base64_decode(Storage::get($supplyChainFormFile)),true);
 		}
 		// $data = $this->getSanctionLetterData((int)$appId, (int)$bizId, (int)$offerId, (int)$sanctionId);
 		$data = $this->getSanctionLetterData((int)$appId, (int)$bizId, (int)$offerId, (int)$sanctionId);
@@ -2233,10 +2233,10 @@ class ApplicationController extends Controller
 			$bizId = (int) $request->get('biz_id');
 			$offerId = null;
 			$supplyChaindata = $this->getSanctionLetterSupplyChainData($appId, $bizId);
-			$supplyChainFormFile = storage_path('app/public/user/'.$appId.'_supplychain.json');
+			$supplyChainFormFile = 'public/user/'.$appId.'_supplychain.json';
 			$arrFileData = [];
-			if (file_exists($supplyChainFormFile)) {
-			  $arrFileData = json_decode(base64_decode(file_get_contents($supplyChainFormFile)),true);
+			if (Storage::exists($supplyChainFormFile)) {
+			  $arrFileData = json_decode(base64_decode(Storage::get($supplyChainFormFile)),true);
 			}
 			$data = ['appId' => $appId, 'bizId' => $bizId, 'offerId'=>$offerId,'download'=> false];
 			$htmlContent = view('backend.app.sanctionSupply')->with($data)->with(['supplyChaindata'=>$supplyChaindata,'postData'=>$arrFileData])->render();
@@ -2259,73 +2259,6 @@ class ApplicationController extends Controller
             }
 
 			return redirect()->back()->with('is_send',1);
-		} catch (Exception $ex) {
-			return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
-		}
-	}
-
-	/**
-	 * Show upload sanction letter
-	 *
-	 * @param Request $request
-	 * @return View
-	 */
-	public function showUploadSanctionLetter(Request $request)
-	{
-		$appId = $request->get('app_id');
-		$offerId = $request->get('offer_id');
-		$bizId = $request->get('biz_id');
-		//$prgmDocsWhere = [];
-		//$prgmDocsWhere['app_id'] = $appId;
-		//$prgmDocsWhere['stage_code'] = 'upload_exe_doc';
-		//$prgmDocs = $this->appRepo->getProgramDocs($prgmDocsWhere);    //33;
-
-		//$docId = $prgmDocs ? $prgmDocs[0]->doc_id : null;
-		$docId = 33;
-
-		return view('backend.app.upload_sanction_letter')
-				->with('appId', $appId)
-				->with('bizId', $bizId)
-				->with('offerId', $offerId)
-				->with('docId', $docId);
-	}
-
-	/**
-	 * Upload signed sanction letter
-	 *
-	 * @param Request $request
-	 * @return Response
-	 */
-	public function uploadSanctionLetter(Request $request)
-	{
-
-		$arrFileData = $request->all();
-
-		$docId = $request->get('doc_id');
-		$appId = $request->get('app_id');
-		$bizId = $request->get('biz_id');
-		$offerId = $request->get('offer_id');
-
-		try {
-			$s3path = env('S3_BUCKET_DIRECTORY_PATH').'/user/'. $userId . '/' . $appId;
-			$uploadData = Helpers::uploadAwsS3Bucket($s3path, $arrFileData);
-
-			$userFile = $this->docRepo->saveFile($uploadData);
-
-			if(!empty($userFile->file_id)) {
-
-				$appDocData = Helpers::appDocData($arrFileData, $userFile->file_id);
-				$appDocResponse = $this->docRepo->saveAppDoc($appDocData);
-
-				//Update workflow stage
-				//Helpers::updateWfStage('upload_exe_doc', $appId, $wf_status = 1);
-
-				Session::flash('message',trans('backend_messages.upload_sanction_letter_success'));
-			} else {
-				Session::flash('message',trans('backend_messages.upload_sanction_letter_fail'));
-			}
-			return redirect()->route('gen_sanction_letter', ['app_id' => $appId, 'biz_id' => $bizId, 'offer_id' => $offerId ]);
-
 		} catch (Exception $ex) {
 			return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
 		}
@@ -2473,10 +2406,11 @@ class ApplicationController extends Controller
 			$offerId = (int)$request->offer_id;
 			$bizId = (int) $request->get('biz_id');
 			$supplyChaindata = $this->getSanctionLetterSupplyChainData($appId, $bizId, $offerId);
-			$filepath = storage_path('app/public/user/'.$appId.'_supplychain.json');
-			\File::put($filepath, base64_encode(json_encode($arrFileData)));
 
-						Helpers::updateAppCurrentStatus($appId, config('common.mst_status_id.SANCTION_LETTER_GENERATED'));
+			$filepath = 'public/user/'.$appId.'_supplychain.json';
+			Storage::put($filepath, base64_encode(json_encode($arrFileData)));
+
+			Helpers::updateAppCurrentStatus($appId, config('common.mst_status_id.SANCTION_LETTER_GENERATED'));
 
             $whereActivi['activity_code'] = 'save_sanction_letter_supplychain';
             $activity = $this->masterRepo->getActivity($whereActivi);
@@ -2507,10 +2441,10 @@ class ApplicationController extends Controller
 			$offerId = (int)$request->offer_id;
 			$bizId = (int) $request->get('biz_id');
 			$supplyChaindata = $this->getSanctionLetterSupplyChainData($appId, $bizId, $offerId);
-			$supplyChainFormFile = storage_path('app/public/user/'.$appId.'_supplychain.json');
+			$supplyChainFormFile = 'public/user/'.$appId.'_supplychain.json';
 			$arrFileData = [];
-			if (file_exists($supplyChainFormFile)) {
-			  $arrFileData = json_decode(base64_decode(file_get_contents($supplyChainFormFile)),true);
+			if (Storage::exists($supplyChainFormFile)) {
+			  $arrFileData = json_decode(base64_decode(Storage::get($supplyChainFormFile)),true);
 			}
 			$data = ['appId' => $appId, 'bizId' => $bizId, 'offerId'=>$offerId,'download'=> true];
 			$html = view('backend.app.sanctionSupply')->with($data)->with(['supplyChaindata'=>$supplyChaindata,'postData'=>$arrFileData])->render();

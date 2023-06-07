@@ -663,10 +663,10 @@ class AjaxController extends Controller {
             if (!Storage::exists('/public/user/' . $userId . '/excelpayment')) {
                 Storage::makeDirectory('/public/user/' . $userId . '/excelpayment', 0775, true);
             }
-            $path = Storage::disk('public')->put('/user/' . $userId . '/excelpayment', $request['upload'], null);
-            $inputArr['file_path'] = $path;
+            $path = Storage::put('public/user/' . $userId . '/excelpayment', $request['upload'], null);
+            $inputArr['file_path'] = str_replace('public/', '', $path);
        }
-        $csvFilePath = storage_path("app/public/" . $inputArr['file_path']);
+        $csvFilePath = Storage::url("public/" . $inputArr['file_path']);
          $file = fopen($csvFilePath, "r");
      
         while (!feof($file)) {
@@ -4347,7 +4347,7 @@ class AjaxController extends Controller {
                 $nameArr = $controller->getLatestFileName($appId, 'banking', 'xlsx');
                 $file_name = $nameArr['curr_file'];
                 //$file_path = "storage/user/docs/$appId/banking/$file_name";
-                if(!empty($file_name) && file_exists(storage_path("app/public/user/docs/$appId/banking/".$file_name))) {
+                if(!empty($file_name) && Storage::exists("public/user/docs/$appId/banking/".$file_name)) {
                     $final_res['file_url'] = Storage::url('user/docs/'.$appId.'/banking/'.$file_name);
                     return response()->json(['status' => 1, 'value'=>$final_res, 'response_status'=>$resStatus]);
                 } else {
@@ -4384,7 +4384,7 @@ class AjaxController extends Controller {
                 $nameArr = $controller->getLatestFileName($appId, 'finance', 'xlsx');
                 $file_name = $nameArr['curr_file'];
                 //$file_path = "storage/user/docs/$appId/finance/$file_name";
-                if(!empty($file_name) && file_exists(storage_path("app/public/user/docs/$appId/finance/".$file_name))) {
+                if(!empty($file_name) && Storage::exists("public/user/docs/$appId/finance/".$file_name)) {
                     $final_res['file_url'] = Storage::url('user/docs/'.$appId.'/finance/'.$file_name);
                     return response()->json(['status' => 1, 'value'=>$final_res, 'response_status'=>$resStatus]);
                 } else {
