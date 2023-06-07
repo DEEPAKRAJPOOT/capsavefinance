@@ -873,7 +873,6 @@ class userInvoiceController extends Controller
 
             if($borneBy == 1){
                 $anchorDetails = AnchorUser::getAnchorsDetails($user_id);
-                $custDetails = User::getCustomerData($user_id);
                 $billingDetails = [
                     'pan_no' => $anchorDetails['pan_no'],
                     'biz_gst_no' => $anchorDetails['gst_no'],
