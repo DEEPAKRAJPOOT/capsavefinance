@@ -861,6 +861,7 @@ class userInvoiceController extends Controller
             $bank_id = bankDetailIsOfRegisteredCompanyInInvoice() ? $registeredCompany['bank_account_id'] : $company_data['bank_id'];
 
             $isGst = $inv_data[3];
+            dd($isGst);
             $invoiceType = $invoice_type;
             $invoiceTypeName = substr($invoiceType,0,1)  == 'C' ? 1 : 2;
             $invCat = $inv_data[2];
@@ -891,7 +892,7 @@ class userInvoiceController extends Controller
                     'biz_gst_state_code' => substr($billing_data['gstin_no'],0,2),
                     'gst_addr' => $billing_data['address'],
                     'customer_id' => $custDetails['customer_id'],
-                    'customer_name' => '',
+                    'customer_name' => $custDetails['biz_entity_name'],
                     'anchor_name' => '',
                     'anchor_id' => '',
                 ];
