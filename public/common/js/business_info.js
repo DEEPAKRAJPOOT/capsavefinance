@@ -467,6 +467,7 @@ function checkValidation(){
 		setError('input[name=invoice_level_mail]', 'Invoice level Mail Field cannont be left Blank');
 		flag = false;
 	}
+
 	if (invoiceLeveMail !== '') {
 		var validEmails = [];
 		var invalidEmails = [];
@@ -477,7 +478,7 @@ function checkValidation(){
 	  
 		for (var i = 0; i < invoiceLeveMail.length; i++) {
 		  var trimmedEmail = invoiceLeveMail[i].trim();
-	  
+			// console.log(trimmedEmail);
 		  if (emailPattern.test(trimmedEmail)) {
 			if (uniqueEmails.has(trimmedEmail)) {
 			  // Duplicate email ID found
@@ -492,7 +493,7 @@ function checkValidation(){
 			invalidEmails.push(trimmedEmail);
 		  }
 		}
-	  
+
 		if (invalidEmails.length !== 0) {
 		  setError('input[name=invoice_level_mail]', 'Invalid email IDs: ' + invalidEmails.join(', '));
 		  flag = false;
@@ -500,6 +501,10 @@ function checkValidation(){
 	  
 		if (duplicateEmails.length !== 0) {
 		  setError('input[name=invoice_level_mail]', 'Duplicate email IDs: ' + duplicateEmails.join(', '));
+		  flag = false;
+		}
+		if(validEmails.length >3){
+			setError('input[name=invoice_level_mail]', 'Maximum email IDs: Enter email ids can not be more than 3');
 		  flag = false;
 		}
 	  }
