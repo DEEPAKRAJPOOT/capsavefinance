@@ -861,7 +861,6 @@ class userInvoiceController extends Controller
             $bank_id = bankDetailIsOfRegisteredCompanyInInvoice() ? $registeredCompany['bank_account_id'] : $company_data['bank_id'];
 
             $isGst = $inv_data[3];
-            dd($isGst);
             $invoiceType = $invoice_type;
             $invoiceTypeName = substr($invoiceType,0,1)  == 'C' ? 1 : 2;
             $invCat = $inv_data[2];
