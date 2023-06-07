@@ -1303,7 +1303,7 @@ class Transactions extends BaseModel {
     }
 
     public static function getUserInvoiceTxns($userId, $invoiceType, $trans_ids, $is_force = false){
-       $sql = self::with('transType','invoiceDisbursed:invoice_disbursed_id,invoice_id','invoiceDisbursed.invoice:invoice_id,program_id','invoiceDisbursed.invoice.program:prgm_id,interest_borne_by,overdue_interest_borne_by','ChargesTransactions:trans_id,prgm_id','ChargesTransactions.chargePrgm:prgm_id,interest_borne_by')->whereNull('payment_id')->where(['user_id' => $userId, 'entry_type' => 0]);
+       $sql = self::with('transType','invoiceDisbursed:invoice_disbursed_id,invoice_id','invoiceDisbursed.invoice:invoice_id,program_id,invoice_no','invoiceDisbursed.invoice.program:prgm_id,interest_borne_by,overdue_interest_borne_by','ChargesTransactions:trans_id,prgm_id','ChargesTransactions.chargePrgm:prgm_id,interest_borne_by')->whereNull('payment_id')->where(['user_id' => $userId, 'entry_type' => 0]);
        if (!empty($trans_ids)) {
         if ($is_force) {
             $sql->where('is_invoice_generated', '=', 0);

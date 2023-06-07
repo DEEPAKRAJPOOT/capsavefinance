@@ -845,6 +845,9 @@ class userInvoiceController extends Controller
                 }
             }
 
+            foreach($txnsData as $txn){
+                $invNo = $txn->invoiceDisbursed->invoice->invoice_no;
+            }
             $invSerialNo = null;
             $InvoiceNoArr = explode('/',$requestedData['invoice_no']);
             $InvoiceNoArr[3] = $invSerialNo;
@@ -923,6 +926,7 @@ class userInvoiceController extends Controller
                 'bank_id' => $bank_id,
                 'is_active' => 1,
                 'is_gst' => $isGst,
+                'inv_no' => $invNo,
 
                 'pan_no' => $billingDetails['pan_no'] ?? NULL, 
                 'biz_gst_no' => $billingDetails['biz_gst_no'] ?? NULL, 
