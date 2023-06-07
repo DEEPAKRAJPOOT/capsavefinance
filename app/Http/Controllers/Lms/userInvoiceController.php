@@ -588,9 +588,17 @@ class userInvoiceController extends Controller
                 }
             }
 
+            if(in_array($txn->trans_type,[
+                config('lms.TRANS_TYPE.INTEREST'),
+                config('lms.TRANS_TYPE.INTEREST_OVERDUE'),
+                config('lms.TRANS_TYPE.INVOICE_PROCESSING_FEE')
+            ])){
+                $desc = $desc.$invoice_no;
+            }
+
             $intrest_charges[$key] = array(
                 'trans_id' => $txn->trans_id,
-                'desc' => $desc.$invoice_no,
+                'desc' => $desc,
                 'sac' => $sac_code,
                 'base_amt' => round($base_amt,2),
                 'sgst_rate' => $sgst_rate,
@@ -845,9 +853,6 @@ class userInvoiceController extends Controller
                 }
             }
 
-            foreach($txnsData as $txn){
-                $invNo = $txn->invoiceDisbursed->invoice->invoice_no;
-            }
             $invSerialNo = null;
             $InvoiceNoArr = explode('/',$requestedData['invoice_no']);
             $InvoiceNoArr[3] = $invSerialNo;
@@ -926,7 +931,6 @@ class userInvoiceController extends Controller
                 'bank_id' => $bank_id,
                 'is_active' => 1,
                 'is_gst' => $isGst,
-                'inv_no' => $invNo,
 
                 'pan_no' => $billingDetails['pan_no'] ?? NULL, 
                 'biz_gst_no' => $billingDetails['biz_gst_no'] ?? NULL, 
