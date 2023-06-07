@@ -110,9 +110,9 @@ class GenerateNotePdf implements ShouldQueue
                 $sgst_rate = $invTrans->sgst_rate;
                 $base_amt = $invTrans->base_amount;
                 $sac_code = $invTrans->sac_code;
-                
+
                 if($invoice_type == 'I'){
-                    $description = $invTrans->description.' '.($invoice_no);
+                    $description = $invTrans->description.' (Invoice No-'.($invoice_no).')';
                 }else{
                     $description = $invTrans->description;
                 }
