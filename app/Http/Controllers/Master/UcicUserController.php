@@ -128,7 +128,7 @@ class UcicUserController extends Controller
                         $uniqueEmails = [];
                         $invalidEmails = [];
                         $duplicateEmails = [];
-            
+                        // dd(count($emails));
                         foreach ($emails as $email) {
                             if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
                                 $invalidEmails[] = $email;
@@ -146,6 +146,10 @@ class UcicUserController extends Controller
             
                         if (!empty($duplicateEmails)) {
                             $fail("Duplicate email IDs: " . implode(', ', $duplicateEmails));
+                            return;
+                        }
+                        if(count($emails) >3){
+                            $fail('Maximum email IDs: Enter email ids can not be more than 3');
                             return;
                         }
                     },
