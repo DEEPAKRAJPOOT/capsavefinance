@@ -53,7 +53,7 @@ class GenerateDebitNote extends Command
         $controller = \App::make('App\Http\Controllers\Lms\userInvoiceController');
         $billData = [];
         $curdate = Helpers::getSysStartDate();
-        $transList = Transactions::with('invoiceDisbursed:invoice_disbursed_id,invoice_id','invoiceDisbursed.invoice:invoice_id,program_id','invoiceDisbursed.invoice.program:prgm_id,interest_borne_by,overdue_interest_borne_by','ChargesTransactions:trans_id,prgm_id','ChargesTransactions.chargePrgm:prgm_id,interest_borne_by')->whereNull('parent_trans_id')->whereDate('created_at','>=','2023-01-01')
+        $transList = Transactions::with('invoiceDisbursed:invoice_disbursed_id,invoice_id','invoiceDisbursed.invoice:invoice_id,program_id,invoice_no','invoiceDisbursed.invoice.program:prgm_id,interest_borne_by,overdue_interest_borne_by','ChargesTransactions:trans_id,prgm_id','ChargesTransactions.chargePrgm:prgm_id,interest_borne_by')->whereNull('parent_trans_id')->whereDate('created_at','>=','2023-01-01')
         ->where('entry_type','0')
         ->where('invoice_disbursed_id','!=','NULL')
         ->where('is_invoice_generated','0');
