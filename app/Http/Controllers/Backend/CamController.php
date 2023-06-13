@@ -658,12 +658,18 @@ class CamController extends Controller
      if (!Storage::exists($inputFileName)) {
        return ['', ''];
      }
-     $objSpreadsheet = IOFactory::load($inputFileName);
-     $objWriter = IOFactory::createWriter($objSpreadsheet, 'HTML');
+
+     $fileDetails = pathinfo($inputFileName);
+     $tempFileName = Session::getId().'_'.$fileDetails['basename'];
+     $localPath = Storage::disk('temp')->put($tempFileName, Storage::get($inputFileName));
+     $localPath = Storage::disk('temp')->path($tempFileName);
+     $objSpreadsheet = IOFactory::load($localPath);
+     $objWriter = IOFactory::createWriter($objSpreadsheet, 'Html');
      $allsheets = $objSpreadsheet->getSheetNames();
      $pagination = $this->_getPaginate($allsheets, $sheet_no);
      $objWriter->setSheetIndex($sheet_no);
      $html = $objWriter->generateHtmlAll();
+     Storage::disk('temp')->delete($tempFileName);
      return [$html, $pagination];
     }
 
