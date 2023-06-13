@@ -796,7 +796,12 @@ class CamController extends Controller
           if (!empty($financeData[$year-1])) {
              $growth_data[$year] =  getGrowth($financeData[$year], $financeData[$year-1]);
           }else{
-             $growth_data[$year] = 0;
+             $growth_data[$year] =  array(
+              'netSalesGrowth' => 0,
+              'netIncomeGrowth' => 0,
+              'netProfitGrowth' => 0,
+              'tangibleNetWorthGrowth' => 0,
+            );
           }
         }
         $finDetailData = AppBizFinDetail::where('biz_id','=',$bizId)->where('app_id','=',$appId)->first();
