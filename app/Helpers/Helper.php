@@ -3696,7 +3696,7 @@ class Helper extends PaypalHelper
             foreach($fileArray as $key => $val) {
                 if(Storage::exists('public/'.$val['file_path'])) {
                     $fileAttachments[] = [
-                        'file_path' => Storage::path('public/'.$val['file_path']),
+                        'file_path' => Storage::url('public/'.$val['file_path']),
                         'file_name' => $val['file_name'],
                         'isBinaryData' => false,
                     ];
@@ -3708,7 +3708,7 @@ class Helper extends PaypalHelper
         if($camFile) {
             if(Storage::exists('public/'.$camFile['file_path'])) {
                 $fileAttachments[] = [
-                    'file_path' => Storage::path('public/'.$camFile['file_path']),
+                    'file_path' => Storage::url('public/'.$camFile['file_path']),
                     'file_name' => $camFile['file_name'],
                     'isBinaryData' => false,
                 ];
