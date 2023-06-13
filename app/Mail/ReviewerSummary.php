@@ -230,7 +230,7 @@ class ReviewerSummary extends Mailable
             foreach($fileArray as $key=>$val) {
                 if(Storage::exists('public/'.$val['file_path'])) {
                     
-                    $email->attach(Storage::path('public/'.$val['file_path']),
+                    $email->attach(Storage::url('public/'.$val['file_path']),
                     [
                         'as' => $val['file_name']
                     ]);
@@ -243,7 +243,7 @@ class ReviewerSummary extends Mailable
         $camFile = UserAppDoc::getLatestDoc($appId, config('common.PRODUCT.LEASE_LOAN'), '2');
         if($camFile) {
             if(Storage::exists('public/'.$camFile['file_path'])) {
-                $email->attach(Storage::path('public/'.$camFile['file_path']),
+                $email->attach(Storage::url('public/'.$camFile['file_path']),
                 [
                     'as' => $camFile['file_name']
                 ]);
