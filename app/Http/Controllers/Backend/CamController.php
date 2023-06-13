@@ -682,10 +682,10 @@ class CamController extends Controller
 
     public function getLatestFileName($appId, $fileType='banking', $extType='json'){
       $scanpath = $this->getToUploadPath($appId, $fileType);
-      if (is_dir($scanpath) == false) {
-        $files = [];
+      if(Storage::exists($scanpath)){
+        $files = Storage::allFiles($scanpath); 
       }else{
-        $files = scandir($scanpath, SCANDIR_SORT_DESCENDING);
+        $files = [];
       }
       $files = array_diff($files, [".", ".."]);
       natsort($files);
@@ -727,7 +727,9 @@ class CamController extends Controller
           Storage::makeDirectory('public/user/docs/' .$appId.'/finance', 0777, true);
           $touploadpath = Storage::path('public/user/docs/' .$appId);
       }
-      return $touploadpath .= ($type == 'banking' ? '/banking' : '/finance');
+      $touploadpath .= ($type == 'banking' ? '/banking' : '/finance');
+      $defaultPath = Storage::path('');
+      return str_replace($defaultPath, '', $touploadpath);
     }
 
     private function getCommonFilePath($filenameorpath = ''){
