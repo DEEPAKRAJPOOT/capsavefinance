@@ -47,7 +47,7 @@
                          <div class="clearfix"></div>
                          <div style="text-align: right;">
                          @if(!empty($active_json_filename) && !empty($active_xlsx_filename) && Storage::exists("public/user/docs/$appId/finance/".$active_xlsx_filename))
-                               <a class="btn btn-success btn-sm" href="{{ Storage::url('user/docs/'.$appId.'/finance/'.$active_xlsx_filename) }}" download>Download</a>
+                               <a class="btn btn-success btn-sm" href="{{ Storage::url('public/user/docs/'.$appId.'/finance/'.$active_xlsx_filename) }}" download>Download</a>
                          @endif 
                          @if(request()->get('view_only'))
                          @can('upload_xlsx_document_finance')
