@@ -1447,7 +1447,9 @@ class ApiController
           Storage::makeDirectory('public/user/docs/' .$appId.'/finance', 0777, true);
           $touploadpath = Storage::path('public/user/docs/' .$appId);
       }
-      return $touploadpath .= ($type == 'banking' ? '/banking' : '/finance');
+      $touploadpath .= ($type == 'banking' ? '/banking' : '/finance');
+      $defaultPath = Storage::path('');
+      return str_replace($defaultPath, '', $touploadpath);
   }
 
   private function getLatestFileName($appId, $fileType='banking', $extType='json'){
