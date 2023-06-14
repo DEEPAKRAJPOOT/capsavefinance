@@ -52,7 +52,6 @@ use App\Inv\Repositories\Contracts\UcicUserInterface as InvUcicUserRepoInterface
 use App\Inv\Repositories\Models\Program;
 use Exception;
 
-
 class ApplicationController extends Controller
 {
 	use ApplicationTrait;

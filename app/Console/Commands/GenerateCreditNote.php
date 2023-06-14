@@ -59,7 +59,7 @@ class GenerateCreditNote extends Command
         ->whereDate('created_at','=',$cDate)
         ->where('entry_type','1')
         ->where('is_invoice_generated','0')
-        ->with('userInvParentTrans:trans_id,user_invoice_id','userInvParentTrans.getUserInvoice:user_invoice_id,user_invoice_rel_id','userInvParentTrans.trans:trans_id,invoice_disbursed_id','userInvParentTrans.trans.invoiceDisbursed:invoice_disbursed_id,invoice_id','userInvParentTrans.trans.invoiceDisbursed.invoice:invoice_id,program_id','userInvParentTrans.trans.invoiceDisbursed.invoice.program:prgm_id,interest_borne_by,overdue_interest_borne_by','userInvParentTrans.trans.ChargesTransactions:trans_id,prgm_id','userInvParentTrans.trans.ChargesTransactions.chargePrgm:prgm_id,interest_borne_by')
+        ->with('userInvParentTrans:trans_id,user_invoice_id','userInvParentTrans.getUserInvoice:user_invoice_id,user_invoice_rel_id','userInvParentTrans.trans:trans_id,invoice_disbursed_id','userInvParentTrans.trans.invoiceDisbursed:invoice_disbursed_id,invoice_id','userInvParentTrans.trans.invoiceDisbursed.invoice:invoice_id,program_id,invoice_no','userInvParentTrans.trans.invoiceDisbursed.invoice.program:prgm_id,interest_borne_by,overdue_interest_borne_by','userInvParentTrans.trans.ChargesTransactions:trans_id,prgm_id','userInvParentTrans.trans.ChargesTransactions.chargePrgm:prgm_id,interest_borne_by')
         ->get();
 
         $creditData = [];

@@ -461,7 +461,7 @@ class userInvoiceController extends Controller
         }
         $total_sum_of_rental = 0;
         $activeGst = (in_array($invCat, [1,3])) ? GstTax::getActiveGST()->first() : NULL;
-
+        $isGst = 0;
         foreach ($txnsData as  $key => $txn) {
             $desc = $txn->customerTransactionSOA->trans_name??'';
             $totalamount = $txn->amount;
@@ -588,9 +588,17 @@ class userInvoiceController extends Controller
                 }
             }
 
+            if(in_array($txn->trans_type,[
+                config('lms.TRANS_TYPE.INTEREST'),
+                config('lms.TRANS_TYPE.INTEREST_OVERDUE'),
+                config('lms.TRANS_TYPE.INVOICE_PROCESSING_FEE')
+            ])){
+                $desc = $desc.$invoice_no;
+            }
+
             $intrest_charges[$key] = array(
                 'trans_id' => $txn->trans_id,
-                'desc' => $desc.$invoice_no,
+                'desc' => $desc,
                 'sac' => $sac_code,
                 'base_amt' => round($base_amt,2),
                 'sgst_rate' => $sgst_rate,
@@ -604,8 +612,11 @@ class userInvoiceController extends Controller
             $total_rental = round($base_amt + $sgst_amt + $cgst_amt + $igst_amt, 2);
             $total_sum_of_rental += $total_rental; 
             $intrest_charges[$key]['total_rental'] =  $total_rental; 
+            if($txn->gst == 1){
+                $isGst = 1;
+            }
         }
-        return [$intrest_charges, $total_sum_of_rental, $invCatName];
+        return [$intrest_charges, $total_sum_of_rental, $invCatName,$isGst];
     }
 
     /**
@@ -857,6 +868,7 @@ class userInvoiceController extends Controller
             unset($company_data['state']);
             $bank_id = bankDetailIsOfRegisteredCompanyInInvoice() ? $registeredCompany['bank_account_id'] : $company_data['bank_id'];
 
+            $isGst = $inv_data[3];
             $invoiceType = $invoice_type;
             $invoiceTypeName = substr($invoiceType,0,1)  == 'C' ? 1 : 2;
             $invCat = $inv_data[2];
@@ -865,9 +877,10 @@ class userInvoiceController extends Controller
             $invoiceType = ($invCat == "NZ") ? (($borneBy == 1) ? "CA" : "CC") : $invoiceType;
             $invoiceCode = substr($invoiceType,0,1);
             $billingDetails = [];
+            $custDetails = User::getCustomerData($user_id);
+
             if($borneBy == 1){
                 $anchorDetails = AnchorUser::getAnchorsDetails($user_id);
-                $custDetails = User::getCustomerData($user_id);
                 $billingDetails = [
                     'pan_no' => $anchorDetails['pan_no'],
                     'biz_gst_no' => $anchorDetails['gst_no'],
@@ -875,7 +888,8 @@ class userInvoiceController extends Controller
                     'gst_addr' => $anchorDetails['comp_addr'].','.$anchorDetails['comp_city'].','.$anchorDetails['name'].','.$anchorDetails['comp_zip'],
                     'customer_id' => $custDetails['customer_id'],
                     'customer_name' => $custDetails['biz_entity_name'],
-                    'anchor_name' => $anchorDetails['comp_name']
+                    'anchor_name' => $anchorDetails['comp_name'],
+                    'anchor_id' => $anchorDetails['anchor_id']
                 ];
             }else{
                 $billingDetails = [
@@ -883,9 +897,10 @@ class userInvoiceController extends Controller
                     'biz_gst_no' => $billing_data['gstin_no'],
                     'biz_gst_state_code' => substr($billing_data['gstin_no'],0,2),
                     'gst_addr' => $billing_data['address'],
-                    'customer_id' => NULL,
-                    'customer_name' => '',
+                    'customer_id' => $custDetails['customer_id'],
+                    'customer_name' => $custDetails['biz_entity_name'],
                     'anchor_name' => '',
+                    'anchor_id' => '',
                 ];
             }
 
@@ -916,6 +931,7 @@ class userInvoiceController extends Controller
                 'comp_addr_register' => json_encode($registeredCompany),
                 'bank_id' => $bank_id,
                 'is_active' => 1,
+                'is_gst' => $isGst,
 
                 'pan_no' => $billingDetails['pan_no'] ?? NULL, 
                 'biz_gst_no' => $billingDetails['biz_gst_no'] ?? NULL, 
@@ -923,7 +939,8 @@ class userInvoiceController extends Controller
                 'gst_addr' => $billingDetails['gst_addr'] ?? NULL, 
                 'customer_id' => $billingDetails['customer_id'] ?? NULL, 
                 'customer_name' => $billingDetails['customer_name'] ?? NULL,
-                'anchor_name' => $billingDetails['anchor_name'] ?? NULL
+                'anchor_name' => $billingDetails['anchor_name'] ?? NULL,
+                'anchor_id' => $billingDetails['anchor_id'] ?? NULL
             ];
             $invoiceResp = $this->UserInvRepo->saveUserInvoice($userInvoiceData);
             if(!empty($invoiceResp->user_invoice_id)){
@@ -1048,6 +1065,7 @@ class userInvoiceController extends Controller
             $is_state_diffrent = ($userStateId != $companyStateId);
             $inv_data = $this->_calculateInvoiceTxns($txnsData, $is_state_diffrent, false, 1);
 
+            $isGst = $inv_data[3];
             $invoiceTypeName = substr($invoiceType,0,1) == "C" ? 1 : 2;
 
             $invCat = $inv_data[2];
@@ -1062,11 +1080,12 @@ class userInvoiceController extends Controller
             $intrest_charges = $inv_data[0];
             $total_sum_of_rental = $inv_data[1];
             $bank_id = bankDetailIsOfRegisteredCompanyInInvoice() ? $registeredCompany['bank_account_id'] : $company_data['bank_id'];
+            $custDetails = User::getCustomerData($userId);
+
             
             $billingDetails = [];
             if($borneBy == 1){
                 $anchorDetails = AnchorUser::getAnchorsDetails($userId);
-                $custDetails = User::getCustomerData($userId);
                 $billingDetails = [
                     'pan_no' => $anchorDetails['pan_no'],
                     'biz_gst_no' => $anchorDetails['gst_no'],
@@ -1074,7 +1093,8 @@ class userInvoiceController extends Controller
                     'gst_addr' => $anchorDetails['comp_addr'].','.$anchorDetails['comp_city'].','.$anchorDetails['name'].','.$anchorDetails['comp_zip'],
                     'customer_id' => $custDetails['customer_id'],
                     'customer_name' => $custDetails['biz_entity_name'],
-                    'anchor_name' => $anchorDetails['comp_name']
+                    'anchor_name' => $anchorDetails['comp_name'],
+                    'anchor_id' => $anchorDetails['anchor_id']
                 ];
             }else{
                 $billingDetails = [
@@ -1082,9 +1102,10 @@ class userInvoiceController extends Controller
                     'biz_gst_no' => $billing_data['gstin_no'],
                     'biz_gst_state_code' => substr($billing_data['gstin_no'],0,2),
                     'gst_addr' => $billing_data['address'],
-                    'customer_id' => NULL,
-                    'customer_name' => '',
+                    'customer_id' => $custDetails['customer_id'],
+                    'customer_name' => $custDetails['biz_entity_name'],
                     'anchor_name' => '',
+                    'anchor_id' => NULL,
                 ];
             }
             $userInvoiceData = [
@@ -1113,6 +1134,7 @@ class userInvoiceController extends Controller
                 'comp_addr_register' => json_encode($registeredCompany),
                 'bank_id' => $bank_id,
                 'is_active' => 1,
+                'is_gst' => $isGst,
 
                 'pan_no' => $billingDetails['pan_no'] ?? NULL, 
                 'biz_gst_no' => $billingDetails['biz_gst_no'] ?? NULL, 
@@ -1120,7 +1142,8 @@ class userInvoiceController extends Controller
                 'gst_addr' => $billingDetails['gst_addr'] ?? NULL, 
                 'customer_id' => $billingDetails['customer_id'] ?? NULL, 
                 'customer_name' => $billingDetails['customer_name'] ?? NULL,
-                'anchor_name' => $billingDetails['anchor_name'] ?? NULL
+                'anchor_name' => $billingDetails['anchor_name'] ?? NULL,
+                'anchor_id' => $billingDetails['anchor_id'] ?? NULL
             ];
             $invoiceResp = $this->UserInvRepo->saveUserInvoice($userInvoiceData);
 
@@ -1284,7 +1307,8 @@ class userInvoiceController extends Controller
                     'gst_addr' => $anchorDetails['comp_addr'].','.$anchorDetails['comp_city'].','.$anchorDetails['name'].','.$anchorDetails['comp_zip'],
                     'customer_id' => $custDetails['customer_id'],
                     'customer_name' => $custDetails['biz_entity_name'],
-                    'anchor_name' => $anchorDetails['comp_name']
+                    'anchor_name' => $anchorDetails['comp_name'],
+                    'anchor_id' => $anchorDetails['anchor_id'],
                 ];
             }else{
                 $billingDetails = [
@@ -1295,6 +1319,7 @@ class userInvoiceController extends Controller
                     'customer_id' => NULL,
                     'customer_name' => '',
                     'anchor_name' => '',
+                    'anchor_id' => '',
                 ];
             }
             $userInvoiceData = [
@@ -1332,6 +1357,7 @@ class userInvoiceController extends Controller
                 'customer_id' => $billingDetails['customer_id'] ?? NULL, 
                 'customer_name' => $billingDetails['customer_name'] ?? NULL,
                 'anchor_name' => $billingDetails['anchor_name'] ?? NULL,
+                'anchor_id' => $billingDetails['anchor_id'] ?? NULL
             ];
             $invoiceResp = $this->UserInvRepo->saveUserInvoice($userInvoiceData);
 
@@ -1493,7 +1519,8 @@ class userInvoiceController extends Controller
                     'gst_addr' => $anchorDetails['comp_addr'].','.$anchorDetails['comp_city'].','.$anchorDetails['name'].','.$anchorDetails['comp_zip'],
                     'customer_id' => $custDetails['customer_id'],
                     'customer_name' => $custDetails['biz_entity_name'],
-                    'anchor_name' => $anchorDetails['comp_name']
+                    'anchor_name' => $anchorDetails['comp_name'],
+                    'anchor_id' => $anchorDetails['anchor_id'],
                 ];
             }else{
                 $billingDetails = [
@@ -1504,6 +1531,7 @@ class userInvoiceController extends Controller
                     'customer_id' => NULL,
                     'customer_name' => '',
                     'anchor_name' => '',
+                    'anchor_id' => '',
                 ];
             }
             $userInvoiceData = [
@@ -1541,7 +1569,8 @@ class userInvoiceController extends Controller
                 'gst_addr' => $billingDetails['gst_addr'] ?? NULL, 
                 'customer_id' => $billingDetails['customer_id'] ?? NULL, 
                 'customer_name' => $billingDetails['customer_name'] ?? NULL,
-                'anchor_name' => $billingDetails['anchor_name'] ?? NULL
+                'anchor_name' => $billingDetails['anchor_name'] ?? NULL,
+                'anchor_id' => $billingDetails['anchor_id'] ?? NULL
             ];
             $invoiceResp = $this->UserInvRepo->saveUserInvoice($userInvoiceData);
 
@@ -1582,15 +1611,6 @@ class userInvoiceController extends Controller
         }
     }
     
-    public function sendCapsaveInvoiceMail($pdfResult,$newInvoiceNo,$getEmail){
-        $emailData = array(
-            'invoice_no' => $newInvoiceNo,
-            'email' => $getEmail,
-            'body' => 'body',
-            'attachment' => $pdfResult,
-          );
-        // \Event::dispatch("USER_INVOICE_MAIL", serialize($emailData));
-    }
 
     public function unpublishUsereAddrApp(Request $request) {
         try{

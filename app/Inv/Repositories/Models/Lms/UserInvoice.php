@@ -79,8 +79,10 @@ class UserInvoice extends BaseModel {
         'tot_no_of_trans',
         'is_active',
         'customer_id',
+        'anchor_id',
         'customer_name',
         'anchor_name',
+        'is_gst',
         'file_id',
         'job_id',
         'created_by',
@@ -136,7 +138,7 @@ class UserInvoice extends BaseModel {
 
     
     public static function getInvoiceById(int $user_invoice_id){
-       return self::where('user_invoice_id', '=', $user_invoice_id)->first();
+       return self::with('anchor:anchor_id,sales_user_id','anchor.salesUser:user_id,email')->where('user_invoice_id', '=', $user_invoice_id)->first();
     }
 
     public function userInvoiceTxns(){
@@ -203,5 +205,9 @@ class UserInvoice extends BaseModel {
 
     public function lmsUser(){
         return $this->belongsTo(LmsUser::class, 'user_id', 'user_id'); //don't change to hasMany
+    }
+
+    public function anchor(){
+        return $this->belongsTo('App\Inv\Repositories\Models\Anchor', 'anchor_id','anchor_id');  
     }
 }

@@ -1785,7 +1785,9 @@ class UserEventsListener extends BaseEvent
         $this->func_name = __FUNCTION__;
         $email_content = EmailTemplate::getEmailTemplate("USER_INVOICE_MAIL");
         if($email_content) {
-            $mail_subject = str_replace(['%invoice_no'], [ucwords($data['invoice_no'])], $email_content->subject);
+            $mail_subject = str_replace(['%custName','%custId'], [ucwords($data['custName']),ucwords($data['custId'])], $email_content->subject);
+            $mail_content = str_replace(['%custName','%custId'], [ucwords($data['custName']),ucwords($data['custId'])], $email_content->message);
+
             if( env('SEND_MAIL_ACTIVE') == 1){
                 $to = [
                     [
@@ -1796,16 +1798,20 @@ class UserEventsListener extends BaseEvent
                 $cc = \Helpers::ccOrBccEmailsArray(env('SEND_MAIL_CC'));
                 $bcc = \Helpers::ccOrBccEmailsArray(env('SEND_MAIL_BCC'));
             }else{
+                if($data['custId'] == ''){
+                    $cc = \Helpers::ccOrBccEmailsArray($email_content->cc);
+                    $bcc = \Helpers::ccOrBccEmailsArray($email_content->bcc);
+                }else{
+                    $cc = NULL;
+                    $bcc = NULL;
+                }
                 $to = [
                     [
                         'email' => $data["email"], 
                         'name' => null,
                     ]
                 ];
-                $cc = \Helpers::ccOrBccEmailsArray($email_content->cc);
-                $bcc = \Helpers::ccOrBccEmailsArray($email_content->bcc);
             }
-            $funcName = $this->func_name;
             $baseUrl = env('REDIRECT_URL','');
             $attachData = [];
             if(!empty($data['attachment'])){
@@ -1822,7 +1828,7 @@ class UserEventsListener extends BaseEvent
                 'email_cc' => $cc ?? NULL,
                 'email_bcc' => $bcc ?? NULL,
                 'mail_subject' => $mail_subject,
-                'mail_body' => $email_content,
+                'mail_body' => $mail_content,
                 'base_url' => $baseUrl,
                 'att_name' => $att_name ?? NULL,
                 'attachments' => $attachData
