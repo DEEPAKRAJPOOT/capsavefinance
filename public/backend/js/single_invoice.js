@@ -504,10 +504,10 @@
                           }
                           if (offerData.benchmark_date != null){
                               switch (offerData.benchmark_date) {
-                                case '1':
+                                case 1:
                                   textBencMarDate = '<b>Benchmark Date :</b> Invoice Date';
                                   break;
-                                case '2':
+                                case 2:
                                   textBencMarDate = '<b>Benchmark Date :</b> Date of discounting';
                                   break;
                                 default:
