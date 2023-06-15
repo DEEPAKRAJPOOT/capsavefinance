@@ -484,15 +484,15 @@
                           const offerData = JSON.parse(decodedOfferData);
                           if (offerData.payment_frequency != null){
                             switch (offerData.payment_frequency) {
-                              case '1':
+                              case 1:
                                  textPayFre = '<b>Payment Frequency :</b> Upfront';
                                  $('#calculateUpfrontInt').removeClass('hide');
                                  $('#upFrontAmount').removeClass('hide');
                                 break;
-                              case '2':
+                              case 2:
                                 textPayFre = '<b>Payment Frequency :</b> Monthly';
                                 break;
-                              case '3':
+                              case 3:
                                 textPayFre = '<b>Payment Frequency :</b> Rear Ended';
                                 break;
                               default:
