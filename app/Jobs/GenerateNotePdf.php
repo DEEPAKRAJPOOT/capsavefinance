@@ -169,9 +169,8 @@ class GenerateNotePdf implements ShouldQueue
                             }
                         }
                         if(!empty($getEmail)){
-                            $fullPath = storage_path('app/public/'.$path);
-                            if(Storage::exists('public/'.$path))
-                                $mailData = $this->sendCapsaveInvoiceMail($fullPath,$invoice_no,$getEmail,$invData->customer_id,$invData->customer_name,$invoiceBorneBy);
+                            if(Storage::exists($fileData['file_path']))
+                                $mailData = $this->sendCapsaveInvoiceMail(Storage::url($path),$invoice_no,$getEmail,$invData->customer_id,$invData->customer_name,$invoiceBorneBy);
                         }
                     }
                 }

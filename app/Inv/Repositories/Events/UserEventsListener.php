@@ -1788,30 +1788,25 @@ class UserEventsListener extends BaseEvent
             $mail_subject = str_replace(['%custName','%custId'], [ucwords($data['custName']),ucwords($data['custId'])], $email_content->subject);
             $mail_content = str_replace(['%custName','%custId'], [ucwords($data['custName']),ucwords($data['custId'])], $email_content->message);
 
-            if( env('SEND_MAIL_ACTIVE') == 1){
-                $to = [
-                    [
-                        'email' => explode(',', env('SEND_MAIL')), 
-                        'name' => null,
-                    ]
-                ];
-                $cc = \Helpers::ccOrBccEmailsArray(env('SEND_MAIL_CC'));
-                $bcc = \Helpers::ccOrBccEmailsArray(env('SEND_MAIL_BCC'));
-            }else{
-                if($data['custId'] == ''){
+            // if( env('SEND_MAIL_ACTIVE') == 1){
+            //     $to = [
+            //         [
+            //             'email' => explode(',', env('SEND_MAIL')), 
+            //             'name' => null,
+            //         ]
+            //     ];
+            //     $cc = \Helpers::ccOrBccEmailsArray(env('SEND_MAIL_CC'));
+            //     $bcc = \Helpers::ccOrBccEmailsArray(env('SEND_MAIL_BCC'));
+            // }else{
+                $to =$data["email"];
+                if($data['invoiceBorneBy'] == 2){
                     $cc = \Helpers::ccOrBccEmailsArray($email_content->cc);
                     $bcc = \Helpers::ccOrBccEmailsArray($email_content->bcc);
                 }else{
                     $cc = NULL;
                     $bcc = NULL;
                 }
-                $to = [
-                    [
-                        'email' => $data["email"], 
-                        'name' => null,
-                    ]
-                ];
-            }
+            // }
             $baseUrl = env('REDIRECT_URL','');
             $attachData = [];
             if(!empty($data['attachment'])){
@@ -1824,7 +1819,7 @@ class UserEventsListener extends BaseEvent
                 ];
             }
             $mailData = [
-                'email_to' => [$data["email"]],
+                'email_to' => $data["email"],
                 'email_cc' => $cc ?? NULL,
                 'email_bcc' => $bcc ?? NULL,
                 'mail_subject' => $mail_subject,
