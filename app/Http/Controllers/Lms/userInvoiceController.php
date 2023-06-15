@@ -442,7 +442,6 @@ class userInvoiceController extends Controller
         if (empty($invData)) {
            return redirect()->route('view_user_invoice', ['user_id' => $user_id])->with('error', 'No Detail found for the Invoice.'); 
         }
-        $reference_no = $invData->reference_no;
         $invoice_no = $invData->invoice_no;
 
         $file = 'public/capsaveInvoice/'.str_replace("/","_",strtoupper($invoice_no)).'.pdf';
