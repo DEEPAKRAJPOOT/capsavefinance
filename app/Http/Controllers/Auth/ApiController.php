@@ -1082,8 +1082,7 @@ class ApiController
     // $dates = $this->displayDates('2020-01-01', date('Y-m-d'));
     // foreach ($dates as $activeDate) {
       $startActiveDate  = "$activeDate 00:00:00"; 
-      $endActiveDate = Carbon::now()->setTimezone(config('common.timezone'))->format('Y-m-d H:i:s');
-      // $endActiveDate = "$activeDate 23:59:59";
+      $endActiveDate = "$activeDate 23:59:59";
       self::tally_entry($startActiveDate,$endActiveDate);
     // }
   }
