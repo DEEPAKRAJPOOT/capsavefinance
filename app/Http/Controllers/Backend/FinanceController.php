@@ -493,6 +493,21 @@ class FinanceController extends Controller {
             $voucher_date = "";
             $transDate = "";
             if (!empty($result)) {
+                $factBankCodes = []; // Initialize an empty array
+
+                $comp_bank_list = Helpers::getAllCompBankAccList(config('lms.COMP_ADDR_ID'));
+                foreach($comp_bank_list as $cmp_bank_details){
+                    $bankName = $cmp_bank_details->bank_name;
+                    $bankAcNo = $cmp_bank_details->acc_no;
+                    $factBankCode = $cmp_bank_details->fact_bank_code;
+                
+                    if (!isset($factBankCodes[$bankName])) {
+                        $factBankCodes[$bankName] = [];
+                    }
+                
+                    $factBankCodes[$bankName][$bankAcNo] = $factBankCode;  
+                }
+
                 foreach ($result as $key => $value) {
                     $bankName = '';
                     $bankAcNo = '';
@@ -508,40 +523,24 @@ class FinanceController extends Controller {
                     $amount = '';
                     $accNo = '';
                     $bankCode = null;
-
+                    
                     if($fetchedArr['voucher_type'] == 'Payment'){
                         $amount = $fetchedArr['amount'];
                         $bankName = $fetchedArr['bank'];
                         $bankAcNo = $fetchedArr['bank_acc_no'];
-                        if($fetchedArr['bank'] == 'IDFC Bank' && $fetchedArr['bank_acc_no'] == '10006748999'){
-                            $bankCode = 4;
-                        }elseif($fetchedArr['bank'] == 'IDFC Bank' && $fetchedArr['bank_acc_no'] == '10062193074'){
-                            $bankCode = 9;
-                        }elseif($fetchedArr['bank'] == 'IDFC Bank' && $fetchedArr['bank_acc_no'] == '10047035004'){
-                            $bankCode = 3;
-                        }elseif($fetchedArr['bank'] == 'HDFC Bank' && $fetchedArr['bank_acc_no'] == '50200030310781'){
-                            $bankCode = 19;
-                        }elseif($fetchedArr['bank'] == 'Yes Bank' && $fetchedArr['bank_acc_no'] == '007884600002532'){
-                            $bankCode = 11;
-                        }elseif($fetchedArr['bank'] == 'IDFC Bank' && $fetchedArr['bank_acc_no'] == '10124986882'){
-                            $bankCode = 24;
+
+                        // Check if the bank name and account number combination exists in the factBankCodes array
+                        if (isset($factBankCodes[$bankName]) && isset($factBankCodes[$bankName][$bankAcNo])) {
+                            $bankCode = $factBankCodes[$bankName][$bankAcNo];
                         }
                     }elseif($fetchedArr['voucher_type'] == 'Receipt'){
                         $amount = $fetchedArr['amount'];
                         $bankName = $fetchedArr['company_bank_name'];
                         $bankAcNo = $fetchedArr['company_bank_acc'];
-                        if($fetchedArr['company_bank_name'] == 'IDFC Bank' && $fetchedArr['company_bank_acc'] == '10006748999'){
-                            $bankCode = 4;
-                        }elseif($fetchedArr['company_bank_name'] == 'IDFC Bank' && $fetchedArr['company_bank_acc'] == '10062193074'){
-                            $bankCode = 9;
-                        }elseif($fetchedArr['company_bank_name'] == 'IDFC Bank' && $fetchedArr['company_bank_acc'] == '10047035004'){
-                            $bankCode = 3;
-                        }elseif($fetchedArr['company_bank_name'] == 'HDFC Bank' && $fetchedArr['company_bank_acc'] == '50200030310781'){
-                            $bankCode = 19;
-                        }elseif($fetchedArr['company_bank_name'] == 'Yes Bank' && $fetchedArr['company_bank_acc'] == '007884600002532'){
-                            $bankCode = 11;
-                        }elseif($fetchedArr['company_bank_name'] == 'IDFC Bank' && $fetchedArr['company_bank_acc'] == '10124986882'){
-                            $bankCode = 24;
+                        
+                        // Check if the bank name and account number combination exists in the factBankCodes array
+                        if (isset($factBankCodes[$bankName]) && isset($factBankCodes[$bankName][$bankAcNo])) {
+                            $bankCode = $factBankCodes[$bankName][$bankAcNo];
                         }
                     }
                    
