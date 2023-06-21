@@ -1,5 +1,6 @@
 <?php
 namespace App\Http\Controllers\Backend;
+use App\Helpers\Helper;
 use App\Http\Controllers\Controller;
 use Auth;
 use Illuminate\Http\Request;
@@ -1197,6 +1198,20 @@ class InvoiceController extends Controller {
                 $idfcObj= new Idfc_lib();
                 $getResponse = false;
                 $result = $idfcObj->api_call(Idfc_lib::MULTI_PAYMENT, $params, $getResponse);
+                /*
+                $result = [
+                    'code' => '200',
+                    'http_code' => '200',
+                    'message' => 'Success',
+                    'result' => [
+                        'http_header' => 'Test_header',
+                        'url' => 'test_url',
+                        'payload' => 'test_payload',
+                        'response' => 'test_response',
+                    ],
+                    'status' => 'success'
+                ];
+                */
                 if (isset($result['code'])) {
                     if (isset($result['http_code']) && $result['http_code'] == 200) {
                         
@@ -1216,16 +1231,12 @@ class InvoiceController extends Controller {
                     .PHP_EOL .' Log  '.$time .PHP_EOL. $result['result']['payload']  .PHP_EOL
                     .PHP_EOL .' Log  '.$time .PHP_EOL. $result['result']['http_header']  .PHP_EOL
                     .PHP_EOL .' Log  '.$time .PHP_EOL. $result['result']['response'] . PHP_EOL;
-                /*
-                 Comment By Sudesh For Retesting Purpose
-                   
                  $createOrUpdatefile = Helpers::uploadOrUpdateFileWithContent($fileDirPath, $fileContents, true);
                  if(is_array($createOrUpdatefile)) {
                      $userFileSaved = $this->docRepo->saveFile($createOrUpdatefile)->toArray();
                  } else {
                      $userFileSaved = $createOrUpdatefile;
                  }
-                */
                 
                 $otherData['bank_type'] = config('lms.BANK_TYPE')['IDFC'];
                 $disbusalApiLogData = $this->createDisbusalApiLogData($userFileSaved, $result, $otherData);
@@ -1305,11 +1316,11 @@ public function disburseTableInsert($exportData = [], $supplierIds = [], $allinv
                     if (empty($invoiceDisbursedData)) {
                         $processingFee= 0;
                         if (isset($invoice['processing_fee']['chrg_type']) && $invoice['processing_fee']['chrg_type'] == 2) {
-                            $processingFee = $this->calPercentage($fundedAmount, $invoice['processing_fee']['chrg_value']);
+                            $processingFee = $this->calPercentage($fundedAmount, ($invoice['processing_fee']['chrg_value'] ?? 0));
                         } else {
-                            $processingFee = $invoice['processing_fee']['chrg_value'];
+                            $processingFee = $invoice['processing_fee']['chrg_value'] ?? 0;
                         }
-                        $processingFeeGst = $invoice['processing_fee']['gst_chrg_value'] - $processingFee;
+                        $processingFeeGst = ($invoice['processing_fee']['gst_chrg_value'] ?? 0) - $processingFee;
 
                         $invoice['batch_id'] = $batchId;
                         $invoice['disburse_date'] = $disburseDate;
