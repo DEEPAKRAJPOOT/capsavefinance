@@ -1121,7 +1121,7 @@ class InvoiceController extends Controller {
                         //     $processingFee = $invoice['processing_fee']['chrg_value'];
 
                         // }
-                        $processingFee = $invoice['processing_fee']['gst_chrg_value'];
+                        $processingFee = $invoice['processing_fee']['gst_chrg_value'] ?? 0;
 
                         $prgmWhere=[];
                         $prgmWhere['prgm_id'] = $invoice['program_id'];
