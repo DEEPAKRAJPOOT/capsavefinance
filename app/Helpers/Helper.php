@@ -2057,7 +2057,7 @@ class Helper extends PaypalHelper
         }
         if (isset($isSaved)) {
             $mimetype = Storage::mimeType($realPath);
-            $size = Storage::getSize($realPath);
+            $size = Storage::size($realPath);
             $inputArr['file_path'] = $realPath;
             $inputArr['file_type'] = $mimetype;
             $inputArr['file_name'] = basename($realPath);
