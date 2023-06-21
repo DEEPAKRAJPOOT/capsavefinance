@@ -1216,16 +1216,15 @@ class InvoiceController extends Controller {
                     .PHP_EOL .' Log  '.$time .PHP_EOL. $result['result']['payload']  .PHP_EOL
                     .PHP_EOL .' Log  '.$time .PHP_EOL. $result['result']['http_header']  .PHP_EOL
                     .PHP_EOL .' Log  '.$time .PHP_EOL. $result['result']['response'] . PHP_EOL;
-                /**
-                 * 
-                 * Comment By Sudesh For Retesting Purpose
-                 *   
-                 * $createOrUpdatefile = Helpers::uploadOrUpdateFileWithContent($fileDirPath, $fileContents, true);
-                 * if(is_array($createOrUpdatefile)) {
-                 *     $userFileSaved = $this->docRepo->saveFile($createOrUpdatefile)->toArray();
-                 * } else {
-                 *     $userFileSaved = $createOrUpdatefile;
-                 * }
+                /*
+                 Comment By Sudesh For Retesting Purpose
+                   
+                 $createOrUpdatefile = Helpers::uploadOrUpdateFileWithContent($fileDirPath, $fileContents, true);
+                 if(is_array($createOrUpdatefile)) {
+                     $userFileSaved = $this->docRepo->saveFile($createOrUpdatefile)->toArray();
+                 } else {
+                     $userFileSaved = $createOrUpdatefile;
+                 }
                 */
                 
                 $otherData['bank_type'] = config('lms.BANK_TYPE')['IDFC'];
