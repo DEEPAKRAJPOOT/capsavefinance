@@ -1505,6 +1505,7 @@ class ApiController
               'reportType' => 'xlsx',
               'txnId' => $prolitus_txn,
         );
+        $fileFullPath = $this->getToUploadPath($appId, 'finance').'/'.$file_name;
         if ($this->download_xlsx) {
           $final_res = $perfios->api_call(Perfios_lib::GET_STMT, $req_arr);
           if ($final_res['status'] != 'success') {
@@ -1513,10 +1514,10 @@ class ApiController
               $final_res['perfiosTransactionId'] = $perfiostransactionid;
               return $final_res;
           }else{
-          	 Storage::put($this->getToUploadPath($appId, 'finance').'/'.$file_name, $final_res['result']);
+          	Storage::put($fileFullPath, $final_res['result']);
           }
         }
-        $file= url("storage/user/docs/$appId/finance/". $file_name);
+        $file= Storage::url($fileFullPath);
         $req_arr['reportType'] = 'json';
         $final_res = $perfios->api_call(Perfios_lib::GET_STMT, $req_arr);
        	$final_res['api_type'] = Perfios_lib::GET_STMT;
@@ -1549,6 +1550,7 @@ class ApiController
             'perfiosTransactionId' => $perfiostransactionid,
             'types' => 'xlsx',
         );
+        $fileFullPath = $this->getToUploadPath($appId, 'banking').'/'.$file_name;
         if ($this->download_xlsx) {
           $final_res = $bsa->api_call(Bsa_lib::GET_REP, $req_arr);
           if ($final_res['status'] != 'success') {
@@ -1557,10 +1559,10 @@ class ApiController
               $final_res['perfiosTransactionId'] = $perfiostransactionid;
               return $final_res;
           }else{
-            Storage::put($this->getToUploadPath($appId, 'banking').'/'.$file_name, $final_res['result']);
+            Storage::put($fileFullPath, $final_res['result']);
           } 
         }
-        $file= url("storage/user/docs/$appId/banking/". $file_name);
+        $file= Storage::url($fileFullPath);
         $req_arr['types'] = 'json';
         $final_res = $bsa->api_call(Bsa_lib::GET_REP, $req_arr);
         $final_res['api_type'] = Bsa_lib::GET_REP;
