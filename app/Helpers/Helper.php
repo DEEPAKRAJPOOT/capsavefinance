@@ -2055,21 +2055,28 @@ class Helper extends PaypalHelper
         } else {
             $isSaved = Storage::put($realPath, $fileContents);
         }
+        
+        $mimetype = Storage::mimeType($realPath);
+        $size = Storage::size($realPath);
+        $inputArr['file_path'] = $realPath;
+        $inputArr['file_type'] = $mimetype;
+        $inputArr['file_name'] = basename($realPath);
+        $inputArr['file_size'] = $size;
+        $inputArr['file_encp_key'] =  md5('2');
+        $inputArr['created_by'] = \Auth::user()->user_id ?? 0;
+        $inputArr['updated_by'] = \Auth::user()->user_id ?? 0;
+
         if (isset($isSaved)) {
-            $mimetype = Storage::mimeType($realPath);
-            $size = Storage::size($realPath);
-            $inputArr['file_path'] = $realPath;
-            $inputArr['file_type'] = $mimetype;
-            $inputArr['file_name'] = basename($realPath);
-            $inputArr['file_size'] = $size;
-            $inputArr['file_encp_key'] =  md5('2');
-            $inputArr['created_by'] = \Auth::user()->user_id ?? 0;
-            $inputArr['updated_by'] = \Auth::user()->user_id ?? 0;
             return $inputArr;
         }
         if (isset($isUpdated) && $appendFlag) {
-            $fileData = UserFile::where('file_path', $realPath)
-                ->first()->toArray();
+            $fileData = UserFile::where('file_path', $realPath)->first();
+
+            if($fileData->count()){
+                $fileData = $fileData->toArray();
+            }else{
+                $fileData = UserFile::create($inputArr);
+            }
             return $fileData ?? false;
         }
         return $isUpdated ? $isUpdated : $isSaved;

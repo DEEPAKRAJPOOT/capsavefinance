@@ -1122,7 +1122,9 @@ class InvoiceController extends Controller {
                         //     $processingFee = $invoice['processing_fee']['chrg_value'];
 
                         // }
-                        $processingFee = $invoice['processing_fee']['gst_chrg_value'] ?? 0;
+                        if($invoice['program_offer']['is_invoice_processingfee'] === 1){
+                            $processingFee = $invoice['processing_fee']['gst_chrg_value'];
+                        }
 
                         $prgmWhere=[];
                         $prgmWhere['prgm_id'] = $invoice['program_id'];
@@ -1231,12 +1233,13 @@ class InvoiceController extends Controller {
                     .PHP_EOL .' Log  '.$time .PHP_EOL. $result['result']['payload']  .PHP_EOL
                     .PHP_EOL .' Log  '.$time .PHP_EOL. $result['result']['http_header']  .PHP_EOL
                     .PHP_EOL .' Log  '.$time .PHP_EOL. $result['result']['response'] . PHP_EOL;
-                 $createOrUpdatefile = Helpers::uploadOrUpdateFileWithContent($fileDirPath, $fileContents, true);
-                 if(is_array($createOrUpdatefile)) {
-                     $userFileSaved = $this->docRepo->saveFile($createOrUpdatefile)->toArray();
-                 } else {
-                     $userFileSaved = $createOrUpdatefile;
-                 }
+                
+                $createOrUpdatefile = Helpers::uploadOrUpdateFileWithContent($fileDirPath, $fileContents, true);
+                if(is_array($createOrUpdatefile)) {
+                    $userFileSaved = $this->docRepo->saveFile($createOrUpdatefile)->toArray();
+                } else {
+                    $userFileSaved = $createOrUpdatefile;
+                }
                 
                 $otherData['bank_type'] = config('lms.BANK_TYPE')['IDFC'];
                 $disbusalApiLogData = $this->createDisbusalApiLogData($userFileSaved, $result, $otherData);
@@ -1315,12 +1318,17 @@ public function disburseTableInsert($exportData = [], $supplierIds = [], $allinv
                     $fundedAmount = $invoice['invoice_approve_amount'] - $margin;
                     if (empty($invoiceDisbursedData)) {
                         $processingFee= 0;
-                        if (isset($invoice['processing_fee']['chrg_type']) && $invoice['processing_fee']['chrg_type'] == 2) {
-                            $processingFee = $this->calPercentage($fundedAmount, ($invoice['processing_fee']['chrg_value'] ?? 0));
-                        } else {
-                            $processingFee = $invoice['processing_fee']['chrg_value'] ?? 0;
+                        $processingFeeGst = 0;
+
+                        if($invoice['program_offer']['is_invoice_processingfee'] === 1){
+                            if (isset($invoice['processing_fee']['chrg_type']) && $invoice['processing_fee']['chrg_type'] == 2) {
+                                $processingFee = $this->calPercentage($fundedAmount, ($invoice['processing_fee']['chrg_value']));
+                            } else {
+                                $processingFee = $invoice['processing_fee']['chrg_value'];
+                            }
+                            $processingFeeGst = ($invoice['processing_fee']['gst_chrg_value']) - $processingFee;
                         }
-                        $processingFeeGst = ($invoice['processing_fee']['gst_chrg_value'] ?? 0) - $processingFee;
+
 
                         $invoice['batch_id'] = $batchId;
                         $invoice['disburse_date'] = $disburseDate;
