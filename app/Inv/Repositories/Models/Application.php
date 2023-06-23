@@ -194,12 +194,12 @@ class Application extends BaseModel
         } else {
         $query  = $query->join('app_assign', function ($join) use($roleData, $curUserId, $userArr) {
                     $join->on('app.app_id', '=', 'app_assign.app_id');
-                    if ($roleData[0]->is_superadmin != 1 && $roleData[0]->is_allapp_access !== '1') {
+                    if ($roleData[0]->is_superadmin != 1 && $roleData[0]->is_allapp_access != 1) {
                         //$join->on('app_assign.to_id', '=', DB::raw($curUserId));
                         $join->whereIn('app_assign.to_id', $userArr);
                         $join->where('app_assign.is_deleted', DB::raw("0"));
                         
-                    } else if($roleData[0]->is_allapp_access === '1') {
+                    } else if($roleData[0]->is_allapp_access == '1') {
                         $join->on('app_assign.is_owner', '=', DB::raw("1"));
                         $join->whereNotNull('app_assign.to_id');
                         $join->where('app_assign.is_deleted', DB::raw("0"));
