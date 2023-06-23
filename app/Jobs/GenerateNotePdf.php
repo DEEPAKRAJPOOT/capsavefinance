@@ -15,7 +15,8 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use App\Inv\Repositories\Models\Lms\UserInvoice;
 use App\Inv\Repositories\Contracts\UserInvoiceInterface;
 use Storage;
-use App\Inv\Repositories\Models\UcicUser;
+use App\Inv\Repositories\Models\UcicUserDetail;
+use App\Inv\Repositories\Models\UcicUserUcic;
 
 
 class GenerateNotePdf implements ShouldQueue
@@ -163,14 +164,16 @@ class GenerateNotePdf implements ShouldQueue
                         if($invoiceBorneBy == 1){
                             $getEmail[] = $invData->anchor->salesUser->email;
                         }else{
-                            $ucicDetails = UcicUser::with('ucicUserDetail:user_ucic_id,invoice_level_mail')->where('user_id',$invData->user_id)->first();
-                            if(!empty($ucicDetails) && isset($ucicDetails->ucicUserDetail)){
-                                $getEmail = $ucicDetails->ucicUserDetail->pluck('invoice_level_mail')->filter()->toArray();
+                            $ucicId = UcicUserUcic::where('user_id',$invData->user_id)->value('ucic_id');
+                            if($ucicId){
+                                $getEmail = UcicUserDetail::where('user_ucic_id',$ucicId)->pluck('invoice_level_mail')->toArray();
                             }
                         }
                         if(!empty($getEmail)){
-                            if(Storage::exists($fileData['file_path']))
-                                $mailData = $this->sendCapsaveInvoiceMail(Storage::url($fileData['file_path']),$invoice_no,$getEmail,$invData->customer_id,$invData->customer_name,$invoiceBorneBy);
+                            if(Storage::exists($fileData['file_path'])){
+                                $fileUrl = Storage::url($fileData['file_path']);
+                                $this->sendCapsaveInvoiceMail($fileUrl, $invoice_no, $getEmail, $invData->customer_id, $invData->customer_name, $invoiceBorneBy);
+                            }
                         }
                     }
                 }
