@@ -7,11 +7,11 @@ use Auth;
 use Session;
 use Helpers;
 use DateTime;
-use PHPExcel; 
+use PhpOffice\PhpSpreadsheet\Spreadsheet; 
 use PDF as DPDF;
 use Carbon\Carbon;
 use App\Libraries\Pdf;
-use PHPExcel_IOFactory;
+use PhpOffice\PhpSpreadsheet\IOFactory;
 use App\Helpers\FileHelper;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
@@ -428,8 +428,7 @@ class NACHController extends Controller {
     }
 
 	public function export($data, $filename = 'nach_demo') {
-        ob_start();
-        $sheet =  new PHPExcel();
+        $sheet =  new Spreadsheet();
         $sheet->getProperties()
                 ->setCreator("Capsave")
                 ->setLastModifiedBy("Capsave")
@@ -459,38 +458,29 @@ class NACHController extends Controller {
 
             $rows++;
         }
-        // dd($sheet);
-
-        // Redirect output to a client’s web browser (Excel2007)
         header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
         header('Content-Disposition: attachment;filename="'.$filename.'.xlsx"');
         header('Cache-Control: max-age=0');
-        // If you're serving to IE 9, then the following may be needed
-        // header('Cache-Control: max-age=1');
 
-        // // If you're serving to IE over SSL, then the following may be needed
-        // header ('Expires: Mon, 26 Jul 1997 05:00:00 GMT'); // Date in the past
-        // header ('Last-Modified: '.gmdate('D, d M Y H:i:s').' GMT'); // always modified
-        // header ('Cache-Control: cache, must-revalidate'); // HTTP/1.1
-        // header ('Pragma: public'); // HTTP/1.0
         if (!Storage::exists('/public/docs/nachRequest')) {
             Storage::makeDirectory('/public/docs/nachRequest');
         }
-        $commonUrl = 'docs/nachRequest'.'/'.$filename.'.xlsx';
-        $filePath = storage_path('app/public/'.$commonUrl);
-        // $filePath = $storage_path.'/'.$filename.'.xlsx';
+        $tmpHandle = tmpfile();
+		$metaDatas = stream_get_meta_data($tmpHandle);
+		$tmpFilename = $metaDatas['uri'];
+
+        $commonUrl = 'public/docs/nachRequest'.'/'.$filename.'.xlsx';
+        $storage_path = Storage::path($commonUrl);
         $fileUrl = Storage::url($commonUrl);
 
-        $objWriter = PHPExcel_IOFactory::createWriter($sheet, 'Excel2007');
-        $objWriter->save($filePath);
-        $objWriter->save("php://output");
+        $objWriter = IOFactory::createWriter($sheet, 'Xlsx');
+        $objWriter->save($tmpFilename);
+        $attributes['temp_file_path'] = $tmpFilename;
+		$path = Helper::uploadAwsS3Bucket($storage_path, $attributes, $filename);
+		unlink($tmpFilename);
         
-        // $objReader = PHPExcel_IOFactory::createReader($fileType); 
-        // $objPHPExcel = $objReader->load($fileName);
-        ob_end_flush();
-
         return [ 'status' => 1,
-                'file_path' => $filePath,
+                'file_path' => $path,
                 'file_url' => $fileUrl,
                 'objWriter' => $objWriter
                 ];
@@ -525,27 +515,20 @@ class NACHController extends Controller {
     public function importNachTransResponse(Request $request)
     {
         try {
-            $arrFileData = $request->files;
-            $inputArr = [];
-            $path = '';
-            $userId = Auth::user()->user_id;
-            if ($request['doc_file']) {
-                if (!Storage::exists('/public/nach/transaction/response')) {
-                    Storage::makeDirectory('/public/nach/transaction/response');
-                }
-                $path = Storage::disk('public')->put('/nach/transaction/response', $request['doc_file'], null);
-            }
+            
             $uploadedFile = $request->file('doc_file');
-            $destinationPath = storage_path() . '/app/public/nach/transaction/response';
-//            dd('$destinationPath--', $destinationPath);
+            $destinationPath = Storage::path('public/nach/transaction/response');
             $date = new DateTime;
             $currentDate = $date->format('Y-m-d H:i:s');
             $fileName = $currentDate.'_nach.xlsx';
             if ($uploadedFile->isValid()) {
-                $uploadedFile->move($destinationPath, $fileName);
-                $filePath = $destinationPath.'/'.$fileName;
-                $fileContent = $this->fileHelper->readFileContent($filePath);
-                $fileData = $this->fileHelper->uploadFileWithContent($filePath, $fileContent);
+
+                $sessionId = Session::getId();
+                Storage::disk('temp')->put($sessionId.'/'.$fileName,$uploadedFile);
+                $filePath = $sessionId.'/'.$fileName;
+                $fileContent = Storage::disk('temp')->get($filePath);
+                $fileData = $this->fileHelper->uploadFileWithContent($destinationPath, $fileContent);
+                Storage::disk('temp')->delete($filePath);
                 $file = UserFile::create($fileData);
                 $nachBatchData['res_file_id'] = $file->file_id;
                 $this->appRepo->saveNachBatch($nachBatchData, null);

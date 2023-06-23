@@ -246,6 +246,17 @@
 											@enderror
 										</div>
 									</div>
+									<div class="col-md-4">
+										<div class="form-group password-input">
+											<label for="txtPassword">Automail for Invoices
+												<span class="mandatory">*</span>
+											</label>
+											<input type="text" name="invoice_level_mail" id="invoice_level_mail" value="{{ $commaSeparatedEmails }}" class="form-control" tabindex="5" placeholder="Enter Email address" autocomplete="off">
+											@error('invoice_level_mail')
+												<span class="text-danger error">{{ $message }}</span>
+											@enderror
+										</div>
+									</div>
 								</div>
 							</div>
 	

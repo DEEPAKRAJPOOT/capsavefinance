@@ -286,7 +286,7 @@ class InvoiceController extends Controller {
                   $resZipFile =  $this->invRepo->saveInvoiceZipBatch($uploadData);
                   if($resZipFile)
                   {
-                    $csvPath = storage_path('app/public/'.$userFile->file_path);
+                    $csvPath = Storage::url('public/'.$userFile->file_path);
                     $handle = fopen($csvPath, "r");
                     $data = fgetcsv($handle, 1000, ",");
                     if(count($data) < 4 || count($data) > 4)
@@ -295,7 +295,7 @@ class InvoiceController extends Controller {
                        Session::flash('multiVali',$multichk);
                        return back();
                     }
-                    $csvPath1 = storage_path('app/public/'.$userFile->file_path);
+                    $csvPath1 = Storage::url('public/'.$userFile->file_path);
                     $handle1 = fopen($csvPath1, "r");
                     $data1 = fgetcsv($handle1, 1000, ",");
                     $key=0;
@@ -379,7 +379,7 @@ class InvoiceController extends Controller {
                         else
                         {
                            $FileId  = Null; 
-                           $comm_txt  =  $getImage['message']; 
+                           $comm_txt  =  $getImage['message'] ?? ''; 
                         }
                          
                       }

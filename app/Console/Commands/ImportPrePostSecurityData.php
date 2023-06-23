@@ -11,6 +11,7 @@ use App\Inv\Repositories\Models\Master\SecurityDocument;
 use App\Inv\Repositories\Models\Application;
 use App\Inv\Repositories\Models\AppStatusLog;
 use App\Inv\Repositories\Models\Master\Status;
+use Storage;
 
 class ImportPrePostSecurityData extends Command
 {
@@ -95,7 +96,11 @@ class ImportPrePostSecurityData extends Command
                 return false;
 
             $header = null;
-            if (($handle = fopen($filename, 'r')) !== false) {
+            $fileDetails = pathinfo($filename);
+            $tempFileName = Session::getId().'_'.$fileDetails['basename'];
+            $localPath = Storage::disk('temp')->put($tempFileName, Storage::get($filename));
+            $localPath = Storage::disk('temp')->path($tempFileName);
+            if (($handle = fopen($localPath, 'r')) !== false) {
                 $rows = 1;
                 while (($row = fgetcsv($handle, 10000, $delimiter)) !== false) {
                     if (!$header) {
@@ -107,6 +112,7 @@ class ImportPrePostSecurityData extends Command
                 }
                 fclose($handle);
             }
+            Storage::disk('temp')->delete($tempFileName);
         } catch (\Exception $e) {
             $respArray['data'] = [];
             $respArray['status'] = 'fail';

@@ -5,8 +5,9 @@ namespace App\Console\Commands\ETL;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Storage;
 use App\Inv\Repositories\Models\ETL\AccountDisbursalReport as AccountDisbursalReportModel;
-use PHPExcel_IOFactory;
+use PhpOffice\PhpSpreadsheet\IOFactory;
 use Carbon\Carbon;
+use Session;
 
 class AccountDisbursalReport extends Command
 {
@@ -46,20 +47,24 @@ class AccountDisbursalReport extends Command
         $dirPath = 'public/report/temp/accountDailyDisbursalReport/'.$reportDate;
         
         if (Storage::exists($dirPath)) {
-            $files = Storage::disk('local')->files($dirPath);
-            foreach($files as $file)
+            $files = Storage::files($dirPath);
+            foreach($files as $filePath)
             {
-                $filePath = storage_path('app/'.$file);
-                if (file_exists($filePath)) {
+                if (Storage::exists($filePath)) {
                     try {
-                        $inputFileType = PHPExcel_IOFactory::identify($filePath);
-                        $objReader = PHPExcel_IOFactory::createReader($inputFileType);
-                        $objPHPExcel = $objReader->load($filePath);
+                        $fileDetails = pathinfo($filePath);
+                        $tempFileName = Session::getId().'_'.$fileDetails['basename'];
+                        $localPath = Storage::disk('temp')->put($tempFileName, Storage::get($filePath));
+                        $localPath = Storage::disk('temp')->path($tempFileName);
+                        $inputFileType = IOFactory::identify($localPath);
+                        $objReader = IOFactory::createReader($inputFileType);
+                        $objSpreadsheet = $objReader->load($localPath);
+                        Storage::disk('temp')->delete($tempFileName);
                     } catch (\Exception $e) {
                         die('Error loading file "'.pathinfo($filePath,PATHINFO_BASENAME).'": '.$e->getMessage());
                     }
                     //  Get worksheet dimensions
-                    $sheet = $objPHPExcel->getSheet(0);
+                    $sheet = $objSpreadsheet->getSheet(0);
                     $highestRow = $sheet->getHighestRow(); 
                     $highestColumn = $sheet->getHighestColumn();
 

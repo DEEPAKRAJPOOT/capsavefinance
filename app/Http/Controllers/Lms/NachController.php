@@ -146,27 +146,21 @@ class NachController extends Controller {
     public function importNachResponse(Request $request)
     {
         try {
-            $arrFileData = $request->files;           
-            $user_id = $request->get('user_id');
-            $inputArr = [];
-            $path = '';
-            $userId = Auth::user()->user_id;
-            if ($request['doc_file']) {
-                if (!Storage::exists('/public/nach/response')) {
-                    Storage::makeDirectory('/public/nach/response');
-                }
-                $path = Storage::disk('public')->put('/nach/response', $request['doc_file'], null);
-            }
+            $arrFileData = $request->files;  
             $uploadedFile = $request->file('doc_file');
-            $destinationPath = storage_path() . '/app/public/nach/response';
+            $destinationPath = Storage::path('/public/nach/response');
             $date = new DateTime;
             $currentDate = $date->format('Y-m-d H:i:s');
             $fileName = $currentDate.'_nach.xlsx';
             if ($uploadedFile->isValid()) {
-                $uploadedFile->move($destinationPath, $fileName);
-                $filePath = $destinationPath.'/'.$fileName;
-                $fileContent = $this->fileHelper->readFileContent($filePath);
-                $fileData = $this->fileHelper->uploadFileWithContent($filePath, $fileContent);
+
+                $sessionId = Session::getId();
+                $filePath = $sessionId.'/'.$fileName;
+                Storage::disk('temp')->put($filePath,$uploadedFile);
+                
+                $fileContent = Storage::disk('temp')->get($filePath);
+                $fileData = $this->fileHelper->uploadFileWithContent($destinationPath, $fileContent);
+                Storage::disk('temp')->delete($filePath);
                 $file = UserFile::create($fileData);
                 $nachBatchData['res_file_id'] = $file->file_id;
                 $this->appRepo->saveNachBatch($nachBatchData, null);

@@ -4,11 +4,12 @@ namespace App\Console\Commands\ETL;
 
 use Carbon\Carbon;
 use App\Helpers\Helper;
-use PHPExcel_IOFactory;
+use PhpOffice\PhpSpreadsheet\IOFactory;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Storage;
 use App\Inv\Repositories\Models\Lms\OutstandingReportLog;
 use App\Inv\Repositories\Models\ETL\OutstandingReport as OutstandingReportModel;
+use Session;
 
 class OutstandingReport extends Command
 {
@@ -48,18 +49,23 @@ class OutstandingReport extends Command
         $filePath = $outstandingReportLog->file_path;
         $reportLogId = $outstandingReportLog->id;
         $currDate = NULL;
-        if(file_exists($filePath)) {
+        if(Storage::exists($filePath)) {
             $currDate = Helper::utcToIst($outstandingReportLog->created_at);
             try {
-                $inputFileType = PHPExcel_IOFactory::identify($filePath);
-                $objReader = PHPExcel_IOFactory::createReader($inputFileType);
-                $objPHPExcel = $objReader->load($filePath);
+                $fileDetails = pathinfo($filePath);
+                $tempFileName = Session::getId().'_'.$fileDetails['basename'];
+                $localPath = Storage::disk('temp')->put($tempFileName, Storage::get($filePath));
+                $localPath = Storage::disk('temp')->path($tempFileName);
+                $inputFileType = IOFactory::identify($localPath);
+                $objReader = IOFactory::createReader($inputFileType);
+                $objSpreadsheet = $objReader->load($localPath);
+                Storage::disk('temp')->delete($tempFileName);
             } catch (\Exception $e) {
                 $this->error('Error loading file "'.pathinfo($filePath,PATHINFO_BASENAME).'": '.$e->getMessage());
                 die();
             }
             //  Get worksheet dimensions
-            $sheet = $objPHPExcel->getSheet(0);
+            $sheet = $objSpreadsheet->getSheet(0);
             $highestRow = $sheet->getHighestRow(); 
             $highestColumn = $sheet->getHighestColumn();
 

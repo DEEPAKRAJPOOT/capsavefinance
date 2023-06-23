@@ -533,6 +533,7 @@ class User extends Authenticatable
      */
     public static function getUserRoles($user_id)
     {
+        // dd($user_id);
         /**
          * Check id is not blank
          */
@@ -546,9 +547,8 @@ class User extends Authenticatable
         if (!is_int($user_id)) {
             throw new InvalidDataTypeExceptions(trans('error_message.invalid_data_type'));
         }
-
         $arrRoles = self::find($user_id)->roles;
-
+        // dd($arrRoles);
         return ($arrRoles ? : false);
     }
     
@@ -648,9 +648,12 @@ class User extends Authenticatable
         // dd($anchId);
 
         $arrAnchUser = self::select('users.*', 'user_app_doc.file_id')
-            ->join('user_app_doc', 'users.user_id', '=', 'user_app_doc.user_id')
-            ->where('user_app_doc.is_active', 1)
-            ->where('user_app_doc.file_type', 1)
+            ->leftJoin('user_app_doc', function($join)
+            {
+                $join->on('users.user_id', '=', 'user_app_doc.user_id')
+                ->where('user_app_doc.is_active', '=', 1)
+                ->where('user_app_doc.file_type', '=', 1);
+            })
             ->where('users.anchor_id', (int) $anchId)
             ->first();
         return ($arrAnchUser ?: false);

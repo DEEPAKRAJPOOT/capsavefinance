@@ -6,9 +6,9 @@ use Auth;
 use Helpers;
 use Session;
 use Exception;
-use PHPExcel; 
+use PhpOffice\PhpSpreadsheet\Spreadsheet; 
 use Carbon\Carbon;
-use PHPExcel_IOFactory; 
+use PhpOffice\PhpSpreadsheet\IOFactory; 
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
@@ -37,6 +37,7 @@ use App\Helpers\FileHelper;
 use App\Inv\Repositories\Models\Lms\PaymentApportionment;
 use Illuminate\Support\Facades\Response;
 use App\Inv\Repositories\Models\Application;
+use Storage;
 
 class ApportionmentController extends Controller
 {
@@ -2083,7 +2084,6 @@ class ApportionmentController extends Controller
             $transactions = null;
             $unInvCnt = BizInvoice::where('supplier_id', $userId)->whereHas('invoice_disbursed')->where('is_repayment', '0')->count();
             $showSuggestion = ($unInvCnt <= 50) ? true : false;
-            //dd($showSuggestion);
             $date_of_payment = null;
             if ($request->has('payment_id')) {
                 $paymentId = $request->payment_id;
@@ -2190,8 +2190,8 @@ class ApportionmentController extends Controller
                             return redirect()->back();
                         }
                         $uploadFileData = $uploadData['data'];
-                        $fullFilePath = storage_path('app') . '/public/' . $uploadFileData['file_path'];
-                        if (file_exists($fullFilePath)) {
+                        $fullFilePath = $uploadFileData['file_path'];
+                        if (Storage::exists($fullFilePath)) {
                             $fileArrayData = $fileHelper->csvToArray($fullFilePath, $delimiter = ',');
                             if ($fileArrayData['status'] != 'success') {
                                 Session::flash('untrans_error', $fileHelper->validationMessage(5));
@@ -2239,7 +2239,7 @@ class ApportionmentController extends Controller
                                     Session::flash('untrans_error', $fileHelper->validationMessage(10));
                                     return redirect()->back();
                                 }
-                                $selectedPayment = round(str_replace(",","",$value['Payment']),2);
+                                $selectedPayment = round((float)(str_replace(",","",$value['Payment'])),2);
                                 $is_negative = $selectedPayment < 0 ? true : false;
                                 if (!empty($selectedPayment)) {
                                     $checkV = 1;

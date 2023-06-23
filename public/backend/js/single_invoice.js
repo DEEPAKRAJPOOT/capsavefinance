@@ -484,15 +484,15 @@
                           const offerData = JSON.parse(decodedOfferData);
                           if (offerData.payment_frequency != null){
                             switch (offerData.payment_frequency) {
-                              case '1':
+                              case 1:
                                  textPayFre = '<b>Payment Frequency :</b> Upfront';
                                  $('#calculateUpfrontInt').removeClass('hide');
                                  $('#upFrontAmount').removeClass('hide');
                                 break;
-                              case '2':
+                              case 2:
                                 textPayFre = '<b>Payment Frequency :</b> Monthly';
                                 break;
-                              case '3':
+                              case 3:
                                 textPayFre = '<b>Payment Frequency :</b> Rear Ended';
                                 break;
                               default:
@@ -504,10 +504,10 @@
                           }
                           if (offerData.benchmark_date != null){
                               switch (offerData.benchmark_date) {
-                                case '1':
+                                case 1:
                                   textBencMarDate = '<b>Benchmark Date :</b> Invoice Date';
                                   break;
-                                case '2':
+                                case 2:
                                   textBencMarDate = '<b>Benchmark Date :</b> Date of discounting';
                                   break;
                                 default:

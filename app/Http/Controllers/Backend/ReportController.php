@@ -1,20 +1,21 @@
 <?php
 
 namespace App\Http\Controllers\Backend;
+use App\Helpers\Helper;
 use Auth;
 use Mail;
 use Helpers;
 use Session;
-use PHPExcel;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PDF as DPDF;
 use Carbon\Carbon;
 use App\Events\Event;
-use PHPExcel_IOFactory;
-use PHPExcel_Style_Fill;
+use PhpOffice\PhpSpreadsheet\IOFactory;
+use PhpOffice\PhpSpreadsheet\Style\Fill;
 use App\Helpers\FileHelper;
-use PHPExcel_Cell_DataType;
+use PhpOffice\PhpSpreadsheet\Cell\DataType;
 use Illuminate\Http\Request;
-use PHPExcel_Style_Alignment;
+use PhpOffice\PhpSpreadsheet\Style\Alignment;
 use App\Http\Controllers\Controller;
 use App\Inv\Repositories\Models\Anchor;
 use Illuminate\Support\Facades\Storage;
@@ -27,6 +28,7 @@ use App\Inv\Repositories\Contracts\InvoiceInterface as InvoiceInterface;
 use App\Inv\Repositories\Models\Lms\OutstandingReportLog;
 use App\Inv\Repositories\Models\Lms\UserInvoice;
 use App\Inv\Repositories\Models\Lms\ReconReportLog;
+use App\Mail\SendEmail;
 
 class ReportController extends Controller
 {
@@ -90,7 +92,7 @@ class ReportController extends Controller
 			'to_date' => $to_date ?? NULL,
 		];
 		$rows = 1;
-		$sheet =  new PHPExcel();
+		$sheet =  new Spreadsheet();
 		$sheet->getActiveSheet()->getStyle('A1:M1')->applyFromArray(['font' => ['bold'  => true]]);
 		$sheet->setActiveSheetIndex(0)
 				->setCellValue('A'.$rows, 'Loan #')
@@ -135,7 +137,7 @@ class ReportController extends Controller
 		// If you're serving to IE 9, then the following may be needed
 		header('Cache-Control: max-age=1');
 		
-		$objWriter = PHPExcel_IOFactory::createWriter($sheet, 'Excel2007');
+		$objWriter = IOFactory::createWriter($sheet, 'Xlsx');
 		$objWriter->save('php://output');     
 	}
 
@@ -155,7 +157,7 @@ class ReportController extends Controller
 			$rowWhere = "trans_date between '".$from_date."' AND '". $to_date."'";
 		}
 		$rows = 1;
-		$sheet =  new PHPExcel();
+		$sheet =  new Spreadsheet();
 		$sheet->getActiveSheet()->getStyle('A1:H1')->applyFromArray(['font' => ['bold'  => true]]);
 		$sheet->setActiveSheetIndex(0)
 				->setCellValue('A'.$rows, 'Loan #')
@@ -192,7 +194,7 @@ class ReportController extends Controller
 		// If you're serving to IE 9, then the following may be needed
 		header('Cache-Control: max-age=1');
 		
-		$objWriter = PHPExcel_IOFactory::createWriter($sheet, 'Excel2007');
+		$objWriter = IOFactory::createWriter($sheet, 'Xlsx');
 		$objWriter->save('php://output');
 	}
 
@@ -212,7 +214,7 @@ class ReportController extends Controller
 			$rowWhere = "trans_date between '".$from_date."' AND '". $to_date."'";
 		}
 		$rows = 1;
-		$sheet =  new PHPExcel();
+		$sheet =  new Spreadsheet();
 		$sheet->getActiveSheet()->getStyle('A1:M1')->applyFromArray(['font' => ['bold'  => true]]);
 		$sheet->setActiveSheetIndex(0)
 			->setCellValue('A'.$rows, 'Loan #')
@@ -247,7 +249,7 @@ class ReportController extends Controller
 		// If you're serving to IE 9, then the following may be needed
 		header('Cache-Control: max-age=1');
 		
-		$objWriter = PHPExcel_IOFactory::createWriter($sheet, 'Excel2007');
+		$objWriter = IOFactory::createWriter($sheet, 'Xlsx');
 		$objWriter->save('php://output');
 	}
 	
@@ -688,7 +690,7 @@ class ReportController extends Controller
                     $emailData['email'] = $emailTo;
                     $emailData['name'] = $anchor->comp_name;
                     $emailData['body'] = 'PFA';
-                    $emailData['attachment'] = $filePath;
+                    $emailData['attachment'] = Storage::url($filePath);
                     $emailData['subject'] ="Maturity Report (".$anchor->comp_name.")";
                     \Event::dispatch("NOTIFY_MATURITY_REPORT", serialize($emailData));
                 }
@@ -703,7 +705,7 @@ class ReportController extends Controller
             $emailData['email'] = $emailTo;
             $emailData['name'] = 'Capsave Team';
             $emailData['body'] = 'PFA';
-            $emailData['attachment'] = $filePath;
+            $emailData['attachment'] = Storage::url($filePath);
             $emailData['subject'] ="Utilization Report";
             \Event::dispatch("NOTIFY_UTILIZATION_REPORT", serialize($emailData));
 			         
@@ -731,7 +733,7 @@ class ReportController extends Controller
             $emailData['email'] = $emailTo;
             $emailData['name'] = 'Capsave Team';
             $emailData['body'] = 'PFA';
-            $emailData['attachment'] = $filePath;
+            $emailData['attachment'] = Storage::url($filePath);
             $emailData['subject'] ="Disbursal Report";
             \Event::dispatch("NOTIFY_DISBURSAL_REPORT", serialize($emailData));
             
@@ -759,7 +761,7 @@ class ReportController extends Controller
             $emailData['email'] = $emailTo;
             $emailData['name'] = 'Capsave Team';
             $emailData['body'] = 'PFA';
-            $emailData['attachment'] = $filePath;
+            $emailData['attachment'] = Storage::url($filePath);
             $emailData['subject'] ="Overdue Report";
             \Event::dispatch("NOTIFY_OVERDUE_REPORT", serialize($emailData));
         }
@@ -772,7 +774,7 @@ class ReportController extends Controller
             $emailData['email'] = $emailTo;
             $emailData['name'] = 'Capsave Team';
             $emailData['body'] = 'PFA';
-            $emailData['attachment'] = $filePath;
+            $emailData['attachment'] = Storage::url($filePath);
             $emailData['subject'] ="Disbursal Report";
             \Event::dispatch("NOTIFY_ACCOUNT_DISBURSAL_REPORT", serialize($emailData));
         }
@@ -782,7 +784,7 @@ class ReportController extends Controller
 
     public function downloadMaturityReport($exceldata){
         $rows = 5;
-        $sheet =  new PHPExcel();
+        $sheet =  new Spreadsheet();
         $sheet->setActiveSheetIndex(0)
             ->setCellValue('A'.$rows, 'Customer Name')
             ->setCellValue('B'.$rows, 'Loan Account #')
@@ -827,21 +829,28 @@ class ReportController extends Controller
             $rows++;
         }
         
-        $objWriter = PHPExcel_IOFactory::createWriter($sheet, 'Excel2007');
+		$tmpHandle = tmpfile();
+		$metaDatas = stream_get_meta_data($tmpHandle);
+		$tmpFilename = $metaDatas['uri'];
+
+        $objWriter = IOFactory::createWriter($sheet, 'Xlsx');
         
         $dirPath = 'public/report/temp/maturityReport/'.date('Ymd');
         if (!Storage::exists($dirPath)) {
             Storage::makeDirectory($dirPath);
         }
-        $storage_path = storage_path('app/'.$dirPath);
-        $filePath = $storage_path.'/Maturity Report'.time().'.xlsx';
-        $objWriter->save($filePath);
-        return $filePath;
+        $storage_path = Storage::path($dirPath);
+        $filename = '/Maturity Report'.time().'.xlsx';
+        $objWriter->save($tmpFilename);
+		$attributes['temp_file_path'] = $tmpFilename;
+		$path = Helper::uploadAwsS3Bucket($storage_path, $attributes, $filename);
+		unlink($tmpFilename);
+        return $path;
     }
 
     public function downloadDailyDisbursalReport($exceldata){
         $rows = 5;
-        $sheet =  new PHPExcel();
+        $sheet =  new Spreadsheet();
         $sheet->setActiveSheetIndex(0)
             ->setCellValue('A'.$rows, 'Borrower name')
             ->setCellValue('B'.$rows, 'RM')
@@ -945,23 +954,30 @@ class ReportController extends Controller
             $rows++;
         }
         
-        $objWriter = PHPExcel_IOFactory::createWriter($sheet, 'Excel2007');
+		$tmpHandle = tmpfile();
+		$metaDatas = stream_get_meta_data($tmpHandle);
+		$tmpFilename = $metaDatas['uri'];
+
+        $objWriter = IOFactory::createWriter($sheet, 'Xlsx');
 
         $dirPath = 'public/report/temp/dailyDisbursalReport/'.date('Ymd');
         if (!Storage::exists($dirPath)) {
             Storage::makeDirectory($dirPath);
         }
-        $storage_path = storage_path('app/'.$dirPath);
-        $filePath = $storage_path.'/Daily Disbursal Report'.time().'.xlsx';
-        $objWriter->save($filePath);
-        return $filePath;
+        $storage_path = Storage::path($dirPath);
+        $filename = '/Daily Disbursal Report'.time().'.xlsx';
+        $objWriter->save($tmpFilename);
+		$attributes['temp_file_path'] = $tmpFilename;
+		$path = Helper::uploadAwsS3Bucket($storage_path, $attributes, $filename);
+		unlink($tmpFilename);
+        return $path;
     }
 
     public function downloadUtilizationExcel($exceldata) {
     
         $rows = 5;
 
-        $sheet =  new PHPExcel();
+        $sheet =  new Spreadsheet();
         foreach($exceldata as $rowData){
             $sheet->setActiveSheetIndex(0)
             ->setCellValue('A'.$rows, 'Anchor Name')
@@ -1046,22 +1062,28 @@ class ReportController extends Controller
             }
             $rows++;
         }
-        
-        $objWriter = PHPExcel_IOFactory::createWriter($sheet, 'Excel2007');
+        $tmpHandle = tmpfile();
+		$metaDatas = stream_get_meta_data($tmpHandle);
+		$tmpFilename = $metaDatas['uri'];
+
+        $objWriter = IOFactory::createWriter($sheet, 'Xlsx');
         
         $dirPath = 'public/report/temp/utilizationReport/'.date('Ymd');
         if (!Storage::exists($dirPath)) {
             Storage::makeDirectory($dirPath);
         }
-        $storage_path = storage_path('app/'.$dirPath);
-        $filePath = $storage_path.'/Utilization Report'.time().'.xlsx';
-        $objWriter->save($filePath);
-        return $filePath;
+        $storage_path = Storage::path($dirPath);
+        $filename = '/Utilization Report'.time().'.xlsx';
+        $objWriter->save($tmpFilename);
+		$attributes['temp_file_path'] = $tmpFilename;
+		$path = Helper::uploadAwsS3Bucket($storage_path, $attributes, $filename);
+		unlink($tmpFilename);
+        return $path;
     }
 
     public function downloadOverdueReport($exceldata){
         $rows = 5;
-        $sheet =  new PHPExcel();
+        $sheet =  new Spreadsheet();
         $sheet->setActiveSheetIndex(0)
             ->setCellValue('A'.$rows, 'Customer Name')
             ->setCellValue('B'.$rows, 'Customer ID')
@@ -1091,22 +1113,28 @@ class ReportController extends Controller
             ->setCellValue('I'.$rows, $rowData['sales_person_name']);
             $rows++;
         }
-        
-        $objWriter = PHPExcel_IOFactory::createWriter($sheet, 'Excel2007');
+        $tmpHandle = tmpfile();
+		$metaDatas = stream_get_meta_data($tmpHandle);
+		$tmpFilename = $metaDatas['uri'];
+		
+        $objWriter = IOFactory::createWriter($sheet, 'Xlsx');
         
         $dirPath = 'public/report/temp/overdueReport/'.date('Ymd');
         if (!Storage::exists($dirPath)) {
             Storage::makeDirectory($dirPath);
         }
-        $storage_path = storage_path('app/'.$dirPath);
-        $filePath = $storage_path.'/Overdue Report'.time().'.xlsx';
-        $objWriter->save($filePath);
-        return $filePath;
+        $storage_path = Storage::path($dirPath);
+        $filename = '/Overdue Report'.time().'.xlsx';
+        $objWriter->save($tmpFilename);
+		$attributes['temp_file_path'] = $tmpFilename;
+		$path = Helper::uploadAwsS3Bucket($storage_path, $attributes, $filename);
+		unlink($tmpFilename);
+        return $path;
     }
 
     public function downloadAccountDailyDisbursalReport($exceldata){
         $rows = 5;
-        $sheet =  new PHPExcel();
+        $sheet =  new Spreadsheet();
         $sheet->setActiveSheetIndex(0)
             ->setCellValue('A'.$rows, 'Customer Name')
             ->setCellValue('B'.$rows, 'Loan Account #')
@@ -1145,17 +1173,22 @@ class ReportController extends Controller
             ->setCellValue('O'.$rows, $rowData['status_des']);
             $rows++;
         }
-        
-        $objWriter = PHPExcel_IOFactory::createWriter($sheet, 'Excel2007');
+		$tmpHandle = tmpfile();
+		$metaDatas = stream_get_meta_data($tmpHandle);
+		$tmpFilename = $metaDatas['uri'];
+        $objWriter = IOFactory::createWriter($sheet, 'Xlsx');
 
         $dirPath = 'public/report/temp/accountDailyDisbursalReport/'.date('Ymd');
         if (!Storage::exists($dirPath)) {
             Storage::makeDirectory($dirPath);
         }
-        $storage_path = storage_path('app/'.$dirPath);
-        $filePath = $storage_path.'/Account Daily Disbursal Report'.time().'.xlsx';
-        $objWriter->save($filePath);
-        return $filePath;
+        $storage_path = Storage::path($dirPath);
+        $filename = '/Account Daily Disbursal Report'.time().'.xlsx';
+        $objWriter->save($tmpFilename);
+		$attributes['temp_file_path'] = $tmpFilename;
+		$path = Helper::uploadAwsS3Bucket($storage_path, $attributes, $filename);
+		unlink($tmpFilename);
+        return $path;
     }
 
 	/**
@@ -1164,6 +1197,8 @@ class ReportController extends Controller
 	 */
 	public function maturityAlertReport() 
 	{
+		set_time_limit(10000);
+        ini_set("memory_limit", "-1");
 		try {
 			$anchor_id = null;
 			$anchorNameList = array();
@@ -1208,6 +1243,8 @@ class ReportController extends Controller
 	 */
 	public function maturityOverdueAlertReport() 
 	{
+		set_time_limit(10000);
+        ini_set("memory_limit", "-1");
 		try {
 			$anchor_id = null;
 			$anchorNameList = array();
@@ -1251,37 +1288,51 @@ class ReportController extends Controller
 			return;
 		}
 		$mail_body = implode(PHP_EOL, $array);
-		Mail::send('email', ['baseUrl'=>env('REDIRECT_URL',''),'varContent' => $mail_body,
-                ],
-                function ($message) use ($subject, $email_content, $mail_body) {
-					
-				if(!empty(env('CRONINVOICE_SEND_MAIL_TO'))){
-					$email = explode(',', env('CRONINVOICE_SEND_MAIL_TO'));
-				}
-				if(!empty(env('CRONINVOICE_SEND_MAIL_CC_TO'))){
-					$message->cc(explode(',', env('CRONINVOICE_SEND_MAIL_CC_TO')));
-				}
-				if(!empty(env('CRONINVOICE_SEND_MAIL_BCC_TO'))){
-					$message->bcc(explode(',', env('CRONINVOICE_SEND_MAIL_BCC_TO')));
-				}
-                $message->from(config('common.FRONTEND_FROM_EMAIL'), config('common.FRONTEND_FROM_EMAIL_NAME'));
-                $message->to($email, '')->subject($subject);
-                $mailContent = [
-                    'email_from' => config('common.FRONTEND_FROM_EMAIL'),
-                    'email_to' => $email,
-                    'email_type' => $this->func_name,
-                    'name' => $user['name'] ?? NULL,
-                    'subject' => $subject,
-                    'body' => $mail_body,
-                ];
-                FinanceModel::logEmail($mailContent);
-            });
+		$mail_body ='<table class="wrapper" width="100%" cellpadding="0" cellspacing="0" style="font-family: Avenir, Helvetica, sans-serif; margin: 0 auto; padding: 20px; width:100%;"><tr><td style="font-family: Calibri !important; box-sizing: border-box; font-size: 0.917rem !important; text-align: left; padding: 10px 10px 10px 0px; padding: 2px 5px;font-size: 0.917rem !important;line-height: 18px;vertical-align: top;">'.$mail_body.'</td></tr></table>';
+		$email = $cc = $bcc = [];
+		if(!empty(env('CRONINVOICE_SEND_MAIL_TO'))){
+			$email = explode(',', env('CRONINVOICE_SEND_MAIL_TO'));
+		}
+		if(!empty(env('CRONINVOICE_SEND_MAIL_CC_TO'))){
+			$cc = explode(',', env('CRONINVOICE_SEND_MAIL_CC_TO'));
+		}
+		if(!empty(env('CRONINVOICE_SEND_MAIL_BCC_TO'))){
+			$bcc = explode(',', env('CRONINVOICE_SEND_MAIL_BCC_TO'));
+		}
+		if (empty($email) || !is_array($email)) {
+			return;
+		}
+		$to = [
+			[
+				'email' => $email, //$data["email"]
+				'name' => $user['name'] ?? NULL,
+			]
+		];
+		$baseUrl = env('REDIRECT_URL','');
+		$mailData = [
+			'email_to' => $email, //$data["email"]
+			'email_bcc' => $bcc ?? NULL,
+			'email_cc' => $cc ?? NULL,
+			'mail_subject' => $subject,
+			'mail_body' => $mail_body,
+			'base_url' => $baseUrl,
+		];
+		$mailLogData = [
+			'email_from' => config('common.FRONTEND_FROM_EMAIL'),
+			'email_type' => 'sendAnStringFromArr',
+			'name' => $user['name'] ?? NULL,
+		];
+		// Serialize the data
+		$mailDataSerialized = serialize($mailData);
+		$mailLogDataSerialized = serialize($mailLogData);
+		// Queue the email job
+		Mail::to($to)->cc($cc)->bcc($bcc)->queue(new SendEmail($mailDataSerialized, $mailLogDataSerialized));
 	}
 
 	public function downloadOverdueReportFromLogs(Request $request)
 	{
 		$reportLog = OverdueReportLog::findOrfail($request->report_log_id);
-		return response()->download($reportLog->file_path);
+		return Storage::download($reportLog->file_path);
 	}
 	
     public function etlReportSync(){
@@ -1299,7 +1350,7 @@ class ReportController extends Controller
 	public function downloadOutstandingReportFromLogs(Request $request)
 	{
 		$reportLog = OutstandingReportLog::findOrfail($request->report_log_id);
-		return response()->download($reportLog->file_path);
+		return Storage::download($reportLog->file_path);
 	}
 
 	public function reconReport(Request $request){
@@ -1313,6 +1364,6 @@ class ReportController extends Controller
 	public function downloadReconReportFromLogs(Request $request)
 	{
 		$reportLog = ReconReportLog::findOrfail($request->report_log_id);
-		return response()->download($reportLog->file_path);
+		return Storage::download($reportLog->file_path);
 	}
 }

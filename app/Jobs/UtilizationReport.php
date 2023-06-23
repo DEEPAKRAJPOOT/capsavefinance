@@ -11,10 +11,11 @@ use Illuminate\Queue\SerializesModels;
 use App\Inv\Repositories\Models\Master\EmailTemplate;
 use App\Inv\Repositories\Contracts\ReportInterface;
 use Illuminate\Support\Facades\Storage;
-use PHPExcel_IOFactory;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\IOFactory;
+use PhpOffice\PhpSpreadsheet\Cell\DataType;
 use Carbon\Carbon;
-use PHPExcel;
-use Helpers;
+use App\Helpers\Helper;
 
 class UtilizationReport implements ShouldQueue
 {
@@ -84,7 +85,7 @@ class UtilizationReport implements ShouldQueue
             $emailData               = Helpers::getDailyReportsEmailData($emailTemplate, $compName);
             $filePath                = $this->downloadUtilizationExcel($data, $reportName);
             $emailData['to']      = $this->emailTo;
-            $emailData['attachment'] = $filePath;
+            $emailData['attachment'] = Storage::url($filePath);
             \Event::dispatch("NOTIFY_UTILIZATION_REPORT", serialize($emailData));
         }
     }
@@ -93,7 +94,7 @@ class UtilizationReport implements ShouldQueue
     {
         $rows = 1;
 
-        $sheet =  new PHPExcel();
+        $sheet =  new Spreadsheet();
         $sheet->setActiveSheetIndex(0)
         ->setCellValue('A'.$rows, 'Anchor Name')
         ->setCellValue('B'.$rows, 'Program Name')
@@ -128,48 +129,53 @@ class UtilizationReport implements ShouldQueue
                     if(!empty($disb['invoice'])){
                         foreach($disb['invoice'] as $inv){
                             $sheet->setActiveSheetIndex(0)
-                            ->setCellValueExplicit('A'.$rows, $rowData['anchor_name'], \PHPExcel_Cell_DataType::TYPE_STRING)
-                            ->setCellValueExplicit('B'.$rows, $rowData['prgm_name'], \PHPExcel_Cell_DataType::TYPE_STRING)
-                            ->setCellValueExplicit('C'.$rows, $rowData['sub_prgm_name'], \PHPExcel_Cell_DataType::TYPE_STRING)
-                            ->setCellValueExplicit('D'.$rows, $rowData['client_sanction'], \PHPExcel_Cell_DataType::TYPE_STRING)
-                            ->setCellValueExplicit('E'.$rows, $rowData['ttl_od_customer'], \PHPExcel_Cell_DataType::TYPE_STRING)
-                            ->setCellValueExplicit('F'.$rows, number_format($rowData['ttl_od_amt'],2), \PHPExcel_Cell_DataType::TYPE_STRING)
-                            ->setCellValueExplicit('G'.$rows, $disb['client_name'], \PHPExcel_Cell_DataType::TYPE_STRING)
-                            ->setCellValueExplicit('H'.$rows, $disb['user_id'], \PHPExcel_Cell_DataType::TYPE_STRING)
-                            ->setCellValueExplicit('I'.$rows, $disb['virtual_ac'], \PHPExcel_Cell_DataType::TYPE_STRING)
-                            ->setCellValueExplicit('J'.$rows, number_format($disb['client_sanction_limit'],2), \PHPExcel_Cell_DataType::TYPE_STRING)
-                            ->setCellValueExplicit('K'.$rows, number_format($disb['limit_utilize'],2), \PHPExcel_Cell_DataType::TYPE_STRING)
-                            ->setCellValueExplicit('L'.$rows, number_format($disb['limit_available'],2), \PHPExcel_Cell_DataType::TYPE_STRING)
-                            ->setCellValueExplicit('M'.$rows, Carbon::parse($disb['end_date'])->format('d/m/Y') ?? NULL, \PHPExcel_Cell_DataType::TYPE_STRING)
-                            ->setCellValueExplicit('N'.$rows, $disb['sales_person_name'], \PHPExcel_Cell_DataType::TYPE_STRING)
-                            ->setCellValueExplicit('O'.$rows, $inv['invoice_no'], \PHPExcel_Cell_DataType::TYPE_STRING)
-                            ->setCellValueExplicit('P'.$rows, Carbon::parse($inv['invoice_date'])->format('d/m/Y') ?? NULL, \PHPExcel_Cell_DataType::TYPE_STRING)
-                            ->setCellValueExplicit('Q'.$rows, number_format($inv['invoice_amt'],2), \PHPExcel_Cell_DataType::TYPE_STRING)
-                            ->setCellValueExplicit('R'.$rows, number_format($inv['approve_amt'],2), \PHPExcel_Cell_DataType::TYPE_STRING)
-                            ->setCellValueExplicit('S'.$rows, number_format($inv['margin_amt'],2), \PHPExcel_Cell_DataType::TYPE_STRING)
-                            ->setCellValueExplicit('T'.$rows, number_format($inv['disb_amt'],2), \PHPExcel_Cell_DataType::TYPE_STRING)
-                            ->setCellValueExplicit('U'.$rows, $inv['principal_od_days'], \PHPExcel_Cell_DataType::TYPE_STRING)
-                            ->setCellValueExplicit('V'.$rows, number_format($inv['principal_od_amount'],2), \PHPExcel_Cell_DataType::TYPE_STRING)
-                            ->setCellValueExplicit('W'.$rows, $inv['od_days'], \PHPExcel_Cell_DataType::TYPE_STRING)
-                            ->setCellValueExplicit('X'.$rows, number_format($inv['od_amt'],2), \PHPExcel_Cell_DataType::TYPE_STRING)
-                            ->setCellValueExplicit('Y'.$rows, !empty($rowData['prgm_type']) ? $rowData['prgm_type'] : '---', \PHPExcel_Cell_DataType::TYPE_STRING);
+                            ->setCellValueExplicit('A'.$rows, $rowData['anchor_name'], DataType::TYPE_STRING)
+                            ->setCellValueExplicit('B'.$rows, $rowData['prgm_name'], DataType::TYPE_STRING)
+                            ->setCellValueExplicit('C'.$rows, $rowData['sub_prgm_name'], DataType::TYPE_STRING)
+                            ->setCellValueExplicit('D'.$rows, $rowData['client_sanction'], DataType::TYPE_STRING)
+                            ->setCellValueExplicit('E'.$rows, $rowData['ttl_od_customer'], DataType::TYPE_STRING)
+                            ->setCellValueExplicit('F'.$rows, number_format($rowData['ttl_od_amt'],2), DataType::TYPE_STRING)
+                            ->setCellValueExplicit('G'.$rows, $disb['client_name'], DataType::TYPE_STRING)
+                            ->setCellValueExplicit('H'.$rows, $disb['user_id'], DataType::TYPE_STRING)
+                            ->setCellValueExplicit('I'.$rows, $disb['virtual_ac'], DataType::TYPE_STRING)
+                            ->setCellValueExplicit('J'.$rows, number_format($disb['client_sanction_limit'],2), DataType::TYPE_STRING)
+                            ->setCellValueExplicit('K'.$rows, number_format($disb['limit_utilize'],2), DataType::TYPE_STRING)
+                            ->setCellValueExplicit('L'.$rows, number_format($disb['limit_available'],2), DataType::TYPE_STRING)
+                            ->setCellValueExplicit('M'.$rows, Carbon::parse($disb['end_date'])->format('d/m/Y') ?? NULL, DataType::TYPE_STRING)
+                            ->setCellValueExplicit('N'.$rows, $disb['sales_person_name'], DataType::TYPE_STRING)
+                            ->setCellValueExplicit('O'.$rows, $inv['invoice_no'], DataType::TYPE_STRING)
+                            ->setCellValueExplicit('P'.$rows, Carbon::parse($inv['invoice_date'])->format('d/m/Y') ?? NULL, DataType::TYPE_STRING)
+                            ->setCellValueExplicit('Q'.$rows, number_format($inv['invoice_amt'],2), DataType::TYPE_STRING)
+                            ->setCellValueExplicit('R'.$rows, number_format($inv['approve_amt'],2), DataType::TYPE_STRING)
+                            ->setCellValueExplicit('S'.$rows, number_format($inv['margin_amt'],2), DataType::TYPE_STRING)
+                            ->setCellValueExplicit('T'.$rows, number_format($inv['disb_amt'],2), DataType::TYPE_STRING)
+                            ->setCellValueExplicit('U'.$rows, $inv['principal_od_days'], DataType::TYPE_STRING)
+                            ->setCellValueExplicit('V'.$rows, number_format($inv['principal_od_amount'],2), DataType::TYPE_STRING)
+                            ->setCellValueExplicit('W'.$rows, $inv['od_days'], DataType::TYPE_STRING)
+                            ->setCellValueExplicit('X'.$rows, number_format($inv['od_amt'],2), DataType::TYPE_STRING)
+                            ->setCellValueExplicit('Y'.$rows, !empty($rowData['prgm_type']) ? $rowData['prgm_type'] : '---', DataType::TYPE_STRING);
                             $rows++;
                         }
                     }
                 }
             }
         }
-        
-        $objWriter = PHPExcel_IOFactory::createWriter($sheet, 'Excel2007');
+
+        $tmpHandle = tmpfile();
+        $metaDatas = stream_get_meta_data($tmpHandle);
+        $tmpFilename = $metaDatas['uri'];
+        $objWriter = IOFactory::createWriter($sheet, 'Xlsx');
         
         $dirPath = 'public/report/temp/utilizationReport/'.date('Ymd');
         if (!Storage::exists($dirPath)) {
             Storage::makeDirectory($dirPath);
         }
-        $storage_path = storage_path('app/'.$dirPath);
-        // $filePath = $storage_path.'/Utilization Report'.time().'_'.rand(1111, 9999).'_'.'.xlsx';
-        $filePath = $storage_path.$reportName.'.xlsx';
-        $objWriter->save($filePath);
-        return $filePath;
+        $storage_path = Storage::path($dirPath);
+        $fileName = $reportName.'.xlsx';
+        $objWriter->save($tmpFilename);
+        $attributes['temp_file_path'] = $tmpFilename;
+        $path = Helper::uploadAwsS3Bucket($storage_path, $attributes, $fileName);
+        unlink($tmpFilename);
+        return $path;
     }
 }

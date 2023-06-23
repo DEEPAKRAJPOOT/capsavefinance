@@ -82,7 +82,7 @@ class Mimes
                 if (! array_key_exists($extension, $this->mimeTypes)) {
                     return false;
                 }
-                if (! in_array(strtolower($val->getMimeType()), $this->mimeTypes[$extension])) {
+                if (! in_array(strtolower($val->getClientMimeType()), $this->mimeTypes[$extension])) {
                     return false;
                 }
             }
@@ -91,7 +91,7 @@ class Mimes
             if (! array_key_exists($extension, $this->mimeTypes)) {
                 return false;
             }
-            if (! in_array(strtolower($this->value->getMimeType()), $this->mimeTypes[$extension])) {
+            if (! in_array(strtolower($this->value->getClientMimeType()), $this->mimeTypes[$extension])) {
                 return false;
             }
         }

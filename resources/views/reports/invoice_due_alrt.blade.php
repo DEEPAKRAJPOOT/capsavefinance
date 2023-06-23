@@ -1,20 +1,17 @@
-<div
-  style="font-family: Calibri !important; box-sizing: border-box; font-size: 0.917rem !important; -webkit-font-smoothing: antialiased; -webkit-text-size-adjust: none; width: 100% !important; height: 100%; line-height: 1.6em; background-color: #f8f8f8; margin: 0;">
-
-  <table border="0" cellpadding="0" cellspacing="0"
-    style="width: 100%; background-color: #f4f8fb; font-family: Calibri !important; box-sizing: border-box; font-size: 0.917rem !important;"
+<table border="0" cellpadding="0" cellspacing="0"
+  style="width: 100%; background-color: #f4f8fb; font-family: Calibri !important; box-sizing: border-box; font-size: 0.917rem !important;"
     bgcolor="#f8f8f8">
 
     <tr>
       <td>
         <table align="center" border="0" cellpadding="0" cellspacing="0" width="600"
-          style="width:600px; background-color: #ffffff; color: #514d6a; padding: 40px; line-height: 28px;"
+          style="width:100%; background-color: #ffffff; color: #514d6a; padding: 40px; line-height: 28px;"
           bgcolor="#ffffff">
 
           <tr>
             <td
               style="font-family: Calibri !important; box-sizing: border-box; font-size: 0.917rem !important; text-align: left; padding-top:20px; font-size: 0.917rem !important; font-family: Calibri !important; color: #111; line-height: 11px;">
-              {{ $userData['user_name'].' - '.$userData['email'] }} <br>
+              {{ $userData['user_name'].' - '.$userData['email'] }} <br/><br/>
               Dear Sir/Madam,
             </td>
           </tr>
@@ -161,5 +158,3 @@
 
 
   </table>
-
-</div>

@@ -11,10 +11,11 @@ use Illuminate\Queue\SerializesModels;
 use App\Inv\Repositories\Models\Master\EmailTemplate;
 use App\Inv\Repositories\Contracts\ReportInterface;
 use Illuminate\Support\Facades\Storage;
-use PHPExcel_IOFactory;
 use Carbon\Carbon;
-use PHPExcel;
-use Helpers;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\IOFactory;
+use PhpOffice\PhpSpreadsheet\Cell\DataType;
+use App\Helpers\Helper;
 
 class AccountDisbursalReport implements ShouldQueue
 {
@@ -51,7 +52,7 @@ class AccountDisbursalReport implements ShouldQueue
                 $emailData               = Helpers::getDailyReportsEmailData($emailTemplate);
                 $filePath                = $this->downloadAccountDailyDisbursalReport($data);
                 $emailData['to']      = $this->emailTo;
-                $emailData['attachment'] = $filePath;
+                $emailData['attachment'] = Storage::url($filePath);
                 \Event::dispatch("NOTIFY_ACCOUNT_DISBURSAL_REPORT", serialize($emailData));
             }
         }
@@ -60,7 +61,7 @@ class AccountDisbursalReport implements ShouldQueue
     private function downloadAccountDailyDisbursalReport($exceldata)
     {
         $rows = 5;
-        $sheet =  new PHPExcel();
+        $sheet =  new Spreadsheet();
         $sheet->setActiveSheetIndex(0)
             ->setCellValue('A'.$rows, 'Customer Name')
             ->setCellValue('B'.$rows, 'Loan Account #')
@@ -82,33 +83,40 @@ class AccountDisbursalReport implements ShouldQueue
         $rows++;
         foreach($exceldata as $rowData){
             $sheet->setActiveSheetIndex(0)
-            ->setCellValueExplicit('A'.$rows, $rowData['cust_name'], \PHPExcel_Cell_DataType::TYPE_STRING)
-            ->setCellValueExplicit('B'.$rows, $rowData['loan_ac'], \PHPExcel_Cell_DataType::TYPE_STRING)
-            ->setCellValueExplicit('C'.$rows, Carbon::parse($rowData['trans_date'])->format('d-m-Y'), \PHPExcel_Cell_DataType::TYPE_STRING)
-            ->setCellValueExplicit('D'.$rows, $rowData['trans_no'], \PHPExcel_Cell_DataType::TYPE_STRING)
-            ->setCellValueExplicit('E'.$rows, $rowData['invoice_no'], \PHPExcel_Cell_DataType::TYPE_STRING)
-            ->setCellValueExplicit('F'.$rows, Carbon::parse($rowData['invoice_date'])->format('d-m-Y'), \PHPExcel_Cell_DataType::TYPE_STRING)
-            ->setCellValueExplicit('G'.$rows, number_format($rowData['invoice_amt'],2), \PHPExcel_Cell_DataType::TYPE_STRING)
-            ->setCellValueExplicit('H'.$rows, number_format($rowData['margin_amt'],2), \PHPExcel_Cell_DataType::TYPE_STRING)
-            ->setCellValueExplicit('I'.$rows, number_format($rowData['disb_amt'],2), \PHPExcel_Cell_DataType::TYPE_STRING)
-            ->setCellValueExplicit('J'.$rows, $rowData['trans_utr'], \PHPExcel_Cell_DataType::TYPE_STRING)
-            ->setCellValueExplicit('K'.$rows, $rowData['remark'], \PHPExcel_Cell_DataType::TYPE_STRING)
-            ->setCellValueExplicit('L'.$rows, $rowData['bank_ac'], \PHPExcel_Cell_DataType::TYPE_STRING)
-            ->setCellValueExplicit('M'.$rows, $rowData['ifsc'], \PHPExcel_Cell_DataType::TYPE_STRING)
-            ->setCellValueExplicit('N'.$rows, $rowData['status'], \PHPExcel_Cell_DataType::TYPE_STRING)
-            ->setCellValueExplicit('O'.$rows, $rowData['status_des'], \PHPExcel_Cell_DataType::TYPE_STRING);
+            ->setCellValueExplicit('A'.$rows, $rowData['cust_name'], DataType::TYPE_STRING)
+            ->setCellValueExplicit('B'.$rows, $rowData['loan_ac'], DataType::TYPE_STRING)
+            ->setCellValueExplicit('C'.$rows, Carbon::parse($rowData['trans_date'])->format('d-m-Y'), DataType::TYPE_STRING)
+            ->setCellValueExplicit('D'.$rows, $rowData['trans_no'], DataType::TYPE_STRING)
+            ->setCellValueExplicit('E'.$rows, $rowData['invoice_no'], DataType::TYPE_STRING)
+            ->setCellValueExplicit('F'.$rows, Carbon::parse($rowData['invoice_date'])->format('d-m-Y'), DataType::TYPE_STRING)
+            ->setCellValueExplicit('G'.$rows, number_format($rowData['invoice_amt'],2), DataType::TYPE_STRING)
+            ->setCellValueExplicit('H'.$rows, number_format($rowData['margin_amt'],2), DataType::TYPE_STRING)
+            ->setCellValueExplicit('I'.$rows, number_format($rowData['disb_amt'],2), DataType::TYPE_STRING)
+            ->setCellValueExplicit('J'.$rows, $rowData['trans_utr'], DataType::TYPE_STRING)
+            ->setCellValueExplicit('K'.$rows, $rowData['remark'], DataType::TYPE_STRING)
+            ->setCellValueExplicit('L'.$rows, $rowData['bank_ac'], DataType::TYPE_STRING)
+            ->setCellValueExplicit('M'.$rows, $rowData['ifsc'], DataType::TYPE_STRING)
+            ->setCellValueExplicit('N'.$rows, $rowData['status'], DataType::TYPE_STRING)
+            ->setCellValueExplicit('O'.$rows, $rowData['status_des'], DataType::TYPE_STRING);
             $rows++;
         }
 
-        $objWriter = PHPExcel_IOFactory::createWriter($sheet, 'Excel2007');
+        $tmpHandle = tmpfile();
+        $metaDatas = stream_get_meta_data($tmpHandle);
+        $tmpFilename = $metaDatas['uri'];
+
+        $objWriter = IOFactory::createWriter($sheet, 'Xlsx');
 
         $dirPath = 'public/report/temp/accountDailyDisbursalReport/'.date('Ymd');
         if (!Storage::exists($dirPath)) {
             Storage::makeDirectory($dirPath);
         }
-        $storage_path = storage_path('app/'.$dirPath);
-        $filePath = $storage_path.'/Account Daily Disbursal Report'.time().'.xlsx';
-        $objWriter->save($filePath);
-        return $filePath;
+        $storage_path = Storage::path($dirPath);
+        $fileName = 'Account Daily Disbursal Report'.time().'.xlsx';
+        $objWriter->save($tmpFilename);
+        $attributes['temp_file_path'] = $tmpFilename;
+        $path = Helper::uploadAwsS3Bucket($storage_path, $attributes, $fileName);
+        unlink($tmpFilename);
+        return $path;
     }
 }

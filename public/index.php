@@ -1,10 +1,4 @@
 <?php
-ini_set('display_errors', 1);
-ini_set('max_execution_time', 1000);
-ini_set('max_input_vars', 3000);
-set_time_limit(0);
-error_reporting(E_ALL);
-
 /**
  * Laravel - A PHP Framework For Web Artisans
  *
@@ -13,6 +7,10 @@ error_reporting(E_ALL);
  */
 
 define('LARAVEL_START', microtime(true));
+
+if (file_exists(__DIR__.'/../storage/framework/maintenance.php')) {
+    require __DIR__.'/../storage/framework/maintenance.php';
+}
 
 /*
 |--------------------------------------------------------------------------

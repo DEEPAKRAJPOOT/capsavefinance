@@ -3,7 +3,6 @@
 <td class="header" style=" text-align: center;">
         <a href="#">
             <img src="{{ $baseUrl.'/frontend/assets/images/email_logo.png' }}"  alt="Capsave" width="200px;" />
-
         </a>
     </td>
 </tr>

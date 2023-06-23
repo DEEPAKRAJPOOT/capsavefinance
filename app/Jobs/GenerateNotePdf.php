@@ -6,25 +6,24 @@ use PDF;
 use Exception;
 use App\Helpers\FileHelper;
 use Illuminate\Bus\Queueable;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\App;
 use Illuminate\Queue\SerializesModels;
-use Illuminate\Support\Facades\Storage;
 use App\Inv\Repositories\Models\LmsUser;
 use Illuminate\Queue\InteractsWithQueue;
 use App\Inv\Repositories\Models\UserFile;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use App\Inv\Repositories\Models\Lms\UserInvoice;
-use App\Inv\Repositories\Contracts\ReportInterface;
-use App\Inv\Repositories\Models\Master\EmailTemplate;
 use App\Inv\Repositories\Contracts\UserInvoiceInterface;
+use Storage;
+use App\Inv\Repositories\Models\UcicUser;
 
 
 class GenerateNotePdf implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
+    protected $UserInvRepo;
+    protected $fileHelper;
     private $userInvoice_id;
     /**
      * Create a new job instance.
@@ -60,11 +59,9 @@ class GenerateNotePdf implements ShouldQueue
             $invoice_date = $invData->invoice_date;
             $due_date = $invData->due_date;
             $company_id = $invData->comp_addr_id;
-            $registered_comp_id = $invData->registered_comp_id;
             $bank_account_id = $invData->bank_id;
             $totalTxnsInInvoice = $invData->userInvoiceTxns;
             $userStateId = $invData->user_gst_state_id;
-            $companyStateId = $invData->comp_gst_state_id;
             $lmsDetails = LmsUser::getLmsDetailByUserId($user_id);
             $virtual_acc_id = $lmsDetails[0]->virtual_acc_id;
             $stateDetail = $this->UserInvRepo->getStateById($userStateId);
@@ -97,7 +94,6 @@ class GenerateNotePdf implements ShouldQueue
             }else{
                 $company_data = json_decode($invData->inv_comp_data, true);
             }
-            $is_state_diffrent = ($userStateId != $companyStateId);
             $intrest_charges = [];
             $total_sum_of_rental = 0;
             foreach ($totalTxnsInInvoice as  $key => $invTrans) {
@@ -109,6 +105,7 @@ class GenerateNotePdf implements ShouldQueue
                 $sgst_rate = $invTrans->sgst_rate;
                 $base_amt = $invTrans->base_amount;
                 $sac_code = $invTrans->sac_code;
+
 
                 $intrest_charges[$key] = array(
                     'trans_id' => $invTrans->trans_id,
@@ -128,6 +125,7 @@ class GenerateNotePdf implements ShouldQueue
                 $intrest_charges[$key]['total_rental'] =  $total_rental; 
             }
             $registeredCompany = json_decode($invData->comp_addr_register, true);
+            
             $data = [
                 'company_data' => $company_data,
                 'billingDetails' => $billingDetails,
@@ -141,16 +139,10 @@ class GenerateNotePdf implements ShouldQueue
                 'custId' => $invData->customer_id ?? '',
                 'custName' => $invData->customer_name ?? '',
                 'anchorName' => $invData->anchor_name ?? '',
+                'isGst' => $invData->is_gst
             ];
-
             view()->share($data);
-            $path ='capsaveInvoice/'.str_replace("/","_",strtoupper($data['origin_of_recipient']['invoice_no'])).'.pdf';
-            //$year = date("Y");   
-            //$month = date("m");
-            //$path ='capsaveInvoice/'.$year.'/'.$month.'/'.str_replace("/","_",strtoupper($data['origin_of_recipient']['invoice_no'])).'.pdf';
-            if(Storage::exists('public/'.$path)){
-                Storage::move('public/'.$path, 'public/'.'capsaveInvoice/'.str_replace("/","_",strtoupper($data['origin_of_recipient']['invoice_no'])).'_'.time().'.pdf');
-            }
+            $path = Storage::path('public/capsaveInvoice/'.str_replace("/","_",strtoupper($data['origin_of_recipient']['invoice_no'])).'.pdf');
             switch ($invData->invoice_cat) {
                 case '1':
                     $pdf = PDF::loadView('lms.note.generate_debit_note');
@@ -164,10 +156,39 @@ class GenerateNotePdf implements ShouldQueue
                 $fileData =  $this->fileHelper->uploadFileWithContent($path,$pdf->output());
                 $userFile = UserFile::create($fileData);
                 if($userInvoiceId && $userFile){
-                    UserInvoice::where('user_invoice_id',$userInvoiceId)->update(['file_id' => $userFile->file_id]);
+                    $isUpdated = UserInvoice::where('user_invoice_id',$userInvoiceId)->update(['file_id' => $userFile->file_id]);
+                    if($isUpdated && $invoice_type == 'I' && $invData->invoice_cat == 1){
+                        // If custId is present then bill is Anchor based else customer based
+                        $getEmail = [];
+                        if($invoiceBorneBy == 1){
+                            $getEmail[] = $invData->anchor->salesUser->email;
+                        }else{
+                            $ucicDetails = UcicUser::with('ucicUserDetail:user_ucic_id,invoice_level_mail')->where('user_id',$invData->user_id)->first();
+                            if(!empty($ucicDetails) && isset($ucicDetails->ucicUserDetail)){
+                                $getEmail = $ucicDetails->ucicUserDetail->pluck('invoice_level_mail')->filter()->toArray();
+                            }
+                        }
+                        if(!empty($getEmail)){
+                            if(Storage::exists($fileData['file_path']))
+                                $mailData = $this->sendCapsaveInvoiceMail(Storage::url($fileData['file_path']),$invoice_no,$getEmail,$invData->customer_id,$invData->customer_name,$invoiceBorneBy);
+                        }
+                    }
                 }
             }
         }
 
+    }
+
+    public function sendCapsaveInvoiceMail($pdfResult,$newInvoiceNo,$getEmails,$custId = NULL,$custName = NULL,$invoiceBorneBy =NULL){
+            $emailData = array(
+                'invoice_no' => $newInvoiceNo,
+                'email' => $getEmails,
+                'body' => 'body',
+                'attachment' => $pdfResult,
+                'custId' => $custId,
+                'custName' => $custName,
+                'invoiceBorneBy' => $invoiceBorneBy,
+            );
+            \Event::dispatch("USER_INVOICE_MAIL", serialize($emailData));
     }
 }

@@ -191,21 +191,6 @@ Route::group(
         'uses' => 'Karza\KarzaController@checkPassportVerification'
         ]
     );
-    Route::post(
-        'get-users-wci',
-        [
-        'as' => 'get_users_wci',
-        'uses' => 'AjaxController@getUsersListAPIDummy'
-        ]
-    );
-
-    Route::post(
-        'get-users-wci-single',
-        [
-        'as' => 'get_users_wci_single',
-        'uses' => 'AjaxController@getUsersDetailAPIDummy'
-        ]
-    );
 
     Route::post(
         'save_repayment',
@@ -224,15 +209,6 @@ Route::group(
     Route::post('get_settled_payments', [
         'as' => 'get_settled_payments',
         'uses' => 'AjaxController@getSettledPayments'
-        ]
-    );
-  
-   //
-    Route::post(
-        'shareholder-save-ajax',
-        [
-        'as' => 'shareholder_save_ajax',
-        'uses' => 'AjaxController@saveShareholder'
         ]
     );
     

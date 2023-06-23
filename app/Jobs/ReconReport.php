@@ -1,10 +1,10 @@
 <?php
 
 namespace App\Jobs;
-use Helpers;
-use PHPExcel;
+use App\Helpers\Helper;
 use Carbon\Carbon;
-use PHPExcel_IOFactory;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\IOFactory;
 use Illuminate\Bus\Queueable;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\App;
@@ -85,7 +85,7 @@ class ReconReport implements ShouldQueue
             ini_set("memory_limit", "-1");
             ini_set('max_execution_time', 10000);
             $rows = 1;
-            $sheet =  new PHPExcel();
+            $sheet =  new Spreadsheet();
             $sheet->setActiveSheetIndex(0)
             ->setCellValue('A'.$rows, 'Customer Id')
             ->setCellValue('B'.$rows, 'SOA Balance')
@@ -114,7 +114,7 @@ class ReconReport implements ShouldQueue
             if (!Storage::exists($dirPath)) {
                 Storage::makeDirectory($dirPath);
             }
-            $storage_path = storage_path('app/'.$dirPath);
+            $storage_path = Storage::path($dirPath);
             $filename = 'Recon Report'.'_'.Carbon::now()->setTimezone(config('common.timezone'))->format('Ymd_hisA').'.xlsx';
             $filePath = $storage_path.'/'.$filename;
             
@@ -125,10 +125,17 @@ class ReconReport implements ShouldQueue
             header("Cache-Control: post-check=0, pre-check=0", false);
             header("Pragma: no-cache");
             
-            $objWriter = PHPExcel_IOFactory::createWriter($sheet, 'Excel2007');
+            $tmpHandle = tmpfile();
+            $metaDatas = stream_get_meta_data($tmpHandle);
+            $tmpFilename = $metaDatas['uri'];
+
+            $objWriter = IOFactory::createWriter($sheet, 'Xlsx');
         
-            $objWriter->save($filePath);
-            return $filePath;
+            $objWriter->save($tmpFilename);
+            $attributes['temp_file_path'] = $tmpFilename;
+            $path = Helper::uploadAwsS3Bucket($storage_path, $attributes, $filename);
+            unlink($tmpFilename);
+            return $path;
         } catch (\Throwable $th) {
             throw $th;
         } 

@@ -2777,8 +2777,7 @@ class DataRenderer implements DataProviderInterface
                   ->addColumn(
                     'update',
                     function ($invoice) {
-                          return '&nbsp;'.$invoice->user->f_name.'&nbsp;'.$invoice->user->l_name.'';
-
+                        return empty($invoice->user) ?  "-" : '&nbsp;'.$invoice->user->f_name.'&nbsp;'.$invoice->user->l_name.'';
                   })
                  ->addColumn(
                     'timestamp',
@@ -7106,11 +7105,16 @@ class DataRenderer implements DataProviderInterface
                 function ($data) {
                 $link = '';
                     if(Helpers::checkPermission('download_user_invoice') ){
-                        if($data->job_id != null && $data->file_id != null){
+                        if($data->file_id != null){
                             $link = "<a title='Download User Invoice' href='".route('download_user_invoice', ['user_id' => $data->user_id, 'user_invoice_id' => $data->user_invoice_id])."' class='btn btn-success btn-sm'><i style='color:#fff' class='fa fa-download'> Download</a>";
-                        }elseif($data->job_id == null && $data->file_id == null){
-                            return ' <button class="btn btn-primary" disabled> <span class="spinner-grow spinner-grow-sm"></span> Loading.. </button>';
-                        }else{
+                        }elseif(!$data->job_id && !$data->file_id){
+                            $file = 'public/capsaveInvoice/'.str_replace("/","_",strtoupper($data->invoice_no)).'.pdf';
+                            if (Storage::exists($file)) {
+                                return "<a title='Download User Invoice' href='".route('download_user_invoice', ['user_id' => $data->user_id, 'user_invoice_id' => $data->user_invoice_id])."' class='btn btn-success btn-sm'><i style='color:#fff' class='fa fa-download'> Download</a>";
+                            }else{   
+                                return ' <button class="btn btn-primary" disabled> <span class="spinner-grow spinner-grow-sm"></span> Loading.. </button>';
+                            }
+                        }elseif($data->job_id && !$data->file_id){
                             return "<button class='btn btn-primary' disabled> <i style='color:#fff' class='fa fa-download'></i> Download </button>";
                         }
                         

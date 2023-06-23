@@ -17,13 +17,15 @@ use App\Inv\Repositories\Models\Master\FactTransType;
 use App\Inv\Repositories\Models\Master\FactJournalEntry;
 use App\Inv\Repositories\Models\Master\FactPaymentEntry;
 use App\Helpers\Helper;
-use PHPExcel;
-use PHPExcel_IOFactory;
-use PHPExcel_Style_Fill;
-use PHPExcel_Cell_DataType;
-use PHPExcel_Style_Alignment;
-use PHPExcel_Style_Border;
-use PHPExcel_Shared_Date;
+
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\IOFactory;
+use PhpOffice\PhpSpreadsheet\Style\Fill;
+use PhpOffice\PhpSpreadsheet\Cell\DataType;
+use PhpOffice\PhpSpreadsheet\Style\Alignment;
+use PhpOffice\PhpSpreadsheet\Style\Border;
+use PhpOffice\PhpSpreadsheet\Shared;
+
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\App;
@@ -969,10 +971,10 @@ class FinanceController extends Controller {
     }
 
     public function facJournalFileExcel($data, $file_name = "", $isFileSave = false, $dirPath = null){
-      $objPHPExcel = new PHPExcel();
+      $objSpreadsheet = new Spreadsheet();
 
       // Set document properties
-      $objPHPExcel->getProperties()->setCreator("Capsave Finance")
+      $objSpreadsheet->getProperties()->setCreator("Capsave Finance")
       ->setLastModifiedBy("Capsave Finance")
       ->setTitle($file_name)
       ->setSubject($file_name)
@@ -985,27 +987,27 @@ class FinanceController extends Controller {
           'bold' => true,
         ),
         'alignment' => array(
-          'horizontal' => PHPExcel_Style_Alignment::HORIZONTAL_CENTER,
+          'horizontal' => Alignment::HORIZONTAL_CENTER,
         ),
         'borders' => array(
             'top' => array(
-              'style' => PHPExcel_Style_Border::BORDER_THIN,
+              'borderStyle' => Border::BORDER_THIN,
             ),
         ),
         'fill' => array(
-          'type' => PHPExcel_Style_Fill::FILL_SOLID,
+          'fillType' => Fill::FILL_SOLID,
           'rotation' => 90,
-          'startcolor' => array(
+          'startColor' => array(
               'argb' => 'FFA0A0A0',
           ),
-          'endcolor' => array(
+          'endColor' => array(
               'argb' => 'FFFFFFFF',
           ),
         ),
       );
 
       // Set header 
-      $objPHPExcel->getActiveSheet()
+      $objSpreadsheet->getActiveSheet()
         ->setCellValue('A1', 'Voucher No')
         ->setCellValue('B1', 'Voucher Date')
         ->setCellValue('C1', 'Voucher Narration')
@@ -1034,27 +1036,27 @@ class FinanceController extends Controller {
         ->getStyle('A1:Y1')->applyFromArray($headerStyle);
 
       foreach(range('A','Y') as $columnID){
-        $objPHPExcel->getActiveSheet()->getColumnDimension($columnID)->setAutoSize(true);
+        $objSpreadsheet->getActiveSheet()->getColumnDimension($columnID)->setAutoSize(true);
       }
 
       // Set Data
       if(isset($data)){
         $dataStyle = array(
           'alignment' => array(
-            'horizontal' => PHPExcel_Style_Alignment::HORIZONTAL_JUSTIFY,
+            'horizontal' => Alignment::HORIZONTAL_JUSTIFY,
           ),
           'borders' => array(
             'allborders' => array(
-              'style' => PHPExcel_Style_Border::BORDER_THIN,
+              'borderStyle' => Border::BORDER_THIN,
             ),
           ),
         );
 
         foreach($data as $key => $item){
           $excel_row = $key+2;
-          $objPHPExcel->getActiveSheet()
+          $objSpreadsheet->getActiveSheet()
             ->setCellValue('A' . $excel_row, $item['voucher_no'])
-            ->setCellValue('B' . $excel_row, PHPExcel_Shared_Date::PHPToExcel($item['voucher_date']))
+            ->setCellValue('B' . $excel_row, Shared\Date::PHPToExcel($item['voucher_date']))
             ->setCellValue('C' . $excel_row, $item['voucher_narration'])
             ->setCellValue('D' . $excel_row, $item['general_ledger_code'])
             ->setCellValue('E' . $excel_row, $item['document_class'])
@@ -1082,7 +1084,7 @@ class FinanceController extends Controller {
             ->getNumberFormat()
             ->setFormatCode('dd-mm-yyyy');
         }
-        $objPHPExcel->getActiveSheet()->getStyle('A2:Y'.($key+2))->applyFromArray($dataStyle);
+        $objSpreadsheet->getActiveSheet()->getStyle('A2:Y'.($key+2))->applyFromArray($dataStyle);
       }
       
       header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
@@ -1102,25 +1104,29 @@ class FinanceController extends Controller {
             Storage::makeDirectory($dirPath);
         }
         $filePath = '';
-        $fileData = [];
-        $storage_path = storage_path('app'.$dirPath);
+        $storage_path = Storage::path($dirPath);
         $filePath = $storage_path.'/'.$file_name;
-        $objWriter = PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel2007');
-        $objWriter->save($filePath); 
-        
+        $tmpHandle = tmpfile();
+        $metaDatas = stream_get_meta_data($tmpHandle);
+        $tmpFilename = $metaDatas['uri'];
+        $objWriter = IOFactory::createWriter($objSpreadsheet, 'Xlsx');
+        $objWriter->save($tmpFilename); 
+        $attributes['temp_file_path'] = $tmpFilename;
+        $path = Helper::uploadAwsS3Bucket($storage_path, $attributes, $file_name);
+        unlink($tmpFilename);
       }
       if(!App::runningInConsole()){
-        $objWriter = PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel2007');
+        $objWriter = IOFactory::createWriter($objSpreadsheet, 'Xlsx');
         $objWriter->save('php://output');
         exit;
       }
     }
 
     public function facPaymentFileExcel($data, $file_name = "", $isFileSave = false, $dirPath = null){
-      $objPHPExcel = new PHPExcel();
+      $objSpreadsheet = new Spreadsheet();
 
       // Set document properties
-      $objPHPExcel->getProperties()->setCreator("Capsave Finance")
+      $objSpreadsheet->getProperties()->setCreator("Capsave Finance")
       ->setLastModifiedBy("Capsave Finance")
       ->setTitle($file_name)
       ->setSubject($file_name)
@@ -1133,27 +1139,27 @@ class FinanceController extends Controller {
           'bold' => true,
         ),
         'alignment' => array(
-          'horizontal' => PHPExcel_Style_Alignment::HORIZONTAL_CENTER,
+          'horizontal' => Alignment::HORIZONTAL_CENTER,
         ),
         'borders' => array(
             'top' => array(
-              'style' => PHPExcel_Style_Border::BORDER_THIN,
+              'borderStyle' => Border::BORDER_THIN,
             ),
         ),
         'fill' => array(
-          'type' => PHPExcel_Style_Fill::FILL_SOLID,
+          'fillType' => Fill::FILL_SOLID,
           'rotation' => 90,
-          'startcolor' => array(
+          'startColor' => array(
               'argb' => 'FFA0A0A0',
           ),
-          'endcolor' => array(
+          'endColor' => array(
               'argb' => 'FFFFFFFF',
           ),
         ),
       );
 
       // Set header 
-      $objPHPExcel->getActiveSheet()
+      $objSpreadsheet->getActiveSheet()
         ->setCellValue('A1','Voucher')
         ->setCellValue('B1','Sr')
         ->setCellValue('C1','Date')
@@ -1178,31 +1184,31 @@ class FinanceController extends Controller {
 
       // Set Header Style
       foreach(range('A','T') as $columnID){
-        $objPHPExcel->getActiveSheet()->getColumnDimension($columnID)->setAutoSize(true);
+        $objSpreadsheet->getActiveSheet()->getColumnDimension($columnID)->setAutoSize(true);
       }
 
       // Set Data
       if(isset($data)){
         $dataStyle = array(
           'alignment' => array(
-            'horizontal' => PHPExcel_Style_Alignment::HORIZONTAL_JUSTIFY,
+            'horizontal' => Alignment::HORIZONTAL_JUSTIFY,
           ),
           'borders' => array(
-            'allborders' => array(
-              'style' => PHPExcel_Style_Border::BORDER_THIN,
+            'allBorders' => array(
+              'borderStyle' => Border::BORDER_THIN,
             ),
           ),
         );
 
         foreach($data as $key => $item) {
           $excel_row = $key + 2;
-          $objPHPExcel->getActiveSheet()
+          $objSpreadsheet->getActiveSheet()
             ->setCellValue('A' . $excel_row, $item['voucher'])
             ->setCellValue('B' . $excel_row, $item['sr'])
-            ->setCellValue('C' . $excel_row, PHPExcel_Shared_Date::PHPToExcel($item['date']))
+            ->setCellValue('C' . $excel_row, Shared\Date::PHPToExcel($item['date']))
             ->setCellValue('D' . $excel_row, $item['description'])
             ->setCellValue('E' . $excel_row, $item['chq_/_ref_number'])
-            ->setCellValue('F' . $excel_row, PHPExcel_Shared_Date::PHPToExcel($item['dt_value']))
+            ->setCellValue('F' . $excel_row, Shared\Date::PHPToExcel($item['dt_value']))
             ->setCellValue('G' . $excel_row, $item['fc_amount'])
             ->setCellValue('H' . $excel_row, $item['amount'])
             ->setCellValue('I' . $excel_row, $item['bank_code'])
@@ -1218,18 +1224,18 @@ class FinanceController extends Controller {
             ->setCellValue('S' . $excel_row, $item['upload_status'])
             ->setCellValue('T' . $excel_row, $item['vendor_code_exists']);
             
-            $objPHPExcel->getActiveSheet()
+            $objSpreadsheet->getActiveSheet()
             ->getStyle('C'.$excel_row)
             ->getNumberFormat()
             ->setFormatCode('dd-mm-yyyy');
 
-            $objPHPExcel->getActiveSheet()
+            $objSpreadsheet->getActiveSheet()
             ->getStyle('F'.$excel_row)
             ->getNumberFormat()
             ->setFormatCode('dd-mm-yyyy');
         }
       
-        $objPHPExcel->getActiveSheet()->getStyle('A2:T'.($key+2))->applyFromArray($dataStyle);
+        $objSpreadsheet->getActiveSheet()->getStyle('A2:T'.($key+2))->applyFromArray($dataStyle);
       }
     
       header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
@@ -1250,14 +1256,20 @@ class FinanceController extends Controller {
         }
         $filePath = '';
         $fileData = [];
-        $storage_path = storage_path('app'.$dirPath);
+        $storage_path = Storage::path($dirPath);
         $filePath = $storage_path.'/'.$file_name;
-        $objWriter = PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel2007');
-        $objWriter->save($filePath); 
+        $tmpHandle = tmpfile();
+        $metaDatas = stream_get_meta_data($tmpHandle);
+        $tmpFilename = $metaDatas['uri'];
+        $objWriter = IOFactory::createWriter($objSpreadsheet, 'Xlsx');
+        $objWriter->save($tmpFilename); 
+        $attributes['temp_file_path'] = $tmpFilename;
+        $path = Helper::uploadAwsS3Bucket($storage_path, $attributes, $file_name);
+        unlink($tmpFilename);
         
       }
       if(!App::runningInConsole()){
-        $objWriter = PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel2007');
+        $objWriter = IOFactory::createWriter($objSpreadsheet, 'Xlsx');
         $objWriter->save('php://output');
         exit;
       }

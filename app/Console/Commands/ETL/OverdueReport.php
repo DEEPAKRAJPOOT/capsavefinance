@@ -5,7 +5,8 @@ namespace App\Console\Commands\ETL;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Storage;
 use App\Inv\Repositories\Models\ETL\OverdueReport as OverdueReportModel;
-use PHPExcel_IOFactory;
+use PhpOffice\PhpSpreadsheet\IOFactory;
+use Session;
 
 class OverdueReport extends Command
 {
@@ -41,24 +42,28 @@ class OverdueReport extends Command
     public function handle()
     {
         ini_set("memory_limit", "-1");
-        $reportDate = now()->format('Ymd'); // now()->subDays(1)->format('Ymd');
+        $reportDate = now()->format('Ymd');
         $dirPath = 'public/report/temp/overdueReport/'.$reportDate;
         
         if (Storage::exists($dirPath)) {
-            $files = Storage::disk('local')->files($dirPath);
-            foreach($files as $file)
+            $files = Storage::files($dirPath);
+            foreach($files as $filePath)
             {
-                $filePath = storage_path('app/'.$file);
-                if (file_exists($filePath)) {
+                if (Storage::exists($filePath)) {
                     try {
-                        $inputFileType = PHPExcel_IOFactory::identify($filePath);
-                        $objReader = PHPExcel_IOFactory::createReader($inputFileType);
-                        $objPHPExcel = $objReader->load($filePath);
+                        $fileDetails = pathinfo($filePath);
+                        $tempFileName = Session::getId().'_'.$fileDetails['basename'];
+                        $localPath = Storage::disk('temp')->put($tempFileName, Storage::get($filePath));
+                        $localPath = Storage::disk('temp')->path($tempFileName);
+                        $inputFileType = IOFactory::identify($localPath);
+                        $objReader = IOFactory::createReader($inputFileType);
+                        $objSpreadsheet = $objReader->load($localPath);
+                        Storage::disk('temp')->delete($tempFileName);
                     } catch (\Exception $e) {
                         die('Error loading file "'.pathinfo($filePath,PATHINFO_BASENAME).'": '.$e->getMessage());
                     }
                     //  Get worksheet dimensions
-                    $sheet = $objPHPExcel->getSheet(0);
+                    $sheet = $objSpreadsheet->getSheet(0);
                     $highestRow = $sheet->getHighestRow(); 
                     $highestColumn = $sheet->getHighestColumn();
 

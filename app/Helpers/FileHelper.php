@@ -5,15 +5,15 @@ namespace App\Helpers;
 use Auth;
 use Illuminate\Support\Facades\Storage;
 use PDF as DPDF;
-use PHPExcel;
-use PHPExcel_IOFactory;
-use PHPExcel_Style_Fill;
-use PHPExcel_Cell_DataType;
-use PHPExcel_Style_Alignment;
-use PHPExcel_Style_Border;
-use PHPExcel_Shared_Date;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\IOFactory;
+use PhpOffice\PhpSpreadsheet\Style\Fill;
+use PhpOffice\PhpSpreadsheet\Cell\DataType;
+use PhpOffice\PhpSpreadsheet\Style\Alignment;
+use PhpOffice\PhpSpreadsheet\Style\Border;
 use App\Inv\Repositories\Models\UserFile;
 use App\Inv\Repositories\Contracts\ApplicationInterface as InvAppRepoInterface;
+use Session;
 
 class FileHelper {
 
@@ -21,7 +21,6 @@ class FileHelper {
     protected $appRepo;
 
     public function __construct(InvAppRepoInterface $app_repo) {
-       $this->diskStoragePath = Storage::disk('public');
        $this->appRepo = $app_repo;
     }
 
@@ -65,39 +64,40 @@ class FileHelper {
     }
 
     public function getToUploadPath($appId, $type = 'banking'){
-      $storageDiskPath = $this->diskStoragePath;
-      $touploadpath = $storageDiskPath->path('user/docs/'.$appId);
-      if(!$storageDiskPath->exists('user/docs/' .$appId)) {
-          $storageDiskPath->makeDirectory('user/docs/' .$appId.'/banking', 0777, true);
-          $storageDiskPath->makeDirectory('user/docs/' .$appId.'/finance', 0777, true);
-          $touploadpath = $storageDiskPath->path('user/docs/' .$appId);
+      $touploadpath = Storage::path('public/user/docs/'.$appId);
+      if(!Storage::exists('public/user/docs/' .$appId)) {
+          Storage::makeDirectory('public/user/docs/' .$appId.'/banking', 0777, true);
+          Storage::makeDirectory('public/user/docs/' .$appId.'/finance', 0777, true);
+          $touploadpath = Storage::path('public/user/docs/' .$appId);
       }
-      return $touploadpath .= ($type == 'banking' ? '/banking' : '/finance');
+      $touploadpath .= ($type == 'banking' ? '/banking' : '/finance');
+      $defaultPath = Storage::path('');
+      return str_replace($defaultPath, '', $touploadpath);
     }
 
     public function uploadFileWithContent($active_filename_fullpath, $fileContents) {
-        $defaultPath = $this->diskStoragePath->path('');
+        $defaultPath = Storage::path('public');
         $realPath = str_replace($defaultPath, '', $active_filename_fullpath);
-        $isSaved = $this->diskStoragePath->put($realPath, $fileContents);
+        $realPath = 'public'.$realPath;
+        $isSaved = Storage::put($realPath, $fileContents);
         if ($isSaved) {
-            $mimetype = $this->diskStoragePath->getMimeType($realPath);
-            $metadata = $this->diskStoragePath->getMetaData($realPath);
+            $mimetype = Storage::mimeType($realPath);
+            $size = Storage::size($realPath);
             $inputArr['file_path'] = $realPath;
             $inputArr['file_type'] = $mimetype;
             $inputArr['file_name'] = basename($realPath);
-            $inputArr['file_size'] = $metadata['size'];
+            $inputArr['file_size'] = $size;
             $inputArr['file_encp_key'] =  md5('2');
             $inputArr['created_by'] = 1;
             $inputArr['updated_by'] = 1;
             return $inputArr;
         }
-        return $isSaved;
     }
 
     public function readFileContent($active_filename_fullpath) {
-        $defaultPath = $this->diskStoragePath->path('');
+        $defaultPath = Storage::path('public');
         $realPath = str_replace($defaultPath, '', $active_filename_fullpath);
-        $fileContent = $this->diskStoragePath->get($realPath);
+        $fileContent = Storage::get('public/'.$realPath);
         return $fileContent;
     }
 
@@ -110,50 +110,50 @@ class FileHelper {
         }
         $activeSheet = 0;
         $lastkey = array_key_last($toExportData);
-        $objPHPExcel = new PHPExcel();
+        $objSpreadsheet = new Spreadsheet();
 
-        $ExtraRow = 0;
+        $ExtraRow = 1;
           $styleArr2 = $styleArray = array(
               'font' => array(
                 'bold' => true,
               ),
               'alignment' => array(
-                    'horizontal' => PHPExcel_Style_Alignment::HORIZONTAL_LEFT,
+                    'horizontal' => Alignment::HORIZONTAL_LEFT,
               ),
               'borders' => array(
                   'top' => array(
-                    'style' => PHPExcel_Style_Border::BORDER_THIN,
+                    'borderStyle' => Border::BORDER_THIN,
                   ),
               ),
               'fill' => array(
                   'rotation' => 90,
-                  'startcolor' => array(
+                  'startColor' => array(
                     'argb' => 'FFA0A0A0',
                   ),
-                  'endcolor' => array(
+                  'endColor' => array(
                     'argb' => 'FFFFFFFF',
                   ),
               ),
             );
         foreach ($moreDetails as $kk => $vv) {
-          $objPHPExcel->setActiveSheetIndex($activeSheet);
+          $objSpreadsheet->setActiveSheetIndex($activeSheet);
           $coll = 0;
           foreach ($vv as $moreIndex => $moreValue) {
               $chrr = chr(ord('A') + $coll);
-              $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($coll, $ExtraRow, $moreIndex);
-              $objPHPExcel->getActiveSheet()->getStyle($chrr. $ExtraRow)->applyFromArray($styleArray);
+              $objSpreadsheet->getActiveSheet()->setCellValueByColumnAndRow($coll+1, $ExtraRow, $moreIndex);
+              $objSpreadsheet->getActiveSheet()->getStyle($chrr. $ExtraRow)->applyFromArray($styleArray);
               unset($styleArr2['font']);
               $coll++;
               $chrr = chr(ord('A') + $coll);
-              $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($coll, $ExtraRow, $moreValue);
-              $objPHPExcel->getActiveSheet()->getStyle($chrr. $ExtraRow)->applyFromArray($styleArr2);
+              $objSpreadsheet->getActiveSheet()->setCellValueByColumnAndRow($coll+1, $ExtraRow, $moreValue);
+              $objSpreadsheet->getActiveSheet()->getStyle($chrr. $ExtraRow)->applyFromArray($styleArr2);
               $coll = $coll+2;
           }
           $ExtraRow++;
         }
         foreach ($toExportData as $title => $data) {
             if ($title != $lastkey) {
-                $objPHPExcel->createSheet();
+                $objSpreadsheet->createSheet();
             }
             if (empty($data) || !isset($data[0])) {
               $data[0] = [
@@ -163,19 +163,18 @@ class FileHelper {
             $rec_count = count($data[0]);
             $header_cols = array_keys($data[0]);
             $sheetTitle = $title;
-            $objPHPExcel->setActiveSheetIndex($activeSheet);
+            $objSpreadsheet->setActiveSheetIndex($activeSheet);
             $activeSheet++;
-            $column = 0;
-            $header_row = $ExtraRow + 1;
-            $start_row = $ExtraRow + 2;
+            $header_row =  ($ExtraRow > 1) ? ($ExtraRow + 1) : $ExtraRow;
+            $start_row = ($ExtraRow > 1) ? ($ExtraRow + 2) : $ExtraRow+1;
             $row = $start_row;
-            $column = 0;
+            $column = 1;
             $floor = floor($rec_count/26);
             $reminder = $rec_count % 26;
             $char = ($floor > 0 ? chr(ord("A") + $floor-1) : '').chr(ord("A") + $reminder);
             foreach($data as $key => $item) {
               foreach($item as $key1 => $item1) {
-                $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($column, $row, $item1);
+                $objSpreadsheet->getActiveSheet()->setCellValueByColumnAndRow($column, $row, $item1);
                 
                 $column++;
               }
@@ -185,91 +184,68 @@ class FileHelper {
               }
               $styleArray = array(
                 'fill' => array(
-                  'type' => PHPExcel_Style_Fill::FILL_SOLID,
-                  'startcolor' => array(
+                  'fillType' => Fill::FILL_SOLID,
+                  'startColor' => array(
                     'argb' => $argb,
                   ),
                 ),
               );
-              $objPHPExcel->getActiveSheet()->getStyle('A'. $row .':' . $char . $row)->applyFromArray($styleArray);
-              $column = 0;
+              $objSpreadsheet->getActiveSheet()->getStyle('A'. $row .':' . $char . $row)->applyFromArray($styleArray);
+              $column = 1;
               $row++;
             }
             $end_row = $row - 1;
             $row = $header_row;
-            $column = 0;
+            $column = 1;
             foreach($header_cols as $key) {
                $key = ucwords(str_replace('_', ' ', $key));
-               $objPHPExcel->getActiveSheet()->getCellByColumnAndRow($column, $row)->setValueExplicit($key, PHPExcel_Cell_DataType::TYPE_STRING);
+               $objSpreadsheet->getActiveSheet()->getCellByColumnAndRow($column, $row)->setValueExplicit($key, DataType::TYPE_STRING);
                   $column++;
             }
+        
             $styleArray = array(
               'font' => array(
                 'bold' => true,
               ),
               'alignment' => array(
-                    'horizontal' => PHPExcel_Style_Alignment::HORIZONTAL_CENTER,
+                'horizontal' => Alignment::HORIZONTAL_CENTER,
               ),
               'borders' => array(
                   'top' => array(
-                    'style' => PHPExcel_Style_Border::BORDER_THIN,
+                    'borderStyle' => Border::BORDER_THIN,
                   ),
               ),
               'fill' => array(
-                  'type' => PHPExcel_Style_Fill::FILL_GRADIENT_LINEAR,
-                  'rotation' => 90,
-                  'startcolor' => array(
-                    'argb' => 'FFA0A0A0',
-                  ),
-                  'endcolor' => array(
-                    'argb' => 'FFFFFFFF',
-                  ),
-              ),
-            );
-
-            $styleArray = array(
-              'font' => array(
-                'bold' => true,
-              ),
-              'alignment' => array(
-                'horizontal' => PHPExcel_Style_Alignment::HORIZONTAL_CENTER,
-              ),
-              'borders' => array(
-                  'top' => array(
-                    'style' => PHPExcel_Style_Border::BORDER_THIN,
-                  ),
-              ),
-              'fill' => array(
-                'type' => PHPExcel_Style_Fill::FILL_SOLID,
+                'fillType' => Fill::FILL_SOLID,
                 'rotation' => 90,
-                'startcolor' => array(
+                'startColor' => array(
                     'argb' => 'FFA0A0A0',
                 ),
-                'endcolor' => array(
+                'endColor' => array(
                     'argb' => 'FFFFFFFF',
                 ),
               ),
             );
-            $objPHPExcel->getActiveSheet()->getStyle('A'. $header_row .':' . $char . $header_row)->applyFromArray($styleArray);
+            $objSpreadsheet->getActiveSheet()->getStyle('A'. $header_row .':' . $char . $header_row)->applyFromArray($styleArray);
             foreach($header_cols as $key => $el) {
                  $floor = floor(($key)/26);
                  $reminder = ($key) % 26;
                  $char = ($floor > 0 ? chr(ord("A") + $floor-1) : '').chr(ord("A") + $reminder);
-                 $objPHPExcel->getActiveSheet()->getColumnDimension($char)->setAutoSize(true);
+                 $objSpreadsheet->getActiveSheet()->getColumnDimension($char)->setAutoSize(true);
             }
             $styleArray = array(
               'alignment' => array(
-                'horizontal' => PHPExcel_Style_Alignment::HORIZONTAL_JUSTIFY,
+                'horizontal' => Alignment::HORIZONTAL_JUSTIFY,
               ),
               'borders' => array(
-                'allborders' => array(
-                  'style' => PHPExcel_Style_Border::BORDER_THIN,
+                'allBorders' => array(
+                  'borderStyle' => Border::BORDER_THIN,
                   // 'color' => array('argb' => 'FFFF0000'),
                 ),
               ),
             );
-            $objPHPExcel->getActiveSheet()->getStyle('A'. $start_row .':' . $char . $end_row)->applyFromArray($styleArray);
-            $objPHPExcel->getActiveSheet()->setTitle($sheetTitle);
+            $objSpreadsheet->getActiveSheet()->getStyle('A'. $start_row .':' . $char . $end_row)->applyFromArray($styleArray);
+            $objSpreadsheet->getActiveSheet()->setTitle($sheetTitle);
         }
         header('Content-Type: application/vnd.ms-excel');
         header('Content-Disposition: attachment;filename="' . $file_name . '"');
@@ -280,10 +256,20 @@ class FileHelper {
             }
             $filePath = '';
             $fileData = [];
-            $storage_path = storage_path('app/public/nach/request');
+            $storage_path = Storage::path('public/nach/request');
             $filePath = $storage_path.'/'.$file_name;
-            $objWriter = PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel2007');
-            $objWriter->save($filePath); 
+
+            $tmpHandle = tmpfile();
+            $metaDatas = stream_get_meta_data($tmpHandle);
+            $tmpFilename = $metaDatas['uri'];
+
+            $objWriter = IOFactory::createWriter($objSpreadsheet, 'Xlsx');
+            $objWriter->save($tmpFilename); 
+
+            $attributes['temp_file_path'] = $tmpFilename;
+            $path = Helper::uploadAwsS3Bucket($storage_path, $attributes, $file_name);
+            unlink($tmpFilename);
+
             $fileContent = $this->readFileContent($filePath);
             $fileData = $this->uploadFileWithContent($filePath, $fileContent);
             $file = UserFile::create($fileData);
@@ -292,10 +278,10 @@ class FileHelper {
             $nachBatchData['batch_id'] = $batchId;
             $this->appRepo->saveNachBatch($nachBatchData, null);
         }
-        $objWriter = PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel2007');
+        $objWriter = IOFactory::createWriter($objSpreadsheet, 'Xlsx');
         $objWriter->save('php://output');
         ob_end_flush();
-        exit; 
+        exit;
     } 
 
     public function array_to_pdf($pdfArr, $view='reports.commonReport') {
@@ -335,11 +321,17 @@ class FileHelper {
         'message' => 'success',
         'data' => [],
       ];
+
       try{
-          $inputFileType  =   PHPExcel_IOFactory::identify($inputFileName);
-          $objReader      =   PHPExcel_IOFactory::createReader($inputFileType);
-          $objPHPExcel    =   $objReader->load($inputFileName);
-          $sheet = $objPHPExcel->getActiveSheet();
+          $fileDetails = pathinfo($inputFileName);
+          $tempFileName = Session::getId().'_'.$fileDetails['basename'];
+          $localPath = Storage::disk('temp')->put($tempFileName, Storage::get($inputFileName));
+          $localPath = Storage::disk('temp')->path($tempFileName);
+          $inputFileType  =   IOFactory::identify($localPath);
+          $objReader      =   IOFactory::createReader($inputFileType);
+          $objSpreadsheet    =   $objReader->load($localPath);
+          Storage::disk('temp')->delete($tempFileName);
+          $sheet = $objSpreadsheet->getActiveSheet();
           // $sheet = $sheet->removeColumnByIndex(15);
           $highestRow = $sheet->getHighestRow(); 
           $highestColumn = $sheet->getHighestDataColumn();
@@ -402,11 +394,16 @@ public function exportCsv($data=[],$columns=[],$fileName='',$extraDataArray=[])
             'data' => [],
           ];
       try{
-        if (!file_exists($filename) || !is_readable($filename))
-            return false;
+        if (!Storage::exists($filename))
+          return false;
 
         $header = null;
-        if (($handle = fopen($filename, 'r')) !== false)
+
+        $fileDetails = pathinfo($filename);
+        $tempFileName = Session::getId().'_'.$fileDetails['basename'];
+        $localPath = Storage::disk('temp')->put($tempFileName, Storage::get($filename));
+        $localPath = Storage::disk('temp')->path($tempFileName);
+        if (($handle = fopen($localPath, 'r')) !== false)
         {
             $rows=1;
             while (($row = fgetcsv($handle, 1000, $delimiter)) !== false)
@@ -430,12 +427,14 @@ public function exportCsv($data=[],$columns=[],$fileName='',$extraDataArray=[])
               }
             }
             fclose($handle);
+            Storage::disk('temp')->delete($tempFileName);
         }
     }catch(\Exception $e){
         $respArray['data'] = [];
         $respArray['status'] = 'fail';
         $respArray['message'] = str_replace($filename, '', $e->getMessage());
     }
+
     return $respArray;
     }
 
@@ -453,8 +452,10 @@ public function exportCsv($data=[],$columns=[],$fileName='',$extraDataArray=[])
               if (!Storage::exists('/public/payment/' . $paymentId.'/download')) {
                 Storage::makeDirectory('/public/payment/' . $paymentId.'/download', 0777, true);
               }
-              $destinationPath = storage_path('app').'/public/payment/' . $paymentId.'/download/'.$fileName;
-              $fp = fopen($destinationPath, 'w+');
+              $tmpHandle = tmpfile();
+              $metaDatas = stream_get_meta_data($tmpHandle);
+              $tmpFilename = $metaDatas['uri'];
+              $fp = fopen($tmpFilename, 'w+');
               fputcsv($fp, ['Token ID='.$extraDataArray['TOKEN_ID']]);
               fputcsv($fp, [$extraDataArray['NOTE']]);
               fputcsv($fp, []);
@@ -463,27 +464,29 @@ public function exportCsv($data=[],$columns=[],$fileName='',$extraDataArray=[])
                   fputcsv($fp, $data);
               }
               fclose($fp);
+              $filePath = 'public/payment/' . $paymentId.'/download/';
+              Storage::putFileAs($filePath, $tmpFilename, $fileName);
+              unlink($tmpFilename);
+
               $dbpath = 'payment/' . $paymentId.'/download/'.$fileName;
               $inputArr['file_path'] = $dbpath;
-              $fileInfo =  pathinfo($destinationPath);
-              $inputArr['file_type'] = 'text/'.$fileInfo['extension'];//\File::mimeType($destinationPath);
+              $inputArr['file_type'] = Storage::mimeType($filePath.$fileName);
               $inputArr['file_name'] = $fileName;
-              $inputArr['file_size'] = \File::size($destinationPath);
+              $inputArr['file_size'] = Storage::size($filePath.$fileName);
               $inputArr['file_encp_key'] =  md5('2');
         }else{
           if ($data['upload_unsettled_trans']) {
           if (!Storage::exists('/public/payment/' . $paymentId.'/upload')) {
             Storage::makeDirectory('/public/payment/' . $paymentId.'/upload', 0777, true);
           }
-          $destinationPath = '/payment/' . $paymentId.'/upload';
+          $destinationPath = 'public/payment/' . $paymentId.'/upload';
           $fileName = $data['upload_unsettled_trans']->getClientOriginalName();
-          //$path = Storage::put($destinationPath,$data['upload_unsettled_trans'],'file.csv');
-          $path = Storage::disk('public')->putFileAs($destinationPath, $data['upload_unsettled_trans'],$fileName);
+          $path = Storage::put($destinationPath.'/'.$fileName, $data['upload_unsettled_trans']);
           $inputArr['file_path'] = $path;
         }
         $inputArr['file_type'] = $data['upload_unsettled_trans']->getClientMimeType();
         $inputArr['file_name'] = $data['upload_unsettled_trans']->getClientOriginalName();
-        $inputArr['file_size'] = $data['upload_unsettled_trans']->getClientSize();
+        $inputArr['file_size'] = $data['upload_unsettled_trans']->getSize();
         $inputArr['file_encp_key'] =  md5('2');
         }
         $inputArr['created_by'] = 1;
@@ -529,38 +532,4 @@ public function exportCsv($data=[],$columns=[],$fileName='',$extraDataArray=[])
       return $errorMessage[$errorMessageID];
     }
 
-    public function csvToArrayWithSeparator($filename = '', $delimiter = ',')
-    {
-      $respArray = [
-        'status' => 'success',
-        'message' => 'success',
-        'data' => [],
-      ];
-      try{
-        if (!file_exists($filename) || !is_readable($filename))
-          return false;
-
-        $header = null;
-        if (($handle = fopen($filename, 'r')) !== false)
-        {
-          $rows=1;
-          while (($row = fgetcsv($handle, 1000, $delimiter)) !== false)
-          {
-            $num = count($row);
-            if (!$header){
-              $header = $row;
-            }else{
-              $respArray['data'][] = array_combine($header, $row);
-            }
-            $rows++;
-          }
-          fclose($handle);
-        }
-      }catch(\Exception $e){
-        $respArray['data'] = [];
-        $respArray['status'] = 'fail';
-        $respArray['message'] = str_replace($filename, '', $e->getMessage());
-      }
-      return $respArray;
-    }
 }

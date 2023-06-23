@@ -22,4 +22,10 @@
     #RewriteCond %{THE_REQUEST} ^[A-Z]{3,9}\ /storage/
     #RewriteRule ^storage/(.*) /$1 [R=302,L]
 
+    php_value post_max_size 50M
+    php_value upload_max_filesize 50M
+    php_value memory_limit 256M
+    php_value max_execution_time 1000
+    php_value max_input_vars 3000
+
 </IfModule>

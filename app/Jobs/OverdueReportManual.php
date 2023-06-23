@@ -1,10 +1,10 @@
 <?php
 
 namespace App\Jobs;
-use Helpers;
-use PHPExcel;
+use App\Helpers\Helper;
 use Carbon\Carbon;
-use PHPExcel_IOFactory;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\IOFactory;
 use Illuminate\Bus\Queueable;
 use Illuminate\Support\Facades\App;
 use Illuminate\Queue\SerializesModels;
@@ -75,7 +75,7 @@ class OverdueReportManual implements ShouldQueue
         ini_set("memory_limit", "-1");
         ini_set('max_execution_time', 10000);
         $rows = 5;
-        $sheet =  new PHPExcel();
+        $sheet =  new Spreadsheet();
         $sheet->setActiveSheetIndex(0)
         ->setCellValue('A'.$rows, 'Customer Name')
         ->setCellValue('B'.$rows, 'Customer ID')
@@ -138,11 +138,15 @@ class OverdueReportManual implements ShouldQueue
             ->setCellValue('Z'.$rows, '= IF(AND(R'.$rows.'>100,Y'.$rows.'>0), IF(Y'.$rows.'<7,"01 - 07 Days", IF(Y'.$rows.'<15,"08 - 15 Days", IF(Y'.$rows.'<30,"16 - 30 Days", IF(Y'.$rows.'<60,"31-60 Days", IF(Y'.$rows.'<90,"61 - 90 Days","90 + Days"))))),"Not Outstanding")')
             ->setCellValue('AA'.$rows, $rowData['maturityDays'])
             ->setCellValue('AB'.$rows, '= IF(AND(R'.$rows.'>100,AA'.$rows.'>0), IF(AA'.$rows.'<7,"01 - 07 Days", IF(AA'.$rows.'<15,"08 - 15 Days", IF(AA'.$rows.'<30,"16 - 30 Days", IF(AA'.$rows.'<60,"31-60 Days", IF(AA'.$rows.'<90,"61 - 90 Days","90 + Days"))))),"Not Outstanding")');
-            //->setCellValue('AC'.$rows, $rowData['sales_person_name'], \PHPExcel_Cell_DataType::TYPE_STRING);
+            //->setCellValue('AC'.$rows, $rowData['sales_person_name'], \DataType::TYPE_STRING);
             $rows++;
         }
 
-        $objWriter = PHPExcel_IOFactory::createWriter($sheet, 'Excel2007');
+        $tmpHandle = tmpfile();
+        $metaDatas = stream_get_meta_data($tmpHandle);
+        $tmpFilename = $metaDatas['uri'];
+
+        $objWriter = IOFactory::createWriter($sheet, 'Xlsx');
         $objWriter->setPreCalculateFormulas(true);
 
         $dirPath = 'public/report/temp/overdueReport/manual/console';
@@ -152,10 +156,13 @@ class OverdueReportManual implements ShouldQueue
         if (!Storage::exists($dirPath)) {
             Storage::makeDirectory($dirPath);
         }
-        $storage_path = storage_path('app/'.$dirPath);
-        $filePath = $storage_path.'/Overdue Report'.time().'.xlsx';
-        $objWriter->save($filePath);
-        return $filePath;
+        $fileName = '/Overdue Report'.time().'.xlsx';
+        $storage_path = Storage::path($dirPath);
+        $objWriter->save($tmpFilename);
+        $attributes['temp_file_path'] = $tmpFilename;
+        $path = Helper::uploadAwsS3Bucket($storage_path, $attributes, $fileName);
+        unlink($tmpFilename);
+        return $path;
     }
 
     private function isSecondFourthSaturday(){

@@ -10,10 +10,10 @@ use Illuminate\Queue\SerializesModels;
 use App\Inv\Repositories\Models\Master\EmailTemplate;
 use App\Inv\Repositories\Contracts\ReportInterface;
 use Illuminate\Support\Facades\Storage;
-use PHPExcel_IOFactory;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\IOFactory;
 use Carbon\Carbon;
-use PHPExcel;
-use Helpers;
+use App\Helpers\Helper;
 
 class ReceiptReport implements ShouldQueue
 {
@@ -49,7 +49,7 @@ class ReceiptReport implements ShouldQueue
                 $emailData               = Helpers::getDailyReportsEmailData($emailTemplate);
                 $filePath                = $this->downloadReceiptReport($data);
                 $emailData['to']      = $this->emailTo;
-                $emailData['attachment'] = $filePath;
+                $emailData['attachment'] = Storage::url($filePath);
                 \Event::dispatch("NOTIFY_RECEIPT_REPORT", serialize($emailData));
             }
         }
@@ -58,7 +58,7 @@ class ReceiptReport implements ShouldQueue
     private function downloadReceiptReport($exceldata)
     {
         $rows = 5;
-        $sheet =  new PHPExcel();
+        $sheet =  new Spreadsheet();
         $sheet->setActiveSheetIndex(0)
             ->setCellValue('A'.$rows, 'Receipt Date')
             ->setCellValue('B'.$rows, 'Receipt Account #')
@@ -94,15 +94,22 @@ class ReceiptReport implements ShouldQueue
             $rows++;
         }
 
-        $objWriter = PHPExcel_IOFactory::createWriter($sheet, 'Excel2007');
+        $tmpHandle = tmpfile();
+        $metaDatas = stream_get_meta_data($tmpHandle);
+        $tmpFilename = $metaDatas['uri'];
+
+        $objWriter = IOFactory::createWriter($sheet, 'Xlsx');
 
         $dirPath = 'public/report/temp/receiptReport/'.date('Ymd');
         if (!Storage::exists($dirPath)) {
             Storage::makeDirectory($dirPath);
         }
-        $storage_path = storage_path('app/'.$dirPath);
-        $filePath = $storage_path.'/Receipt Report'.time().'.xlsx';
-        $objWriter->save($filePath);
-        return $filePath;
+        $fileName = '/Receipt Report'.time().'.xlsx';
+        $storage_path = Storage::path($dirPath);
+        $objWriter->save($tmpFilename);
+        $attributes['temp_file_path'] = $tmpFilename;
+        $path = Helper::uploadAwsS3Bucket($storage_path, $attributes, $fileName);
+        unlink($tmpFilename);
+        return $path;
     }
 }

@@ -1,12 +1,13 @@
 <?php
 namespace App\Http\Controllers\Lms;
 
+use App\Helpers\Helper;
 use Auth;
 use Session;
 use Helpers;
 
-use PHPExcel; 
-use PHPExcel_IOFactory;
+use PhpOffice\PhpSpreadsheet\Spreadsheet; 
+use PhpOffice\PhpSpreadsheet\IOFactory;
 
 use Illuminate\Http\Request;
 use App\Libraries\Idfc_lib;
@@ -595,7 +596,7 @@ class RefundController extends Controller
     }
 
     public function export($data, $filename, $downloadFlag = 0) {
-        $sheet =  new PHPExcel();
+        $sheet =  new Spreadsheet();
         $sheet->getProperties()
                 ->setCreator("Capsave")
                 ->setLastModifiedBy("Capsave")
@@ -684,16 +685,24 @@ class RefundController extends Controller
             if (!Storage::exists('/public/docs/bank_excel')) {
                 Storage::makeDirectory('/public/docs/bank_excel');
             }
-            $storage_path = storage_path('app/public/docs/bank_excel');
-            $filePath = $storage_path.'/'.$filename.'.xlsx';
-           $objWriter = PHPExcel_IOFactory::createWriter($sheet, 'Excel2007');
-            $objWriter->save($filePath);
+            $tmpHandle = tmpfile();
+            $metaDatas = stream_get_meta_data($tmpHandle);
+            $tmpFilename = $metaDatas['uri'];
+
+            $storage_path = Storage::path('public/docs/bank_excel');
+            $objWriter = IOFactory::createWriter($sheet, 'Xlsx');
+            $objWriter->save($tmpFilename);
+
+            $filename = $filename.'.xlsx';
+            $attributes['temp_file_path'] = $tmpFilename;
+            $path = Helper::uploadAwsS3Bucket($storage_path, $attributes, $filename);
+            unlink($tmpFilename);
 
             return [ 'status' => 1,
-                'file_path' => $filePath
+                'file_path' => $path
             ];
         } else {
-            $objWriter = PHPExcel_IOFactory::createWriter($sheet, 'Excel2007');
+            $objWriter = IOFactory::createWriter($sheet, 'Xlsx');
             $objWriter->save('php://output');
         }
     }

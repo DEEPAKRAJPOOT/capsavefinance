@@ -210,7 +210,7 @@ class AppProgramOffer extends BaseModel {
         // if (!is_int($appId)) {
         //     throw new InvalidDataTypeExceptions(trans('error_message.invalid_data_type'));
         // }
-        
+
         $roleData = User::getBackendUser(\Auth::user()->user_id);            
         $whereCond = [];
         if (isset($roleData[0]) && $roleData[0]->id == 11) {   

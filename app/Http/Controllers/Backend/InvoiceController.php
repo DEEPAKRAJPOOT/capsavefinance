@@ -1,5 +1,6 @@
 <?php
 namespace App\Http\Controllers\Backend;
+use App\Helpers\Helper;
 use App\Http\Controllers\Controller;
 use Auth;
 use Illuminate\Http\Request;
@@ -19,8 +20,8 @@ use DB;
 use Intervention\Image\File;
 use App\Libraries\Pdf;
 use Carbon\Carbon;
-use PHPExcel; 
-use PHPExcel_IOFactory;
+use PhpOffice\PhpSpreadsheet\Spreadsheet; 
+use PhpOffice\PhpSpreadsheet\IOFactory;
 use App\Inv\Repositories\Contracts\Traits\ApplicationTrait;
 use App\Inv\Repositories\Contracts\Traits\LmsTrait;
 use App\Inv\Repositories\Contracts\Traits\InvoiceTrait;
@@ -1084,7 +1085,7 @@ class InvoiceController extends Controller {
 
             foreach ($supplierIds as $userid) {
                 $refNo = _getRand(12);
-                $disburseAmount = 0;
+                $disburseAmount = 0;            
                 foreach ($allinvoices as $invoice) {
                     if($invoice['supplier_id'] == $userid) {
                         
@@ -1121,7 +1122,9 @@ class InvoiceController extends Controller {
                         //     $processingFee = $invoice['processing_fee']['chrg_value'];
 
                         // }
-                        $processingFee = $invoice['processing_fee']['gst_chrg_value'];
+                        if($invoice['program_offer']['is_invoice_processingfee'] === 1){
+                            $processingFee = $invoice['processing_fee']['gst_chrg_value'];
+                        }
 
                         $prgmWhere=[];
                         $prgmWhere['prgm_id'] = $invoice['program_id'];
@@ -1197,6 +1200,20 @@ class InvoiceController extends Controller {
                 $idfcObj= new Idfc_lib();
                 $getResponse = false;
                 $result = $idfcObj->api_call(Idfc_lib::MULTI_PAYMENT, $params, $getResponse);
+                /*
+                $result = [
+                    'code' => '200',
+                    'http_code' => '200',
+                    'message' => 'Success',
+                    'result' => [
+                        'http_header' => 'Test_header',
+                        'url' => 'test_url',
+                        'payload' => 'test_payload',
+                        'response' => 'test_response',
+                    ],
+                    'status' => 'success'
+                ];
+                */
                 if (isset($result['code'])) {
                     if (isset($result['http_code']) && $result['http_code'] == 200) {
                         
@@ -1301,12 +1318,17 @@ public function disburseTableInsert($exportData = [], $supplierIds = [], $allinv
                     $fundedAmount = $invoice['invoice_approve_amount'] - $margin;
                     if (empty($invoiceDisbursedData)) {
                         $processingFee= 0;
-                        if (isset($invoice['processing_fee']['chrg_type']) && $invoice['processing_fee']['chrg_type'] == 2) {
-                            $processingFee = $this->calPercentage($fundedAmount, $invoice['processing_fee']['chrg_value']);
-                        } else {
-                            $processingFee = $invoice['processing_fee']['chrg_value'];
+                        $processingFeeGst = 0;
+
+                        if($invoice['program_offer']['is_invoice_processingfee'] === 1){
+                            if (isset($invoice['processing_fee']['chrg_type']) && $invoice['processing_fee']['chrg_type'] == 2) {
+                                $processingFee = $this->calPercentage($fundedAmount, ($invoice['processing_fee']['chrg_value']));
+                            } else {
+                                $processingFee = $invoice['processing_fee']['chrg_value'];
+                            }
+                            $processingFeeGst = ($invoice['processing_fee']['gst_chrg_value']) - $processingFee;
                         }
-                        $processingFeeGst = $invoice['processing_fee']['gst_chrg_value'] - $processingFee;
+
 
                         $invoice['batch_id'] = $batchId;
                         $invoice['disburse_date'] = $disburseDate;
@@ -1646,7 +1668,7 @@ public function disburseTableInsert($exportData = [], $supplierIds = [], $allinv
 
 
     public function export($data, $filename) {
-        $sheet =  new PHPExcel();
+        $sheet =  new Spreadsheet();
         $sheet->getProperties()
                 ->setCreator("Capsave")
                 ->setLastModifiedBy("Capsave")
@@ -1735,14 +1757,20 @@ public function disburseTableInsert($exportData = [], $supplierIds = [], $allinv
         if (!Storage::exists('/public/docs/bank_excel')) {
             Storage::makeDirectory('/public/docs/bank_excel');
         }
-        $storage_path = storage_path('app/public/docs/bank_excel');
-        $filePath = $storage_path.'/'.$filename.'.xlsx';
+        $storage_path = Storage::path('public/docs/bank_excel');
+        $file_name = $filename.'.xlsx';
 
-        $objWriter = PHPExcel_IOFactory::createWriter($sheet, 'Excel2007');
-        $objWriter->save($filePath);
+        $tmpHandle = tmpfile();
+        $metaDatas = stream_get_meta_data($tmpHandle);
+        $tmpFilename = $metaDatas['uri'];
+        $objWriter = IOFactory::createWriter($sheet, 'Xlsx');
+        $objWriter->save($tmpFilename);
+        $attributes['temp_file_path'] = $tmpFilename;
+        $path = Helper::uploadAwsS3Bucket($storage_path, $attributes, $file_name);
+        unlink($tmpFilename);
 
         return [ 'status' => 1,
-                'file_path' => $filePath
+                'file_path' => $path
                 ];
     }
 
@@ -1763,7 +1791,7 @@ public function disburseTableInsert($exportData = [], $supplierIds = [], $allinv
         $batchId = $request->get('batch_id');
 
         $data = $this->userRepo->lmsGetSentToBankInvToExcel($custCode, $selectDate, $batchId)->toArray();
-        $sheet =  new PHPExcel();
+        $sheet =  new Spreadsheet();
         $sheet->getProperties()
                 ->setCreator("Capsave")
                 ->setLastModifiedBy("Capsave")
@@ -1885,7 +1913,7 @@ public function disburseTableInsert($exportData = [], $supplierIds = [], $allinv
         header ('Cache-Control: cache, must-revalidate'); // HTTP/1.1
         header ('Pragma: public'); // HTTP/1.0
         
-        $objWriter = PHPExcel_IOFactory::createWriter($sheet, 'Excel2007');
+        $objWriter = IOFactory::createWriter($sheet, 'Xlsx');
         $objWriter->save('php://output');
     }
     
@@ -1939,7 +1967,7 @@ public function disburseTableInsert($exportData = [], $supplierIds = [], $allinv
                 }
                 //   if($resZipFile)
                 //   {
-                    $csvPath = storage_path('app/public/'.$userFile->file_path);
+                    $csvPath = $request->file('file_id')->getRealPath();
                     $handle = fopen($csvPath, "r");
                     $data = fgetcsv($handle, 1000, ",");
                     if(count($data) < 5 || count($data) > 6)
@@ -1949,7 +1977,7 @@ public function disburseTableInsert($exportData = [], $supplierIds = [], $allinv
                           return back(); 
                     }
                     
-                    $csvPath1 = storage_path('app/public/'.$userFile->file_path);
+                    $csvPath1 = $request->file('file_id')->getRealPath();
                     $handle1 = fopen($csvPath1, "r");
                     $data1 = fgetcsv($handle1, 1000, ",");
                     $key=0;
@@ -2041,7 +2069,7 @@ public function disburseTableInsert($exportData = [], $supplierIds = [], $allinv
                         else
                         {
                            $FileId  = Null; 
-                           $comm_txt  =  $getImage['message']; 
+                           $comm_txt  =  $getImage['message'] ?? ''; 
                         }
                       }
                       else
@@ -2323,15 +2351,20 @@ public function disburseTableInsert($exportData = [], $supplierIds = [], $allinv
 
     public function viewUploadedFile(Request $request){
         try {
-            
-            $file_id = $request->get('file_id');
-            $fileData = $this->docRepo->getFileByFileId($file_id);
-            // dd($fileData);
-            $filePath = 'app/public/'.$fileData->file_path;
-            $path = storage_path($filePath);
-           
-            if (file_exists($path)) {
-                return response()->file($path);
+
+            $fileId = $request->get('file_id');
+            $fileData = $this->docRepo->getFileByFileId($fileId);
+
+            $filePath = 'public/'.$fileData->file_path;
+            if (Storage::exists($filePath)) {
+                $fileName = time().$fileData->file_name;
+                $temp_filepath = tempnam(sys_get_temp_dir(), 'file');
+                $file_data = Storage::get($filePath);
+                file_put_contents($temp_filepath, $file_data);
+
+                return response()
+                    ->download($temp_filepath, $fileName, [], 'inline')
+                    ->deleteFileAfterSend();
             }else{
                 exit('Requested file does not exist on our server!');
             }
@@ -3269,7 +3302,7 @@ public function disburseTableInsert($exportData = [], $supplierIds = [], $allinv
             return back();
         }
         $data = $this->invRepo->getAllBulkInvoice()->toArray();
-        $sheet =  new PHPExcel();
+        $sheet =  new Spreadsheet();
         $sheet->getProperties()
                 ->setCreator("Capsave")
                 ->setLastModifiedBy("Capsave")
@@ -3327,7 +3360,7 @@ public function disburseTableInsert($exportData = [], $supplierIds = [], $allinv
         header ('Cache-Control: cache, must-revalidate'); // HTTP/1.1
         header ('Pragma: public'); // HTTP/1.0
         
-        $objWriter = PHPExcel_IOFactory::createWriter($sheet, 'Excel2007');
+        $objWriter = IOFactory::createWriter($sheet, 'Xlsx');
         $objWriter->save('php://output');
     }
 

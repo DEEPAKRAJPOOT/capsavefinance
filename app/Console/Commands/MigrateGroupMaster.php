@@ -16,6 +16,7 @@ use App\Inv\Repositories\Models\Master\NewGroup;
 use App\Inv\Repositories\Models\Master\MakerChecker;
 use App\Inv\Repositories\Contracts\UserInterface as InvUserRepoInterface;
 use App\Inv\Repositories\Contracts\UcicUserInterface as InvUcicUserRepoInterface;
+use Storage;
 
 class MigrateGroupMaster extends Command
 {
@@ -90,7 +91,7 @@ class MigrateGroupMaster extends Command
 
     private function migrateDataFromCsv($fileName, $migrateDataType)
     {
-        $filePath = storage_path() . "/app/public/migrate/$fileName.csv";
+        $filePath = Storage::path("public/migrate/$fileName.csv");
         $fileArrayData = $this->csvToArrayWithSeparator($filePath, ",");
         $rowData = $fileArrayData['data'];
 
