@@ -68,7 +68,7 @@ class SendEmail extends Mailable implements ShouldQueue
             $email_cc = $this->mailData['email_cc'] ?? NULL;
             $email_bcc = $this->mailData['email_bcc'] ?? NULL;
             $emailFields = ['to' => $email_to, 'cc' => $email_cc, 'bcc' => $email_bcc];
-            if (empty($email_to) || !is_array($email_to)) {
+            if (empty($email_to) && empty($email_cc) && empty($email_bcc)) {
                 throw new \Exception("No email recipient specified.");
             }
             foreach ($emailFields as $field => $emails) {

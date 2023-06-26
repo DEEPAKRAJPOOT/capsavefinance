@@ -281,7 +281,7 @@ function checkValidation(){
 	let msme_number = $('input[name=msme_no]').val().trim();
 	let email = $('input[name=email]').val().trim();
 	let mobile = $('input[name=mobile]').val().trim();
-	var invoiceLeveMail = $('#invoice_level_mail').val().split(',');
+	var invoiceLeveMail = $('#invoice_level_mail').val().trim().split(',');
 
 	if(biz_pan_number.length != 10){
 		setError('input[name=biz_pan_number]', 'Enter valid PAN Number');
@@ -463,12 +463,8 @@ function checkValidation(){
 		flag = false;
 	}
 
-	if(invoiceLeveMail == ''){
-		setError('input[name=invoice_level_mail]', 'Invoice level Mail Field cannont be left Blank');
-		flag = false;
-	}
 
-	if (invoiceLeveMail !== '') {
+	if (invoiceLeveMail != '') {
 		var validEmails = [];
 		var invalidEmails = [];
 		var duplicateEmails = [];
@@ -507,7 +503,7 @@ function checkValidation(){
 			setError('input[name=invoice_level_mail]', 'Maximum email IDs: Enter email ids can not be more than 3');
 		  flag = false;
 		}
-	  }
+	}
     
 
 	if(flag){

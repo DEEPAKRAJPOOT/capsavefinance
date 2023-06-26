@@ -122,20 +122,20 @@ class UcicUserController extends Controller
 
             $validator = Validator::make($request->all(), [
                 'invoice_level_mail' => [
-                    'required',
                     function ($attribute, $value, $fail) {
                         $emails = array_map('trim', explode(',', $value));
                         $uniqueEmails = [];
                         $invalidEmails = [];
                         $duplicateEmails = [];
-                        // dd(count($emails));
                         foreach ($emails as $email) {
-                            if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-                                $invalidEmails[] = $email;
-                            } elseif (in_array($email, $uniqueEmails)) {
-                                $duplicateEmails[] = $email;
-                            } else {
-                                $uniqueEmails[] = $email;
+                            if($email != ''){
+                                if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+                                    $invalidEmails[] = $email;
+                                } elseif (in_array($email, $uniqueEmails)) {
+                                    $duplicateEmails[] = $email;
+                                } else {
+                                    $uniqueEmails[] = $email;
+                                }
                             }
                         }
             
