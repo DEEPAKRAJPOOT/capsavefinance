@@ -63,7 +63,7 @@ class Kernel extends ConsoleKernel
             });
 
             $schedule->command('fact:FactFileGenerate')->hourlyAt(10)->timezone(config('common.timezone'))->between('00:00', '10:00');
-            //$schedule->command('fact:FactSftpTransfer')->hourlyAt(40)->timezone(config('common.timezone'))->between('00:00', '10:00');
+            $schedule->command('fact:FactSftpTransfer')->hourlyAt(40)->timezone(config('common.timezone'))->between('00:00', '10:00');
 
             $schedule->command('disb_pays:checks')->timezone(config('common.timezone'))->dailyAt('00:11');
         }
