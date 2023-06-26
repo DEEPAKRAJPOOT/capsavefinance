@@ -76,7 +76,10 @@ class SendEmail extends Mailable implements ShouldQueue
                         continue;
                     }
                     $invalidEmails = array_filter($emails, function($email) {
-                        return !filter_var($email, FILTER_VALIDATE_EMAIL);
+                        if(!empty($email)){
+                            return !filter_var($email, FILTER_VALIDATE_EMAIL);
+                        }
+                        return false;
                     });
                     
                     if (!empty($invalidEmails)) {
