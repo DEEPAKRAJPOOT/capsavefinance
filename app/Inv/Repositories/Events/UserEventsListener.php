@@ -1805,7 +1805,7 @@ class UserEventsListener extends BaseEvent
                 ];
             }
             $mailData = [
-                'email_to' => $data["email"],
+                'email_to' => $to ?? NULL,
                 'email_cc' => $cc ?? NULL,
                 'email_bcc' => $bcc ?? NULL,
                 'mail_subject' => $mail_subject,
