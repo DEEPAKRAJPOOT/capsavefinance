@@ -1788,7 +1788,7 @@ class UserEventsListener extends BaseEvent
             $mail_subject = str_replace(['%custName','%custId'], [ucwords($data['custName']),ucwords($data['custId'])], $email_content->subject);
             $mail_content = str_replace(['%custName','%custId'], [ucwords($data['custName']),ucwords($data['custId'])], $email_content->message);
 
-            $to =$data["email"];
+            $to = $data["email"];
             $cc = \Helpers::ccOrBccEmailsArray($email_content->cc);
             $bcc = \Helpers::ccOrBccEmailsArray($email_content->bcc);
             $baseUrl = env('REDIRECT_URL','');
