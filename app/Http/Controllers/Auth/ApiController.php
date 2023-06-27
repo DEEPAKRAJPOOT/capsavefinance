@@ -1453,10 +1453,10 @@ class ApiController
 
   private function getLatestFileName($appId, $fileType='banking', $extType='json'){
       $scanpath = $this->getToUploadPath($appId, $fileType);
-      if (is_dir($scanpath) == false) {
+      if (Storage::exists($scanpath) == false) {
         $files = [];
       }else{
-        $files = scandir($scanpath, SCANDIR_SORT_DESCENDING);
+        $files = Storage::allFiles($scanpath, SCANDIR_SORT_DESCENDING);
       }
       $files = array_diff($files, [".", ".."]);
       natsort($files);
