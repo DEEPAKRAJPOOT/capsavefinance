@@ -8,10 +8,7 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Exception;
-use League\Flysystem\Sftp\SftpAdapter;
-use League\Flysystem\Filesystem;
 use Carbon\Carbon;
-use League\Flysystem\Adapter\Ftp as Adapter;
 use Storage;
 
 class FactFileTransferJob implements ShouldQueue
@@ -62,16 +59,10 @@ class FactFileTransferJob implements ShouldQueue
 
             // Upload to SFTP server
             if( isset($journalDestinationPath) && isset($datewiseJournalPath) && isset($paymentDestinationPath) && isset($datewisePaymentPath)){
-                $sftpAdapter = new Adapter(config('filesystems.disks.fact_ftp'));
-                $sftpAdapter->connect();
-                if(!$sftpAdapter->isconnected()){
-                    throw new Exception("SFTP connection failure for tally_id = ".$this->tally_id." and executed at" .Carbon::now()."!");
-                }else{
-                    $filesystem = new Filesystem($sftpAdapter);
-                    $factJournalUpload =  $filesystem->put($journalDestinationPath, Storage::get($this->journalSourcePath));
-                    $factJournalUploadDate = $filesystem->put($datewiseJournalPath, Storage::get($this->journalSourcePath));
-                    $factPaymentUpload = $filesystem->put($paymentDestinationPath,  Storage::get($this->paymentSourcePath));
-                    $factPaymentUploadDate = $filesystem->put($datewisePaymentPath, Storage::get($this->paymentSourcePath));
+                    $factJournalUpload = Storage::disk('fact_ftp')->put($journalDestinationPath, Storage::get($this->journalSourcePath));
+                    $factJournalUploadDate = Storage::disk('fact_ftp')->put($datewiseJournalPath, Storage::get($this->journalSourcePath));
+                    $factPaymentUpload = Storage::disk('fact_ftp')->put($paymentDestinationPath,  Storage::get($this->paymentSourcePath));
+                    $factPaymentUploadDate = Storage::disk('fact_ftp')->put($datewisePaymentPath, Storage::get($this->paymentSourcePath));
                     
                     if($factJournalUpload && $factPaymentUpload && $factJournalUploadDate && $factPaymentUploadDate){
                         $tallyUpdate = \DB::table('tally')->where('id',$this->tally_id)->update(['is_sftp_transfer'=>2]);
@@ -79,7 +70,6 @@ class FactFileTransferJob implements ShouldQueue
                         $tallyUpdate = \DB::table('tally')->where('id',$this->tally_id)->update(['is_sftp_transfer'=>0]);
                         throw new Exception("All file transfer on sftp server failed!  Tally Id: = ".$this->tally_id." and executed at" .Carbon::now()."!");
                     }
-                }
             }else{
                 $tallyUpdate = \DB::table('tally')->where('id',$this->tally_id)->update(['is_sftp_transfer'=>0]);
             }

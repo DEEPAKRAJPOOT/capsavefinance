@@ -76,7 +76,7 @@ return [
             'host' => env('FACT_FTP_HOST'),
             'username' => env('FACT_FTP_USERNAME'),
             'password' => env('FACT_FTP_PASSWORD'),
-            'port' => env('FACT_FTP_PORT') ?? '21',
+            'port' => (int) env('FACT_FTP_PORT') ?? 21,
             'root' => env('FACT_FTP_ROOT') ?? '',
             'passive' => env('FACT_FTP_PASSIVE') ?? true,
             'ssl' => env('FACT_FTP_SSL') ?? true,
