@@ -82,6 +82,11 @@ return [
             'ssl' => env('FACT_FTP_SSL') ?? true,
             'timeout' => env('FACT_FTP_TIMEOUT') ?? 30,
             'ignorePassiveAddress' => env('FACT_FTP_ING_PASSIVE_ADDR') ?? false,
+            'utf8' => env('FACT_UTF8') ?? false,
+            'transferMode' => env('FACT_TRANSFER_MODE') ?? FTP_BINARY,
+            'systemType' => env('FACT_SYSTEM_TYPE') ?? null,
+            'timestampsOnUnixListingsEnabled' => env('FACT_TIMESTAMPS_ON_UNIX_LISTINGS_ENABLED') ?? false,
+            'recurseManually' => env('FACT_RECURSE_MANUALLY') ?? true
         ],
     ],
 
