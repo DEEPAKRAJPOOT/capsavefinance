@@ -12,6 +12,7 @@ use League\Flysystem\Sftp\SftpAdapter;
 use League\Flysystem\Filesystem;
 use Carbon\Carbon;
 use League\Flysystem\Adapter\Ftp as Adapter;
+use Storage;
 
 class FactFileTransferJob implements ShouldQueue
 {
