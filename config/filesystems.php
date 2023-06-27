@@ -80,7 +80,7 @@ return [
             'root' => env('FACT_FTP_ROOT') ?? '',
             'passive' => env('FACT_FTP_PASSIVE') ?? true,
             'ssl' => env('FACT_FTP_SSL') ?? true,
-            'timeout' => env('FACT_FTP_TIMEOUT') ?? 30,
+            'timeout' => (int) env('FACT_FTP_TIMEOUT') ?? 30,
             'ignorePassiveAddress' => env('FACT_FTP_ING_PASSIVE_ADDR') ?? false,
             'utf8' => env('FACT_UTF8') ?? false,
             'transferMode' => env('FACT_TRANSFER_MODE') ?? FTP_BINARY,
