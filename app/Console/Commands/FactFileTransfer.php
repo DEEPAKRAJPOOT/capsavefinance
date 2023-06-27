@@ -6,6 +6,7 @@ use Illuminate\Console\Command;
 use Illuminate\Http\Request;
 use App\Jobs\FactFileTransferJob;
 use Carbon\Carbon;
+use Storage;
 
 class FactFileTransfer extends Command
 {    
