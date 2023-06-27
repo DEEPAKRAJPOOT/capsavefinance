@@ -3175,7 +3175,7 @@ class Helper extends PaypalHelper
                 $inputArr['final_outstanding'] = $inputArr['outstanding'];
 
                 UcicUserUcic::where('app_id',$appId)->update(['group_id' => $arrData['group_id']]);
-                AppGroupDetail::updateOrcreate(['app_id' => $appId, 'biz_app_id' => $groupData['biz_app_id'], 'product_id' => $groupData['product_type']], $inputArr);
+                AppGroupDetail::updateOrcreate(['app_id' => $appId, 'ucic_id' => $groupData['ucic_id'], 'product_id' => $groupData['product_type']], $inputArr);
             }
             AppGroupDetail::where('app_id', $appId)->whereNotIn('group_id', [$arrData['group_id']])->delete();
         }
