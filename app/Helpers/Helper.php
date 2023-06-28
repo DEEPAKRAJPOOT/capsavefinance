@@ -3181,7 +3181,7 @@ class Helper extends PaypalHelper
                 AppGroupDetail::updateOrcreate(['app_id' => $appId, 'ucic_id' => $groupData['ucic_id'], 'product_id' => $groupData['product_type']], $inputArr);
             }
             //Delete removed product from application  
-            AppGroupDetail::where(['app_id' => $appId, 'biz_app_id' => $groupData['biz_app_id']])
+            AppGroupDetail::where(['app_id' => $appId, 'biz_app_id' => $appId])
             ->whereNotIn('product_id',array_unique($curAppProducts))
             ->delete();
             AppGroupDetail::where('app_id', $appId)->whereNotIn('group_id', [$arrData['group_id']])->delete();
