@@ -62,17 +62,20 @@ class DisbursalReport extends Command
                 }
             } else {
                 // single anchor report
-                $this->generateSingleAnchorReport($query);
+                $this->generateSingleAnchorReport();
             }
         }
     }
 
-    private function generateSingleAnchorReport($query)
+    private function generateSingleAnchorReport()
     {
         $this->anchorId = (int) $this->anchorId;
 
         if (is_numeric($this->anchorId) && $this->anchorId > 0) {
-            $anchor     = $query->where('anchor_id', $this->anchorId)->first();
+            $anchor     = Anchor::active()
+            ->whereNotNull('comp_email')
+            ->where('anchor_id', $this->anchorId)
+            ->first();
             if ($anchor) {
                 $this->generateAnchorReport($anchor);
             }

@@ -11,6 +11,7 @@ use App\Inv\Repositories\Models\Master\SecurityDocument;
 use App\Inv\Repositories\Models\Application;
 use App\Inv\Repositories\Models\AppStatusLog;
 use App\Inv\Repositories\Models\Master\Status;
+use Session;
 use Storage;
 
 class ImportPrePostSecurityData extends Command

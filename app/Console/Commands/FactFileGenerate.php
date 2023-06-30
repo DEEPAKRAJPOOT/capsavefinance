@@ -2,6 +2,8 @@
 
 namespace App\Console\Commands;
 
+use Exception;
+use Helpers;
 use Illuminate\Console\Command;
 use Illuminate\Http\Request;
 
