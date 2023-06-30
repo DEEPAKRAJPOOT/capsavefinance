@@ -50,7 +50,7 @@ class DisbursalReport extends Command
             $files = Storage::files($dirPath);
             foreach($files as $filePath)
             {
-                if (Storage::exists($filePath) && $filePath == Storage::path($dirPath."/Consolidated Report.xlsx")) {
+                if (Storage::exists($filePath) && str_contains($filePath,$reportDate.'/Consolidated Report.xlsx')) {
                     try {
                         $fileDetails = pathinfo($filePath);
                         $tempFileName = Session::getId().'_'.$fileDetails['basename'];
