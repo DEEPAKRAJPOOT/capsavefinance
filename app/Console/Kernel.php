@@ -70,7 +70,7 @@ class Kernel extends ConsoleKernel
                 }
             }); 
 
-            $schedule->command('finance:tallyposting')->timezone(config('common.timezone'))->dailyAt('02:00') 
+            $schedule->command('finance:tallyposting')->timezone(config('common.timezone'))->dailyAt('2:00') 
             ->onSuccess(function(){
                 try {
                     $this->call('fact:FactFileGenerate');
@@ -106,23 +106,23 @@ class Kernel extends ConsoleKernel
             //$schedule->command('report:receipt')->timezone(config('common.timezone'))->dailyAt('23:52');
             
             // To Generate Recon Report
-            $schedule->command('report:reconReport')->timezone(config('common.timezone'))->dailyAt('02:00');
+            $schedule->command('report:reconReport')->timezone(config('common.timezone'))->dailyAt('02:30');
             // To Generate Overdue Report
-            $schedule->command('report:overdue')->timezone(config('common.timezone'))->dailyAt('2:10'); //50
+            $schedule->command('report:overdue')->timezone(config('common.timezone'))->dailyAt('02:40');
             // To Generate Disbursal Report
-            $schedule->command('report:disbursal')->timezone(config('common.timezone'))->dailyAt('02:15'); //55
+            $schedule->command('report:disbursal')->timezone(config('common.timezone'))->dailyAt('02:45');
             // To Generate Outstanding Report Manual
-            $schedule->command('report:outstandingManual')->timezone(config('common.timezone'))->dailyAt('02:20'); //60
+            $schedule->command('report:outstandingManual')->timezone(config('common.timezone'))->dailyAt('03:00');
 
-            $schedule->command('etl:report_overdue')->timezone(config('common.timezone'))->dailyAt('03:00');
-            $schedule->command('etl:report_disbursal')->timezone(config('common.timezone'))->dailyAt('03:10');
-            $schedule->command('etl:report_outstanding')->timezone(config('common.timezone'))->dailyAt('03:20');
-            $schedule->command('etl:report_outstanding_monthly')->timezone(config('common.timezone'))->monthly('03:30');
+            $schedule->command('etl:report_overdue')->timezone(config('common.timezone'))->dailyAt('03:10');
+            $schedule->command('etl:report_disbursal')->timezone(config('common.timezone'))->dailyAt('03:20');
+            $schedule->command('etl:report_outstanding')->timezone(config('common.timezone'))->dailyAt('03:30');
+            $schedule->command('etl:report_outstanding_monthly')->timezone(config('common.timezone'))->monthly('03:40');
         }
         $schedule->command('command:lenovoNewUser')->timezone(config('common.timezone'))->dailyAt('21:00');
         $schedule->command('lms:maturityinvoicedueAlert')->timezone(config('common.timezone'))->dailyAt('04:00');
         $schedule->command('lms:maturityinvoiceoverdueAlert')->timezone(config('common.timezone'))->dailyAt('04:10');
-        //$schedule->command('lms:cibilReport')->timezone(config('common.timezone'))->monthlyOn(1, '22:00');
+        $schedule->command('lms:cibilReport')->timezone(config('common.timezone'))->monthlyOn(1, '07:00');
         $schedule->command('clear:day_end_active_csv_apportionment')->timezone(config('common.timezone'))->dailyAt('23:00');
         //$schedule->command('etl:ReportSync')->timezone(config('common.timezone'))->dailyAt('01:10');
        
