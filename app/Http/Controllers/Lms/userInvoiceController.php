@@ -499,7 +499,7 @@ class userInvoiceController extends Controller
                     $days = $interestDays . ' days -From:' . date('d-M-Y', strtotime($fromDate)) . " to " . date('d-M-Y', strtotime($toDate)) . ' @ ' . round($txn->InvoiceDisbursed->overdue_interest_rate,2) . '%';  
                     $sac_code = config('lms.SAC_CODE_FOR_ODI_INVOICE'); 
                 }else{
-                    $sac_code = $txn->transType->charge->sac_code;
+                    $sac_code = $txn->transType->charge->sac_code ?? '';
                 }
 
                 if($txn->gst == 1){
@@ -528,7 +528,7 @@ class userInvoiceController extends Controller
                     }elseif($parentTrans->trans_type == config('lms.TRANS_TYPE.INTEREST_OVERDUE')){
                         $sac_code = config('lms.SAC_CODE_FOR_ODI_INVOICE'); 
                     }else{
-                        $sac_code = $parentTrans->transType->charge->sac_code;
+                        $sac_code = $parentTrans->transType->charge->sac_code ?? '';
                     }
                 }
                 if($txn->gst == 1){
@@ -561,7 +561,7 @@ class userInvoiceController extends Controller
                     }elseif($parentTrans->trans_type == config('lms.TRANS_TYPE.INTEREST_OVERDUE')){
                         $sac_code = config('lms.SAC_CODE_FOR_ODI_INVOICE'); 
                     }else{
-                        $sac_code = $parentTrans->transType->charge->sac_code;
+                        $sac_code = $parentTrans->transType->charge->sac_code ?? '';
                     }
                 }
                 if($txn->gst == 1){
