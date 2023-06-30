@@ -110,7 +110,7 @@ class Kernel extends ConsoleKernel
         $schedule->command('lms:disbursalBatchRequest')->timezone(config('common.timezone'))->between('10:00','23:59')->hourlyAt('1');
         $schedule->command('lms:disbursalBatchRequest')->timezone(config('common.timezone'))->dailyAt('23:50');
         $schedule->command('alert:approvalMailForPendingCases')->timezone(config('common.timezone'))->tuesdays()->dailyAt('20:45');
-        $schedule->command('alert:app_security_document_renewal')->timezone(config('common.timezone'))->dailyAt('23:00');
+        // $schedule->command('alert:app_security_document_renewal')->timezone(config('common.timezone'))->dailyAt('23:00');
     }
     
     /**
