@@ -120,8 +120,8 @@ class Kernel extends ConsoleKernel
             $schedule->command('etl:report_outstanding_monthly')->timezone(config('common.timezone'))->monthly('03:40');
         }
         $schedule->command('command:lenovoNewUser')->timezone(config('common.timezone'))->dailyAt('21:00');
-        $schedule->command('lms:maturityinvoicedueAlert')->timezone(config('common.timezone'))->dailyAt('04:00');
-        $schedule->command('lms:maturityinvoiceoverdueAlert')->timezone(config('common.timezone'))->dailyAt('04:10');
+        // $schedule->command('lms:maturityinvoicedueAlert')->timezone(config('common.timezone'))->dailyAt('04:00');
+        // $schedule->command('lms:maturityinvoiceoverdueAlert')->timezone(config('common.timezone'))->dailyAt('04:10');
         $schedule->command('lms:cibilReport')->timezone(config('common.timezone'))->monthlyOn(1, '07:00');
         $schedule->command('clear:day_end_active_csv_apportionment')->timezone(config('common.timezone'))->dailyAt('23:00');
         //$schedule->command('etl:ReportSync')->timezone(config('common.timezone'))->dailyAt('01:10');
