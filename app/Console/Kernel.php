@@ -50,22 +50,22 @@ class Kernel extends ConsoleKernel
         // }
 
         if(config('lms.LMS_STATUS')){
-            $schedule->command('Lms:interestAccrualEod')->timezone(config('common.timezone'))->dailyAt('22:50')
+            $schedule->command('Lms:interestAccrualEod')->timezone(config('common.timezone'))->dailyAt('21:00')
             ->onSuccess(function() use($schedule){
                 $this->call('note:generateDebitNote');
                 $this->call('note:generateCreditNote');
                 $this->call('note:generateCreditNoteReversal');
             });
             $schedule->command('Lms:interestAccrualSod')->dailyAt('00:01');
-            $schedule->command('finance:tallyposting')->timezone(config('common.timezone'))->dailyAt('00:01') 
+            $schedule->command('finance:tallyposting')->timezone(config('common.timezone'))->dailyAt('00:31') 
             ->onSuccess(function() use($schedule){
                 $this->call('eod:check-data');
             });
 
-            $schedule->command('fact:FactFileGenerate')->hourlyAt(10)->timezone(config('common.timezone'))->between('00:00', '10:00');
-            $schedule->command('fact:FactSftpTransfer')->hourlyAt(40)->timezone(config('common.timezone'))->between('00:00', '10:00');
+            $schedule->command('fact:FactFileGenerate')->hourlyAt(10)->timezone(config('common.timezone'))->between('00:30', '10:00');
+            $schedule->command('fact:FactSftpTransfer')->hourlyAt(40)->timezone(config('common.timezone'))->between('00:30', '10:00');
 
-            $schedule->command('disb_pays:checks')->timezone(config('common.timezone'))->dailyAt('00:11');
+            $schedule->command('disb_pays:checks')->timezone(config('common.timezone'))->dailyAt('00:41');
         }
         
         if(config('lms.LMS_STATUS') && !empty('lms.DAILY_REPORT_MAIL')){
@@ -83,18 +83,18 @@ class Kernel extends ConsoleKernel
             //$schedule->command('report:receipt')->timezone(config('common.timezone'))->dailyAt('23:52');
             
             // To Generate Recon Report
-            $schedule->command('report:reconReport')->timezone(config('common.timezone'))->dailyAt('00:30');
+            $schedule->command('report:reconReport')->timezone(config('common.timezone'))->dailyAt('01:00');
             // To Generate Outstanding Report Manual
-            $schedule->command('report:outstandingManual')->timezone(config('common.timezone'))->dailyAt('00:35');
+            $schedule->command('report:outstandingManual')->timezone(config('common.timezone'))->dailyAt('01:05');
             // To Generate Overdue Report
-            $schedule->command('report:overdue')->timezone(config('common.timezone'))->dailyAt('00:50');
+            $schedule->command('report:overdue')->timezone(config('common.timezone'))->dailyAt('01:20');
             // To Generate Disbursal Report
-            $schedule->command('report:disbursal')->timezone(config('common.timezone'))->dailyAt('00:55');
+            $schedule->command('report:disbursal')->timezone(config('common.timezone'))->dailyAt('01:25');
             
-            $schedule->command('etl:report_outstanding')->timezone(config('common.timezone'))->dailyAt('02:00');
-            $schedule->command('etl:report_outstanding_monthly')->timezone(config('common.timezone'))->monthly('02:05');
-            $schedule->command('etl:report_overdue')->timezone(config('common.timezone'))->dailyAt('02:11');
-            $schedule->command('etl:report_disbursal')->timezone(config('common.timezone'))->dailyAt('02:12');
+            $schedule->command('etl:report_outstanding')->timezone(config('common.timezone'))->dailyAt('02:30');
+            $schedule->command('etl:report_outstanding_monthly')->timezone(config('common.timezone'))->monthly('02:35');
+            $schedule->command('etl:report_overdue')->timezone(config('common.timezone'))->dailyAt('02:41');
+            $schedule->command('etl:report_disbursal')->timezone(config('common.timezone'))->dailyAt('02:42');
 
         }
         $schedule->command('command:lenovoNewUser')->timezone(config('common.timezone'))->dailyAt('23:00');
