@@ -53,15 +53,40 @@ class Kernel extends ConsoleKernel
             $schedule->command('Lms:interestAccrualSod')->dailyAt('00:01');
             $schedule->command('Lms:interestAccrualEod')->timezone(config('common.timezone'))->dailyAt('22:00')
             ->onSuccess(function() use($schedule){
-                $this->call('note:generateDebitNote');
-                $this->call('note:generateCreditNote');
-                $this->call('note:generateCreditNoteReversal');
-                $this->call('finance:tallyposting')
-                ->onSuccess(function() use($schedule){
+                try {
+                    $this->call('note:generateDebitNote');
+                } catch (\Throwable $th) {
+                    //throw $th;
+                }
+                try {
+                    $this->call('note:generateCreditNote');
+                } catch (\Throwable $th) {
+                    //throw $th;
+                }
+                try {
+                    $this->call('note:generateCreditNoteReversal');
+                } catch (\Throwable $th) {
+                    //throw $th;
+                }
+            }); 
+
+            $schedule->command('finance:tallyposting')->timezone(config('common.timezone'))->dailyAt('02:00') 
+            ->onSuccess(function(){
+                try {
                     $this->call('fact:FactFileGenerate');
+                } catch (\Throwable $th) {
+                    //throw $th;
+                }
+                try {
                     $this->call('eod:check-data');
-                    // $this->call('fact:FactSftpTransfer');
-                });
+                } catch (\Throwable $th) {
+                    //throw $th;
+                }
+                try {
+                    $this->call('fact:FactSftpTransfer');
+                } catch (\Throwable $th) {
+                    //throw $th;
+                }
             });
             $schedule->command('disb_pays:checks')->timezone(config('common.timezone'))->dailyAt('00:41');
         }
