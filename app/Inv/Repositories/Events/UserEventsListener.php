@@ -573,7 +573,7 @@ class UserEventsListener extends BaseEvent
                 $cc = explode(',', env('SEND_MAIL_CC'));
                 $bcc = explode(',', env('SEND_MAIL_BCC'));
             }else{
-                $to = [['name' => $user["name"] , 'email' => $user["email"]]];
+                $to = [['name' => $data["name"] , 'email' => $data["email"]]];
                 $cc = \Helpers::ccOrBccEmailsArray($email_content->cc);
                 $bcc = \Helpers::ccOrBccEmailsArray($email_content->bcc);
             }
@@ -1406,11 +1406,6 @@ class UserEventsListener extends BaseEvent
     // Inform to CPA and CR when agency Status Change
     public function AgencyUpdateToCPAandCR($mailData){
         $user = unserialize($mailData);
-        $email_to;
-        if(isset($user['trigger_email']) && !empty($user['trigger_email'])) {
-            $email_to = $user['trigger_email'];
-        }
-
         $this->func_name = __FUNCTION__;
         //Send mail to User
         $email_content = EmailTemplate::getEmailTemplate("AGENCY_UPDATE_MAIL_TO_CPA_CR");
@@ -1966,9 +1961,9 @@ class UserEventsListener extends BaseEvent
     public function onEODChecksAlert($attributes) {
         $data = unserialize($attributes); 
         $this->func_name = __FUNCTION__;
+        $email_content = EmailTemplate::getEmailTemplate("EOD_CHECKS_ALERT");
         $mail_body = view('reports.eod_checks')->with(['tally_data' => $data['tally_data'], 'tally_error_data' => $data['tally_error_data']])->render();
         $mail_subject = $email_content->subject;
-        $email_content = EmailTemplate::getEmailTemplate("EOD_CHECKS_ALERT");
         if ($email_content) {
             // if( env('SEND_MAIL_ACTIVE') == 1){
             //     $to = explode(',', env('SEND_MAIL'));
