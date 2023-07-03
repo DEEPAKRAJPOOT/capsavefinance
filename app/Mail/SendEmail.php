@@ -87,6 +87,11 @@ class SendEmail extends Mailable implements ShouldQueue
             $email = $this->view('email')
                         ->with(['baseUrl' => $this->mailData['base_url'], 'varContent' => $this->mailData['mail_body']])
                         ->subject($this->mailData['mail_subject']);
+            
+            //Set Null if To has no email id
+            if(empty($email_to)){
+                $email->to = array();
+            }
 
             if (!empty($this->mailData['attachments'])) {
                 foreach ($this->mailData['attachments'] as $attachment) {
