@@ -53,11 +53,11 @@ class Kernel extends ConsoleKernel
             $schedule->command('Lms:interestAccrualSod')->dailyAt('00:01');
             $schedule->command('Lms:interestAccrualEod')->timezone(config('common.timezone'))->dailyAt('22:00')
             ->onSuccess(function() use($schedule){
-                // try {
-                //     $this->call('note:generateDebitNote');
-                // } catch (\Throwable $th) {
-                //     //throw $th;
-                // }
+                try {
+                    $this->call('note:generateDebitNote');
+                } catch (\Throwable $th) {
+                    //throw $th;
+                }
                 try {
                     $this->call('note:generateCreditNote');
                 } catch (\Throwable $th) {
