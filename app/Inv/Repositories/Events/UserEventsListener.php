@@ -85,23 +85,17 @@ class UserEventsListener extends BaseEvent
                 $email_content->message
             );
             if( env('SEND_MAIL_ACTIVE') == 1){
-                $to = [
-                    [
-                        'email' => explode(',', env('SEND_MAIL')), 
-                        'name' => NULL,
-                    ]
-                ];
+                $to = explode(',', env('SEND_MAIL'));
+                $cc = explode(',', env('SEND_MAIL_CC'));
+                $bcc = explode(',', env('SEND_MAIL_BCC'));
             }else{
-                $to = [
-                    [
-                        'email' => $user["email"], 
-                        'name' => $user['name'],
-                    ]
-                ];
+                $to = [['name' => $user["name"] , 'email' => $user["email"]]];
             }
             $baseUrl = env('REDIRECT_URL','');
             $mailData = [
-                'email_to' => [$user["email"]],
+                'email_to' => $to ?? NULL,
+                'email_cc' => $cc ?? NULL,
+                'email_bcc' => $bcc ?? NULL,
                 'mail_subject' => $email_content->subject,
                 'mail_body' => $mail_body,
                 'base_url' => $baseUrl,
@@ -115,7 +109,7 @@ class UserEventsListener extends BaseEvent
             $mailDataSerialized = serialize($mailData);
             $mailLogDataSerialized = serialize($mailLogData);
             // Queue the email job
-            Mail::to($to)->queue(new SendEmail($mailDataSerialized, $mailLogDataSerialized));
+            Mail::to($to)->cc($cc)->bcc($bcc)->queue(new SendEmail($mailDataSerialized, $mailLogDataSerialized));
         }
     }
 
@@ -131,23 +125,17 @@ class UserEventsListener extends BaseEvent
                 $email_content->message
             );
             if( env('SEND_MAIL_ACTIVE') == 1){
-                $to = [
-                    [
-                        'email' => explode(',', env('SEND_MAIL')), 
-                        'name' => NULL,
-                    ]
-                ];
+                $to = explode(',', env('SEND_MAIL'));
+                $cc = explode(',', env('SEND_MAIL_CC'));
+                $bcc = explode(',', env('SEND_MAIL_BCC'));
             }else{
-                $to = [
-                    [
-                        'email' => $user["email"], 
-                        'name' => $user['name'],
-                    ]
-                ];
+                $to = [['name' => $user["name"] , 'email' => $user["email"]]];
             }
             $baseUrl = env('REDIRECT_URL','');
             $mailData = [
-                'email_to' => [$user["email"]],
+                'email_to' => $to ?? NULL,
+                'email_cc' => $cc ?? NULL,
+                'email_bcc' => $bcc ?? NULL,
                 'mail_subject' => $email_content->subject,
                 'mail_body' => $mail_body,
                 'base_url' => $baseUrl,
@@ -161,7 +149,7 @@ class UserEventsListener extends BaseEvent
             $mailDataSerialized = serialize($mailData);
             $mailLogDataSerialized = serialize($mailLogData);
             // Queue the email job
-            Mail::to($to)->queue(new SendEmail($mailDataSerialized, $mailLogDataSerialized));
+            Mail::to($to)->cc($cc)->bcc($bcc)->queue(new SendEmail($mailDataSerialized, $mailLogDataSerialized));
         }
 
     }
@@ -183,24 +171,17 @@ class UserEventsListener extends BaseEvent
                 $email_content->message
             );
             if( env('SEND_MAIL_ACTIVE') == 1){
-                $to = [
-                    [
-                        'email' => explode(',', env('SEND_MAIL')), 
-                        'name' => NULL,
-                    ]
-                ];
+                $to = explode(',', env('SEND_MAIL'));
+                $cc = explode(',', env('SEND_MAIL_CC'));
+                $bcc = explode(',', env('SEND_MAIL_BCC'));
             }else{
-                $to = [
-                    [
-                        'email' => $user["email"], 
-                        'name' => $user['name'],
-                    ]
-                ];
+                $to = [['name' => $user["name"] , 'email' => $user["email"]]];
             }
-            $funcName = $this->func_name;
             $baseUrl = env('REDIRECT_URL','');
             $mailData = [
-                'email_to' => [$user["email"]],
+                'email_to' => $to ?? NULL,
+                'email_cc' => $cc ?? NULL,
+                'email_bcc' => $bcc ?? NULL,
                 'mail_subject' => $email_content->subject,
                 'mail_body' => $mail_body,
                 'base_url' => $baseUrl,
@@ -215,7 +196,7 @@ class UserEventsListener extends BaseEvent
             $mailDataSerialized = serialize($mailData);
             $mailLogDataSerialized = serialize($mailLogData);
             // Queue the email job
-            Mail::to($to)->queue(new SendEmail($mailDataSerialized, $mailLogDataSerialized));
+            Mail::to($to)->cc($cc)->bcc($bcc)->queue(new SendEmail($mailDataSerialized, $mailLogDataSerialized));
         }
     }
 
@@ -235,28 +216,18 @@ class UserEventsListener extends BaseEvent
                 [ucwords($user['name']),$user['otp']],
                 $email_content->message
             );
-            if( env('SEND_MAIL_ACTIVE') == 1){
-                $to = [
-                    [
-                        'email' => explode(',', env('SEND_MAIL')), 
-                        'name' => NULL,
-                    ]
-                ];
-                $cc = \Helpers::ccOrBccEmailsArray(env('SEND_MAIL_CC'));
-                $bcc = \Helpers::ccOrBccEmailsArray(env('SEND_MAIL_BCC'));
-            }else{
-                $to = [
-                    [
-                        'email' => $user["email"], 
-                        'name' => $user['name'],
-                    ]
-                ];
+            // if( env('SEND_MAIL_ACTIVE') == 1){
+            //     $to = explode(',', env('SEND_MAIL'));
+            //     $cc = explode(',', env('SEND_MAIL_CC'));
+            //     $bcc = explode(',', env('SEND_MAIL_BCC'));
+            // }else{
+                $to = [['name' => $user["name"] , 'email' => $user["email"]]];
                 $cc = \Helpers::ccOrBccEmailsArray($email_content->cc);
                 $bcc = \Helpers::ccOrBccEmailsArray($email_content->bcc);
-            }
+            // }
             $baseUrl = env('REDIRECT_URL','');
             $mailData = [
-                'email_to' => [$user["email"]],
+                'email_to' => $to ?? NULL,
                 'email_cc' => $cc ?? NULL,
                 'email_bcc' => $bcc ?? NULL,
                 'mail_subject' => $email_content->subject,
@@ -286,29 +257,35 @@ class UserEventsListener extends BaseEvent
                 [ucwords($user['name']),$user['otp'],$user['url']],
                 $email_content->message
             );
-            Mail::send('email', ['baseUrl'=>env('REDIRECT_URL',''),'varContent' => $mail_body,
-                ],
-                function ($message) use ($user, $email_content, $mail_body) {
-                $email = $user["email"];
-                $emailBcc = \Helpers::ccOrBccEmailsArray($email_content->bcc);
-                $emailCc = \Helpers::ccOrBccEmailsArray($email_content->cc);
-                $mail_subject = str_replace(['%app_id','%biz_name'], [$user['ckyc_app_code'] ?? '',$user['ckyc_biz_name'] ?? ''], $email_content->subject);
-                $message->bcc($emailBcc);
-                $message->cc($emailCc);
-                $message->from(config('common.FRONTEND_FROM_EMAIL'), config('common.FRONTEND_FROM_EMAIL_NAME'));
-                $message->to($email, $user["name"])->subject($mail_subject);
-                $mailContent = [
-                    'email_from' => config('common.FRONTEND_FROM_EMAIL'),
-                    'email_to' => $email,
-                    'email_type' => $this->func_name,
-                    'name' => $user['name'],
-                    'subject' => $mail_subject,
-                    'body' => $mail_body,
-                    'email_bcc' => $emailBcc,
-                    'email_cc' => $emailCc,
-                ];
-                FinanceModel::logEmail($mailContent);
-            });
+            $mail_subject = str_replace(['%app_id','%biz_name'], [$user['ckyc_app_code'] ?? '',$user['ckyc_biz_name'] ?? ''], $email_content->subject);
+            // if( env('SEND_MAIL_ACTIVE') == 1){
+            //     $to = explode(',', env('SEND_MAIL'));
+            //     $cc = explode(',', env('SEND_MAIL_CC'));
+            //     $bcc = explode(',', env('SEND_MAIL_BCC'));
+            // }else{
+                $to = [['name' => $user["name"] , 'email' => $user["email"]]];
+                $cc = \Helpers::ccOrBccEmailsArray($email_content->cc);
+                $bcc = \Helpers::ccOrBccEmailsArray($email_content->bcc);
+            // }
+            $baseUrl = env('REDIRECT_URL','');
+            $mailData = [
+                'email_to' => $to ?? NULL,
+                'email_cc' => $cc ?? NULL,
+                'email_bcc' => $bcc ?? NULL,
+                'mail_subject' => $mail_subject,
+                'mail_body' => $mail_body,
+                'base_url' => $baseUrl,
+            ];
+            $mailLogData = [
+                'email_from' => config('common.FRONTEND_FROM_EMAIL'),
+                'email_type' => $this->func_name,
+                'name' => $user['name'],
+            ];
+            // Serialize the data
+            $mailDataSerialized = serialize($mailData);
+            $mailLogDataSerialized = serialize($mailLogData);
+            // Queue the email job
+            Mail::to($to)->cc($cc)->bcc($bcc)->queue(new SendEmail($mailDataSerialized, $mailLogDataSerialized));
         }
     }    
     
@@ -329,28 +306,18 @@ class UserEventsListener extends BaseEvent
                 [ucwords($user['name']),$user['reset_link']],
                 $email_content->message
             );
-            if( env('SEND_MAIL_ACTIVE') == 1){
-                $to = [
-                    [
-                        'email' => explode(',', env('SEND_MAIL')), 
-                        'name' => NULL,
-                    ]
-                ];
-                $cc = \Helpers::ccOrBccEmailsArray(env('SEND_MAIL_CC'));
-                $bcc = \Helpers::ccOrBccEmailsArray(env('SEND_MAIL_BCC'));
-            }else{
-                $to = [
-                    [
-                        'email' => $user["email"], 
-                        'name' => $user['name'],
-                    ]
-                ];
+            // if( env('SEND_MAIL_ACTIVE') == 1){
+            //     $to = explode(',', env('SEND_MAIL'));
+            //     $cc = explode(',', env('SEND_MAIL_CC'));
+            //     $bcc = explode(',', env('SEND_MAIL_BCC'));
+            // }else{
+                $to = [['name' => $user["name"] , 'email' => $user["email"]]];
                 $cc = \Helpers::ccOrBccEmailsArray($email_content->cc);
                 $bcc = \Helpers::ccOrBccEmailsArray($email_content->bcc);
-            }
+            // }
             $baseUrl = env('REDIRECT_URL','');
             $mailData = [
-                'email_to' => [$user["email"]],
+                'email_to' => $to ?? NULL,
                 'email_cc' => $cc ?? NULL,
                 'email_bcc' => $bcc ?? NULL,
                 'mail_subject' => $email_content->subject,
@@ -384,16 +351,20 @@ class UserEventsListener extends BaseEvent
                 [ucwords($user['name'])],
                 $email_content->message
             );
-            $to = [
-                [
-                    'email' => $user["email"], 
-                    'name' => $user['name'],
-                ]
-            ];
-            $funcName = $this->func_name;
+            // if( env('SEND_MAIL_ACTIVE') == 1){
+            //     $to = explode(',', env('SEND_MAIL'));
+            //     $cc = explode(',', env('SEND_MAIL_CC'));
+            //     $bcc = explode(',', env('SEND_MAIL_BCC'));
+            // }else{
+                $to = [['name' => $user["name"] , 'email' => $user["email"]]];
+                $cc = [];
+                $bcc = [];
+            // }
             $baseUrl = env('REDIRECT_URL','');
             $mailData = [
-                'email_to' => [$user["email"]],
+                'email_to' => $to ?? NULL,
+                'email_cc' => $cc ?? NULL,
+                'email_bcc' => $bcc ?? NULL,
                 'mail_subject' => $email_content->subject,
                 'mail_body' => $mail_body,
                 'base_url' => $baseUrl,
@@ -407,7 +378,7 @@ class UserEventsListener extends BaseEvent
             $mailDataSerialized = serialize($mailData);
             $mailLogDataSerialized = serialize($mailLogData);
             // Queue the email job
-            Mail::to($to)->queue(new SendEmail($mailDataSerialized, $mailLogDataSerialized));
+            Mail::to($to)->cc($cc)->bcc($bcc)->queue(new SendEmail($mailDataSerialized, $mailLogDataSerialized));
         }
     }
 
@@ -422,29 +393,18 @@ class UserEventsListener extends BaseEvent
                 [ucwords($user['name']),$user['email'],$user['password'], $link],
                 $email_content->message
             );
-            if( env('SEND_MAIL_ACTIVE') == 1){
-                $to = [
-                    [
-                        'email' => explode(',', env('SEND_MAIL')), 
-                        'name' => NULL,
-                    ]
-                ];
-                $cc = \Helpers::ccOrBccEmailsArray(env('SEND_MAIL_CC'));
-                $bcc = \Helpers::ccOrBccEmailsArray(env('SEND_MAIL_BCC'));
-            }else{
-                $to = [
-                    [
-                        'email' => $user["email"], 
-                        'name' => $user['name'],
-                    ]
-                ];
+            // if( env('SEND_MAIL_ACTIVE') == 1){
+            //     $to = explode(',', env('SEND_MAIL'));
+            //     $cc = explode(',', env('SEND_MAIL_CC'));
+            //     $bcc = explode(',', env('SEND_MAIL_BCC'));
+            // }else{
+                $to = [['name' => $user["name"] , 'email' => $user["email"]]];
                 $cc = \Helpers::ccOrBccEmailsArray($email_content->cc);
                 $bcc = \Helpers::ccOrBccEmailsArray($email_content->bcc);
-            }
-            $funcName = $this->func_name;
+            // }
             $baseUrl = env('REDIRECT_URL','');
             $mailData = [
-                'email_to' => [$user["email"]],
+                'email_to' => $to ?? NULL,
                 'email_cc' => $cc ?? NULL,
                 'email_bcc' => $bcc ?? NULL,
                 'mail_subject' => $email_content->subject,
@@ -476,23 +436,19 @@ class UserEventsListener extends BaseEvent
                 $email_content->message
             );
             if( env('SEND_MAIL_ACTIVE') == 1){
-                $to = [
-                    [
-                        'email' => explode(',', env('SEND_MAIL')), 
-                        'name' => NULL,
-                    ]
-                ];
+                $to = explode(',', env('SEND_MAIL'));
+                $cc = explode(',', env('SEND_MAIL_CC'));
+                $bcc = explode(',', env('SEND_MAIL_BCC'));
             }else{
-                $to = [
-                    [
-                        'email' => $user["email"], 
-                        'name' => $user['name'],
-                    ]
-                ];
+                $to = [['name' => $user["name"] , 'email' => $user["email"]]];
+                $cc = \Helpers::ccOrBccEmailsArray($email_content->cc);
+                $bcc = \Helpers::ccOrBccEmailsArray($email_content->bcc);
             }
             $baseUrl = env('REDIRECT_URL','');
             $mailData = [
-                'email_to' => [$user["email"]],
+                'email_to' => $to ?? NULL,
+                'email_cc' => $cc ?? NULL,
+                'email_bcc' => $bcc ?? NULL,
                 'mail_subject' => $email_content->subject,
                 'mail_body' => $mail_body,
                 'base_url' => $baseUrl,
@@ -506,7 +462,7 @@ class UserEventsListener extends BaseEvent
             $mailDataSerialized = serialize($mailData);
             $mailLogDataSerialized = serialize($mailLogData);
             // Queue the email job
-            Mail::to($to)->queue(new SendEmail($mailDataSerialized, $mailLogDataSerialized));
+            Mail::to($to)->cc($cc)->bcc($bcc)->queue(new SendEmail($mailDataSerialized, $mailLogDataSerialized));
         }
     }
 
@@ -521,19 +477,20 @@ class UserEventsListener extends BaseEvent
                 [ucwords($user['name']),$user['url']],
                 $email_content->message
             );
-            $to = [
-                [
-                    'email' => $user["email"], 
-                    'name' => $user['name'],
-                ]
-            ];
-            $cc = \Helpers::ccOrBccEmailsArray($email_content->cc);
-            $bcc = \Helpers::ccOrBccEmailsArray($email_content->bcc);
+            // if( env('SEND_MAIL_ACTIVE') == 1){
+            //     $to = explode(',', env('SEND_MAIL'));
+            //     $cc = explode(',', env('SEND_MAIL_CC'));
+            //     $bcc = explode(',', env('SEND_MAIL_BCC'));
+            // }else{
+                $to = [['name' => $user["name"] , 'email' => $user["email"]]];
+                $cc = \Helpers::ccOrBccEmailsArray($email_content->cc);
+                $bcc = \Helpers::ccOrBccEmailsArray($email_content->bcc);
+            // }
             $baseUrl = env('REDIRECT_URL','');
             $mailData = [
-                'email_to' => [$user["email"]],
+                'email_to' => $to ?? NULL,
                 'email_cc' => $cc ?? NULL,
-                'email_cc' => $bcc ?? NULL,
+                'email_bcc' => $bcc ?? NULL,
                 'mail_subject' => $email_content->subject."//".$user['businessName']."//".$user['anchorName'],
                 'mail_body' => $mail_body,
                 'base_url' => $baseUrl,
@@ -564,23 +521,19 @@ class UserEventsListener extends BaseEvent
                 $email_content->message
             );
             if( env('SEND_MAIL_ACTIVE') == 1){
-                $to = [
-                    [
-                        'email' => explode(',', env('SEND_MAIL')), 
-                        'name' => NULL,
-                    ]
-                ];
+                $to = explode(',', env('SEND_MAIL'));
+                $cc = explode(',', env('SEND_MAIL_CC'));
+                $bcc = explode(',', env('SEND_MAIL_BCC'));
             }else{
-                $to = [
-                    [
-                        'email' => $user["email"], 
-                        'name' => $user['name'],
-                    ]
-                ];
+                $to = [['name' => $user["name"] , 'email' => $user["email"]]];
+                $cc = \Helpers::ccOrBccEmailsArray($email_content->cc);
+                $bcc = \Helpers::ccOrBccEmailsArray($email_content->bcc);
             }
             $baseUrl = env('REDIRECT_URL','');
             $mailData = [
-                'email_to' => [$user["email"]],
+                'email_to' => $to ?? NULL,
+                'email_cc' => $cc ?? NULL,
+                'email_bcc' => $bcc ?? NULL,
                 'mail_subject' => $email_content->subject,
                 'mail_body' => $mail_body,
                 'base_url' => $baseUrl,
@@ -594,7 +547,7 @@ class UserEventsListener extends BaseEvent
             $mailDataSerialized = serialize($mailData);
             $mailLogDataSerialized = serialize($mailLogData);
             // Queue the email job
-            Mail::to($to)->queue(new SendEmail($mailDataSerialized, $mailLogDataSerialized));
+            Mail::to($to)->cc($cc)->bcc($bcc)->queue(new SendEmail($mailDataSerialized, $mailLogDataSerialized));
         }
     } 
     
@@ -616,23 +569,19 @@ class UserEventsListener extends BaseEvent
                 $email_content->message
             );
             if( env('SEND_MAIL_ACTIVE') == 1){
-                $to = [
-                    [
-                        'email' => explode(',', env('SEND_MAIL')), 
-                        'name' => NULL,
-                    ]
-                ];
+                $to = explode(',', env('SEND_MAIL'));
+                $cc = explode(',', env('SEND_MAIL_CC'));
+                $bcc = explode(',', env('SEND_MAIL_BCC'));
             }else{
-                $to = [
-                    [
-                        'email' => $data["email"], 
-                        'name' => $data['name'],
-                    ]
-                ];
+                $to = [['name' => $user["name"] , 'email' => $user["email"]]];
+                $cc = \Helpers::ccOrBccEmailsArray($email_content->cc);
+                $bcc = \Helpers::ccOrBccEmailsArray($email_content->bcc);
             }
             $baseUrl = env('REDIRECT_URL','');
             $mailData = [
-                'email_to' => [$data["email"]],
+                'email_to' => $to ?? NULL,
+                'email_cc' => $cc ?? NULL,
+                'email_bcc' => $bcc ?? NULL,
                 'mail_subject' => $email_content->subject,
                 'mail_body' => $mail_body,
                 'base_url' => $baseUrl,
@@ -647,7 +596,7 @@ class UserEventsListener extends BaseEvent
             $mailDataSerialized = serialize($mailData);
             $mailLogDataSerialized = serialize($mailLogData);
             // Queue the email job
-            Mail::to($to)->queue(new SendEmail($mailDataSerialized, $mailLogDataSerialized));
+            Mail::to($to)->cc($cc)->bcc($bcc)->queue(new SendEmail($mailDataSerialized, $mailLogDataSerialized));
         }
     }
 
@@ -660,19 +609,13 @@ class UserEventsListener extends BaseEvent
         $data = unserialize($attributes); 
         $this->func_name = __FUNCTION__;
         if( env('SEND_MAIL_ACTIVE') == 1){
-            $to = [
-                [
-                    'email' => explode(',', env('SEND_MAIL')), 
-                    'name' => NULL,
-                ]
-            ];
+            $to = explode(',', env('SEND_MAIL'));
+            $cc = explode(',', env('SEND_MAIL_CC'));
+            $bcc = explode(',', env('SEND_MAIL_BCC'));
         }else{
-            $to = [
-                [
-                    'email' => $data["email"], 
-                    'name' => $data['name'],
-                ]
-            ];
+            $to = [['name' => $data["name"] , 'email' => $data["email"]]];
+            $cc = [];
+            $bcc = [];
         }
         $baseUrl = env('REDIRECT_URL','');
         $attachData = [];
@@ -687,7 +630,9 @@ class UserEventsListener extends BaseEvent
                 ];
         }
         $mailData = [
-            'email_to' => [$data["email"]],
+            'email_to' => $to ?? NULL,
+            'email_cc' => $cc ?? NULL,
+            'email_bcc' => $bcc ?? NULL,
             'mail_subject' => $data['subject'],
             'mail_body' => $data['body'],
             'base_url' => $baseUrl,
@@ -702,7 +647,7 @@ class UserEventsListener extends BaseEvent
         $mailDataSerialized = serialize($mailData);
         $mailLogDataSerialized = serialize($mailLogData);
         // Queue the email job
-        Mail::to($to)->queue(new SendEmail($mailDataSerialized, $mailLogDataSerialized));
+        Mail::to($to)->cc($cc)->bcc($bcc)->queue(new SendEmail($mailDataSerialized, $mailLogDataSerialized));
     }
 
     public function onApplicationPickup($userData) {
@@ -719,20 +664,34 @@ class UserEventsListener extends BaseEvent
             );
             $mail_subject = str_replace(['%app_id'], $user['app_id'],$email_content->subject);
 
-            Mail::send( 'email', [ 'baseUrl'=>env('REDIRECT_URL',''), 'varContent' => $mail_body, ], 
-                function ($message) use ($user, $mail_subject, $mail_body) {
-                $message->from(config('common.FRONTEND_FROM_EMAIL'), config('common.FRONTEND_FROM_EMAIL_NAME'));
-                $message->to($user["receiver_email"], $user["receiver_user_name"])->subject($mail_subject);
-                $mailContent = [
-                    'email_from' => config('common.FRONTEND_FROM_EMAIL'),
-                    'email_to' => array($user["receiver_email"]),
-                    'email_type' => $this->func_name,
-                    'name' => $user['receiver_user_name'],
-                    'subject' => $mail_subject,
-                    'body' => $mail_body,
-                ];
-                FinanceModel::logEmail($mailContent);
-            });
+            // if( env('SEND_MAIL_ACTIVE') == 1){
+            //     $to = explode(',', env('SEND_MAIL'));
+            //     $cc = explode(',', env('SEND_MAIL_CC'));
+            //     $bcc = explode(',', env('SEND_MAIL_BCC'));
+            // }else{
+                $to = [['name' => $user["receiver_user_name"] , 'email' => $user["receiver_email"]]];
+                $cc = \Helpers::ccOrBccEmailsArray($email_content->cc);
+                $bcc = \Helpers::ccOrBccEmailsArray($email_content->bcc);
+            // }
+            $baseUrl = env('REDIRECT_URL','');
+            $mailData = [
+                'email_to' => $to ?? NULL,
+                'email_cc' => $cc ?? NULL,
+                'email_bcc' => $bcc ?? NULL,
+                'mail_subject' => $mail_subject,
+                'mail_body' => $mail_body,
+                'base_url' => $baseUrl,
+            ];
+            $mailLogData = [
+                'email_from' => config('common.FRONTEND_FROM_EMAIL'),
+                'email_type' => $this->func_name,
+                'name' => $user['name'],
+            ];
+            // Serialize the data
+            $mailDataSerialized = serialize($mailData);
+            $mailLogDataSerialized = serialize($mailLogData);
+            // Queue the email job
+            Mail::to($to)->cc($cc)->bcc($bcc)->queue(new SendEmail($mailDataSerialized, $mailLogDataSerialized));
         }
     } 
 
@@ -750,20 +709,34 @@ class UserEventsListener extends BaseEvent
                 $email_content->message
             );
             $mail_subject = str_replace(['%app_id'], $user['app_id'],$email_content->subject);
-            Mail::send('email', ['baseUrl'=>env('REDIRECT_URL',''),'varContent' => $mail_body, ],
-                function ($message) use ($user, $mail_subject, $mail_body) {
-                $message->from(config('common.FRONTEND_FROM_EMAIL'), config('common.FRONTEND_FROM_EMAIL_NAME'));
-                $message->to($user["receiver_email"], $user["receiver_user_name"])->subject($mail_subject);
-                $mailContent = [
-                    'email_from' => config('common.FRONTEND_FROM_EMAIL'),
-                    'email_to' => array($user["receiver_email"]),
-                    'email_type' => $this->func_name,
-                    'name' => $user['receiver_user_name'],
-                    'subject' => $mail_subject,
-                    'body' => $mail_body,
-                ];
-                FinanceModel::logEmail($mailContent);
-            });
+            // if( env('SEND_MAIL_ACTIVE') == 1){
+            //     $to = explode(',', env('SEND_MAIL'));
+            //     $cc = explode(',', env('SEND_MAIL_CC'));
+            //     $bcc = explode(',', env('SEND_MAIL_BCC'));
+            // }else{
+                $to = [['name' => $user["receiver_user_name"] , 'email' => $user["receiver_email"]]];
+                $cc = \Helpers::ccOrBccEmailsArray($email_content->cc);
+                $bcc = \Helpers::ccOrBccEmailsArray($email_content->bcc);
+            // }
+            $baseUrl = env('REDIRECT_URL','');
+            $mailData = [
+                'email_to' => $to ?? NULL,
+                'email_cc' => $cc ?? NULL,
+                'email_bcc' => $bcc ?? NULL,
+                'mail_subject' => $mail_subject,
+                'mail_body' => $mail_body,
+                'base_url' => $baseUrl,
+            ];
+            $mailLogData = [
+                'email_from' => config('common.FRONTEND_FROM_EMAIL'),
+                'email_type' => $this->func_name,
+                'name' => $user['name'],
+            ];
+            // Serialize the data
+            $mailDataSerialized = serialize($mailData);
+            $mailLogDataSerialized = serialize($mailLogData);
+            // Queue the email job
+            Mail::to($to)->cc($cc)->bcc($bcc)->queue(new SendEmail($mailDataSerialized, $mailLogDataSerialized));
         }
     } 
 
@@ -779,21 +752,34 @@ class UserEventsListener extends BaseEvent
                 $email_content->message
             );
             $mail_subject = str_replace(['%app_id'], $user['app_id'],$email_content->subject);
-
-            Mail::send('email', ['baseUrl'=>env('REDIRECT_URL',''),'varContent' => $mail_body, ],
-                function ($message) use ($user, $mail_subject, $mail_body) {
-                $message->from(config('common.FRONTEND_FROM_EMAIL'), config('common.FRONTEND_FROM_EMAIL_NAME'));
-                $message->to($user["receiver_email"], $user["receiver_user_name"])->subject($mail_subject);
-                $mailContent = [
-                    'email_from' => config('common.FRONTEND_FROM_EMAIL'),
-                    'email_to' => array($user["receiver_email"]),
-                    'email_type' => $this->func_name,
-                    'name' => $user['receiver_user_name'],
-                    'subject' => $mail_subject,
-                    'body' => $mail_body,
-                ];
-                FinanceModel::logEmail($mailContent);
-            });
+            // if( env('SEND_MAIL_ACTIVE') == 1){
+            //     $to = explode(',', env('SEND_MAIL'));
+            //     $cc = explode(',', env('SEND_MAIL_CC'));
+            //     $bcc = explode(',', env('SEND_MAIL_BCC'));
+            // }else{
+                $to = [['name' => $user["receiver_user_name"] , 'email' => $user["receiver_email"]]];
+                $cc = \Helpers::ccOrBccEmailsArray($email_content->cc);
+                $bcc = \Helpers::ccOrBccEmailsArray($email_content->bcc);
+            // }
+            $baseUrl = env('REDIRECT_URL','');
+            $mailData = [
+                'email_to' => $to ?? NULL,
+                'email_cc' => $cc ?? NULL,
+                'email_bcc' => $bcc ?? NULL,
+                'mail_subject' => $mail_subject,
+                'mail_body' => $mail_body,
+                'base_url' => $baseUrl,
+            ];
+            $mailLogData = [
+                'email_from' => config('common.FRONTEND_FROM_EMAIL'),
+                'email_type' => $this->func_name,
+                'name' => $user['name'],
+            ];
+            // Serialize the data
+            $mailDataSerialized = serialize($mailData);
+            $mailLogDataSerialized = serialize($mailLogData);
+            // Queue the email job
+            Mail::to($to)->cc($cc)->bcc($bcc)->queue(new SendEmail($mailDataSerialized, $mailLogDataSerialized));
         }
     }
 
@@ -809,21 +795,34 @@ class UserEventsListener extends BaseEvent
                 $email_content->message
             );
             $mail_subject = str_replace(['%app_id'], $user['app_id'],$email_content->subject);
-
-            Mail::send('email', ['baseUrl'=>env('REDIRECT_URL',''),'varContent' => $mail_body, ],
-                function ($message) use ($user, $mail_subject, $mail_body) {
-                $message->from(config('common.FRONTEND_FROM_EMAIL'), config('common.FRONTEND_FROM_EMAIL_NAME'));
-                $message->to($user["receiver_email"], $user["receiver_user_name"])->subject($mail_subject);
-                $mailContent = [
-                    'email_from' => config('common.FRONTEND_FROM_EMAIL'),
-                    'email_to' => array($user["receiver_email"]),
-                    'email_type' => $this->func_name,
-                    'name' => $user['receiver_user_name'],
-                    'subject' => $mail_subject,
-                    'body' => $mail_body,
-                ];
-                FinanceModel::logEmail($mailContent);
-            });
+            // if( env('SEND_MAIL_ACTIVE') == 1){
+            //     $to = explode(',', env('SEND_MAIL'));
+            //     $cc = explode(',', env('SEND_MAIL_CC'));
+            //     $bcc = explode(',', env('SEND_MAIL_BCC'));
+            // }else{
+                $to = [['name' => $user["receiver_user_name"] , 'email' => $user["receiver_email"]]];
+                $cc = \Helpers::ccOrBccEmailsArray($email_content->cc);
+                $bcc = \Helpers::ccOrBccEmailsArray($email_content->bcc);
+            // }
+            $baseUrl = env('REDIRECT_URL','');
+            $mailData = [
+                'email_to' => $to ?? NULL,
+                'email_cc' => $cc ?? NULL,
+                'email_bcc' => $bcc ?? NULL,
+                'mail_subject' => $mail_subject,
+                'mail_body' => $mail_body,
+                'base_url' => $baseUrl,
+            ];
+            $mailLogData = [
+                'email_from' => config('common.FRONTEND_FROM_EMAIL'),
+                'email_type' => $this->func_name,
+                'name' => $user['name'],
+            ];
+            // Serialize the data
+            $mailDataSerialized = serialize($mailData);
+            $mailLogDataSerialized = serialize($mailLogData);
+            // Queue the email job
+            Mail::to($to)->cc($cc)->bcc($bcc)->queue(new SendEmail($mailDataSerialized, $mailLogDataSerialized));
         }
     } 
 
@@ -924,24 +923,19 @@ class UserEventsListener extends BaseEvent
             );
             $mail_subject = str_replace(['%app_id'], $user['app_id'],$email_content->subject);
             if( env('SEND_MAIL_ACTIVE') == 1){
-                $to = [
-                    [
-                        'email' => explode(',', env('SEND_MAIL')), 
-                        'name' => NULL,
-                    ]
-                ];
+                $to = explode(',', env('SEND_MAIL'));
+                $cc = explode(',', env('SEND_MAIL_CC'));
+                $bcc = explode(',', env('SEND_MAIL_BCC'));
             }else{
-                $to = [
-                    [
-                        'email' => [$user["receiver_email"],$user["sales_manager_email"]], 
-                        'name' => $user['receiver_user_name'],
-                    ]
-                ];
+                $to = [['name' => $user["receiver_email"] , 'email' => $user["sales_manager_email"]]];
+                $cc = \Helpers::ccOrBccEmailsArray($email_content->cc);
+                $bcc = \Helpers::ccOrBccEmailsArray($email_content->bcc);
             }
-            $funcName = $this->func_name;
             $baseUrl = env('REDIRECT_URL','');
             $mailData = [
-                'email_to' => [$user["receiver_email"],$user["sales_manager_email"]],
+                'email_to' => $to ?? NULL,
+                'email_cc' => $cc ?? NULL,
+                'email_bcc' => $bcc ?? NULL,
                 'mail_subject' => $mail_subject,
                 'mail_body' => $mail_body,
                 'base_url' => $baseUrl,
@@ -955,7 +949,7 @@ class UserEventsListener extends BaseEvent
             $mailDataSerialized = serialize($mailData);
             $mailLogDataSerialized = serialize($mailLogData);
             // Queue the email job
-            Mail::to($to)->queue(new SendEmail($mailDataSerialized, $mailLogDataSerialized));
+            Mail::to($to)->cc($cc)->bcc($bcc)->queue(new SendEmail($mailDataSerialized, $mailLogDataSerialized));
         }
     }
     
@@ -970,24 +964,19 @@ class UserEventsListener extends BaseEvent
                 $email_content->message
             );
             if( env('SEND_MAIL_ACTIVE') == 1){
-                $to = [
-                    [
-                        'email' => explode(',', env('SEND_MAIL')), 
-                        'name' => NULL,
-                    ]
-                ];
+                $to = explode(',', env('SEND_MAIL'));
+                $cc = explode(',', env('SEND_MAIL_CC'));
+                $bcc = explode(',', env('SEND_MAIL_BCC'));
             }else{
-                $to = [
-                    [
-                        'email' => $user["email"], 
-                        'name' => $user['name'],
-                    ]
-                ];
+                $to = [['name' => $user["name"] , 'email' => $user["email"]]];
+                $cc = \Helpers::ccOrBccEmailsArray($email_content->cc);
+                $bcc = \Helpers::ccOrBccEmailsArray($email_content->bcc);
             }
-            $funcName = $this->func_name;
             $baseUrl = env('REDIRECT_URL','');
             $mailData = [
-                'email_to' => [$user["email"]],
+                'email_to' => $to ?? NULL,
+                'email_cc' => $cc ?? NULL,
+                'email_bcc' => $bcc ?? NULL,
                 'mail_subject' => $email_content->subject,
                 'mail_body' => $mail_body,
                 'base_url' => $baseUrl,
@@ -1001,7 +990,7 @@ class UserEventsListener extends BaseEvent
             $mailDataSerialized = serialize($mailData);
             $mailLogDataSerialized = serialize($mailLogData);
             // Queue the email job
-            Mail::to($to)->queue(new SendEmail($mailDataSerialized, $mailLogDataSerialized));
+            Mail::to($to)->cc($cc)->bcc($bcc)->queue(new SendEmail($mailDataSerialized, $mailLogDataSerialized));
         }
     }    
 
@@ -1019,20 +1008,34 @@ class UserEventsListener extends BaseEvent
                 $email_content->message
             );
             $mail_subject = str_replace(['%app_id'], $user['app_id'],$email_content->subject);
-            Mail::send('email', ['baseUrl'=>env('REDIRECT_URL',''),'varContent' => $mail_body, ],
-                function ($message) use ($user, $mail_subject, $mail_body) {
-                $message->from(config('common.FRONTEND_FROM_EMAIL'), config('common.FRONTEND_FROM_EMAIL_NAME'));
-                $message->to($user["receiver_email"], $user["receiver_user_name"])->subject($mail_subject);
-                $mailContent = [
-                    'email_from' => config('common.FRONTEND_FROM_EMAIL'),
-                    'email_to' => array($user["receiver_email"]),
-                    'email_type' => $this->func_name,
-                    'name' => $user['receiver_user_name'],
-                    'subject' => $mail_subject,
-                    'body' => $mail_body,
-                ];
-                FinanceModel::logEmail($mailContent);
-            });
+            // if( env('SEND_MAIL_ACTIVE') == 1){
+            //     $to = explode(',', env('SEND_MAIL'));
+            //     $cc = explode(',', env('SEND_MAIL_CC'));
+            //     $bcc = explode(',', env('SEND_MAIL_BCC'));
+            // }else{
+                $to = [['name' => $user["receiver_user_name"] , 'email' => $user["receiver_email"]]];
+                $cc = \Helpers::ccOrBccEmailsArray($email_content->cc);
+                $bcc = \Helpers::ccOrBccEmailsArray($email_content->bcc);
+            // }
+            $baseUrl = env('REDIRECT_URL','');
+            $mailData = [
+                'email_to' => $to ?? NULL,
+                'email_cc' => $cc ?? NULL,
+                'email_bcc' => $bcc ?? NULL,
+                'mail_subject' => $mail_subject,
+                'mail_body' => $mail_body,
+                'base_url' => $baseUrl,
+            ];
+            $mailLogData = [
+                'email_from' => config('common.FRONTEND_FROM_EMAIL'),
+                'email_type' => $this->func_name,
+                'name' => $user['name'],
+            ];
+            // Serialize the data
+            $mailDataSerialized = serialize($mailData);
+            $mailLogDataSerialized = serialize($mailLogData);
+            // Queue the email job
+            Mail::to($to)->cc($cc)->bcc($bcc)->queue(new SendEmail($mailDataSerialized, $mailLogDataSerialized));
         }
     }
 
@@ -1050,26 +1053,29 @@ class UserEventsListener extends BaseEvent
                 $email_content->message
             );
             $mail_subject = str_replace(['%user_id'], $user['user_id'],$email_content->subject);
-            $email_cc = explode(',', $email_content->cc);
-            if(isset($user['anchor_email'])) {
-                $email_cc[] = ($user['anchor_email']);
-            }
-            if(isset($user['sales_email'])) {
-                $email_cc[] = ($user['sales_email']);
-            }
-            if(isset($user['auth_email'])) {
-                $email_cc[] = ($user['auth_email']);
-            }
-            $to = [
-                [
-                    'email' => trim($user["receiver_email"]), 
-                    'name' => trim($user["receiver_user_name"]),
-                ]
-            ];
+            // if( env('SEND_MAIL_ACTIVE') == 1){
+            //     $to = explode(',', env('SEND_MAIL'));
+            //     $cc = explode(',', env('SEND_MAIL_CC'));
+            //     $bcc = explode(',', env('SEND_MAIL_BCC'));
+            // }else{
+                $to = [['name' => $user["receiver_user_name"] , 'email' => $user["receiver_email"]]];
+                $cc = \Helpers::ccOrBccEmailsArray($email_content->cc);
+                $bcc = \Helpers::ccOrBccEmailsArray($email_content->bcc);
+                if(isset($user['anchor_email'])) {
+                    $bcc[] = $user['anchor_email'];
+                }
+                if(isset($user['sales_email'])) {
+                    $bcc[] = $user['sales_email'];
+                }
+                if(isset($user['auth_email'])) {
+                    $bcc[] = $user['auth_email'];
+                }
+            // }
             $baseUrl = env('REDIRECT_URL','');
             $mailData = [
-                'email_to' => [$user["receiver_email"]],
-                'email_cc' => $email_cc,
+                'email_to' => $to ?? NULL,
+                'email_cc' => $cc ?? NULL,
+                'email_bcc' => $bcc ?? NULL,
                 'mail_subject' => $mail_subject,
                 'mail_body' => $mail_body,
                 'base_url' => $baseUrl,
@@ -1083,7 +1089,7 @@ class UserEventsListener extends BaseEvent
             $mailDataSerialized = serialize($mailData);
             $mailLogDataSerialized = serialize($mailLogData);
             // Queue the email job
-            Mail::to($to)->cc($email_cc)->queue(new SendEmail($mailDataSerialized, $mailLogDataSerialized));
+            Mail::to($to)->cc($cc)->bcc($bcc)->queue(new SendEmail($mailDataSerialized, $mailLogDataSerialized));
         }
     }
 
@@ -1366,15 +1372,20 @@ class UserEventsListener extends BaseEvent
                 $email_content->message
             );
             $mail_subject = $user['subject'];
-            $to = [
-                [
-                    'email' => $user["email"], 
-                    'name' => $user['name'],
-                ]
-            ];
+            // if( env('SEND_MAIL_ACTIVE') == 1){
+            //     $to = explode(',', env('SEND_MAIL'));
+            //     $cc = explode(',', env('SEND_MAIL_CC'));
+            //     $bcc = explode(',', env('SEND_MAIL_BCC'));
+            // }else{
+                $to = [['name' => $user["name"] , 'email' => $user["email"]]];
+                $cc = \Helpers::ccOrBccEmailsArray($email_content->cc);
+                $bcc = \Helpers::ccOrBccEmailsArray($email_content->bcc);
+            // }
             $baseUrl = env('REDIRECT_URL','');
             $mailData = [
-                'email_to' => array($user["email"]),
+                'email_to' => $to ?? NULL,
+                'email_cc' => $cc ?? NULL,
+                'email_bcc' => $bcc ?? NULL,
                 'mail_subject' => $mail_subject,
                 'mail_body' => $mail_body,
                 'base_url' => $baseUrl,
@@ -1388,7 +1399,7 @@ class UserEventsListener extends BaseEvent
             $mailDataSerialized = serialize($mailData);
             $mailLogDataSerialized = serialize($mailLogData);
             // Queue the email job
-            Mail::to($to)->queue(new SendEmail($mailDataSerialized, $mailLogDataSerialized));
+            Mail::to($to)->cc($cc)->bcc($bcc)->queue(new SendEmail($mailDataSerialized, $mailLogDataSerialized));
         }
     }
 
@@ -1409,49 +1420,38 @@ class UserEventsListener extends BaseEvent
                 [$user['name'], $user['curr_user'],$user['curr_email'],$user['trigger_type'],$user['comment'],$user['agency_name'],$user['change_status']],
                 $email_content->message
             );
-            $mail_subject = $user['subject'];
-            // $emailCC = array();
-
-            // foreach ($user['email'] as $key => $emailVal) {
-            //     $emailCC[] = $emailVal;
-            // };
-            
-            $cc = explode(',', $email_content->cc);
-            foreach ($user['email'] as $key => $emailVlaue) {
-                array_push($cc, $emailVlaue);
-            }
-
-            if(isset($email_to) && !empty($email_to)) {
-                if (($key = array_search($email_to, $cc)) !== false) {
-                    unset($cc[$key]);
+            // if( env('SEND_MAIL_ACTIVE') == 1){
+            //     $to = explode(',', env('SEND_MAIL'));
+            //     $cc = explode(',', env('SEND_MAIL_CC'));
+            //     $bcc = explode(',', env('SEND_MAIL_BCC'));
+            // }else{
+                $to = [['name' => NULL, 'email' => $user["trigger_email"]]];
+                $cc = \Helpers::ccOrBccEmailsArray($email_content->cc);
+                $bcc = \Helpers::ccOrBccEmailsArray($email_content->bcc);
+                foreach ($user['email'] as $key => $emailVlaue) {
+                    array_push($cc, $emailVlaue);
                 }
-                $check = array($email_to, $user['curr_email']);
-                $check = array_merge($check, $email_cc);
-                $to = [
-                    [
-                        'email' => $user['trigger_email'], 
-                        'name' => NULL,
-                    ]
-                ];
-                $mail_subject = $email_content->subject . \Carbon\Carbon::today();
-                $baseUrl = env('REDIRECT_URL','');
-                $mailData = [
-                    'email_to' => [$check],
-                    'mail_subject' => $mail_subject,
-                    'mail_body' => $mail_body,
-                    'base_url' => $baseUrl,
-                ];
-                $mailLogData = [
-                    'email_from' => config('common.FRONTEND_FROM_EMAIL'),
-                    'email_type' => $this->func_name,
-                    'name' => $user['curr_user'],
-                ];
-                // Serialize the data
-                $mailDataSerialized = serialize($mailData);
-                $mailLogDataSerialized = serialize($mailLogData);
-                // Queue the email job
-                Mail::to($to)->cc($cc)->queue(new SendEmail($mailDataSerialized, $mailLogDataSerialized));
-            }
+            // }
+            $mail_subject = $user['subject'];
+            $baseUrl = env('REDIRECT_URL','');
+            $mailData = [
+                'email_to' => $to ?? NULL,
+                'email_cc' => $cc ?? NULL,
+                'email_bcc' => $bcc ?? NULL,
+                'mail_subject' => $mail_subject,
+                'mail_body' => $mail_body,
+                'base_url' => $baseUrl,
+            ];
+            $mailLogData = [
+                'email_from' => config('common.FRONTEND_FROM_EMAIL'),
+                'email_type' => $this->func_name,
+                'name' => $user['curr_user'],
+            ];
+            // Serialize the data
+            $mailDataSerialized = serialize($mailData);
+            $mailLogDataSerialized = serialize($mailLogData);
+            // Queue the email job
+            Mail::to($to)->cc($cc)->bcc($bcc)->queue(new SendEmail($mailDataSerialized, $mailLogDataSerialized));
         }
     }
 
@@ -1467,18 +1467,21 @@ class UserEventsListener extends BaseEvent
                 [ucwords($user['name']),$user['email'], $link],
                 $email_content->message
             );
-            $to = [
-                [
-                    'email' => $user["email"], 
-                    'name' => $user['name'],
-                ]
-            ];
-            $mail_subject = $email_content->subject . \Carbon\Carbon::today();
-            $cc = explode(',', $email_content->cc);
+            // if( env('SEND_MAIL_ACTIVE') == 1){
+            //     $to = explode(',', env('SEND_MAIL'));
+            //     $cc = explode(',', env('SEND_MAIL_CC'));
+            //     $bcc = explode(',', env('SEND_MAIL_BCC'));
+            // }else{
+                $to = [['name' => NULL, 'email' => $user["email"]]];
+                $cc = \Helpers::ccOrBccEmailsArray($email_content->cc);
+                $bcc = \Helpers::ccOrBccEmailsArray($email_content->bcc);
+            // }
+            $mail_subject = $email_content->subject;
             $baseUrl = env('REDIRECT_URL','');
             $mailData = [
-                'email_to' => [$user["email"]],
-                'email_cc' => $cc,
+                'email_to' => $to ?? NULL,
+                'email_cc' => $cc ?? NULL,
+                'email_bcc' => $bcc ?? NULL,
                 'mail_subject' => $mail_subject,
                 'mail_body' => $mail_body,
                 'base_url' => $baseUrl,
@@ -1492,7 +1495,7 @@ class UserEventsListener extends BaseEvent
             $mailDataSerialized = serialize($mailData);
             $mailLogDataSerialized = serialize($mailLogData);
             // Queue the email job
-            Mail::to($to)->cc($cc)->queue(new SendEmail($mailDataSerialized, $mailLogDataSerialized));
+            Mail::to($to)->cc($cc)->bcc($bcc)->queue(new SendEmail($mailDataSerialized, $mailLogDataSerialized));
         }
     }
     
@@ -1509,19 +1512,22 @@ class UserEventsListener extends BaseEvent
                 ['', $rowData],
                 $email_content->message
             );
-            $email = explode(',', config('common.LENOVO_NEW_LEAD_CRON_MAIL_TO'));
-            $to = [
-                [
-                    'email' => $email, 
-                    'name' => NULL,
-                ]
-            ];
+            // if( env('SEND_MAIL_ACTIVE') == 1){
+            //     $to = explode(',', env('SEND_MAIL'));
+            //     $cc = explode(',', env('SEND_MAIL_CC'));
+            //     $bcc = explode(',', env('SEND_MAIL_BCC'));
+            // }else{
+                $to = explode(',', config('common.LENOVO_NEW_LEAD_CRON_MAIL_TO'));
+                $cc = \Helpers::ccOrBccEmailsArray($email_content->cc);
+                $bcc = \Helpers::ccOrBccEmailsArray($email_content->bcc);
+            // }
             $mail_subject = $email_content->subject . \Carbon\Carbon::today();
             $cc = explode(',', $email_content->cc);
             $baseUrl = env('REDIRECT_URL','');
             $mailData = [
-                'email_to' => $email,
-                'email_cc' => $cc,
+                'email_to' => $to ?? NULL,
+                'email_cc' => $cc ?? NULL,
+                'email_bcc' => $bcc ?? NULL,
                 'mail_subject' => $mail_subject,
                 'mail_body' => $mail_body,
                 'base_url' => $baseUrl,
@@ -1535,7 +1541,7 @@ class UserEventsListener extends BaseEvent
             $mailDataSerialized = serialize($mailData);
             $mailLogDataSerialized = serialize($mailLogData);
             // Queue the email job
-            Mail::to($to)->cc($cc)->queue(new SendEmail($mailDataSerialized, $mailLogDataSerialized));
+            Mail::to($to)->cc($cc)->bcc($bcc)->queue(new SendEmail($mailDataSerialized, $mailLogDataSerialized));
         }
     }
      
@@ -1569,26 +1575,14 @@ class UserEventsListener extends BaseEvent
             $offerData = view('reports.invoice_due_alrt')->with(['data' => $data['data'], 'userData' => $userData])->render();
             $mail_subject = str_replace(['%user_name'], [$data['user_name']],$email_content->subject);
             if( env('SEND_MAIL_ACTIVE') == 1){
-                $to = [
-                    [
-                        'email' => explode(',', env('CRONINVOICE_SEND_MAIL_TO')), 
-                        'name' => null,
-                    ]
-                ];
-                $email = explode(',', env('CRONINVOICE_SEND_MAIL_TO'));
-                $cc = array_filter(explode(',', env('CRONINVOICE_SEND_MAIL_CC_TO')));
-                $bcc = array_filter(explode(',', env('CRONINVOICE_SEND_MAIL_BCC_TO')));
+                $to = explode(',', env('CRONINVOICE_SEND_MAIL_TO'));
+                $cc = explode(',', env('CRONINVOICE_SEND_MAIL_CC_TO'));
+                $bcc = explode(',', env('CRONINVOICE_SEND_MAIL_BCC_TO'));
             }else{
-                $to = [
-                    [
-                        'email' => 'gaurav.agarwal@zuron.in', //$data["email"]
-                        'name' => $data['user_name'],
-                    ]
-                ];
-                $cc = array_filter(explode(',', $email_content->cc));
-                $bcc = array_filter(explode(',', $email_content->bcc));
+                $to = [['name' => $data["user_name"] , 'email' => $data['email']]];
+                $cc = \Helpers::ccOrBccEmailsArray($email_content->cc);
+                $bcc = \Helpers::ccOrBccEmailsArray($email_content->bcc);
             }
-            $funcName = $this->func_name;
             $baseUrl = env('HTTP_APPURL','');
             $mailData = [
                 'email_to' => ['gaurav.agarwal@zuron.in'], //$data["email"]
@@ -1641,31 +1635,19 @@ class UserEventsListener extends BaseEvent
             $offerData = view('reports.invoice_overdue_alrt')->with(['data' => $data['data'], 'userData' => $userData])->render();
             $mail_subject = str_replace(['%user_name'], [$data['user_name']],$email_content->subject);
             if( env('SEND_MAIL_ACTIVE') == 1){
-                $to = [
-                    [
-                        'email' => explode(',', env('CRONINVOICE_SEND_MAIL_TO')), 
-                        'name' => null,
-                    ]
-                ];
-                $email = explode(',', env('CRONINVOICE_SEND_MAIL_TO'));
-                $cc = array_filter(explode(',', env('CRONINVOICE_SEND_MAIL_CC_TO')));
-                $bcc = array_filter(explode(',', env('CRONINVOICE_SEND_MAIL_BCC_TO')));
+                $to = explode(',', env('SEND_MAIL'));
+                $cc = explode(',', env('SEND_MAIL_CC'));
+                $bcc = explode(',', env('SEND_MAIL_BCC'));
             }else{
-                $to = [
-                    [
-                        'email' => 'gaurav.agarwal@zuron.in', //$data["email"]
-                        'name' => $data['user_name'],
-                    ]
-                ];
-                $cc = array_filter(explode(',', $email_content->cc));
-                $bcc = array_filter(explode(',', $email_content->bcc));
+                $to = [['name' => $data["user_name"] , 'email' => $data['email']]];
+                $cc = \Helpers::ccOrBccEmailsArray($email_content->cc);
+                $bcc = \Helpers::ccOrBccEmailsArray($email_content->bcc);
             }
-            $funcName = $this->func_name;
             $baseUrl = env('HTTP_APPURL','');
             $mailData = [
-                'email_to' => ['gaurav.agarwal@zuron.in'], //$data["email"]
-                'email_bcc' => $bcc,
-                'email_cc' => $cc,
+                'email_to' => $to ?? NULL,
+                'email_cc' => $cc ?? NULL,
+                'email_bcc' => $bcc ?? NULL,
                 'mail_subject' => $mail_subject,
                 'mail_body' => $offerData,
                 'base_url' => $baseUrl,
@@ -1686,25 +1668,34 @@ class UserEventsListener extends BaseEvent
     public function onChargeDeletionRequest($userData){
         $user = unserialize($userData);
         $this->func_name = __FUNCTION__;
-        
-        $to = [];
-        foreach($user as $u) {
-            if(!empty($u['receiver_email']) ){
-                $to[] = $u['receiver_email'];
-            }
-        }
         $email_content = EmailTemplate::getEmailTemplate("CHARGE_DELETION_REQUEST_MAIL");
         $email_cc = explode(',', $email_content->cc);
         $cc = array_filter($email_cc);
         if ($email_content) {
+            if( env('SEND_MAIL_ACTIVE') == 1){
+                $to = explode(',', env('SEND_MAIL'));
+                $cc = explode(',', env('SEND_MAIL_CC'));
+                $bcc = explode(',', env('SEND_MAIL_BCC'));
+            }else{
+                $to = [];
+                foreach($user as $u) {
+                    if(!empty($u['receiver_email']) ){
+                        $to[] = $u['receiver_email'];
+                    }
+                }
+                $cc = \Helpers::ccOrBccEmailsArray($email_content->cc);
+                $bcc = \Helpers::ccOrBccEmailsArray($email_content->bcc);
+            }
+
             $mail_subject = str_replace(['%business_name'], [$user['business_name']],$email_content->subject);
             $mail_body = $email_content->message;
             $mail_body = str_replace(['%url'], ['https://'. config('proin.backend_uri')], $mail_body);
             $mail_body = str_replace(['%business_name'], [$user['business_name']], $mail_body);
             $baseUrl = config('lms.REDIRECT_URL');
             $mailData = [
-                'email_to' => $to,
-                'email_cc' => $cc,
+                'email_to' => $to ?? NULL,
+                'email_cc' => $cc ?? NULL,
+                'email_bcc' => $bcc ?? NULL,
                 'mail_subject' => $mail_subject,
                 'mail_body' => $mail_body,
                 'base_url' => $baseUrl,
@@ -1738,31 +1729,20 @@ class UserEventsListener extends BaseEvent
                 [$user['productType']],
                 $email_content->subject
             );
-            if( env('SEND_MAIL_ACTIVE') == 1){
-                $to = [
-                    [
-                        'email' => explode(',', env('SEND_MAIL')), 
-                        'name' => null,
-                    ]
-                ];
-                $cc = \Helpers::ccOrBccEmailsArray(env('SEND_MAIL_CC'));
-                $bcc = \Helpers::ccOrBccEmailsArray(env('SEND_MAIL_BCC'));
-            }else{
-                $to = [
-                    [
-                        'email' => $user["email"], 
-                        'name' => $user['name'],
-                    ]
-                ];
+            // if( env('SEND_MAIL_ACTIVE') == 1){
+            //     $to = explode(',', env('SEND_MAIL'));
+            //     $cc = explode(',', env('SEND_MAIL_CC'));
+            //     $bcc = explode(',', env('SEND_MAIL_BCC'));
+            // }else{
+                $to = [['name' => $user["name"], 'email' => $user["email"]]];
                 $cc = \Helpers::ccOrBccEmailsArray($email_content->cc);
                 $bcc = \Helpers::ccOrBccEmailsArray($email_content->bcc);
-            }
-            $funcName = $this->func_name;
+            // }
             $baseUrl = env('REDIRECT_URL','');
             $mailData = [
-                'email_to' => [$user["email"]],
-                'email_bcc' => $bcc,
-                'email_cc' => $cc,
+                'email_to' => $to ?? NULL,
+                'email_cc' => $cc ?? NULL,
+                'email_bcc' => $bcc ?? NULL,
                 'mail_subject' => $mail_subject,
                 'mail_body' => $mail_body,
                 'base_url' => $baseUrl,
@@ -1788,11 +1768,15 @@ class UserEventsListener extends BaseEvent
             $mail_subject = str_replace(['%custName','%custId'], [ucwords($data['custName']),ucwords($data['custId'])], $email_content->subject);
             $mail_content = str_replace(['%custName','%custId'], [ucwords($data['custName']),ucwords($data['custId'])], $email_content->message);
 
-            $to = array_filter($data["email"], function($email) {
-                return !empty($email);
-            });
-            $cc = \Helpers::ccOrBccEmailsArray($email_content->cc);
-            $bcc = \Helpers::ccOrBccEmailsArray($email_content->bcc);
+            // if( env('SEND_MAIL_ACTIVE') == 1){
+            //     $to = explode(',', env('SEND_MAIL'));
+            //     $cc = explode(',', env('SEND_MAIL_CC'));
+            //     $bcc = explode(',', env('SEND_MAIL_BCC'));
+            // }else{
+                $to = [['name' => NULL, 'email' => $data["email"]]];
+                $cc = \Helpers::ccOrBccEmailsArray($email_content->cc);
+                $bcc = \Helpers::ccOrBccEmailsArray($email_content->bcc);
+            // }
             $baseUrl = env('REDIRECT_URL','');
             $attachData = [];
             if(!empty($data['attachment'])){
@@ -1869,18 +1853,18 @@ class UserEventsListener extends BaseEvent
                 [$userData['approver_name'], $rowData],
                 $email_content->message
             );
-            $cc = array_filter(explode(',', $email_content->cc));
-            $bcc = array_filter(explode(',', $email_content->bcc));
-            $to = [
-                [
-                    'email' => $data["email"], 
-                    'name' => $data["approver_name"],
-                ]
-            ];
-            $funcName = $this->func_name;
+            // if( env('SEND_MAIL_ACTIVE') == 1){
+            //     $to = explode(',', env('SEND_MAIL'));
+            //     $cc = explode(',', env('SEND_MAIL_CC'));
+            //     $bcc = explode(',', env('SEND_MAIL_BCC'));
+            // }else{
+                $to = [['name' => $data["approver_name"], 'email' => $data["email"]]];
+                $cc = \Helpers::ccOrBccEmailsArray($email_content->cc);
+                $bcc = \Helpers::ccOrBccEmailsArray($email_content->bcc);
+            // }
             $baseUrl = env('HTTP_APPURL','');
             $mailData = [
-                'email_to' => [$data["email"]],
+                'email_to' => $to ?? NULL,
                 'email_cc' => $cc ?? NULL,
                 'email_bcc' => $bcc ?? NULL,
                 'mail_subject' => $mail_subject,
@@ -1943,17 +1927,18 @@ class UserEventsListener extends BaseEvent
                 [$userData['user_name'],$userData['email'], $rowData],
                 $email_content->message
             );
-            $cc = array_filter(explode(',', $email_content->cc));
-            $bcc = array_filter(explode(',', $email_content->bcc));
-            $to = [
-                [
-                    'email' => $data["email"], 
-                    'name' => $data["user_name"],
-                ]
-            ];
+            // if( env('SEND_MAIL_ACTIVE') == 1){
+            //     $to = explode(',', env('SEND_MAIL'));
+            //     $cc = explode(',', env('SEND_MAIL_CC'));
+            //     $bcc = explode(',', env('SEND_MAIL_BCC'));
+            // }else{
+                $to = [['name' => $data["user_name"], 'email' => $data["email"]]];
+                $cc = \Helpers::ccOrBccEmailsArray($email_content->cc);
+                $bcc = \Helpers::ccOrBccEmailsArray($email_content->bcc);
+            // }
             $baseUrl = env('HTTP_APPURL','');
             $mailData = [
-                'email_to' => [$data["email"]],
+                'email_to' => $to ?? NULL,
                 'email_cc' => $cc ?? NULL,
                 'email_bcc' => $bcc ?? NULL,
                 'mail_subject' => $mail_subject,
@@ -1981,37 +1966,38 @@ class UserEventsListener extends BaseEvent
     public function onEODChecksAlert($attributes) {
         $data = unserialize($attributes); 
         $this->func_name = __FUNCTION__;
-        $eodCheckData = view('reports.eod_checks')->with(['tally_data' => $data['tally_data'], 'tally_error_data' => $data['tally_error_data']])->render();
-                
+        $mail_body = view('reports.eod_checks')->with(['tally_data' => $data['tally_data'], 'tally_error_data' => $data['tally_error_data']])->render();
+        $mail_subject = $email_content->subject;
         $email_content = EmailTemplate::getEmailTemplate("EOD_CHECKS_ALERT");
         if ($email_content) {
-            Mail::send('email', ['baseUrl'=> env('HTTP_APPURL',''), 'varContent' => $eodCheckData],
-                function ($message) use ($data, $email_content, $eodCheckData) {                    
-                    $email = array_filter(explode(',',env('EOD_CHECK_MAIL_TO')));
-                    $cc = array_filter(explode(',', $email_content->cc));
-                    $bcc = array_filter(explode(',', $email_content->bcc));
-                    if (!empty($bcc)) {
-                        $message->bcc($bcc);
-                    }
-                    if (!empty($cc)) {
-                        $message->cc($cc);
-                    }
-
-                    $mail_subject = $email_content->subject;
-                    $message->from(config('common.FRONTEND_FROM_EMAIL'), config('common.FRONTEND_FROM_EMAIL_NAME'));
-                    $message->to($email);
-                    $message->subject($mail_subject);
-                    $mailContent = [
-                        'email_from' => config('common.FRONTEND_FROM_EMAIL'),
-                        'email_to' => $email,
-                        'email_cc' => $cc ?? NULL,
-                        'email_bcc' => $bcc ?? NULL,
-                        'email_type' => $this->func_name,
-                        'subject' => $mail_subject,
-                        'body' => $eodCheckData,
-                    ];
-                    FinanceModel::logEmail($mailContent);
-            });
+            // if( env('SEND_MAIL_ACTIVE') == 1){
+            //     $to = explode(',', env('SEND_MAIL'));
+            //     $cc = explode(',', env('SEND_MAIL_CC'));
+            //     $bcc = explode(',', env('SEND_MAIL_BCC'));
+            // }else{
+                $to = explode(',',env('EOD_CHECK_MAIL_TO'));
+                $cc = \Helpers::ccOrBccEmailsArray($email_content->cc);
+                $bcc = \Helpers::ccOrBccEmailsArray($email_content->bcc);
+            // }
+            $baseUrl = env('HTTP_APPURL','');
+            $mailData = [
+                'email_to' => $to ?? NULL,
+                'email_cc' => $cc ?? NULL,
+                'email_bcc' => $bcc ?? NULL,
+                'mail_subject' => $mail_subject,
+                'mail_body' => $mail_body,
+                'base_url' => $baseUrl,
+            ];
+            $mailLogData = [
+                'email_from' => config('common.FRONTEND_FROM_EMAIL'),
+                'email_type' => $this->func_name,
+                'user_name' => $email_content->name,
+            ];
+            // Serialize the data
+            $mailDataSerialized = serialize($mailData);
+            $mailLogDataSerialized = serialize($mailLogData);
+            // Queue the email job
+            Mail::to($to)->cc($cc)->bcc($bcc)->queue(new SendEmail($mailDataSerialized, $mailLogDataSerialized));
         }                
     }
 
@@ -2023,38 +2009,39 @@ class UserEventsListener extends BaseEvent
     public function onDisbPayChecksAlert($attributes) {
         $data = unserialize($attributes);
         $this->func_name = __FUNCTION__;
-        $eodCheckData = view('reports.disb_pay_checks')->with(['disbursals' => $data['disbursals'], 'payments' => $data['payments'], 'actualDisbursals' => $data['actualDisbursals'],'actualPayment'=>$data['actualPayment'],'actualRefund'=>$data['actualRefund']])->render();
-                
         $email_content = EmailTemplate::getEmailTemplate("EOD_CHECKS_ALERT");
+        $mail_body = view('reports.disb_pay_checks')->with(['disbursals' => $data['disbursals'], 'payments' => $data['payments'], 'actualDisbursals' => $data['actualDisbursals'],'actualPayment'=>$data['actualPayment'],'actualRefund'=>$data['actualRefund']])->render();
+        $mail_subject = $email_content->subject;
         if ($email_content) {
-            Mail::send('email', ['baseUrl'=> env('HTTP_APPURL',''), 'varContent' => $eodCheckData],
-                function ($message) use ($data, $email_content, $eodCheckData) {                 
-                    $email = array_filter(explode(',',env('EOD_CHECK_MAIL_TO')));
-                    $cc = array_filter(explode(',', $email_content->cc));
-                    $bcc = array_filter(explode(',', $email_content->bcc));
-                    if (!empty($bcc)) {
-                        $message->bcc($bcc);
-                    }
-                    if (!empty($cc)) {
-                        $message->cc($cc);
-                    }
-
-                    $mail_subject = $email_content->subject;
-                    $message->from(config('common.FRONTEND_FROM_EMAIL'), config('common.FRONTEND_FROM_EMAIL_NAME'));
-                    $message->to($email);
-                    $message->subject($mail_subject);
-                    $mailContent = [
-                        'email_from' => config('common.FRONTEND_FROM_EMAIL'),
-                        'email_to' => $email,
-                        'email_cc' => $cc ?? NULL,
-                        'email_bcc' => $bcc ?? NULL,
-                        'email_type' => $this->func_name,
-                        'subject' => $mail_subject,
-                        'body' => $eodCheckData,
-                    ];
-                    FinanceModel::logEmail($mailContent);
-            }); 
-        }
+            // if( env('SEND_MAIL_ACTIVE') == 1){
+            //     $to = explode(',', env('SEND_MAIL'));
+            //     $cc = explode(',', env('SEND_MAIL_CC'));
+            //     $bcc = explode(',', env('SEND_MAIL_BCC'));
+            // }else{
+                $to = explode(',',env('EOD_CHECK_MAIL_TO'));
+                $cc = \Helpers::ccOrBccEmailsArray($email_content->cc);
+                $bcc = \Helpers::ccOrBccEmailsArray($email_content->bcc);
+            // }
+            $baseUrl = env('HTTP_APPURL','');
+            $mailData = [
+                'email_to' => $to ?? NULL,
+                'email_cc' => $cc ?? NULL,
+                'email_bcc' => $bcc ?? NULL,
+                'mail_subject' => $mail_subject,
+                'mail_body' => $mail_body,
+                'base_url' => $baseUrl,
+            ];
+            $mailLogData = [
+                'email_from' => config('common.FRONTEND_FROM_EMAIL'),
+                'email_type' => $this->func_name,
+                'user_name' => $email_content->name,
+            ];
+            // Serialize the data
+            $mailDataSerialized = serialize($mailData);
+            $mailLogDataSerialized = serialize($mailLogData);
+            // Queue the email job
+            Mail::to($to)->cc($cc)->bcc($bcc)->queue(new SendEmail($mailDataSerialized, $mailLogDataSerialized));
+        }    
     }
     
     /**

@@ -46,7 +46,7 @@ class SendEmail extends Mailable implements ShouldQueue
             $this->mailLogData['status'] = 0;
             $this->mailLogData['subject'] = $this->mailData['mail_subject'];
             $this->mailLogData['body'] = $this->mailData['mail_body'];
-            $this->mailLogData['email_to'] = $this->mailData['email_to'];
+            $this->mailLogData['email_to'] = $this->_convertEmailArray($this->mailData['email_to']);
             $this->mailLogData['email_cc'] = $this->mailData['email_cc'] ?? NULL;
             $this->mailLogData['email_bcc'] = $this->mailData['email_bcc'] ?? NULL;
             $this->mailLogDataId = FinanceModel::logEmail($this->mailLogData);
@@ -116,5 +116,16 @@ class SendEmail extends Mailable implements ShouldQueue
         }
 
         return $email;
+    }
+
+    private function _convertEmailArray($emailArray)
+    {
+        $emailArray = (array) $emailArray;
+
+        if (isset($emailArray[0]['email'])) {
+            return array_column($emailArray, 'email');
+        }
+
+        return $emailArray;
     }
 }
