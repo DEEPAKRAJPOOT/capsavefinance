@@ -567,12 +567,18 @@ $(document).on('blur','.role_change', function (){
                 }
                 selector.parents('.parent_role_div').find('.role_user').empty();
 
-               
                 $.each(optionList, function (index, data) {
                     let check = '';
-                    if (selected_value.indexOf(index) != -1) {
+                   /* if (selected_value.indexOf(index) != -1) {
+                        check = 'selected="selected"';
+                    } */
+                    //console.log(selected_value);
+                    $.each(selected_value, function(index1,data1) {
+                        if (data1 == index) {
                         check = 'selected="selected"';
                     }
+                    }) 
+
                     selector.parents('.parent_role_div').find('.role_user').append('<option  value="' + index + '"  ' + check + ' >' + data + '</option>');
                 });
                 selector.parents('.parent_role_div').find('.multi-select-role-users').multiselect('rebuild');

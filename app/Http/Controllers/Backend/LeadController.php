@@ -910,7 +910,6 @@ class LeadController extends Controller {
                     }                            
                 }
             }
-            
             $updateAnchInfo = $this->userRepo->updateAnchor($anchId, $arrAnchorData);
             $arrAnchorUserData = [
                 'f_name' => $arrAnchorVal['employee'],
