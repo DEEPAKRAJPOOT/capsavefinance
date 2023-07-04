@@ -875,12 +875,13 @@ class UserEventsListener extends BaseEvent
         'borrowerLimitData'=> $user['borrowerLimitData']
         ])->render();
         $mailData = [
+            'email_to' => $email,
+            'email_cc' => $cc ?? NULL,
+            'email_bcc' => NULL,
             'mail_subject' => $user['email_subject'],
             'mail_body' => $mail_body,
             'base_url' => $baseUrl,
             'attachments' => $user['fileAttachments'],
-            'email_cc' => $cc ?? NULL,
-            'email_to' => $email,
         ];
         $mailLogData = [
             'email_from' => config('common.FRONTEND_FROM_EMAIL'),
