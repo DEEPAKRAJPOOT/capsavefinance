@@ -569,14 +569,10 @@ $(document).on('blur','.role_change', function (){
 
                 $.each(optionList, function (index, data) {
                     let check = '';
-                   /* if (selected_value.indexOf(index) != -1) {
-                        check = 'selected="selected"';
-                    } */
-                    //console.log(selected_value);
                     $.each(selected_value, function(index1,data1) {
                         if (data1 == index) {
-                        check = 'selected="selected"';
-                    }
+                            check = 'selected="selected"';
+                        }
                     }) 
 
                     selector.parents('.parent_role_div').find('.role_user').append('<option  value="' + index + '"  ' + check + ' >' + data + '</option>');
