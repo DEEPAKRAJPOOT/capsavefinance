@@ -685,7 +685,7 @@ class UserEventsListener extends BaseEvent
             $mailLogData = [
                 'email_from' => config('common.FRONTEND_FROM_EMAIL'),
                 'email_type' => $this->func_name,
-                'name' => $user['name'],
+                'name' => $user['name'] ?? '',
             ];
             // Serialize the data
             $mailDataSerialized = serialize($mailData);
