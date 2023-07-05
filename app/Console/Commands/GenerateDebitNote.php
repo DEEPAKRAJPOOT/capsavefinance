@@ -44,6 +44,8 @@ class GenerateDebitNote extends Command
      */
     public function handle()
     {
+        $this->info('This functionality is stopped due to techinal issue.');
+        die();
         ini_set("memory_limit", "-1");
         ini_set('max_execution_time', 10000);
         $controller = \App::make('App\Http\Controllers\Lms\userInvoiceController');
