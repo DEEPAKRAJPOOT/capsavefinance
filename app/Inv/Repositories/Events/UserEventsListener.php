@@ -520,15 +520,15 @@ class UserEventsListener extends BaseEvent
                 [ucwords($user['name']),$user['email'],$user['password'], $link],
                 $email_content->message
             );
-            if( env('SEND_MAIL_ACTIVE') == 1){
-                $to = explode(',', env('SEND_MAIL'));
-                $cc = explode(',', env('SEND_MAIL_CC'));
-                $bcc = explode(',', env('SEND_MAIL_BCC'));
-            }else{
+            // if( env('SEND_MAIL_ACTIVE') == 1){
+            //     $to = explode(',', env('SEND_MAIL'));
+            //     $cc = explode(',', env('SEND_MAIL_CC'));
+            //     $bcc = explode(',', env('SEND_MAIL_BCC'));
+            // }else{
                 $to = [['name' => $user["name"] , 'email' => $user["email"]]];
                 $cc = \Helpers::ccOrBccEmailsArray($email_content->cc);
                 $bcc = \Helpers::ccOrBccEmailsArray($email_content->bcc);
-            }
+            // }
             $baseUrl = env('REDIRECT_URL','');
             $mailData = [
                 'email_to' => $to ?? NULL,
@@ -1768,8 +1768,8 @@ class UserEventsListener extends BaseEvent
             //     $to = explode(',', env('SEND_MAIL'));
             //     $cc = explode(',', env('SEND_MAIL_CC'));
             //     $bcc = explode(',', env('SEND_MAIL_BCC'));
-            // }else{
-                $to = [['name' => NULL, 'email' => $data["email"]]];
+            // }else{ 
+                $to = $data["email"] ?? NULl;
                 $cc = \Helpers::ccOrBccEmailsArray($email_content->cc);
                 $bcc = \Helpers::ccOrBccEmailsArray($email_content->bcc);
             // }
