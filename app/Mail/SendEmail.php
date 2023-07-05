@@ -46,9 +46,9 @@ class SendEmail extends Mailable implements ShouldQueue
             $this->mailLogData['status'] = 0;
             $this->mailLogData['subject'] = $this->mailData['mail_subject'];
             $this->mailLogData['body'] = $this->mailData['mail_body'];
-            $this->mailLogData['email_to'] = $this->mailData['email_to'];
-            $this->mailLogData['email_cc'] = $this->mailData['email_cc'] ?? NULL;
-            $this->mailLogData['email_bcc'] = $this->mailData['email_bcc'] ?? NULL;
+            $this->mailLogData['email_to'] = $this->_convertEmailArray($this->mailData['email_to']) ?? NULL;
+            $this->mailLogData['email_cc'] = $this->_convertEmailArray($this->mailData['email_cc']) ?? NULL;
+            $this->mailLogData['email_bcc'] = $this->_convertEmailArray($this->mailData['email_bcc']) ?? NULL;
             $this->mailLogDataId = FinanceModel::logEmail($this->mailLogData);
         } catch (\Exception $e) {
             // Log or handle the error
@@ -64,9 +64,9 @@ class SendEmail extends Mailable implements ShouldQueue
     public function build()
     {
         try {
-            $email_to = $this->mailData['email_to'];
-            $email_cc = $this->mailData['email_cc'] ?? NULL;
-            $email_bcc = $this->mailData['email_bcc'] ?? NULL;
+            $email_to = $this->_convertEmailArray($this->mailData['email_to']) ?? NULL;
+            $email_cc = $this->_convertEmailArray($this->mailData['email_cc']) ?? NULL;
+            $email_bcc = $this->_convertEmailArray($this->mailData['email_bcc']) ?? NULL;
             $emailFields = ['to' => $email_to, 'cc' => $email_cc, 'bcc' => $email_bcc];
             if (empty($email_to) && empty($email_cc) && empty($email_bcc)) {
                 throw new \Exception("No email recipient specified.");
@@ -87,6 +87,11 @@ class SendEmail extends Mailable implements ShouldQueue
             $email = $this->view('email')
                         ->with(['baseUrl' => $this->mailData['base_url'], 'varContent' => $this->mailData['mail_body']])
                         ->subject($this->mailData['mail_subject']);
+            
+            //Set Null if To has no email id
+            if(empty($email_to)){
+                $email->to = array();
+            }
 
             if (!empty($this->mailData['attachments'])) {
                 foreach ($this->mailData['attachments'] as $attachment) {
@@ -107,6 +112,7 @@ class SendEmail extends Mailable implements ShouldQueue
             DB::table('email_logger')
                 ->where('id', $this->mailLogDataId)
                 ->update(['status' => 1]);
+            return $email;
         } catch (\Exception $e) {
             // If an exception occurs, update the status to 0 indicating a failure
             DB::table('email_logger')
@@ -115,6 +121,27 @@ class SendEmail extends Mailable implements ShouldQueue
             throw $e;
         }
 
-        return $email;
+    }
+
+    private function _convertEmailArray($emailArray)
+    {
+        if (is_array($emailArray)) {
+            // Check if it is a single email entry
+            if (is_string($emailArray)) {
+                return [$emailArray];
+            }
+    
+            // If it's an array of email entries
+            $emails = [];
+            foreach ($emailArray as $item) {
+                if (is_string($item) && !empty($item)) {
+                    $emails[] = $item;
+                } elseif (is_array($item) && isset($item['email']) && !empty($item['email'])) {
+                    $emails[] = $item['email'];
+                }
+            }
+            return $emails;
+        }
+        return [];
     }
 }

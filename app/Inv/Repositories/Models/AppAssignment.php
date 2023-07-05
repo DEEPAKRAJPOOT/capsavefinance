@@ -92,8 +92,9 @@ class AppAssignment extends BaseModel
         }
 
         $status =  self::create($attributes);
-        if($sendEmail)
-        dispatch(new ProcessMails($status));
+        if($sendEmail){
+            ProcessMails::dispatch($status)->delay(now()->addSeconds(10));
+        }
         return true;
     }
     
