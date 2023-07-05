@@ -3441,7 +3441,7 @@ class DataRenderer implements DataProviderInterface
                     function ($program) {
                         // dd($program->anchors->is_fungible);
                     $prgmType = '';
-                    if($program->anchors->is_fungible === "1"){
+                    if($program->anchors->is_fungible === 1){
                         $prgmType = 'Fungible';
                     }else{
                         $prgmType = 'Non-Fungible';
