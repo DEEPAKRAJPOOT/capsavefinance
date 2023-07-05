@@ -3156,6 +3156,7 @@ class Helper extends PaypalHelper
         {
             $appId = (int) $arrData['app_id'];
             $status = 0;
+            $curAppProducts = [];
             foreach($arrData['group'] as $key => $groupData) {
                 $biz = Business::find($groupData['borrower']);
                 $inputArr = array(
@@ -3173,10 +3174,16 @@ class Helper extends PaypalHelper
                 );
                 $inputArr['final_sanction'] = $inputArr['sanction'];
                 $inputArr['final_outstanding'] = $inputArr['outstanding'];
-
+                if($appId == $groupData['biz_app_id']){
+                    $curAppProducts[] = $groupData['product_type'];
+                }
                 UcicUserUcic::where('app_id',$appId)->update(['group_id' => $arrData['group_id']]);
-                AppGroupDetail::updateOrcreate(['app_id' => $appId, 'biz_app_id' => $groupData['biz_app_id'], 'product_id' => $groupData['product_type']], $inputArr);
+                AppGroupDetail::updateOrcreate(['app_id' => $appId, 'ucic_id' => $groupData['ucic_id'], 'product_id' => $groupData['product_type']], $inputArr);
             }
+            //Delete removed product from application  
+            AppGroupDetail::where(['app_id' => $appId, 'biz_app_id' => $appId])
+            ->whereNotIn('product_id',array_unique($curAppProducts))
+            ->delete();
             AppGroupDetail::where('app_id', $appId)->whereNotIn('group_id', [$arrData['group_id']])->delete();
         }
     }
