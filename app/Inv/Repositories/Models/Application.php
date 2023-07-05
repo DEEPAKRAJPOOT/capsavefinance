@@ -156,9 +156,6 @@ class Application extends BaseModel
         $roleData = User::getBackendUser(\Auth::user()->user_id);
         $curUserId = \Auth::user()->user_id;
         $userArr = Helpers::getChildUsersWithParent($curUserId);
-        if($roleData[0]->is_allapp_access !== '1') {
-            $userArr[] = 1;
-        }
         $query = self::select('app.user_id','app.app_id', 'app.app_code' ,'app.curr_status_id', 'biz.biz_entity_name', 'biz.biz_id', 
                 'app.status','app_assign.to_id', 'users.anchor_id', 'users.is_buyer as user_type', 'app.renewal_status', 'app.app_type',
                 DB::raw("CONCAT_WS(' ', rta_users.f_name, rta_users.l_name) AS assoc_anchor"),
