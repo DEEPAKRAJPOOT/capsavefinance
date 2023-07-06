@@ -190,6 +190,6 @@ class GenerateNotePdf implements ShouldQueue
                 'custName' => $custName,
                 'invoiceBorneBy' => $invoiceBorneBy,
             );
-            \Event::dispatch("USER_INVOICE_MAIL", serialize($emailData));
+            // \Event::dispatch("USER_INVOICE_MAIL", serialize($emailData));
     }
 }
