@@ -54,7 +54,7 @@ class FactFileTransfer extends Command
                     $date = Carbon::parse($tallyData->end_date)->format('d-m-Y') ?? null;
                     $journalSourcePath = 'public/factDocument/tally_' . $batch_no . '/Fact-Journal-' . $batch_no . '.xlsx';
                     $paymentSourcePath = 'public/factDocument/tally_' . $batch_no . '/Fact-Payment-' . $batch_no . '.xlsx';
-                    if(Storage::exists($journalSourcePath) && Storage::exists($paymentSourcePath)){
+                    if(Storage::exists($journalSourcePath) || Storage::exists($paymentSourcePath)){
                         FactFileTransferJob::dispatch($date,$journalSourcePath,$paymentSourcePath,$tally_id);
                     }
                 }
