@@ -573,29 +573,6 @@ class FinanceController extends Controller {
                     $transType = $fetchedArr['trans_type'];
                     $transDate = date('Y-m-d', strtotime($fetchedArr['voucher_date'])); 
                 }
-            } else {
-                $records['PAYMENT'][] =  [
-                    "voucher" => '',
-                    "sr"=>'',
-                    "date" => '',
-                    "description" => '',
-                    "chq_/_ref_number"=> '',
-                    "dt_value" => '',
-                    "fc_amount" => '',
-                    "amount" => '',
-                    "bank_code" => '',
-                    "bank_name" => '',
-                    "account_no" => '',
-                    "payment_vendor_name" => '',
-                    "paid_to_client" => '',
-                    "code" => '',
-                    "remarks" => '',
-                    "type" => '',
-                    "gL_code" => '',
-                    "remark" => '',
-                    "upload_status" => '',
-                    "vendor_code_exists" => '',
-                ];
             }
 
 
@@ -673,30 +650,6 @@ class FinanceController extends Controller {
                 }
             }
 
-            if (empty($records['PAYMENT'])) {
-                $records['PAYMENT'][] =  [
-                    "voucher" => '',
-                    "sr"=>'',
-                    "date" => '',
-                    "description" => '',
-                    "chq_/_ref_number"=> '',
-                    "dt_value" => '',
-                    "fc_amount" => '',
-                    "amount" => '',
-                    "bank_code" => '',
-                    "bank_name" => '',
-                    "account_no" => '',
-                    "payment_vendor_name" => '',
-                    "paid_to_client" => '',
-                    "code" => '',
-                    "remarks" => '',
-                    "type" => '',
-                    "gL_code" => '',
-                    "remark" => '',
-                    "upload_status" => '',
-                    "vendor_code_exists" => '',
-                ];
-            }
 
             $toExportData = $records;
             return $this->facPaymentFileExcel($toExportData['PAYMENT'], "Fact-Payment-$batch_no.xlsx");
@@ -869,34 +822,6 @@ class FinanceController extends Controller {
                         "gST_identification_number_(GSTIN)" => '',
                     ];
                 }
-            }else{
-                $records['JOURNAL'][] = [
-                    "voucher_no" => '',
-                    "voucher_date"=> '',
-                    "voucher_narration" => '',
-                    "general_ledger_code" => '',
-                    "document_class"=> '',
-                    "d_/_c" => '',
-                    "amount" => '',
-                    "description" => '',
-                    "item_serial_number" => '',
-                    "tax_code" => '',
-                    "name" => '',
-                    "gST_hSN_code" => '',
-                    "sAC_code" => '',
-                    "gST_state_name" => '',
-                    "address_line_1" => '',
-                    "address_line_2" => '',
-                    "address_line_3" => '',
-                    "city" => '',
-                    "country" => '',
-                    "postal_code" => '',
-                    "telephone_number" => '',
-                    "mobile_phone_number" => '',
-                    "fAX" => '',
-                    "email" => '',
-                    "gST_identification_number_(GSTIN)" => '',
-                ];
             }
 
             $toExportData = $records;
@@ -981,36 +906,6 @@ class FinanceController extends Controller {
                 }
             }
 
-            if (empty($records['JOURNAL'])) {
-                $records['JOURNAL'][] =  [
-                    "voucher_no" => '',
-                    "voucher_date"=> '',
-                    "voucher_narration" => '',
-                    "general_ledger_code" => '',
-                    "document_class"=> '',
-                    "d_/_c" => '',
-                    "amount" => '',
-                    "description" => '',
-                    "item_serial_number" => '',
-                    "tax_code" => '',
-                    "name" => '',
-                    "gST_hSN_code" => '',
-                    "sAC_code" => '',
-                    "gST_state_name" => '',
-                    "address_line_1" => '',
-                    "address_line_2" => '',
-                    "address_line_3" => '',
-                    "city" => '',
-                    "country" => '',
-                    "postal_code" => '',
-                    "telephone_number" => '',
-                    "mobile_phone_number" => '',
-                    "fAX" => '',
-                    "email" => '',
-                    "gST_identification_number_(GSTIN)" => '',
-                ];
-            }
-
             $toExportData = $records;
             return $this->facJournalFileExcel($toExportData['JOURNAL'], "Fact-Journal-$batch_no.xlsx");
         }catch (Exception $ex) {
@@ -1088,7 +983,7 @@ class FinanceController extends Controller {
       }
 
       // Set Data
-      if(isset($data)){
+      if(!empty($data)){
         $dataStyle = array(
           'alignment' => array(
             'horizontal' => Alignment::HORIZONTAL_JUSTIFY,
@@ -1236,7 +1131,7 @@ class FinanceController extends Controller {
       }
 
       // Set Data
-      if(isset($data)){
+      if(!empty($data)){
         $dataStyle = array(
           'alignment' => array(
             'horizontal' => Alignment::HORIZONTAL_JUSTIFY,
