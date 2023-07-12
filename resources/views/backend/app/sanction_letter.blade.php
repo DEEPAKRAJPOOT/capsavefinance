@@ -310,7 +310,7 @@
                                     </td>
                                  </tr>
                                  <tr>
-                                    <td width="33.33%">Investment Payment Frequency</td>
+                                    <td width="33.33%">Interest Payment Frequency</td>
                                     <td width="66.66%" colspan="3">{{getInvestmentPaymentFrequency($offerD['payment_frequency'])}}</td>
                                  </tr>
                                  <tr>

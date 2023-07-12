@@ -238,7 +238,7 @@
                   <td colspan="3">{{getBenchmarkType($supplyOffer->benchmark_date)}}</td>
               </tr>
               <tr>
-                  <td><b>Investment Payment Frequency: </b></td>
+                  <td><b>Interest Payment Frequency: </b></td>
                   <td colspan="3">{{getInvestmentPaymentFrequency($supplyOffer->payment_frequency)}}</td>
               </tr>
               <tr>

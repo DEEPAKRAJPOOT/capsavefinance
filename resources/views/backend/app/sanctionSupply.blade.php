@@ -244,7 +244,7 @@
                         </td>
                       </tr>
                       <tr>
-                        <td  style="border-right: 1px solid #cccccc;border-bottom: 1px solid #cccccc;vertical-align: top;font-size: 14px;text-align:left;padding:5px 10px;" width="33.33%">Investment Payment Frequency</td>
+                        <td  style="border-right: 1px solid #cccccc;border-bottom: 1px solid #cccccc;vertical-align: top;font-size: 14px;text-align:left;padding:5px 10px;" width="33.33%">Interest Payment Frequency</td>
                         <td  style="border-right: 1px solid #cccccc;border-bottom: 1px solid #cccccc;vertical-align: top;font-size: 14px;text-align:left;padding:5px 10px;" width="66.66%" colspan="3">{{getInvestmentPaymentFrequency($offerD['payment_frequency'])}}</td>
                       </tr>
                       <tr>
