@@ -86,16 +86,12 @@ tr.border_bottom td {
                                                     <td></td>
                                                 </tr>
                                                 @foreach($supplyOffer->offerCharges as $key=>$offerCharge)
-                                                @if($key%2 == 0)
                                                 <tr>
                                                     <td></td>
-                                                    @endif
                                                     <td><b>{{$offerCharge->chargeName->chrg_name}} {!!($offerCharge->chrg_type == 2)? ' (%)': ' (&#8377;)'!!}: </b></td>
                                                     <td>{{$offerCharge->chrg_value}}</td>
-                                                    @if($key%2 != 0)
-                                                    <td></td>
+                                                    <td colspan="3"></td>
                                                 </tr>
-                                                @endif
                                                 @endforeach
                                                 <tr>
                                                 <td></td>
@@ -108,7 +104,7 @@ tr.border_bottom td {
                                                 <td></td>
                                                     <td><b>Overdue Interest Rate (%): </b></td>
                                                     <td>{{($supplyOffer->overdue_interest_rate ?? 0) + ($supplyOffer->interest_rate ?? 0)}}</td>
-                                                    <td><b>Investment Payment Frequency: </b></td>
+                                                    <td><b>Interest payment frequency: </b></td>
                                                     <td colspan="3">{{getInvestmentPaymentFrequency($supplyOffer->payment_frequency)}}</td>
                                                 </tr>
                                                 <tr>
@@ -295,7 +291,8 @@ tr.border_bottom td {
                                                 <tr>
                                                     <td></td>
                                                     <td><b>DSA Applicable: </b></td>
-                                                    <td>No</td>       
+                                                    <td>No</td>
+                                                    <td colspan="3"></td>       
                                                 </tr>
                                                 @endif
                                                 @if($loop->last)
