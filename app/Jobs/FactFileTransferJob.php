@@ -58,20 +58,29 @@ class FactFileTransferJob implements ShouldQueue
             }
 
             // Upload to SFTP server
-            if( isset($journalDestinationPath) && isset($datewiseJournalPath) && isset($paymentDestinationPath) && isset($datewisePaymentPath)){
+            if((isset($journalDestinationPath) && isset($datewiseJournalPath)) || (isset($paymentDestinationPath) && isset($datewisePaymentPath))){
+                if(isset($journalDestinationPath)){
                     $factJournalUpload = Storage::disk('fact_ftp')->put($journalDestinationPath, Storage::get($this->journalSourcePath));
+                }
+                if(isset($datewiseJournalPath)){
                     $factJournalUploadDate = Storage::disk('fact_ftp')->put($datewiseJournalPath, Storage::get($this->journalSourcePath));
+                }
+                if(isset($paymentDestinationPath)){
                     $factPaymentUpload = Storage::disk('fact_ftp')->put($paymentDestinationPath,  Storage::get($this->paymentSourcePath));
+                }
+                if(isset($datewisePaymentPath)){
                     $factPaymentUploadDate = Storage::disk('fact_ftp')->put($datewisePaymentPath, Storage::get($this->paymentSourcePath));
+                }
                     
-                    if($factJournalUpload && $factPaymentUpload && $factJournalUploadDate && $factPaymentUploadDate){
-                        $tallyUpdate = \DB::table('tally')->where('id',$this->tally_id)->update(['is_sftp_transfer'=>2]);
-                    }else{
-                        $tallyUpdate = \DB::table('tally')->where('id',$this->tally_id)->update(['is_sftp_transfer'=>0]);
-                        throw new Exception("All file transfer on sftp server failed!  Tally Id: = ".$this->tally_id." and executed at" .Carbon::now()."!");
-                    }
+                if($factJournalUpload || $factJournalUploadDate || $factPaymentUpload || $factPaymentUploadDate){
+                    $tallyUpdate = \DB::table('tally')->where('id',$this->tally_id)->update(['is_sftp_transfer'=>2]);
+                }else{
+                    $tallyUpdate = \DB::table('tally')->where('id',$this->tally_id)->update(['is_sftp_transfer'=>0]);
+                    throw new Exception("All file transfer on sftp server failed!  Tally Id: = ".$this->tally_id." and executed at" .Carbon::now()."!");
+                }
             }else{
                 $tallyUpdate = \DB::table('tally')->where('id',$this->tally_id)->update(['is_sftp_transfer'=>0]);
+                throw new Exception("File Path Missing! Tally Id: = ".$this->tally_id." and executed at" .Carbon::now()."!");
             }
         } catch (\Throwable $th) {
             throw $th;

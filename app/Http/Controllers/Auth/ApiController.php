@@ -1173,10 +1173,6 @@ class ApiController
     $refundArray = $this->createRefundData($refundData, $batch_no);
     $allTransFactVoucher = array_merge($this->journalTransFactVoucher,$this->disbursalTransFactVoucher,$this->receiptTransFactVoucher,$this->refundTransFactVoucher);
     $tally_data = array_merge($disbursalArray, $journalArray , $receiptArray, $receiptReversalArray, $refundArray);
-    if (empty($tally_data)) {
-      $response['message'] =  'No Records are selected to Post in tally.';
-      return $response;
-    }
     $selectedTxnData = $this->selectedTxnData;
     $selectedPaymentData = $this->selectedPaymentData;
     DB::beginTransaction();
@@ -1194,12 +1190,8 @@ class ApiController
           $totalPaymentsRecords = \DB::update('update rta_payments set is_posted_in_tally = 1 where payment_id in(' . implode(', ', $selPayData) . ')');
         }
       }
-      $totalRecords = $totalTxnRecords + $totalPaymentsRecords;
       $recordsTobeInserted = count($selectedTxnData);
-      if (empty($totalRecords)) {
-        DB::rollback();
-        $response['message'] =  'Some error occured. No Record can be posted in tally.';
-      }else{
+      if(1){
         $response['status'] = 'success';
         $batchData = [
           'batch_no' => $batch_no,

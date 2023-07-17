@@ -650,30 +650,6 @@ class FinanceController extends Controller {
                 }
             }
 
-            if (empty($records['PAYMENT'])) {
-                $records['PAYMENT'][] =  [
-                    "voucher" => '',
-                    "sr"=>'',
-                    "date" => '',
-                    "description" => '',
-                    "chq_/_ref_number"=> '',
-                    "dt_value" => '',
-                    "fc_amount" => '',
-                    "amount" => '',
-                    "bank_code" => '',
-                    "bank_name" => '',
-                    "account_no" => '',
-                    "payment_vendor_name" => '',
-                    "paid_to_client" => '',
-                    "code" => '',
-                    "remarks" => '',
-                    "type" => '',
-                    "gL_code" => '',
-                    "remark" => '',
-                    "upload_status" => '',
-                    "vendor_code_exists" => '',
-                ];
-            }
 
             $toExportData = $records;
             return $this->facPaymentFileExcel($toExportData['PAYMENT'], "Fact-Payment-$batch_no.xlsx");
@@ -724,8 +700,7 @@ class FinanceController extends Controller {
             $transDate = "";
             $factGstHand = [];
             if (!empty($result)) {
-            foreach ($result as $key => $value) {
-                
+                foreach ($result as $key => $value) {
                     $new[] = $fetchedArr = (array)$value;
                     $batchNo = $fetchedArr['batch_no'];
                     $voucherDate = date('d-m-Y',strtotime($fetchedArr['voucher_date']));
@@ -791,7 +766,6 @@ class FinanceController extends Controller {
                         }
                     }
                     
-
                     $records['JOURNAL'][] = [
                         "voucher_no" => $fetchedArr['fact_voucher_number'],
                         "voucher_date"=> $transaction_date,
@@ -849,7 +823,6 @@ class FinanceController extends Controller {
                     ];
                 }
             }
-
 
             $toExportData = $records;
             if($tallyData->is_fact_journal_generated == "1"){
@@ -933,36 +906,6 @@ class FinanceController extends Controller {
                 }
             }
 
-            if (empty($records['JOURNAL'])) {
-                $records['JOURNAL'][] =  [
-                    "voucher_no" => '',
-                    "voucher_date"=> '',
-                    "voucher_narration" => '',
-                    "general_ledger_code" => '',
-                    "document_class"=> '',
-                    "d_/_c" => '',
-                    "amount" => '',
-                    "description" => '',
-                    "item_serial_number" => '',
-                    "tax_code" => '',
-                    "name" => '',
-                    "gST_hSN_code" => '',
-                    "sAC_code" => '',
-                    "gST_state_name" => '',
-                    "address_line_1" => '',
-                    "address_line_2" => '',
-                    "address_line_3" => '',
-                    "city" => '',
-                    "country" => '',
-                    "postal_code" => '',
-                    "telephone_number" => '',
-                    "mobile_phone_number" => '',
-                    "fAX" => '',
-                    "email" => '',
-                    "gST_identification_number_(GSTIN)" => '',
-                ];
-            }
-
             $toExportData = $records;
             return $this->facJournalFileExcel($toExportData['JOURNAL'], "Fact-Journal-$batch_no.xlsx");
         }catch (Exception $ex) {
@@ -1040,7 +983,7 @@ class FinanceController extends Controller {
       }
 
       // Set Data
-      if(isset($data)){
+      if(!empty($data)){
         $dataStyle = array(
           'alignment' => array(
             'horizontal' => Alignment::HORIZONTAL_JUSTIFY,
@@ -1056,7 +999,7 @@ class FinanceController extends Controller {
           $excel_row = $key+2;
           $objSpreadsheet->getActiveSheet()
             ->setCellValue('A' . $excel_row, $item['voucher_no'])
-            ->setCellValue('B' . $excel_row, Shared\Date::PHPToExcel($item['voucher_date']))
+            ->setCellValue('B' . $excel_row, $item['voucher_date'] ? Shared\Date::PHPToExcel($item['voucher_date']) : '')
             ->setCellValue('C' . $excel_row, $item['voucher_narration'])
             ->setCellValue('D' . $excel_row, $item['general_ledger_code'])
             ->setCellValue('E' . $excel_row, $item['document_class'])
@@ -1188,7 +1131,7 @@ class FinanceController extends Controller {
       }
 
       // Set Data
-      if(isset($data)){
+      if(!empty($data)){
         $dataStyle = array(
           'alignment' => array(
             'horizontal' => Alignment::HORIZONTAL_JUSTIFY,
@@ -1205,10 +1148,10 @@ class FinanceController extends Controller {
           $objSpreadsheet->getActiveSheet()
             ->setCellValue('A' . $excel_row, $item['voucher'])
             ->setCellValue('B' . $excel_row, $item['sr'])
-            ->setCellValue('C' . $excel_row, Shared\Date::PHPToExcel($item['date']))
+            ->setCellValue('C' . $excel_row, $item['date'] ? Shared\Date::PHPToExcel($item['date']) : '')
             ->setCellValue('D' . $excel_row, $item['description'])
             ->setCellValue('E' . $excel_row, $item['chq_/_ref_number'])
-            ->setCellValue('F' . $excel_row, Shared\Date::PHPToExcel($item['dt_value']))
+            ->setCellValue('F' . $excel_row, $item['dt_value'] ? Shared\Date::PHPToExcel($item['dt_value']) : '')
             ->setCellValue('G' . $excel_row, $item['fc_amount'])
             ->setCellValue('H' . $excel_row, $item['amount'])
             ->setCellValue('I' . $excel_row, $item['bank_code'])
