@@ -1063,13 +1063,13 @@ class UserEventsListener extends BaseEvent
                 $cc = \Helpers::ccOrBccEmailsArray($email_content->cc);
                 $bcc = \Helpers::ccOrBccEmailsArray($email_content->bcc);
                 if(isset($user['anchor_email'])) {
-                    $bcc[] = $user['anchor_email'];
+                    $cc[] = $user['anchor_email'];
                 }
                 if(isset($user['sales_email'])) {
-                    $bcc[] = $user['sales_email'];
+                    $cc[] = $user['sales_email'];
                 }
                 if(isset($user['auth_email'])) {
-                    $bcc[] = $user['auth_email'];
+                    $cc[] = $user['auth_email'];
                 }
             // }
             $baseUrl = env('REDIRECT_URL','');
