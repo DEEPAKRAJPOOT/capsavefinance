@@ -7526,7 +7526,7 @@ class DataRenderer implements DataProviderInterface
     public function getRefundTrans(Request $request, $trans)
     {
         return DataTables::of($trans)
-            ->rawColumns(['select', 'refund','outstanding_amt'])
+            ->rawColumns(['select', 'refund'])
             ->addColumn('disb_date', function($trans){
                 return Carbon::parse($trans->trans_date)->format('d-m-Y');
             })
@@ -7545,7 +7545,7 @@ class DataRenderer implements DataProviderInterface
                 return "₹ ".number_format($trans->amount,2);
             })
             ->addColumn('outstanding_amt', function($trans){
-                return "<div id=".number_format($trans->refundoutstanding,2)." class='ref_amnt_".$trans->trans_id."'>₹" .number_format($trans->refundoutstanding,2)."</div>";
+                return "₹ ".number_format($trans->refundoutstanding,2);
             })
             ->addColumn('refund', function($trans){
                 $result = "<input class='refund' id='".$trans->trans_id."' disabled type='text' max='".round($trans->refundoutstanding,2)."' name='refund[".$trans->trans_id."]' onchange='apport.onRefundChange(".$trans->trans_id.")'>";
@@ -7553,7 +7553,7 @@ class DataRenderer implements DataProviderInterface
             })
             ->addColumn('select', function($trans){
                 $type = $trans->transType->chrg_master_id != 0  ? 'charges' : (in_array($trans->transType->id, [config('lms.TRANS_TYPE.INTEREST'),config('lms.TRANS_TYPE.INTEREST_OVERDUE')]) ? 'interest' : '');
-                $result = "<input class='chkBox check_".$trans->trans_id."' id='".$trans->trans_id."'   transtype='$type' type='checkbox' name='check[".$trans->trans_id."]' onchange='apport.onRefundCheckChange(".$trans->trans_id.")'>";
+                $result = "<input class='check' transtype='$type' type='checkbox' name='check[".$trans->trans_id."]' onchange='apport.onRefundCheckChange(".$trans->trans_id.")'>";
                 return $result;
             })
             ->make(true);

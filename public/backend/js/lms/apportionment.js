@@ -429,15 +429,31 @@ class Apportionment {
     }
 
     onRefundCheckChange(transId){
-        if ($("input[name='check["+transId+"]']").is(":checked")) { 
-            var amnt = $('.ref_amnt_'+transId).attr('id');
-            $("#"+transId).val(amnt);
+        if ($("input[name='check["+transId+"]']").is(":checked")) {
+            var amt = $("input[name='refund["+transId+"]']").attr('max');
+            $("input[name='refund["+transId+"]']").val(amt);
             $("input[name='refund["+transId+"]']").attr('disabled',false);
         } else { 
             $("input[name='refund["+transId+"]']").attr('disabled',true);
             $("input[name='refund["+transId+"]']").val('');
         }
     }
+
+    selectAllRefundCheck(checkallId){
+        if ($('#' + checkallId).is(':checked')) {
+            $('.refund[type="text"]').each(function(){
+                var amt = $(this).attr('max');
+                $(this).val(amt);
+            });
+            $('.check[type="checkbox"]').prop('checked', true);
+            $('.refund[type="text"]').attr('disabled',false);
+        }else{
+            $('.check[type="checkbox"]').prop('checked', false);
+            $('.refund[type="text"]').attr('disabled',true);
+            $('.refund[type="text"]').val(''); 
+        }
+    }
+
 }
 
 var apport =  new Apportionment(messages);
@@ -457,26 +473,6 @@ jQuery(document).ready(function ($) {
     if($('#runningTransactions').length){
         oTable = apport.datatableView('runningTransactions');
     }
-
-    $("#checkAll").change(function(){
-        var checked = $(this).is(':checked');
-        if(checked){
-        $('.chkBox').each(function(){
-            $(this).prop("checked",true);
-            var transId = $(this).attr('id');
-            console.log(transId);
-            var amnt = $('.ref_amnt_'+transId).attr('id');
-            $("#"+transId).val(amnt);
-            console.log($(this).attr('id'));
-        });
-        }else{
-        $('.chkBox').each(function(){
-            $(this).prop("checked",false);
-            var transId = $(this).attr('id');
-            $("#"+transId).val('');
-        });
-        }
-    });
 
 });
 
