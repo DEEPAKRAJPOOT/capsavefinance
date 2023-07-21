@@ -474,6 +474,14 @@ jQuery(document).ready(function ($) {
         oTable = apport.datatableView('runningTransactions');
     }
 
+    $(document).on('click', '#Confirm', function () {
+        if ($("input[name='confirm']").is(":checked")) {
+            return true;
+        }else{
+            replaceAlert('Please select checkbox.', 'error');
+            return false;
+        }
+    });
 });
 
 $(document).on('propertychange change click keyup input paste','.pay',function(){

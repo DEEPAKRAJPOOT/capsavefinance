@@ -92,7 +92,7 @@
                 </div>
                 <div class="row pull-right">
                     <div class="col-md-12" >
-                        <input type="submit" value="Confirm" class="btn btn-success btn-sm">
+                        <input type="submit" id="Confirm" value="Confirm" class="btn btn-success btn-sm">
                     </div>
                 </div>
             </form>
