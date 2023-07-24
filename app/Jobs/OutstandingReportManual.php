@@ -52,16 +52,14 @@ class OutstandingReportManual implements ShouldQueue
         try {
             ini_set("memory_limit", "-1");
             ini_set('max_execution_time', 10000);
-            $this->toDate = Carbon::now()->setTimezone(config('common.timezone'))->format('Y-m-d');
-            $this->reportsRepo = $reportsRepo;
-            $data = $this->reportsRepo->getOutstandingReportManual(['user_id' => $this->userId, 'to_date' => $this->toDate], $this->sendMail);
+            $this->toDate = Carbon::parse($this->toDate)->setTimezone(config('common.timezone'))->format('Y-m-d');
+            $data = $reportsRepo->getOutstandingReportManual(['user_id' => $this->userId, 'to_date' => $this->toDate], $this->sendMail);
             $filePath = $this->downloadOutstandingReport($data);
             unset($data);
             if($this->toDate && $this->logId){
                 $this->createOutstandingReportLog($this->toDate, $this->userId, $filePath, $this->logId);
             }
             DB::commit();
-            return true;
         } catch (\Throwable $ex) {
             DB::rollback();
             throw $ex;
@@ -214,18 +212,6 @@ class OutstandingReportManual implements ShouldQueue
             $path = Helper::uploadAwsS3Bucket($storage_path, $attributes, $filename);
             unlink($tmpFilename);
             return $path;
-        } catch (\Throwable $ex) {
-            throw $ex;
-        } 
-    }
-
-    private function isSecondFourthSaturday(){
-        try{
-            $month = date('M');
-            $year = date('Y');
-            $secondSat = date('Ymd', strtotime('second sat of '.$month.' '.$year));
-            $fourthSat = date('Ymd', strtotime('fourth sat of '.$month.' '.$year));
-            return in_array(date('Ymd'),[$secondSat,$fourthSat]);
         } catch (\Throwable $ex) {
             throw $ex;
         } 
