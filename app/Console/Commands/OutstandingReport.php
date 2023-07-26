@@ -67,7 +67,6 @@ class OutstandingReport extends Command
         }
 
         // consolidated report
-        OutstandingReportManualJob::dispatch($this->emailTo, $userId, $toDate, $logId)
-                        ->delay(now()->addSeconds(10));
+        OutstandingReportManualJob::dispatchSync($this->emailTo, $userId, $toDate, $logId);
     }
 }
