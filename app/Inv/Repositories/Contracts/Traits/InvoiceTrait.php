@@ -1034,26 +1034,23 @@ trait InvoiceTrait
       {
          $data['msg']  = 'You cannot close this account as some invoices are sent to bank for disbursal.';
          $data['status'] = 0;
- 
       }
-      else if($get_TDS_Payment_File == 0)
+      elseif($get_TDS_Payment > 0 && $get_TDS_Payment_File == 0)
       {
         $data['msg']  = 'You cannot close this account as TDS certificated is not uploaded.';
         $data['status'] = 0;
       }
-      else if($get_outstanding > 0)
+      elseif($get_outstanding > 0)
       {
-         $data['msg']  = 'You cannot close this account as outstanding amount is pending for this customer.';
-         $data['status'] = 0;
-       
+        $data['msg']  = 'You cannot close this account as outstanding amount is pending for this customer.';
+        $data['status'] = 0;
       }
-       else if(count($getReject) > 0 && $get_outstanding==0 && $get_Payment > 0 && $getBank==0)
+      elseif(count($getReject) > 0 && $get_outstanding == 0  && $getBank == 0)
       {
-         self::updateReject($getReject);
-         self::accountLock($attr['user_id']);
-         $data['msg']  = 'Customer account has been closed.';
-         $data['status'] = 1;
-       
+        self::updateReject($getReject);
+        self::accountLock($attr['user_id']);
+        $data['msg']  = 'Customer account has been closed.';
+        $data['status'] = 1;
       }
       else
       {
