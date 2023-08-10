@@ -1,6 +1,7 @@
 <?php
 namespace App\Inv\Repositories\Contracts\Traits;
 
+use App\Inv\Repositories\Models\Lms\TransactionsRunning;
 use Auth;
 use Carbon\Carbon;
 use DateTime;
@@ -1019,7 +1020,9 @@ trait InvoiceTrait
   public static function getAccountClosure($attr)
    {
       $getBank =   BizInvoice::where(['status_id' => 10,'supplier_id' =>$attr['user_id']])->count();
-      $get_outstanding =   BizInvoice::where(['is_repayment' =>0,'status_id' => 12,'supplier_id' =>$attr['user_id']])->count();
+      $transRuningOut = TransactionsRunning::where('user_id', $attr['user_id']) ->get() ->sum('outstanding');
+      $transOut = Transactions::where('user_id', $attr['user_id'])->whereNull('parent_trans_id')->where('entry_type',0)->whereNotIn('trans_type',[10])->sum('outstanding');
+      $get_outstanding = round($transRuningOut + $transOut, 2);
       $get_TDS_Payment  =  Payment::where(['user_id' => $attr['user_id'],'action_type' =>3])->count();
       $get_TDS_Payment_File = Payment::where(['user_id' => $attr['user_id'],'action_type' =>3])->where('file_id','<>', 0)->count();
       $getReject =   BizInvoice::whereIn('status_id',[7,8,9,11,28])->where(['supplier_id' =>$attr['user_id']])->get();
@@ -1034,26 +1037,23 @@ trait InvoiceTrait
       {
          $data['msg']  = 'You cannot close this account as some invoices are sent to bank for disbursal.';
          $data['status'] = 0;
-          
       }
-      else if($get_TDS_Payment <> $get_TDS_Payment_File)
+      elseif($get_TDS_Payment > 0 && $get_TDS_Payment_File == 0)
       {
         $data['msg']  = 'You cannot close this account as TDS certificated is not uploaded.';
         $data['status'] = 0;
       }
-      else if($get_outstanding > 0)
+      elseif($get_outstanding > 0)
       {
-         $data['msg']  = 'You cannot close this account as outstanding amount is pending for this customer.';
-         $data['status'] = 0;
-       
+        $data['msg']  = 'You cannot close this account as outstanding amount is pending for this customer.';
+        $data['status'] = 0;
       }
-       else if(count($getReject) > 0 && $get_outstanding==0 && $get_Payment > 0 && $getBank==0)
+      elseif(count($getReject) > 0 && $get_outstanding == 0  && $getBank == 0)
       {
-         self::updateReject($getReject);
-         self::accountLock($attr['user_id']);
-         $data['msg']  = 'Customer account has been closed.';
-         $data['status'] = 1;
-       
+        self::updateReject($getReject);
+        self::accountLock($attr['user_id']);
+        $data['msg']  = 'Customer account has been closed.';
+        $data['status'] = 1;
       }
       else
       {
