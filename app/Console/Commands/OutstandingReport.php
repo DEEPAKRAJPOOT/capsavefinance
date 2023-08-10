@@ -2,8 +2,12 @@
 
 namespace App\Console\Commands;
 
+use App\Helpers\Helper;
+use App\Inv\Repositories\Models\Lms\OutstandingReportLog;
+use DateTime;
 use Illuminate\Console\Command;
 use App\Jobs\OutstandingReportManual as OutstandingReportManualJob;
+use InvalidArgumentException;
 
 class OutstandingReport extends Command
 {
@@ -44,30 +48,45 @@ class OutstandingReport extends Command
      */
     public function handle()
     {
-        ini_set("memory_limit", "-1");
-        ini_set('max_execution_time', 10000);
-        if (empty($this->emailTo)) {
-            dd('DAILY_REPORT_MAIL is missing');
+        try {
+            ini_set("memory_limit", "-1");
+            ini_set('max_execution_time', 10000);
+            if (empty($this->emailTo)) {
+                dd('DAILY_REPORT_MAIL is missing');
+            }
+
+            $userId = $this->argument('user');
+            $toDate = $this->argument('date');
+            $logId = $this->argument('logId');
+
+            if(trim(strtolower($toDate)) == 'now'){
+                $toDate = (string) Helper::getSysStartDate();
+            }
+            else{
+                $dateTime = DateTime::createFromFormat('Y/m/d', $toDate);
+                if($dateTime && $dateTime->format('Y/m/d') === $toDate){
+                    $toDate = $dateTime->format('Y-m-d');
+                }else{
+                    throw new InvalidArgumentException('Invalid date of outstanding report(YYYY/MM/DD):'. $toDate);
+                }
+            }
+
+            if(trim(strtolower($userId)) == 'all'){
+                $userId = NULL;
+            }
+
+            if(trim(strtolower($logId)) == 'null'){
+                if(!is_numeric($userId) && !is_null($userId)) {
+                    throw new InvalidArgumentException('User id must be numeric value');
+                }
+
+                $odReportLog = OutstandingReportLog::create([ 'user_id' => $userId, 'to_date' => $toDate]);
+                $logId = $odReportLog->id;
+            }
+
+            OutstandingReportManualJob::dispatchSync($this->emailTo, $userId, $toDate, $logId);
+        } catch (\Throwable $th) {
+            throw $th;
         }
-
-        $userId = $this->argument('user');
-        $toDate = $this->argument('date');
-        $logId = $this->argument('logId');
-
-        if(trim(strtolower($toDate)) == 'now'){
-            $toDate = NULL;
-        }
-
-        if(trim(strtolower($userId)) == 'all'){
-            $userId = NULL;
-        }
-
-        if(trim(strtolower($logId)) == 'NULL'){
-            $logId = NULL;
-        }
-
-        // consolidated report
-        OutstandingReportManualJob::dispatch($this->emailTo, $userId, $toDate, $logId)
-                        ->delay(now()->addSeconds(10));
     }
 }
