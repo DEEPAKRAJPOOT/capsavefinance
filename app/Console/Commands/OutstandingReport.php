@@ -84,7 +84,7 @@ class OutstandingReport extends Command
                 $logId = $odReportLog->id;
             }
 
-            OutstandingReportManualJob::dispatch($this->emailTo, $userId, $toDate, $logId)->delay(now()->addSeconds(10));
+            OutstandingReportManualJob::dispatchSync($this->emailTo, $userId, $toDate, $logId);
         } catch (\Throwable $th) {
             throw $th;
         }
