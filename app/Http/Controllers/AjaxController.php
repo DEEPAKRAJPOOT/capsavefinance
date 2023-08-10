@@ -4056,7 +4056,7 @@ class AjaxController extends Controller {
     public function sendInvoiceOutstandingReportByMail()
     {
         if ($this->request->get('to_date') && $this->request->get('generate_report')) {
-            $to_date = Carbon::createFromFormat('d/m/Y', $this->request->get('to_date'))->format('Y-m-d');
+            $to_date = Carbon::createFromFormat('d/m/Y', $this->request->get('to_date'))->format('Y/m/d');
             $userId  = $this->request->get('user_id') ?? 'all';
             $odReportLog = OutstandingReportLog::create([ 'user_id' => $userId, 'to_date' => $to_date]);
             \Artisan::call("report:outstandingManual", ['user' => $userId, 'date' => $to_date, 'logId' => $odReportLog->id ?? NULL]);
