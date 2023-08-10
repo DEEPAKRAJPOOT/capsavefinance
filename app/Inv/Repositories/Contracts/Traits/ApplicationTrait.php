@@ -490,7 +490,7 @@ trait ApplicationTrait
             //Get and save application document files         
             $whereCond=[];
             $whereCond['app_id'] = $appId;
-            $appUserDocData = $this->appRepo->getUserAppDocData($whereCond);
+            $appUserDocData = $this->appRepo->getUserAppDocData($whereCond)->where('file_type','<>',2);
             foreach($appUserDocData as $appUserDoc) {
                 $appUserDocArrData = $appUserDoc ? $this->arrayExcept($appUserDoc->toArray(), array_merge($excludeKeys, ['app_doc_file_id'])) : [];
                 $appUserDocArrData['app_id'] = $newAppId;
@@ -974,7 +974,7 @@ trait ApplicationTrait
             //Get and save application document files         
             $whereCond=[];
             $whereCond['app_id'] = $appId;
-            $appUserDocData = $this->appRepo->getUserAppDocData($whereCond);
+            $appUserDocData = $this->appRepo->getUserAppDocData($whereCond)->where('file_type','<>',2);
             foreach($appUserDocData as $appUserDoc) {
                 $appUserDocArrData = $appUserDoc ? $this->arrayExcept($appUserDoc->toArray(), array_merge($excludeKeys, ['app_doc_file_id'])) : [];
                 $appUserDocArrData['app_id'] = $newAppId;
